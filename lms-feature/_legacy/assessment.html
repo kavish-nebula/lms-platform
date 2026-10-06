@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Assessment — Proofcraft</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body data-bot-page="assessment" data-bot-topic="Assessment">
+<div id="topbar"></div>
+
+<div class="container" style="max-width:760px">
+  <div class="page-head" id="head"></div>
+  <div id="quiz" style="margin-bottom:30px"></div>
+  <div id="result"></div>
+  <div style="height:80px"></div>
+</div>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+<script>
+const params = new URLSearchParams(location.search);
+const isFinal = params.get("module") === "final";
+const MOD = isFinal ? null : Number(params.get("module"));
+const mod = isFinal ? null : COURSE.modules.find((m) => m.n === MOD);
+const qs = (isFinal ? COURSE.finalAssessment.questions : mod.gate).map(withCorrectSecond);
+const PASS = isFinal ? COURSE.finalAssessment.passMark : 4;
+
+topbar("courses");
+document.body.dataset.botTopic = isFinal ? "Final build" : mod.title;
+
+document.getElementById("head").innerHTML = isFinal
+  ? `<div class="eyebrow">Independent · no hints</div>
+     <h1>${COURSE.finalAssessment.title}</h1>
+     <p class="lede">${COURSE.finalAssessment.intro}</p>
+     <div class="meta-row" style="margin-top:12px"><span class="chip gold">${qs.length} questions · scenario-heavy</span><span class="chip">Pass ${PASS}/${qs.length}</span></div>`
+  : `<div class="eyebrow">Module ${MOD} · mastery gate</div>
+     <h1>${mod.title}</h1>
+     <p class="lede">Five questions. Four right opens Module ${MOD + 1}. Wrong answers aren't failure — they're your gap map.</p>
+     <div class="meta-row" style="margin-top:12px"><span class="chip">Pass ${PASS}/${qs.length}</span></div>`;
+
+/* ---------- render quiz ---------- */
+const answers = new Array(qs.length).fill(null);
+document.getElementById("quiz").innerHTML = qs.map((q, qi) => `
+  <div class="card q-card">
+    <div class="q-text">${qi + 1}. ${q.q}</div>
+    <div id="q-${qi}">${q.options.map((o, oi) =>
+      `<label class="opt" onclick="pick(${qi},${oi})" style="margin-top:8px">
+        <input type="radio" name="q${qi}" value="${oi}" /><span class="opt-label">${o}</span>
+      </label>`).join("")}</div>
+    <div class="q-why" id="why-${qi}"></div>
+  </div>`).join("") +
+  (isFinal
+    ? `<div class="card" style="border-left:4px solid var(--accent)">
+        <div class="eyebrow">Reflection · required</div>
+        <p class="lede" style="font-size:.92rem;margin-bottom:10px">${COURSE.finalAssessment.reflectionPrompt}</p>
+        <textarea class="text-input reflect" id="reflect" placeholder="Your words go on your evidence page — write like an engineer, not a student."></textarea>
+      </div>`
+    : "") +
+  `<div style="text-align:right;margin-top:18px"><button class="btn btn-primary" id="btn-submit" onclick="submit()">Submit ${isFinal ? "the build" : "gate"}</button></div>`;
+
+function pick(qi, oi) {
+  answers[qi] = oi;
+  document.querySelectorAll(`#q-${qi} .opt`).forEach((el, i) => el.classList.toggle("selected", i === oi));
+}
+
+/* ---------- submit ---------- */
+function submit() {
+  if (answers.some((a) => a === null)) { toast("Answer every question — gaps count."); return; }
+  const reflection = isFinal ? document.getElementById("reflect").value.trim() : "";
+  if (isFinal && reflection.length < 20) { toast("Write your reflection — it becomes part of your evidence."); document.getElementById("reflect").focus(); return; }
+
+  const score = answers.reduce((s, a, i) => s + (a === qs[i].correct ? 1 : 0), 0);
+  const passed = score >= PASS;
+
+  // reveal per-question why + mark
+  qs.forEach((q, i) => {
+    const good = answers[i] === q.correct;
+    const why = document.getElementById("why-" + i);
+    why.className = "q-why " + (good ? "good" : "bad");
+    why.innerHTML = (good ? "✓ " : "△ Correct answer: <strong>" + q.options[q.correct] + "</strong>. ") + q.why;
+    document.querySelectorAll(`#q-${i} .opt`).forEach((el, oi) => {
+      if (oi === q.correct) el.classList.add("correct");
+      else if (oi === answers[i]) el.classList.add("wrong");
+      el.style.pointerEvents = "none";
+    });
+  });
+
+  if (isFinal) recordFinal(score, qs.length, passed, reflection);
+  else recordGate(MOD, score, qs.length, passed);
+
+  const pct = Math.round((score / qs.length) * 100);
+  const lvl = pct >= 75 ? ["Strong", "var(--good)"] : pct >= 40 ? ["Developing", "var(--gold)"] : ["Emerging", "var(--faint)"];
+  const nextCta = isFinal
+    ? (passed
+        ? `<a class="btn btn-primary" href="evidence.html">See your learning evidence →</a>`
+        : `<a class="btn btn-ghost" href="assessment.html?module=final">Retake the build</a> <a class="btn btn-ghost" href="course.html">Review weak modules</a>`)
+    : (passed
+        ? (MOD < 5 ? `<a class="btn btn-primary" href="course.html">Module ${MOD + 1} unlocked — continue →</a>` : `<a class="btn btn-primary" href="assessment.html?module=final">All gates open — final build →</a>`)
+        : `<a class="btn btn-ghost" href="assessment.html?module=${MOD}">Retake this gate</a> <a class="btn btn-ghost" href="course.html">Review the module</a>`);
+
+  document.getElementById("result").innerHTML = `
+    <div class="card result-banner">
+      <div class="score-panel">
+        <div class="eyebrow">${isFinal ? "Independent build" : "Mastery gate · Module " + MOD}</div>
+        <div class="score-big" style="color:${lvl[1]}">${score}/${qs.length}</div>
+        <div style="font-weight:600;color:${lvl[1]}">${lvl[0]}</div>
+        <div class="meter" style="max-width:260px;margin:14px auto"><div style="width:${pct}%;background:${lvl[1]}"></div></div>
+        <p class="lede" style="max-width:440px;margin:10px auto 0;font-size:.92rem">${
+          isFinal
+            ? (passed
+                ? "You built from requirements, unguided. That's the whole point of this course — and it's on your evidence page now, not as a badge, as proof."
+                : "Not yet — and honestly is better than inflated. The wrong ones above name your gaps; close them and retake. Your evidence page will tell the truth either way.")
+            : (passed
+                ? `Gate cleared. ${qs.length - score} gap${qs.length - score === 1 ? "" : "s"} flagged above — the spaced review will revisit ${qs.length - score === 1 ? "it" : "them"} in a few days.`
+                : `Close. Pass needs ${PASS}. The explanations above are your gap map — patch them and retake; nothing is lost by trying again.`)
+        }</p>
+        <div style="display:flex;gap:10px;justify-content:center;margin-top:20px;flex-wrap:wrap">${nextCta}</div>
+      </div>
+    </div>`;
+  document.getElementById("result").scrollIntoView({ behavior: "smooth" });
+}
+</script>
+<script src="bot.js"></script>
+</body>
+</html>
