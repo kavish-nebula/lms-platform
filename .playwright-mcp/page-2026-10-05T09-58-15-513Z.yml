@@ -1,0 +1,29 @@
+- generic [ref=f18e3]:
+  - navigation "Main" [ref=f18e4]:
+    - link "Nebula KnowLab" [ref=f18e5] [cursor=pointer]:
+      - /url: /dashboard
+    - generic [ref=f18e11]:
+      - link "Dashboard" [ref=f18e12] [cursor=pointer]:
+        - /url: /dashboard
+      - link "Courses" [ref=f18e19] [cursor=pointer]:
+        - /url: /catalog
+      - link "Plan" [ref=f18e23] [cursor=pointer]:
+        - /url: /plan
+      - link "Portfolio" [ref=f18e28] [cursor=pointer]:
+        - /url: /portfolio
+      - link "Profile" [ref=f18e35] [cursor=pointer]:
+        - /url: /profile
+    - button "Demo" [ref=f18e40] [cursor=pointer]
+    - link "@Geetika" [ref=f18e44] [cursor=pointer]:
+      - /url: /profile
+  - main [ref=f18e45]:
+    - generic [ref=f18e46]:
+      - generic [ref=f18e48]:
+        - generic [ref=f18e49]: Your schedule
+        - heading "Learning plan" [level=1] [ref=f18e50]
+        - paragraph [ref=f18e51]: Your lesson sequence and what’s left, on the days you choose.
+      - generic [ref=f18e52]:
+        - text: Start a course and its lessons appear here to plan.
+        - link "Go to Courses" [ref=f18e54] [cursor=pointer]:
+          - /url: /catalog
+  - generic [ref=f18e56] [cursor=pointer]

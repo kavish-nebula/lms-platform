@@ -1,0 +1,88 @@
+- generic [ref=f3e3]:
+  - navigation "Main" [ref=f3e4]:
+    - link "P Proofcraft" [ref=f3e5] [cursor=pointer]:
+      - /url: /dashboard
+      - generic [ref=f3e6]: P
+      - text: Proofcraft
+    - generic [ref=f3e7]:
+      - link "Dashboard" [ref=f3e8] [cursor=pointer]:
+        - /url: /dashboard
+      - link "Courses" [ref=f3e15] [cursor=pointer]:
+        - /url: /catalog
+      - link "Plan" [ref=f3e20] [cursor=pointer]:
+        - /url: /plan
+      - link "Portfolio" [ref=f3e24] [cursor=pointer]:
+        - /url: /portfolio
+      - link "Profile" [ref=f3e31] [cursor=pointer]:
+        - /url: /profile
+    - button "Demo" [ref=f3e36] [cursor=pointer]
+    - link "@Geetika" [ref=f3e40] [cursor=pointer]:
+      - /url: /profile
+  - main [ref=f3e41]:
+    - generic [ref=f3e42]:
+      - generic [ref=f3e43]:
+        - generic [ref=f3e44]:
+          - generic [ref=f3e45]: Module 4 · Duplicate invoices, silent failures, and 200 tickets a day that an AI could triage. Then the same cleaning steps copied into five workflows, a tax rule no node can express, and invoices that arrive as PDFs.
+          - heading "Reliability, AI & Bigger Workflows" [level=1] [ref=f3e46]
+        - link "Exit to course path" [ref=f3e47] [cursor=pointer]:
+          - /url: /course/n8n
+      - generic [ref=f3e48]:
+        - complementary [ref=f3e49]:
+          - button "4.1 · When things break" [ref=f3e50] [cursor=pointer]
+          - button "4.2 · Error workflows locked" [ref=f3e55] [cursor=pointer]:
+            - generic [ref=f3e59]: 4.2 · Error workflows
+            - img "locked" [ref=f3e60]
+          - button "4.3 · AI in the loop locked" [ref=f3e63] [cursor=pointer]:
+            - generic [ref=f3e67]: 4.3 · AI in the loop
+            - img "locked" [ref=f3e68]
+          - button "4.4 · Sub-workflows locked" [ref=f3e71] [cursor=pointer]:
+            - generic [ref=f3e75]: 4.4 · Sub-workflows
+            - img "locked" [ref=f3e76]
+          - button "4.5 · The Code node locked" [ref=f3e79] [cursor=pointer]:
+            - generic [ref=f3e83]: 4.5 · The Code node
+            - img "locked" [ref=f3e84]
+          - button "4.6 · Files and binary data locked" [ref=f3e87] [cursor=pointer]:
+            - generic [ref=f3e91]: 4.6 · Files and binary data
+            - img "locked" [ref=f3e92]
+          - button "Module quiz locked" [ref=f3e95] [cursor=pointer]:
+            - generic [ref=f3e100]: Module quiz
+            - img "locked" [ref=f3e101]
+          - button [ref=f3e104] [cursor=pointer]
+          - generic [ref=f3e109]: 0/7 steps complete
+        - generic [ref=f3e112]:
+          - generic [ref=f3e113]:
+            - generic [ref=f3e116]: This step is running as authored.
+            - link "Tell us how you learn" [ref=f3e117] [cursor=pointer]:
+              - /url: /onboarding
+          - generic [ref=f3e118]:
+            - generic [ref=f3e120]:
+              - generic [ref=f3e121]: Lesson 4.1 · concept video
+              - heading "When things break" [level=2] [ref=f3e122]
+            - generic [ref=f3e124]:
+              - generic [ref=f3e125]:
+                - generic [ref=f3e129]:
+                  - generic [ref=f3e133]: Module 4 · Video 1
+                  - heading "When things break" [level=3] [ref=f3e134]
+                  - paragraph [ref=f3e135]: What a failure really is, and how a workflow can survive one
+                - button "Play the video" [ref=f3e136] [cursor=pointer]
+              - paragraph [ref=f3e139]: Press play to start — the slides follow the narration.
+              - group "Video controls" [ref=f3e140]:
+                - button "Previous slide" [disabled] [ref=f3e141]
+                - button "Play the video" [ref=f3e144] [cursor=pointer]: Play
+                - button "Next slide" [ref=f3e147] [cursor=pointer]
+                - button "Replay this slide" [ref=f3e150] [cursor=pointer]
+                - generic [ref=f3e154]:
+                  - 'button "Go to slide 1: When things break" [ref=f3e155] [cursor=pointer]'
+                  - 'button "Go to slide 2: Two kinds of failure" [ref=f3e156] [cursor=pointer]'
+                  - 'button "Go to slide 3: By default, one error stops everything" [ref=f3e157] [cursor=pointer]'
+                  - 'button "Go to slide 4: Setting 1: retry" [ref=f3e158] [cursor=pointer]':
+                    - generic "Quick check" [ref=f3e159]
+                  - 'button "Go to slide 5: Setting 2: continue, and keep the failures" [ref=f3e160] [cursor=pointer]'
+                  - 'button "Go to slide 6: Which setting, when?" [ref=f3e161] [cursor=pointer]'
+                  - 'button "Go to slide 7: In practice: the duplicate invoices" [ref=f3e162] [cursor=pointer]'
+                  - 'button "Go to slide 8: Surviving failure, everywhere" [ref=f3e163] [cursor=pointer]'
+                  - 'button "Go to slide 9: What to take away" [ref=f3e164] [cursor=pointer]'
+                - generic [ref=f3e165]: 0:00 / 3:02
+                - generic [ref=f3e166]: 1 / 9
+                - button "Mute" [ref=f3e167] [cursor=pointer]
+  - generic [ref=f3e173] [cursor=pointer]

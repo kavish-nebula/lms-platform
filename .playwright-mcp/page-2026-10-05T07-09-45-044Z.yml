@@ -1,0 +1,129 @@
+- generic [ref=f1e2]:
+  - complementary [ref=f1e3]:
+    - generic [ref=f1e4]: Forma
+    - generic [ref=f1e10]:
+      - paragraph [ref=f1e11]: Workspace
+      - navigation "Main navigation" [ref=f1e12]:
+        - link "Overview" [ref=f1e14] [cursor=pointer]:
+          - /url: "#"
+        - link "My learning" [ref=f1e19] [cursor=pointer]:
+          - /url: "#"
+        - link "Learning paths" [ref=f1e24] [cursor=pointer]:
+          - /url: "#"
+        - link "Schedule" [ref=f1e30] [cursor=pointer]:
+          - /url: "#"
+        - link "Community" [ref=f1e35] [cursor=pointer]:
+          - /url: "#"
+    - generic [ref=f1e41]:
+      - navigation "Settings" [ref=f1e42]:
+        - link "Settings" [ref=f1e43] [cursor=pointer]:
+          - /url: "#"
+      - generic [ref=f1e48]:
+        - generic [aria-hidden] [ref=f1e49]: MJ
+        - generic [ref=f1e50]:
+          - generic [ref=f1e51]: Maya Johnson
+          - generic [ref=f1e52]: maya@forma.co
+        - button "Profile menu" [ref=f1e53] [cursor=pointer]: ···
+  - main [ref=f1e54]:
+    - generic [ref=f1e55]:
+      - generic [ref=f1e56]:
+        - textbox "Search courses, skills, or topics" [ref=f1e60]
+        - generic [ref=f1e61]: ⌘K
+      - button "Notifications" [ref=f1e62] [cursor=pointer]
+      - button "Maya Johnson" [ref=f1e66] [cursor=pointer]: MJ
+    - generic [ref=f1e67]:
+      - generic [ref=f1e68]:
+        - generic [ref=f1e69]:
+          - paragraph [ref=f1e70]: Tuesday, May 20
+          - heading "Good morning, Maya." [level=1] [ref=f1e71]
+          - paragraph [ref=f1e72]: Keep building momentum. You’re 3 lessons away from your weekly goal.
+        - button "Ask AI coach" [ref=f1e73] [cursor=pointer]
+      - generic [ref=f1e76]:
+        - region "Continue learning" [ref=f1e77]:
+          - generic [ref=f1e78]:
+            - heading "DESIGN SYSTEMS" [level=3] [ref=f1e80]
+            - generic [ref=f1e81]:
+              - generic [ref=f1e82]:
+                - generic [ref=f1e83]: CONTINUE LEARNING
+                - generic [ref=f1e84]: Lesson 8 of 24
+              - heading "Product Design Foundations" [level=2] [ref=f1e85]
+              - paragraph [ref=f1e86]: Building scalable design systems
+              - generic [ref=f1e87]:
+                - progressbar "Course progress" [ref=f1e88]
+                - generic [ref=f1e89]: 68%
+              - button "Resume lesson 8" [ref=f1e90] [cursor=pointer]: Resume lesson
+        - region "AI learning companion" [ref=f1e93]:
+          - paragraph [ref=f1e99]: AI learning companion
+          - heading "Your week, intelligently planned." [level=2] [ref=f1e100]
+          - paragraph [ref=f1e101]: I’ve created a focused 4-day plan based on your goals and available time.
+          - button "View my learning plan" [ref=f1e102] [cursor=pointer]
+      - region "In progress" [ref=f1e105]:
+        - generic [ref=f1e106]:
+          - generic [ref=f1e107]:
+            - heading "In progress" [level=2] [ref=f1e108]
+            - paragraph [ref=f1e109]: Pick up where you left off
+          - button "View all" [ref=f1e110] [cursor=pointer]
+        - generic [ref=f1e113]:
+          - button "Product Design Foundations, 24 lessons, 68% complete" [ref=f1e114] [cursor=pointer]:
+            - generic [aria-hidden] [ref=f1e115]: Aa
+            - generic [ref=f1e116]:
+              - generic [ref=f1e117]: Design
+              - heading "Product Design Foundations" [level=3] [ref=f1e118]
+              - generic [ref=f1e119]:
+                - generic [ref=f1e120]: 24 lessons
+                - generic [ref=f1e121]: 68%
+          - button "AI for Everyday Work, 18 lessons, 42% complete" [ref=f1e122] [cursor=pointer]:
+            - generic [aria-hidden] [ref=f1e123]: AI
+            - generic [ref=f1e124]:
+              - generic [ref=f1e125]: Artificial Intelligence
+              - heading "AI for Everyday Work" [level=3] [ref=f1e126]
+              - generic [ref=f1e127]:
+                - generic [ref=f1e128]: 18 lessons
+                - generic [ref=f1e129]: 42%
+          - button "Data Storytelling, 16 lessons, 81% complete" [ref=f1e130] [cursor=pointer]:
+            - generic [ref=f1e134]:
+              - generic [ref=f1e135]: Data & Analytics
+              - heading "Data Storytelling" [level=3] [ref=f1e136]
+              - generic [ref=f1e137]:
+                - generic [ref=f1e138]: 16 lessons
+                - generic [ref=f1e139]: 81%
+      - generic [ref=f1e140]:
+        - region "Up next" [ref=f1e141]:
+          - generic [ref=f1e142]:
+            - generic [ref=f1e143]:
+              - heading "Up next" [level=2] [ref=f1e144]
+              - paragraph [ref=f1e145]: Your learning schedule
+            - button "Open calendar" [ref=f1e146] [cursor=pointer]
+          - generic [ref=f1e150]:
+            - generic [aria-hidden] [ref=f1e151]:
+              - generic [ref=f1e152]: "21"
+              - generic [ref=f1e153]: Wed
+            - generic [ref=f1e154]:
+              - paragraph [ref=f1e155]: 10:00 AM · 45 min
+              - generic [ref=f1e156]: Design critique essentials
+              - paragraph [ref=f1e157]: Product Design Foundations
+            - button "Join" [ref=f1e158] [cursor=pointer]
+          - generic [ref=f1e159]:
+            - generic [aria-hidden] [ref=f1e160]:
+              - generic [ref=f1e161]: "23"
+              - generic [ref=f1e162]: Fri
+            - generic [ref=f1e163]:
+              - paragraph [ref=f1e164]: 2:30 PM · 30 min
+              - generic [ref=f1e165]: AI productivity workshop
+              - paragraph [ref=f1e166]: Live cohort session
+            - button "More options for AI productivity workshop" [ref=f1e167] [cursor=pointer]: ⋯
+        - region "Weekly goal" [ref=f1e168]:
+          - generic [ref=f1e169]:
+            - generic [ref=f1e170]:
+              - heading "Weekly goal" [level=2] [ref=f1e171]
+              - paragraph [ref=f1e172]: May 19 – 25
+            - button "Adjust weekly goal" [ref=f1e173] [cursor=pointer]
+          - generic [ref=f1e176]:
+            - generic [ref=f1e177]:
+              - strong [ref=f1e178]: "3.5"
+              - generic [ref=f1e179]: of 5 hrs
+            - progressbar "Weekly goal progress"
+            - generic [ref=f1e180]:
+              - generic [ref=f1e181]: 70%
+              - paragraph [ref=f1e182]: complete · Just 1.5 hours to go. You’ve got this.
+            - generic [ref=f1e183]: 3 day streak

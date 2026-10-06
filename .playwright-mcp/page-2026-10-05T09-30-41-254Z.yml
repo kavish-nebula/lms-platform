@@ -1,0 +1,119 @@
+- generic [ref=f11e3]:
+  - navigation "Main" [ref=f11e4]:
+    - link "Proofcraft" [ref=f11e5] [cursor=pointer]:
+      - /url: /dashboard
+    - generic [ref=f11e11]:
+      - link "Dashboard" [ref=f11e12] [cursor=pointer]:
+        - /url: /dashboard
+      - link "Courses" [ref=f11e19] [cursor=pointer]:
+        - /url: /catalog
+      - link "Plan" [ref=f11e24] [cursor=pointer]:
+        - /url: /plan
+      - link "Portfolio" [ref=f11e28] [cursor=pointer]:
+        - /url: /portfolio
+      - link "Profile" [ref=f11e35] [cursor=pointer]:
+        - /url: /profile
+    - button "Demo" [ref=f11e40] [cursor=pointer]
+    - link "@Geetika" [ref=f11e44] [cursor=pointer]:
+      - /url: /profile
+  - main [ref=f11e45]:
+    - generic [ref=f11e46]:
+      - generic [ref=f11e48]:
+        - generic [ref=f11e49]: Courses
+        - heading "Recommended credentials" [level=1] [ref=f11e50]
+        - paragraph [ref=f11e51]: "Every course on the platform, Coursera-style: what you'll learn, what you'll gain, and the modules inside — one card per course."
+      - group "Filter courses by level" [ref=f11e52]:
+        - button "All" [pressed] [ref=f11e53] [cursor=pointer]
+        - button "Beginner" [ref=f11e54] [cursor=pointer]
+        - button "Intermediate" [ref=f11e55] [cursor=pointer]
+        - button "Advanced" [ref=f11e56] [cursor=pointer]
+      - generic [ref=f11e57]:
+        - generic [ref=f11e58]:
+          - generic [ref=f11e59]: Top recommendation
+          - generic [ref=f11e61]:
+            - generic [ref=f11e62]:
+              - heading "Automate Real Work with n8n" [level=2] [ref=f11e69]
+              - paragraph [ref=f11e70]: "Skills you’ll gain: Workflow automation, Triggers & executions, Data transformation, Expressions, Branching & merging, REST APIs, Error handling, AI in workflows, Sub-workflows, Files & binary data"
+              - paragraph [ref=f11e71]:
+                - generic [ref=f11e74]: "4.6"
+                - generic [ref=f11e75]: (1,203 reviews)
+              - paragraph [ref=f11e76]: Beginner · about 4h 39m now · 4 modules + capstone
+              - generic [ref=f11e77]:
+                - link "Enroll for free" [ref=f11e78] [cursor=pointer]:
+                  - /url: /course/n8n
+                - link "View details" [ref=f11e81] [cursor=pointer]:
+                  - /url: /course/n8n
+            - group "Automate Real Work with n8n modules" [ref=f11e83]:
+              - button "Show earlier modules" [disabled]
+              - generic [ref=f11e84]:
+                - generic [aria-hidden] [ref=f11e85]:
+                  - generic [ref=f11e86]: "1"
+                  - heading [level=3] [ref=f11e88]: "Foundations: Your First Working Workflow"
+                  - paragraph [ref=f11e89]: Module 1 of 4
+                - generic [aria-hidden] [ref=f11e90]:
+                  - generic [ref=f11e91]: "2"
+                  - heading [level=3] [ref=f11e93]: "Data Transformation: Taming Messy Data"
+                  - paragraph [ref=f11e94]: Module 2 of 4
+                - generic [aria-hidden] [ref=f11e95]:
+                  - generic [ref=f11e96]: "3"
+                  - heading [level=3] [ref=f11e98]: Logic, Branching & APIs
+                  - paragraph [ref=f11e99]: Module 3 of 4
+                - generic [aria-hidden] [ref=f11e100]:
+                  - generic [ref=f11e101]: "4"
+                  - heading [level=3] [ref=f11e103]: Reliability, AI & Bigger Workflows
+                  - paragraph [ref=f11e104]: Module 4 of 4
+              - button "Show later modules" [disabled]
+        - generic [ref=f11e105]:
+          - generic [ref=f11e106]: coming soon
+          - generic [ref=f11e111]:
+            - generic [ref=f11e112]:
+              - generic [aria-hidden] [ref=f11e113]: S
+              - heading "SQL Data Modeling" [level=2] [ref=f11e114]
+              - paragraph [ref=f11e115]: "Skills you’ll gain: Relational modeling, Normalization, Indexes & query plans, Joins, Schema migrations, Analytical SQL"
+              - paragraph [ref=f11e116]:
+                - generic [ref=f11e119]: "4.7"
+                - generic [ref=f11e120]: (862 reviews)
+              - paragraph [ref=f11e121]: Intermediate · in the works · 3 modules planned
+              - generic [ref=f11e122]: Coming soon
+            - group "SQL Data Modeling modules" [ref=f11e125]:
+              - button "Show earlier modules" [disabled]
+              - generic [ref=f11e126]:
+                - generic [aria-hidden] [ref=f11e127]:
+                  - heading [level=3] [ref=f11e132]: New module
+                  - paragraph [ref=f11e133]: Coming soon
+                - generic [aria-hidden] [ref=f11e134]:
+                  - heading [level=3] [ref=f11e139]: New module
+                  - paragraph [ref=f11e140]: Coming soon
+                - generic [aria-hidden] [ref=f11e141]:
+                  - heading [level=3] [ref=f11e146]: New module
+                  - paragraph [ref=f11e147]: Coming soon
+                - generic [aria-hidden] [ref=f11e148]:
+                  - heading [level=3] [ref=f11e153]: New module
+                  - paragraph [ref=f11e154]: Coming soon
+              - button "Show later modules" [disabled]
+        - generic [ref=f11e155]:
+          - generic [ref=f11e156]: coming soon
+          - generic [ref=f11e161]:
+            - generic [ref=f11e162]:
+              - generic [aria-hidden] [ref=f11e163]: W
+              - heading "Web Performance, Honestly" [level=2] [ref=f11e164]
+              - paragraph [ref=f11e165]: "Skills you’ll gain: Core Web Vitals, Performance budgets, Lazy loading, Caching strategy, Bundle analysis, Rendering metrics"
+              - paragraph [ref=f11e166]:
+                - generic [ref=f11e169]: "4.8"
+                - generic [ref=f11e170]: (540 reviews)
+              - paragraph [ref=f11e171]: Advanced · in the works · 2 modules planned
+              - generic [ref=f11e172]: Coming soon
+            - group "Web Performance, Honestly modules" [ref=f11e175]:
+              - button "Show earlier modules" [disabled]
+              - generic [ref=f11e176]:
+                - generic [aria-hidden] [ref=f11e177]:
+                  - heading [level=3] [ref=f11e182]: New module
+                  - paragraph [ref=f11e183]: Coming soon
+                - generic [aria-hidden] [ref=f11e184]:
+                  - heading [level=3] [ref=f11e189]: New module
+                  - paragraph [ref=f11e190]: Coming soon
+                - generic [aria-hidden] [ref=f11e191]:
+                  - heading [level=3] [ref=f11e196]: New module
+                  - paragraph [ref=f11e197]: Coming soon
+              - button "Show later modules" [disabled]
+  - generic [ref=f11e199] [cursor=pointer]

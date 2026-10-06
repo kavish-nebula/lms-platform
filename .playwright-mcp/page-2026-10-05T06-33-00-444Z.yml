@@ -1,0 +1,35 @@
+- generic [ref=f11e3]:
+  - banner [ref=f11e4]:
+    - link "P Proofcraft" [ref=f11e5] [cursor=pointer]:
+      - /url: /dashboard
+      - generic [ref=f11e6]: P
+      - text: Proofcraft
+  - main [ref=f11e7]:
+    - generic [ref=f11e8]:
+      - generic [ref=f11e10]:
+        - generic [ref=f11e11]: Proofcraft — learning you can prove
+        - heading [level=1] [ref=f11e12]:
+          - text: Learning that fits you.Then
+          - emphasis [ref=f11e13]: proof
+          - text: you can do it.
+        - paragraph [ref=f11e14]: Choose a course, tell it a little about yourself, and take a short pre-assessment. Each lesson is then put in your own field and explained at the depth you need — and you can change any of it later.
+        - link "Go to your dashboard" [ref=f11e16] [cursor=pointer]:
+          - /url: /dashboard
+        - generic [ref=f11e19]:
+          - generic [ref=f11e20]: 1 · choose a course
+          - generic [ref=f11e21]: →
+          - generic [ref=f11e22]: 2 · a few questions about you
+          - generic [ref=f11e23]: →
+          - generic [ref=f11e24]: 3 · a short pre-assessment
+          - generic [ref=f11e25]: →
+          - generic [ref=f11e26]: 4 · your course
+      - generic [ref=f11e27]:
+        - generic [ref=f11e28]:
+          - heading "Proof, not badges" [level=3] [ref=f11e34]
+          - paragraph [ref=f11e35]: Every module ships a real artifact — a working workflow with the acceptance checks it passed. Your portfolio is evidence, not decoration.
+        - generic [ref=f11e36]:
+          - heading "Adapts quietly" [level=3] [ref=f11e39]
+          - paragraph [ref=f11e40]: When you start a course, a few questions about you set the framing and the order, and one short pre-assessment sets how much support each lesson gives. Every change is shown to you.
+        - generic [ref=f11e41]:
+          - heading "Health checks that keep it alive" [level=3] [ref=f11e45]
+          - paragraph [ref=f11e46]: Days later, a workflow “needs attention.” Maintenance scenarios keep the skill alive — retention disguised as real work.

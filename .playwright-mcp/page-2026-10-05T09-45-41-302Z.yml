@@ -1,0 +1,33 @@
+- generic [ref=f15e3]:
+  - banner [ref=f15e4]:
+    - link "Nebula KnowLab" [ref=f15e5] [cursor=pointer]:
+      - /url: /dashboard
+  - main [ref=f15e11]:
+    - generic [ref=f15e12]:
+      - generic [ref=f15e14]:
+        - generic [ref=f15e15]: Nebula KnowLab — learning you can prove
+        - heading [level=1] [ref=f15e16]:
+          - text: Learning that fits you.Then
+          - emphasis [ref=f15e17]: proof
+          - text: you can do it.
+        - paragraph [ref=f15e18]: Choose a course, tell it a little about yourself, and take a short pre-assessment. Each lesson is then put in your own field and explained at the depth you need — and you can change any of it later.
+        - link "Go to your dashboard" [ref=f15e20] [cursor=pointer]:
+          - /url: /dashboard
+        - generic [ref=f15e23]:
+          - generic [ref=f15e24]: 1 · choose a course
+          - generic [ref=f15e25]: →
+          - generic [ref=f15e26]: 2 · a few questions about you
+          - generic [ref=f15e27]: →
+          - generic [ref=f15e28]: 3 · a short pre-assessment
+          - generic [ref=f15e29]: →
+          - generic [ref=f15e30]: 4 · your course
+      - generic [ref=f15e31]:
+        - generic [ref=f15e32]:
+          - heading "Proof, not badges" [level=3] [ref=f15e38]
+          - paragraph [ref=f15e39]: Every module ships a real artifact — a working workflow with the acceptance checks it passed. Your portfolio is evidence, not decoration.
+        - generic [ref=f15e40]:
+          - heading "Adapts quietly" [level=3] [ref=f15e43]
+          - paragraph [ref=f15e44]: When you start a course, a few questions about you set the framing and the order, and one short pre-assessment sets how much support each lesson gives. Every change is shown to you.
+        - generic [ref=f15e45]:
+          - heading "Health checks that keep it alive" [level=3] [ref=f15e49]
+          - paragraph [ref=f15e50]: Days later, a workflow “needs attention.” Maintenance scenarios keep the skill alive — retention disguised as real work.

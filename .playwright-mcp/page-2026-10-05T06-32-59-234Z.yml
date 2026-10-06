@@ -1,0 +1,46 @@
+- generic [ref=f10e3]:
+  - navigation "Main" [ref=f10e4]:
+    - link "P Proofcraft" [ref=f10e5] [cursor=pointer]:
+      - /url: /dashboard
+      - generic [ref=f10e6]: P
+      - text: Proofcraft
+    - generic [ref=f10e7]:
+      - link "Dashboard" [ref=f10e8] [cursor=pointer]:
+        - /url: /dashboard
+      - link "Courses" [ref=f10e16] [cursor=pointer]:
+        - /url: /catalog
+      - link "Plan" [ref=f10e20] [cursor=pointer]:
+        - /url: /plan
+      - link "Portfolio" [ref=f10e24] [cursor=pointer]:
+        - /url: /portfolio
+      - link "Profile" [ref=f10e31] [cursor=pointer]:
+        - /url: /profile
+    - button "Demo" [ref=f10e36] [cursor=pointer]
+    - link "@Geetika" [ref=f10e40] [cursor=pointer]:
+      - /url: /profile
+  - main [ref=f10e41]:
+    - generic [ref=f10e42]:
+      - generic [ref=f10e45]:
+        - generic [ref=f10e46]: Dashboard
+        - heading "Afternoon, Geetika." [level=1] [ref=f10e47]
+        - paragraph [ref=f10e48]: Pick a course to begin. A few questions about you and a short pre-assessment set it up for you.
+      - generic [ref=f10e50]:
+        - generic [ref=f10e51]: Start here
+        - heading "Choose your first course" [level=2] [ref=f10e52]
+        - paragraph [ref=f10e53]: "Open a course to see what it covers. Starting it takes three steps: a few questions about you, a short pre-assessment, then the course set up for you."
+      - generic [ref=f10e54]:
+        - generic [ref=f10e55]:
+          - generic [ref=f10e56]: open now
+          - heading "Automate Real Work with n8n" [level=3] [ref=f10e57]
+          - paragraph [ref=f10e58]: Nebula runs on spreadsheets, a flaky CRM and hope. Every week, hours vanish into copy-paste work that a machine should do. Over four modules, you become the person who fixes that — by shipping real, working automations.
+          - link "View course" [ref=f10e60] [cursor=pointer]:
+            - /url: /course/n8n
+        - generic [ref=f10e63]:
+          - generic [ref=f10e64]: coming soon
+          - heading "SQL Data Modeling" [level=3] [ref=f10e68]
+          - paragraph [ref=f10e69]: Schemas that were “obvious” on day one and unbearable by month three.
+        - generic [ref=f10e70]:
+          - generic [ref=f10e71]: coming soon
+          - heading "Web Performance, Honestly" [level=3] [ref=f10e75]
+          - paragraph [ref=f10e76]: A page that scores 100 and still feels slow. Measure what users feel.
+  - generic [ref=f10e78] [cursor=pointer]

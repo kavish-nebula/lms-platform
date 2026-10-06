@@ -1,0 +1,28 @@
+[    1376ms] [LOG] Running frontend commit 734519e56fbecc5877374c6551b2472b951d59d5 @ https://www.figma.com/make/aua6GXnuvV8r9NECbYzp4r/LMS-Learning-Platform-Template?t=pFxH0tClb9PhjaFT-20&fullscreen=1:572
+[    4785ms] [WARNING] Statsig is not ready to log exposures, will retry in 1 seconds @ https://www.figma.com/webpack-artifacts/assets/vendor-2b8fd634163619d9.min.js.br:131
+[    4812ms] [ERROR] Failed to load resource: the server responded with a status of 403 (Forbidden) @ https://browser-intake-datadoghq.com/api/v2/rum:0
+[    6752ms] [LOG] [import] git: 734519e56fbecc5877374c6551b2472b951d59d5, stamp: 9F206C9127351829 @ https://www.figma.com/webpack-artifacts/assets/vendor-2b8fd634163619d9.min.js.br:131
+[    7752ms] [LOG] Loaded 52 scripts (7156400b), 0 from cache (0b) @ https://www.figma.com/webpack-artifacts/assets/vendor-2b8fd634163619d9.min.js.br:131
+[    8474ms] [INFO] [Fullscreen] Booting... (emscripten version 4.0.21) @ https://www.figma.com/webpack-artifacts/assets/vendor-2b8fd634163619d9.min.js.br:131
+[    8840ms] [INFO] [GPU] graphicsAPI:"WebGL 2", vendor:"Google Inc. (Intel)", renderer:"ANGLE (Intel, Intel(R) Iris(R) Xe Graphics (0x00009A49) Direct3D11 vs_5_0 ps_5_0, D3D11)" version:"OpenGL ES 3.0 (WebGL 2.0 (OpenGL ES 3.0 Chromium))" @ https://www.figma.com/webpack-artifacts/assets/vendor-2b8fd634163619d9.min.js.br:131
+[    8877ms] [LOG] [Fullscreen] Ready in 2828.0ms @ https://www.figma.com/webpack-artifacts/assets/vendor-2b8fd634163619d9.min.js.br:131
+[    8903ms] [WARNING] The powerPreference option is currently ignored when calling requestAdapter() on Windows. See https://crbug.com/369219127 @ https://www.figma.com/webpack-artifacts/assets/486-0912e88e824b23aa.min.js.br:28
+[    8906ms] [WARNING] The powerPreference option is currently ignored when calling requestAdapter() on Windows. See https://crbug.com/369219127 @ https://www.figma.com/webpack-artifacts/assets/486-0912e88e824b23aa.min.js.br:28
+[   10441ms] [INFO] [FullscreenApp] calling setEditorTheme and setting preference light @ https://www.figma.com/webpack-artifacts/assets/vendor-2b8fd634163619d9.min.js.br:131
+[   10730ms] [INFO] [MultiplayerSession] connecting to wss://www.figma.com/api/multiplayer/aua6GXnuvV8r9NECbYzp4r?role=editor&tracking_session_id=jZkQC3NJtLVNwvSq&version=240&recentReload=0&file-load-streaming-compression=&client_release=734519e56fbecc5877374c6551b2472b951d59d5&previousLoadMode=full&reconnect-key=b28bd502-2d19-4df5-9da1-d1dc3dd00f82&reconnect-sequence-number=6&initialFileVersion=106 @ https://www.figma.com/webpack-artifacts/assets/vendor-2b8fd634163619d9.min.js.br:131
+[   10815ms] [INFO] [FullscreenApp] calling setEditorTheme and setting preference light @ https://www.figma.com/webpack-artifacts/assets/vendor-2b8fd634163619d9.min.js.br:131
+[   11374ms] [INFO] [MultiplayerSession] Joining file version 106 (journaled reconnect) @ https://www.figma.com/webpack-artifacts/assets/vendor-2b8fd634163619d9.min.js.br:131
+[   13874ms] [LOG] [Fullscreen] loadtime=11.25s maxmem=5868224 @ https://www.figma.com/webpack-artifacts/assets/vendor-2b8fd634163619d9.min.js.br:131
+[   13912ms] [ERROR] Failed to load resource: the server responded with a status of 401 () @ https://www.figma.com/api/source/v1/make/environment/aua6GXnuvV8r9NECbYzp4r?guid=0%3A6:0
+[   13926ms] [ERROR] Failed to load resource: the server responded with a status of 401 () @ https://www.figma.com/api/integrations/supabase/aua6GXnuvV8r9NECbYzp4r/connection:0
+[   14417ms] [LOG] [make] iframe_buffer_manager.sandbox_state_effect @ https://www.figma.com/webpack-artifacts/assets/vendor-2b8fd634163619d9.min.js.br:131
+[   14436ms] [LOG] [devtools] Skipping LS initialization (code object type) @ https://www.figma.com/webpack-artifacts/assets/vendor-2b8fd634163619d9.min.js.br:131
+[   14453ms] [LOG] [devtools] Skipping LS initialization (code object type) @ https://www.figma.com/webpack-artifacts/assets/vendor-2b8fd634163619d9.min.js.br:131
+[   14484ms] [LOG] [make] iframe_buffer_manager.sandbox_state_effect @ https://www.figma.com/webpack-artifacts/assets/vendor-2b8fd634163619d9.min.js.br:131
+[   15199ms] [ERROR] Failed to load resource: the server responded with a status of 401 () @ https://www.figma.com/api/user/plans:0
+[   15367ms] [ERROR] Failed to load resource: the server responded with a status of 401 () @ https://www.figma.com/api/user/plans:0
+[   15915ms] [LOG] [make] sandbox_manager.sandbox_state_emitted @ https://www.figma.com/webpack-artifacts/assets/vendor-2b8fd634163619d9.min.js.br:131
+[   15923ms] [LOG] [make] sandbox_manager.sandbox_state_transition @ https://www.figma.com/webpack-artifacts/assets/vendor-2b8fd634163619d9.min.js.br:131
+[   16026ms] [LOG] [make] iframe_buffer_manager.sandbox_state_effect @ https://www.figma.com/webpack-artifacts/assets/vendor-2b8fd634163619d9.min.js.br:131
+[   16030ms] [LOG] [make] iframe_buffer_manager.generic_cached_preview_branch @ https://www.figma.com/webpack-artifacts/assets/vendor-2b8fd634163619d9.min.js.br:131
+[   16148ms] [LOG] [make] iframe_buffer_manager.sandbox_state_effect @ https://www.figma.com/webpack-artifacts/assets/vendor-2b8fd634163619d9.min.js.br:131

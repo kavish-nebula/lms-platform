@@ -1,0 +1,67 @@
+- generic [ref=f4e3]:
+  - navigation "Main" [ref=f4e4]:
+    - link "P Proofcraft" [ref=f4e5] [cursor=pointer]:
+      - /url: /dashboard
+      - generic [ref=f4e6]: P
+      - text: Proofcraft
+    - generic [ref=f4e7]:
+      - link "Dashboard" [ref=f4e8] [cursor=pointer]:
+        - /url: /dashboard
+      - link "Courses" [ref=f4e15] [cursor=pointer]:
+        - /url: /catalog
+      - link "Plan" [ref=f4e20] [cursor=pointer]:
+        - /url: /plan
+      - link "Portfolio" [ref=f4e24] [cursor=pointer]:
+        - /url: /portfolio
+      - link "Profile" [ref=f4e31] [cursor=pointer]:
+        - /url: /profile
+    - button "Demo" [ref=f4e36] [cursor=pointer]
+    - link "@Geetika" [ref=f4e40] [cursor=pointer]:
+      - /url: /profile
+  - main [ref=f4e41]:
+    - generic [ref=f4e42]:
+      - generic [ref=f4e44]:
+        - generic [ref=f4e45]: Courses
+        - heading "All courses" [level=1] [ref=f4e46]
+        - paragraph [ref=f4e47]: Everything on the platform. Open a course to see what it covers and to start it. One course is open today; more follow.
+      - generic [ref=f4e48]:
+        - generic [ref=f4e49]:
+          - generic [ref=f4e50]:
+            - generic [ref=f4e51]: open · 4 of 4 modules available
+            - generic [ref=f4e52]: in progress · 37%
+          - heading "Automate Real Work with n8n" [level=3] [ref=f4e53]
+          - paragraph [ref=f4e54]: Nebula runs on spreadsheets, a flaky CRM and hope. Every week, hours vanish into copy-paste work that a machine should do. Over four modules, you become the person who fixes that — by shipping real, working automations.
+          - generic [ref=f4e55]:
+            - generic [ref=f4e56]: Skills you’ll gain
+            - generic [ref=f4e57]: Workflow automation
+            - generic [ref=f4e58]: Triggers & executions
+            - generic [ref=f4e59]: Data transformation
+            - generic [ref=f4e60]: Expressions
+            - generic [ref=f4e61]: +6 more
+          - generic [ref=f4e62]:
+            - link "Open course" [ref=f4e63] [cursor=pointer]:
+              - /url: /course/n8n
+            - generic [ref=f4e66]: about 4.5 hrs available now
+        - generic [ref=f4e67]:
+          - generic [ref=f4e68]: coming soon
+          - heading "SQL Data Modeling" [level=3] [ref=f4e73]
+          - paragraph [ref=f4e74]: Schemas that were “obvious” on day one and unbearable by month three.
+          - generic [ref=f4e75]:
+            - generic [ref=f4e76]: Skills you’ll gain
+            - generic [ref=f4e77]: Relational modeling
+            - generic [ref=f4e78]: Normalization
+            - generic [ref=f4e79]: Indexes & query plans
+            - generic [ref=f4e80]: Joins
+            - generic [ref=f4e81]: +2 more
+        - generic [ref=f4e82]:
+          - generic [ref=f4e83]: coming soon
+          - heading "Web Performance, Honestly" [level=3] [ref=f4e88]
+          - paragraph [ref=f4e89]: A page that scores 100 and still feels slow. Measure what users feel.
+          - generic [ref=f4e90]:
+            - generic [ref=f4e91]: Skills you’ll gain
+            - generic [ref=f4e92]: Core Web Vitals
+            - generic [ref=f4e93]: Performance budgets
+            - generic [ref=f4e94]: Lazy loading
+            - generic [ref=f4e95]: Caching strategy
+            - generic [ref=f4e96]: +2 more
+  - generic [ref=f4e98] [cursor=pointer]

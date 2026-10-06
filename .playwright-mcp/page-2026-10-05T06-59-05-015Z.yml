@@ -1,0 +1,44 @@
+- generic [ref=e5]:
+  - generic [ref=e34]:
+    - status [ref=e36]
+    - generic [ref=e38]:
+      - generic [ref=e42]:
+        - status [ref=e43]:
+          - generic [ref=e44]: "Warning:"
+          - generic [ref=e45]: You’re viewing something built by another Figma user. Be careful when entering any personal information.
+        - link "Learn more" [ref=e46] [cursor=pointer]:
+          - /url: https://help.figma.com/hc/articles/31304412302231
+      - button "Dismiss" [ref=e48]
+    - generic [ref=e50]:
+      - generic [ref=e52]:
+        - generic [ref=e53]:
+          - button "Back to files" [ref=e54]
+          - link "AI, Learn more" [ref=e55]:
+            - /url: https://help.figma.com/hc/articles/23870272542231
+            - generic [ref=e56]: AI
+        - generic [ref=e58]:
+          - button "LMS Learning Platform Template, file name" [ref=e59]: LMS Learning Platform Template
+          - generic [ref=e60]: File name
+          - button "Edit file menu" [ref=e61]
+        - generic [ref=e62]:
+          - button "Help" [ref=e64]
+          - button "Sign up with email" [ref=e65]
+          - button "Continue with Google" [ref=e69]
+      - generic [ref=e84]:
+        - generic:
+          - status:
+            - generic: Loading
+  - generic:
+    - status
+    - group [ref=e92]:
+      - alert [ref=e94]
+      - alert [ref=e96]
+    - region "Consent Manager" [ref=e98]:
+      - generic [ref=e99]:
+        - text: This website uses cookies, pixel tags, and local storage for performance, personalization, and marketing purposes. We use our own cookies and some from third parties. Only essential cookies are turned on by default.
+        - link "Cookies settings" [ref=e100]:
+          - /url: /consent-preferences/
+      - generic [ref=e101]:
+        - button "Do not allow cookies" [ref=e102]
+        - button "Allow all cookies" [ref=e103]
+      - button "Dismiss" [ref=e105]

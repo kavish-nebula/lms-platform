@@ -1,0 +1,66 @@
+- generic [ref=f9e3]:
+  - navigation "Main" [ref=f9e4]:
+    - link "Proofcraft" [ref=f9e5] [cursor=pointer]:
+      - /url: /dashboard
+    - generic [ref=f9e11]:
+      - link "Dashboard" [ref=f9e12] [cursor=pointer]:
+        - /url: /dashboard
+      - link "Courses" [ref=f9e20] [cursor=pointer]:
+        - /url: /catalog
+      - link "Plan" [ref=f9e24] [cursor=pointer]:
+        - /url: /plan
+      - link "Portfolio" [ref=f9e28] [cursor=pointer]:
+        - /url: /portfolio
+      - link "Profile" [ref=f9e35] [cursor=pointer]:
+        - /url: /profile
+    - button "Demo" [ref=f9e40] [cursor=pointer]
+    - link "@Geetika" [ref=f9e44] [cursor=pointer]:
+      - /url: /profile
+  - main [ref=f9e45]:
+    - generic [ref=f9e46]:
+      - generic [ref=f9e49]:
+        - generic [ref=f9e50]: Dashboard
+        - heading "Afternoon, Geetika." [level=1] [ref=f9e51]
+        - paragraph [ref=f9e52]: Pick a course to begin. A few questions about you and a short pre-assessment set it up for you.
+      - generic [ref=f9e54]:
+        - generic [ref=f9e55]: Start here
+        - heading "Your recommended credential" [level=2] [ref=f9e56]
+        - paragraph [ref=f9e57]: "Starting takes three steps: a few questions about you, a short pre-assessment, then the course set up for you. The full list lives on the Courses page."
+      - generic [ref=f9e58]:
+        - generic [ref=f9e59]: Top recommendation
+        - generic [ref=f9e61]:
+          - generic [ref=f9e62]:
+            - heading "Automate Real Work with n8n" [level=2] [ref=f9e69]
+            - paragraph [ref=f9e70]: "Skills you’ll gain: Workflow automation, Triggers & executions, Data transformation, Expressions, Branching & merging, REST APIs, Error handling, AI in workflows, Sub-workflows, Files & binary data"
+            - paragraph [ref=f9e71]:
+              - generic [ref=f9e74]: "4.6"
+              - generic [ref=f9e75]: (1,203 reviews)
+            - paragraph [ref=f9e76]: Beginner · about 4h 39m now · 4 modules + capstone
+            - generic [ref=f9e77]:
+              - link "Enroll for free" [ref=f9e78] [cursor=pointer]:
+                - /url: /course/n8n
+              - link "View details" [ref=f9e81] [cursor=pointer]:
+                - /url: /course/n8n
+          - group "Automate Real Work with n8n modules" [ref=f9e83]:
+            - button "Show earlier modules" [disabled]
+            - generic [ref=f9e84]:
+              - generic [aria-hidden] [ref=f9e85]:
+                - generic [ref=f9e86]: "1"
+                - heading [level=3] [ref=f9e88]: "Foundations: Your First Working Workflow"
+                - paragraph [ref=f9e89]: Module 1 of 4
+              - generic [aria-hidden] [ref=f9e90]:
+                - generic [ref=f9e91]: "2"
+                - heading [level=3] [ref=f9e93]: "Data Transformation: Taming Messy Data"
+                - paragraph [ref=f9e94]: Module 2 of 4
+              - generic [aria-hidden] [ref=f9e95]:
+                - generic [ref=f9e96]: "3"
+                - heading [level=3] [ref=f9e98]: Logic, Branching & APIs
+                - paragraph [ref=f9e99]: Module 3 of 4
+              - generic [aria-hidden] [ref=f9e100]:
+                - generic [ref=f9e101]: "4"
+                - heading [level=3] [ref=f9e103]: Reliability, AI & Bigger Workflows
+                - paragraph [ref=f9e104]: Module 4 of 4
+            - button "Show later modules" [disabled]
+      - link "Browse all courses" [ref=f9e106] [cursor=pointer]:
+        - /url: /catalog
+  - generic [ref=f9e110] [cursor=pointer]

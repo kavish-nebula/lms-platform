@@ -1,0 +1,6 @@
+- generic [ref=e5]:
+  - generic:
+    - status
+    - group [ref=e26]:
+      - alert [ref=e28]
+      - alert [ref=e30]

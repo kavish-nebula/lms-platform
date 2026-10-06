@@ -1,0 +1,34 @@
+[     441ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=94dfd021:22164
+[   25505ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=94dfd021:22164
+[  815484ms] [ERROR] [vite] SyntaxError: The requested module '/src/ui/bits.jsx?t=1791193452319' does not provide an export named 'FormaMark' @ http://localhost:5173/@vite/client:881
+[  815485ms] [ERROR] [vite] Failed to reload /src/ui/TopNav.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://localhost:5173/@vite/client:881
+[  815501ms] [ERROR] [vite] SyntaxError: The requested module '/src/ui/bits.jsx?t=1791193452319' does not provide an export named 'FormaMark' @ http://localhost:5173/@vite/client:881
+[  815502ms] [ERROR] [vite] Failed to reload /src/App.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://localhost:5173/@vite/client:881
+[  831777ms] [ERROR] %o
+
+%s
+
+%s
+ ReferenceError: FormaMark is not defined
+    at TopNav (http://localhost:5173/src/ui/TopNav.jsx?t=1791193470464:41:30)
+    at Object.react_stack_bottom_frame (http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=94dfd021:20259:20)
+    at renderWithHooks (http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=94dfd021:5918:24)
+    at updateFunctionComponent (http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=94dfd021:7763:21)
+    at beginWork (http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=94dfd021:8843:20)
+    at runWithFiberInDEV (http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=94dfd021:1133:72)
+    at performUnitOfWork (http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=94dfd021:13598:98)
+    at workLoopSync (http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=94dfd021:13461:43)
+    at renderRootSync (http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=94dfd021:13445:13)
+    at performWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=94dfd021:12861:37) The above error occurred in the <TopNav> component. React will try to recreate this component tree from scratch using the error boundary you provided, ErrorBoundary. @ http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=94dfd021:7275
+[  831780ms] [ERROR] [Proofcraft crash] ReferenceError: FormaMark is not defined
+    at TopNav (http://localhost:5173/src/ui/TopNav.jsx?t=1791193470464:41:30)
+    at Object.react_stack_bottom_frame (http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=94dfd021:20259:20)
+    at renderWithHooks (http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=94dfd021:5918:24)
+    at updateFunctionComponent (http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=94dfd021:7763:21)
+    at beginWork (http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=94dfd021:8843:20)
+    at runWithFiberInDEV (http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=94dfd021:1133:72)
+    at performUnitOfWork (http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=94dfd021:13598:98)
+    at workLoopSync (http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=94dfd021:13461:43)
+    at renderRootSync (http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=94dfd021:13445:13)
+    at performWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=94dfd021:12861:37) @ http://localhost:5173/src/ui/ErrorBoundary.jsx:21
+[  858867ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=94dfd021:22164

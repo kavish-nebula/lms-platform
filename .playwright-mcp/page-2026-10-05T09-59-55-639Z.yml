@@ -1,0 +1,295 @@
+- generic [ref=f19e3]:
+  - navigation "Main" [ref=f19e4]:
+    - link "Nebula KnowLab" [ref=f19e5] [cursor=pointer]:
+      - /url: /dashboard
+    - generic [ref=f19e11]:
+      - link "Dashboard" [ref=f19e12] [cursor=pointer]:
+        - /url: /dashboard
+      - link "Courses" [ref=f19e19] [cursor=pointer]:
+        - /url: /catalog
+      - link "Plan" [ref=f19e23] [cursor=pointer]:
+        - /url: /plan
+      - link "Portfolio" [ref=f19e28] [cursor=pointer]:
+        - /url: /portfolio
+      - link "Profile" [ref=f19e35] [cursor=pointer]:
+        - /url: /profile
+    - button "Demo" [ref=f19e40] [cursor=pointer]
+    - link "@Geetika" [ref=f19e44] [cursor=pointer]:
+      - /url: /profile
+  - main [ref=f19e45]:
+    - generic [ref=f19e46]:
+      - generic [ref=f19e48]:
+        - generic [ref=f19e49]: Your schedule
+        - heading "Learning plan" [level=1] [ref=f19e50]
+        - paragraph [ref=f19e51]: Your lesson sequence and what’s left. Add sessions on the days you choose — nothing here is a deadline.
+      - generic [ref=f19e52]:
+        - generic [ref=f19e53]:
+          - generic [ref=f19e54]: Add plan
+          - paragraph [ref=f19e55]: Schedule a learning session on a day you choose.
+          - generic [ref=f19e56]:
+            - generic [ref=f19e57]:
+              - generic [ref=f19e58]: Day
+              - textbox "Day" [ref=f19e59]: 2026-10-05
+            - generic [ref=f19e60]:
+              - generic [ref=f19e61]: Session
+              - combobox "Session" [ref=f19e62]:
+                - option "Module 1 — Data & items · 25 min · next up" [selected]
+                - option "Module 1 — Build the lead alert · 25 min"
+                - option "Module 1 — Guided practice · 10 min"
+                - option "Module 1 — Module quiz · 10 min"
+                - option "Module 2 — The handoff · 3 min"
+                - option "Module 2 — Expressions · 25 min"
+                - option "Module 2 — Reshaping with Set · 25 min"
+                - option "Module 2 — Cleaning real data · 25 min"
+                - option "Module 2 — Guided practice · 10 min"
+                - option "Module 2 — Module quiz · 10 min"
+                - option "Module 3 — Conditional logic · 7 min"
+                - option "Module 3 — Merging branches · 7 min"
+                - option "Module 3 — Talking to APIs · 7 min"
+                - option "Module 3 — Module quiz · 10 min"
+                - option "Module 4 — When things break · 7 min"
+                - option "Module 4 — Error workflows · 7 min"
+                - option "Module 4 — AI in the loop · 7 min"
+                - option "Module 4 — Sub-workflows · 7 min"
+                - option "Module 4 — The Code node · 7 min"
+                - option "Module 4 — Files and binary data · 7 min"
+                - option "Module 4 — Module quiz · 10 min"
+            - button "Plan session" [ref=f19e63] [cursor=pointer]
+          - generic [ref=f19e67]:
+            - group "Study days" [ref=f19e68]:
+              - generic [ref=f19e69]: study days
+              - generic [ref=f19e70]:
+                - button "Mon" [pressed] [ref=f19e71] [cursor=pointer]
+                - button "Tue" [ref=f19e72] [cursor=pointer]
+                - button "Wed" [pressed] [ref=f19e73] [cursor=pointer]
+                - button "Thu" [ref=f19e74] [cursor=pointer]
+                - button "Fri" [pressed] [ref=f19e75] [cursor=pointer]
+                - button "Sat" [ref=f19e76] [cursor=pointer]
+                - button "Sun" [ref=f19e77] [cursor=pointer]
+            - group "Session length" [ref=f19e78]:
+              - generic [ref=f19e79]: a session is about
+              - generic [ref=f19e80]:
+                - button "10 min" [ref=f19e81] [cursor=pointer]
+                - button "20 min" [ref=f19e82] [cursor=pointer]
+                - button "30 min" [pressed] [ref=f19e83] [cursor=pointer]
+                - button "45 min" [ref=f19e84] [cursor=pointer]
+            - generic [ref=f19e85]:
+              - button "Plan it for me" [ref=f19e86] [cursor=pointer]
+              - button "Clear planned" [disabled] [ref=f19e90]
+          - paragraph [ref=f19e91]: “plan it for me” puts whatever isn’t planned yet on your study days, in order
+        - generic [ref=f19e92]:
+          - generic [ref=f19e93]:
+            - heading "Study calendar" [level=2] [ref=f19e94]
+            - generic [ref=f19e95]:
+              - button "Previous month" [ref=f19e96] [cursor=pointer]
+              - generic [ref=f19e99]: October 2026
+              - button "Next month" [ref=f19e100] [cursor=pointer]
+          - grid "Study calendar" [ref=f19e103]:
+            - columnheader "Mon" [ref=f19e104]
+            - columnheader "Tue" [ref=f19e105]
+            - columnheader "Wed" [ref=f19e106]
+            - columnheader "Thu" [ref=f19e107]
+            - columnheader "Fri" [ref=f19e108]
+            - columnheader "Sat" [ref=f19e109]
+            - columnheader "Sun" [ref=f19e110]
+            - gridcell "Thursday, October 1" [ref=f19e114] [cursor=pointer]:
+              - generic [ref=f19e115]: "1"
+            - gridcell "Friday, October 2" [ref=f19e116] [cursor=pointer]:
+              - generic [ref=f19e117]: "2"
+            - gridcell "Saturday, October 3" [ref=f19e118] [cursor=pointer]:
+              - generic [ref=f19e119]: "3"
+            - gridcell "Sunday, October 4" [ref=f19e120] [cursor=pointer]:
+              - generic [ref=f19e121]: "4"
+            - gridcell "Monday, October 5, 3 items" [ref=f19e122] [cursor=pointer]:
+              - generic [ref=f19e123]: "5"
+            - gridcell "Tuesday, October 6" [ref=f19e126] [cursor=pointer]:
+              - generic [ref=f19e127]: "6"
+            - gridcell "Wednesday, October 7" [ref=f19e128] [cursor=pointer]:
+              - generic [ref=f19e129]: "7"
+            - gridcell "Thursday, October 8" [ref=f19e130] [cursor=pointer]:
+              - generic [ref=f19e131]: "8"
+            - gridcell "Friday, October 9" [ref=f19e132] [cursor=pointer]:
+              - generic [ref=f19e133]: "9"
+            - gridcell "Saturday, October 10" [ref=f19e134] [cursor=pointer]:
+              - generic [ref=f19e135]: "10"
+            - gridcell "Sunday, October 11" [ref=f19e136] [cursor=pointer]:
+              - generic [ref=f19e137]: "11"
+            - gridcell "Monday, October 12" [ref=f19e138] [cursor=pointer]:
+              - generic [ref=f19e139]: "12"
+            - gridcell "Tuesday, October 13" [ref=f19e140] [cursor=pointer]:
+              - generic [ref=f19e141]: "13"
+            - gridcell "Wednesday, October 14" [ref=f19e142] [cursor=pointer]:
+              - generic [ref=f19e143]: "14"
+            - gridcell "Thursday, October 15" [ref=f19e144] [cursor=pointer]:
+              - generic [ref=f19e145]: "15"
+            - gridcell "Friday, October 16" [ref=f19e146] [cursor=pointer]:
+              - generic [ref=f19e147]: "16"
+            - gridcell "Saturday, October 17" [ref=f19e148] [cursor=pointer]:
+              - generic [ref=f19e149]: "17"
+            - gridcell "Sunday, October 18" [ref=f19e150] [cursor=pointer]:
+              - generic [ref=f19e151]: "18"
+            - gridcell "Monday, October 19" [ref=f19e152] [cursor=pointer]:
+              - generic [ref=f19e153]: "19"
+            - gridcell "Tuesday, October 20" [ref=f19e154] [cursor=pointer]:
+              - generic [ref=f19e155]: "20"
+            - gridcell "Wednesday, October 21" [ref=f19e156] [cursor=pointer]:
+              - generic [ref=f19e157]: "21"
+            - gridcell "Thursday, October 22" [ref=f19e158] [cursor=pointer]:
+              - generic [ref=f19e159]: "22"
+            - gridcell "Friday, October 23" [ref=f19e160] [cursor=pointer]:
+              - generic [ref=f19e161]: "23"
+            - gridcell "Saturday, October 24" [ref=f19e162] [cursor=pointer]:
+              - generic [ref=f19e163]: "24"
+            - gridcell "Sunday, October 25" [ref=f19e164] [cursor=pointer]:
+              - generic [ref=f19e165]: "25"
+            - gridcell "Monday, October 26" [ref=f19e166] [cursor=pointer]:
+              - generic [ref=f19e167]: "26"
+            - gridcell "Tuesday, October 27" [ref=f19e168] [cursor=pointer]:
+              - generic [ref=f19e169]: "27"
+            - gridcell "Wednesday, October 28" [ref=f19e170] [cursor=pointer]:
+              - generic [ref=f19e171]: "28"
+            - gridcell "Thursday, October 29" [ref=f19e172] [cursor=pointer]:
+              - generic [ref=f19e173]: "29"
+            - gridcell "Friday, October 30" [ref=f19e174] [cursor=pointer]:
+              - generic [ref=f19e175]: "30"
+            - gridcell "Saturday, October 31" [ref=f19e176] [cursor=pointer]:
+              - generic [ref=f19e177]: "31"
+          - generic [ref=f19e179]:
+            - generic [ref=f19e180]: planned
+            - generic [ref=f19e182]: health check
+            - generic [ref=f19e184]: done
+          - generic [ref=f19e187]:
+            - generic [ref=f19e188]: Monday, October 5
+            - generic [ref=f19e189]: 0 sessions
+          - generic [ref=f19e190]:
+            - generic [ref=f19e191]: M1
+            - generic [ref=f19e194]:
+              - text: The wake-up call
+              - generic [ref=f19e195]: · done
+          - generic [ref=f19e196]:
+            - generic [ref=f19e197]: M1
+            - generic [ref=f19e200]:
+              - text: Workflow anatomy
+              - generic [ref=f19e201]: · done
+          - generic [ref=f19e202]:
+            - generic [ref=f19e203]: M1
+            - generic [ref=f19e206]:
+              - text: Data & items
+              - generic [ref=f19e207]: · 1 of 3 steps done
+        - generic [ref=f19e208]:
+          - generic [ref=f19e209]:
+            - heading "Automate Real Work with n8n" [level=2] [ref=f19e210]
+            - generic [ref=f19e211]: In progress · 14%
+          - generic [ref=f19e212]:
+            - generic [ref=f19e213]:
+              - heading "Module 1 · Foundations" [level=3] [ref=f19e214]
+              - generic [ref=f19e215]: 1h 38m
+            - generic [ref=f19e216]:
+              - button "The wake-up call done" [disabled] [ref=f19e217]:
+                - generic [ref=f19e221]: The wake-up call
+                - generic [ref=f19e222]: done
+              - button "Workflow anatomy done" [disabled] [ref=f19e223]:
+                - generic [ref=f19e227]: Workflow anatomy
+                - generic [ref=f19e228]: done
+              - button "3 Data & items 25 min next up" [pressed] [ref=f19e229] [cursor=pointer]:
+                - generic [ref=f19e230]: "3"
+                - generic [ref=f19e231]: Data & items
+                - generic [ref=f19e232]: 25 min
+                - generic [ref=f19e233]: next up
+              - button "4 Build the lead alert 25 min" [ref=f19e234] [cursor=pointer]:
+                - generic [ref=f19e235]: "4"
+                - generic [ref=f19e236]: Build the lead alert
+                - generic [ref=f19e237]: 25 min
+              - button "5 Guided practice 4 steps" [ref=f19e238] [cursor=pointer]:
+                - generic [ref=f19e239]: "5"
+                - generic [ref=f19e240]: Guided practice
+                - generic [ref=f19e241]: 4 steps
+              - button "6 Module quiz 8 questions" [ref=f19e242] [cursor=pointer]:
+                - generic [ref=f19e243]: "6"
+                - generic [ref=f19e244]: Module quiz
+                - generic [ref=f19e245]: 8 questions
+          - generic [ref=f19e246]:
+            - generic [ref=f19e247]:
+              - heading "Module 2 · Data Transformation" [level=3] [ref=f19e248]
+              - generic [ref=f19e249]: 1h 38m
+            - generic [ref=f19e250]:
+              - button "1 The handoff 3 min" [ref=f19e251] [cursor=pointer]:
+                - generic [ref=f19e252]: "1"
+                - generic [ref=f19e253]: The handoff
+                - generic [ref=f19e254]: 3 min
+              - button "2 Expressions 25 min" [ref=f19e255] [cursor=pointer]:
+                - generic [ref=f19e256]: "2"
+                - generic [ref=f19e257]: Expressions
+                - generic [ref=f19e258]: 25 min
+              - button "3 Reshaping with Set 25 min" [ref=f19e259] [cursor=pointer]:
+                - generic [ref=f19e260]: "3"
+                - generic [ref=f19e261]: Reshaping with Set
+                - generic [ref=f19e262]: 25 min
+              - button "4 Cleaning real data 25 min" [ref=f19e263] [cursor=pointer]:
+                - generic [ref=f19e264]: "4"
+                - generic [ref=f19e265]: Cleaning real data
+                - generic [ref=f19e266]: 25 min
+              - button "5 Guided practice 5 steps" [ref=f19e267] [cursor=pointer]:
+                - generic [ref=f19e268]: "5"
+                - generic [ref=f19e269]: Guided practice
+                - generic [ref=f19e270]: 5 steps
+              - button "6 Module quiz 8 questions" [ref=f19e271] [cursor=pointer]:
+                - generic [ref=f19e272]: "6"
+                - generic [ref=f19e273]: Module quiz
+                - generic [ref=f19e274]: 8 questions
+          - generic [ref=f19e275]:
+            - generic [ref=f19e276]:
+              - heading "Module 3 · Logic, Branching & APIs" [level=3] [ref=f19e277]
+              - generic [ref=f19e278]: 31 min
+            - generic [ref=f19e279]:
+              - button "1 Conditional logic 7 min" [ref=f19e280] [cursor=pointer]:
+                - generic [ref=f19e281]: "1"
+                - generic [ref=f19e282]: Conditional logic
+                - generic [ref=f19e283]: 7 min
+              - button "2 Merging branches 7 min" [ref=f19e284] [cursor=pointer]:
+                - generic [ref=f19e285]: "2"
+                - generic [ref=f19e286]: Merging branches
+                - generic [ref=f19e287]: 7 min
+              - button "3 Talking to APIs 7 min" [ref=f19e288] [cursor=pointer]:
+                - generic [ref=f19e289]: "3"
+                - generic [ref=f19e290]: Talking to APIs
+                - generic [ref=f19e291]: 7 min
+              - button "4 Module quiz 6 questions" [ref=f19e292] [cursor=pointer]:
+                - generic [ref=f19e293]: "4"
+                - generic [ref=f19e294]: Module quiz
+                - generic [ref=f19e295]: 6 questions
+          - generic [ref=f19e296]:
+            - generic [ref=f19e297]:
+              - heading "Module 4 · Reliability, AI & Bigger Workflows" [level=3] [ref=f19e298]
+              - generic [ref=f19e299]: 52 min
+            - generic [ref=f19e300]:
+              - button "1 When things break 7 min" [ref=f19e301] [cursor=pointer]:
+                - generic [ref=f19e302]: "1"
+                - generic [ref=f19e303]: When things break
+                - generic [ref=f19e304]: 7 min
+              - button "2 Error workflows 7 min" [ref=f19e305] [cursor=pointer]:
+                - generic [ref=f19e306]: "2"
+                - generic [ref=f19e307]: Error workflows
+                - generic [ref=f19e308]: 7 min
+              - button "3 AI in the loop 7 min" [ref=f19e309] [cursor=pointer]:
+                - generic [ref=f19e310]: "3"
+                - generic [ref=f19e311]: AI in the loop
+                - generic [ref=f19e312]: 7 min
+              - button "4 Sub-workflows 7 min" [ref=f19e313] [cursor=pointer]:
+                - generic [ref=f19e314]: "4"
+                - generic [ref=f19e315]: Sub-workflows
+                - generic [ref=f19e316]: 7 min
+              - button "5 The Code node 7 min" [ref=f19e317] [cursor=pointer]:
+                - generic [ref=f19e318]: "5"
+                - generic [ref=f19e319]: The Code node
+                - generic [ref=f19e320]: 7 min
+              - button "6 Files and binary data 7 min" [ref=f19e321] [cursor=pointer]:
+                - generic [ref=f19e322]: "6"
+                - generic [ref=f19e323]: Files and binary data
+                - generic [ref=f19e324]: 7 min
+              - button "7 Module quiz 12 questions" [ref=f19e325] [cursor=pointer]:
+                - generic [ref=f19e326]: "7"
+                - generic [ref=f19e327]: Module quiz
+                - generic [ref=f19e328]: 12 questions
+          - paragraph [ref=f19e329]: green = done · times are estimates · click a circle to select that lesson in “add plan”
+  - generic [ref=f19e331] [cursor=pointer]

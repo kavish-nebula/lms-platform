@@ -1,0 +1,154 @@
+- generic [ref=e5]:
+  - generic [ref=e34]:
+    - status [ref=e36]
+    - generic [ref=e38]:
+      - generic [ref=e42]:
+        - status [ref=e43]:
+          - generic [ref=e44]: "Warning:"
+          - generic [ref=e45]: You’re viewing something built by another Figma user. Be careful when entering any personal information.
+        - link "Learn more" [ref=e46] [cursor=pointer]:
+          - /url: https://help.figma.com/hc/articles/31304412302231
+      - button "Dismiss" [ref=e48]
+    - generic [ref=e50]:
+      - generic [ref=e52]:
+        - generic [ref=e53]:
+          - button "Back to files" [ref=e54]
+          - link "AI, Learn more" [ref=e55]:
+            - /url: https://help.figma.com/hc/articles/23870272542231
+            - generic [ref=e56]: AI
+        - generic [ref=e58]:
+          - button "LMS Learning Platform Template, file name" [ref=e59]: LMS Learning Platform Template
+          - generic [ref=e60]: File name
+          - button "Edit file menu" [ref=e61]
+        - generic [ref=e62]:
+          - button "Help" [ref=e64]
+          - button "Sign up with email" [ref=e65]
+          - button "Continue with Google" [ref=e69]
+      - iframe [ref=e109]:
+        - generic [ref=f5e3]:
+          - complementary [ref=f5e4]:
+            - generic [ref=f5e5]: Forma
+            - navigation "Main navigation" [ref=f5e11]:
+              - paragraph [ref=f5e12]: Workspace
+              - button "Overview" [ref=f5e13] [cursor=pointer]
+              - button "My learning" [ref=f5e17] [cursor=pointer]
+              - button "Learning paths" [ref=f5e21] [cursor=pointer]
+              - button "Schedule" [ref=f5e26] [cursor=pointer]
+              - button "Community" [ref=f5e30] [cursor=pointer]
+            - generic [ref=f5e35]:
+              - button "Settings" [ref=f5e36] [cursor=pointer]
+              - generic [ref=f5e40]:
+                - generic [ref=f5e41]: MJ
+                - generic [ref=f5e42]:
+                  - strong [ref=f5e43]: Maya Johnson
+                  - generic [ref=f5e44]: maya@forma.co
+                - button "Profile menu" [ref=f5e45] [cursor=pointer]: ···
+          - main [ref=f5e46]:
+            - generic [ref=f5e47]:
+              - generic [ref=f5e48]:
+                - textbox "⌘ K" [ref=f5e52]:
+                  - /placeholder: Search courses, skills, or topics
+                - generic [ref=f5e53]: ⌘ K
+              - button "Notifications" [ref=f5e54] [cursor=pointer]
+              - generic [ref=f5e58]: MJ
+            - generic [ref=f5e59]:
+              - generic [ref=f5e60]:
+                - generic [ref=f5e61]:
+                  - paragraph [ref=f5e62]: Tuesday, May 20
+                  - heading "Good morning, Maya." [level=1] [ref=f5e63]
+                  - paragraph [ref=f5e64]: Keep building momentum. You’re 3 lessons away from your weekly goal.
+                - button "Ask AI coach" [ref=f5e65] [cursor=pointer]
+              - generic [ref=f5e69]:
+                - generic [ref=f5e70]:
+                  - generic [ref=f5e71]: DESIGNSYSTEMS
+                  - generic [ref=f5e76]:
+                    - generic [ref=f5e77]:
+                      - generic [ref=f5e78]: Continue learning
+                      - generic [ref=f5e79]: Lesson 8 of 24
+                    - heading "Product Design Foundations" [level=2] [ref=f5e80]
+                    - paragraph [ref=f5e81]: Building scalable design systems
+                    - strong [ref=f5e85]: 68%
+                    - button [ref=f5e86] [cursor=pointer]
+                - generic [ref=f5e90]:
+                  - paragraph [ref=f5e96]: AI learning companion
+                  - heading "Your week, intelligently planned." [level=2] [ref=f5e97]
+                  - paragraph [ref=f5e98]: I’ve created a focused 4-day plan based on your goals and available time.
+                  - button "View my learning plan" [ref=f5e99] [cursor=pointer]
+              - generic [ref=f5e102]:
+                - generic [ref=f5e103]:
+                  - generic [ref=f5e104]:
+                    - heading "In progress" [level=2] [ref=f5e105]
+                    - paragraph [ref=f5e106]: Pick up where you left off
+                  - button "View all" [ref=f5e107] [cursor=pointer]
+                - generic [ref=f5e110]:
+                  - article [ref=f5e111]:
+                    - generic [ref=f5e112]: Aa
+                    - generic [ref=f5e118]:
+                      - text: Design
+                      - heading "Product Design Foundations" [level=3] [ref=f5e119]
+                      - generic [ref=f5e120]:
+                        - generic [ref=f5e121]: 24 lessons
+                        - generic [ref=f5e125]: 68%
+                  - article [ref=f5e128]:
+                    - generic [ref=f5e129]: AI
+                    - generic [ref=f5e135]:
+                      - text: Artificial Intelligence
+                      - heading "AI for Everyday Work" [level=3] [ref=f5e136]
+                      - generic [ref=f5e137]:
+                        - generic [ref=f5e138]: 18 lessons
+                        - generic [ref=f5e142]: 42%
+                  - article [ref=f5e145]:
+                    - generic [ref=f5e146]: ↗
+                    - generic [ref=f5e152]:
+                      - text: Data & Analytics
+                      - heading "Data Storytelling" [level=3] [ref=f5e153]
+                      - generic [ref=f5e154]:
+                        - generic [ref=f5e155]: 16 lessons
+                        - generic [ref=f5e159]: 81%
+              - generic [ref=f5e162]:
+                - generic [ref=f5e163]:
+                  - generic [ref=f5e164]:
+                    - generic [ref=f5e165]:
+                      - heading "Up next" [level=2] [ref=f5e166]
+                      - paragraph [ref=f5e167]: Your learning schedule
+                    - button "Calendar" [ref=f5e168] [cursor=pointer]
+                  - generic [ref=f5e172]:
+                    - generic [ref=f5e173]:
+                      - strong [ref=f5e174]: "21"
+                      - generic [ref=f5e175]: Wed
+                    - generic [ref=f5e177]:
+                      - generic [ref=f5e178]: 10:00 AM · 45 min
+                      - strong [ref=f5e179]: Design critique essentials
+                      - paragraph [ref=f5e180]: Product Design Foundations
+                    - button "Join" [ref=f5e181] [cursor=pointer]
+                  - generic [ref=f5e182]:
+                    - generic [ref=f5e183]:
+                      - strong [ref=f5e184]: "23"
+                      - generic [ref=f5e185]: Fri
+                    - generic [ref=f5e187]:
+                      - generic [ref=f5e188]: 2:30 PM · 30 min
+                      - strong [ref=f5e189]: AI productivity workshop
+                      - paragraph [ref=f5e190]: Live cohort session
+                    - button "•••" [ref=f5e191] [cursor=pointer]
+                - generic [ref=f5e192]:
+                  - generic [ref=f5e193]:
+                    - generic [ref=f5e194]:
+                      - heading "Weekly goal" [level=2] [ref=f5e195]
+                      - paragraph [ref=f5e196]: May 19 – 25
+                    - button "Adjust" [ref=f5e197] [cursor=pointer]
+                  - generic [ref=f5e198]:
+                    - generic [ref=f5e203]:
+                      - strong [ref=f5e204]: "3.5"
+                      - generic [ref=f5e205]: of 5 hrs
+                    - generic [ref=f5e206]:
+                      - strong [ref=f5e207]: 70% complete
+                      - paragraph [ref=f5e208]: Just 1.5 hours to go. You’ve got this.
+                      - generic [ref=f5e209]: 3 day streak
+  - generic:
+    - status
+    - group [ref=e92]:
+      - alert [ref=e94]
+      - alert [ref=e96]
+    - region "Manage cookies or opt out" [ref=e110]:
+      - link "Manage cookies or opt out" [ref=e111]:
+        - /url: /consent-preferences/

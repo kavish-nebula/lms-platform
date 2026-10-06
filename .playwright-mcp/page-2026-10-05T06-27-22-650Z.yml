@@ -1,0 +1,140 @@
+- generic [ref=f1e3]:
+  - navigation "Main" [ref=f1e4]:
+    - link "P Proofcraft" [ref=f1e5] [cursor=pointer]:
+      - /url: /dashboard
+      - generic [ref=f1e6]: P
+      - text: Proofcraft
+    - generic [ref=f1e7]:
+      - link "Dashboard" [ref=f1e8] [cursor=pointer]:
+        - /url: /dashboard
+      - link "Courses" [ref=f1e15] [cursor=pointer]:
+        - /url: /catalog
+      - link "Plan" [ref=f1e20] [cursor=pointer]:
+        - /url: /plan
+      - link "Portfolio" [ref=f1e24] [cursor=pointer]:
+        - /url: /portfolio
+      - link "Profile" [ref=f1e31] [cursor=pointer]:
+        - /url: /profile
+    - button "Demo" [ref=f1e36] [cursor=pointer]
+    - link "@Geetika" [ref=f1e40] [cursor=pointer]:
+      - /url: /profile
+  - main [ref=f1e41]:
+    - generic [ref=f1e42]:
+      - generic [ref=f1e43]:
+        - generic [ref=f1e44]: Course
+        - heading "Automate Real Work with n8n" [level=1] [ref=f1e45]
+        - paragraph [ref=f1e46]: Nebula runs on spreadsheets, a flaky CRM and hope. Every week, hours vanish into copy-paste work that a machine should do. Over four modules, you become the person who fixes that — by shipping real, working automations.
+        - paragraph [ref=f1e47]: "By the end: Design, build, debug and maintain real n8n workflows — from a silent Slack alert to clean, reliable data pipelines."
+        - generic [ref=f1e48]:
+          - generic [ref=f1e49]: Skills you’ll gain
+          - generic [ref=f1e50]: Workflow automation
+          - generic [ref=f1e51]: Triggers & executions
+          - generic [ref=f1e52]: Data transformation
+          - generic [ref=f1e53]: Expressions
+          - generic [ref=f1e54]: Branching & merging
+          - generic [ref=f1e55]: REST APIs
+          - generic [ref=f1e56]: Error handling
+          - generic [ref=f1e57]: AI in workflows
+          - generic [ref=f1e58]: Sub-workflows
+          - generic [ref=f1e59]: Files & binary data
+        - generic [ref=f1e60]:
+          - button "Start this course" [ref=f1e61] [cursor=pointer]
+          - generic [ref=f1e64]:
+            - generic [ref=f1e65]:
+              - generic [ref=f1e66]: "1"
+              - text: 7 questions about you
+            - generic [ref=f1e67]:
+              - generic [ref=f1e68]: "2"
+              - text: A short pre-assessment
+            - generic [ref=f1e69]:
+              - generic [ref=f1e70]: "3"
+              - text: Your course, set up for you
+        - paragraph [ref=f1e71]: 4 modules · about 5h 9m · one capstone project · final assessment
+      - generic [ref=f1e73]:
+        - generic [ref=f1e74]: What’s inside
+        - heading "4 modules, then a capstone, then the final assessment" [level=2] [ref=f1e75]
+        - paragraph [ref=f1e76]: Move through the strip with the arrows. Each module is one chapter of Nebula’s story — lessons with explained builds and scenario checks, guided practice, and a quiz.
+      - group "Course modules" [ref=f1e77]:
+        - button "Show earlier modules" [disabled]
+        - generic [ref=f1e78]:
+          - generic [ref=f1e79]:
+            - generic [ref=f1e80]:
+              - generic [aria-hidden] [ref=f1e81]: "1"
+              - generic [ref=f1e82]:
+                - generic [ref=f1e83]: Module 1 of 4
+                - generic [ref=f1e84]: 3 lessons
+              - generic [ref=f1e85]: ≈ 1h 38m
+            - generic [ref=f1e86]:
+              - 'heading "Foundations: Your First Working Workflow" [level=3] [ref=f1e87]'
+              - paragraph [ref=f1e88]: The lead alert workflow died at 2:07 AM. 40 leads lost before anyone noticed.
+              - generic [ref=f1e89]:
+                - generic [ref=f1e90]: 1.1 · Workflow anatomy
+                - generic [ref=f1e91]: 1.2 · Data & items
+                - generic [ref=f1e92]: 1.3 · Build the lead alert
+              - paragraph [ref=f1e93]: ≈ 1h 38m · +6 hrs/wk when shipped
+          - generic [ref=f1e94]:
+            - generic [ref=f1e95]:
+              - generic [aria-hidden] [ref=f1e96]: "2"
+              - generic [ref=f1e97]:
+                - generic [ref=f1e98]: Module 2 of 4
+                - generic [ref=f1e99]: 3 lessons
+              - generic [ref=f1e100]: ≈ 1h 38m
+            - generic [ref=f1e101]:
+              - 'heading "Data Transformation: Taming Messy Data" [level=3] [ref=f1e102]'
+              - paragraph [ref=f1e103]: A 500-row export with mixed date formats, duplicate IDs and blank emails. Ana wants it CRM-ready.
+              - generic [ref=f1e104]:
+                - generic [ref=f1e105]: 2.1 · Expressions
+                - generic [ref=f1e106]: 2.2 · Reshaping with Set
+                - generic [ref=f1e107]: 2.3 · Cleaning real data
+              - paragraph [ref=f1e108]: ≈ 1h 38m · +5 hrs/wk when shipped
+          - generic [ref=f1e109]:
+            - generic [ref=f1e110]:
+              - generic [aria-hidden] [ref=f1e111]: "3"
+              - generic [ref=f1e112]:
+                - generic [ref=f1e113]: Module 3 of 4
+                - generic [ref=f1e114]: 3 lessons
+              - generic [ref=f1e115]: ≈ 31 min
+            - generic [ref=f1e116]:
+              - heading "Logic, Branching & APIs" [level=3] [ref=f1e117]
+              - paragraph [ref=f1e118]: VIP and standard orders, digital and physical — and a CRM API that paginates and rate-limits.
+              - generic [ref=f1e119]:
+                - generic [ref=f1e120]: 3.1 · Conditional logic
+                - generic [ref=f1e121]: 3.2 · Merging branches
+                - generic [ref=f1e122]: 3.3 · Talking to APIs
+              - paragraph [ref=f1e123]: ≈ 31 min · +7 hrs/wk when shipped
+          - generic [ref=f1e124]:
+            - generic [ref=f1e125]:
+              - generic [aria-hidden] [ref=f1e126]: "4"
+              - generic [ref=f1e127]:
+                - generic [ref=f1e128]: Module 4 of 4
+                - generic [ref=f1e129]: 6 lessons
+              - generic [ref=f1e130]: ≈ 52 min
+            - generic [ref=f1e131]:
+              - heading "Reliability, AI & Bigger Workflows" [level=3] [ref=f1e132]
+              - paragraph [ref=f1e133]: Duplicate invoices, silent failures, and 200 tickets a day that an AI could triage. Then the same cleaning steps copied into five workflows, a tax rule no node can express, and invoices that arrive as PDFs.
+              - generic [ref=f1e134]:
+                - generic [ref=f1e135]: 4.1 · When things break
+                - generic [ref=f1e136]: 4.2 · Error workflows
+                - generic [ref=f1e137]: 4.3 · AI in the loop
+                - generic [ref=f1e138]: 4.4 · Sub-workflows
+                - generic [ref=f1e139]: 4.5 · The Code node
+                - generic [ref=f1e140]: 4.6 · Files and binary data
+              - paragraph [ref=f1e141]: ≈ 52 min · +18 hrs/wk when shipped
+          - generic [ref=f1e142]:
+            - generic [ref=f1e149]:
+              - generic [ref=f1e150]: After the modules
+              - generic [ref=f1e151]: at the end
+            - generic [ref=f1e152]:
+              - 'heading "Launch week: one pipeline, end to end" [level=3] [ref=f1e153]'
+              - paragraph [ref=f1e154]: "One big build that uses every lesson: a brief with requirements and edge cases, no step-by-step help, and an acceptance check at the end."
+              - paragraph [ref=f1e155]: about 30 min · saved to your portfolio
+          - generic [ref=f1e156]:
+            - generic [ref=f1e162]:
+              - generic [ref=f1e163]: The last stop
+              - generic [ref=f1e164]: at the end
+            - generic [ref=f1e165]:
+              - heading "Everything, from the first lesson to the last" [level=3] [ref=f1e166]
+              - paragraph [ref=f1e167]: 12 harder questions — theory and scenarios — each mixing ideas from more than one lesson. The same for every learner.
+              - paragraph [ref=f1e168]: pass at 80% · no timer · retakes allowed
+        - button "Show later modules" [ref=f1e169] [cursor=pointer]
+  - generic [ref=f1e173] [cursor=pointer]
