@@ -80,7 +80,13 @@ export default function VideoLesson({ video, onDone, doneLabel = 'Continue' }) {
     a.src = srcs[idx]
     a.muted = muted
     setFrac(0)
-    if (live.current.playing) a.play().catch(() => { if (!silent.current[idx]) setPlaying(false) })
+    if (live.current.playing) a.play().catch((e) => {
+      // a missing clip (NotSupportedError) fires the error handler that marks this slide
+      // silent — fall back to the timed clock rather than stalling. Autoplay blocks
+      // (NotAllowedError) still pause, so the learner presses play again.
+      if (e?.name === 'NotSupportedError' && !silent.current[live.current.idx]) silent.current[live.current.idx] = true
+      else if (!silent.current[live.current.idx]) setPlaying(false)
+    })
   }, [idx, srcs])
 
   // while playing, the voice is the clock (or a timer, when a clip is missing)

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Btn } from '../../ui/bits.jsx'
 import { popIn } from '../../motion.js'
+import { play } from '../../sound.js'
 
 /*
   Standardized predict-then-reveal: commit to a guess, see whether it held and why,
@@ -22,7 +23,7 @@ export default function PredictReveal({ q, options, correct, explain, onReveal, 
             type="button"
             disabled={choice !== null}
             className={`opt ${choice !== null && i === correct ? 'right' : ''} ${choice === i && !right ? 'wrong' : ''}`}
-            onClick={() => setChoice(i)}
+            onClick={() => { setChoice(i); play(i === correct ? 'correct' : 'wrong') }}
           >
             {o}
           </button>

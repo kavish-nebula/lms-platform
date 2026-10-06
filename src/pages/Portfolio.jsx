@@ -1,14 +1,36 @@
 import { Package, Clock3, ShieldCheck, Download, ArrowRight } from 'lucide-react'
-import { Btn, PageHeader, EmptyNote, StatTile } from '../ui/bits.jsx'
+import { Btn, PageHeader, SectionTitle, StatTile } from '../ui/bits.jsx'
 import GlassCard from '../ui/GlassCard.jsx'
 import { usePortfolio } from '../stores/portfolio.js'
 import { useCourse } from '../stores/course.js'
+import { useReview } from '../stores/review.js'
+import { BINGO } from '../content/course.js'
+import EmptyState from '../ui/EmptyState.jsx'
+import { ProofCardBtn } from '../ui/ProofCard.jsx'
 
 /* Portfolio — the platform's answer to a badge shelf. Real artifacts or nothing. */
 export default function Portfolio() {
   const artifacts = usePortfolio((s) => s.artifacts)
   const hours = usePortfolio((s) => s.hoursSaved())
-  const quizzesPassed = useCourse((s) => Object.values(s.progress).filter((m) => m.quiz?.passed).length)
+  const progress = useCourse((s) => s.progress)
+  const reviews = useReview((s) => s.items)
+  const quizzesPassed = Object.values(progress).filter((m) => m.quiz?.passed).length
+
+  const ctx = {
+    stage: (n, key) => !!progress[n]?.stages?.[key],
+    reviewDone: (id) => !!reviews.find((r) => r.id === id)?.done,
+    capstone: !!useCourse.getState().capstone,
+  }
+  const notes = BINGO.filter((b) => b.check(ctx)).length
+
+  const proofData = {
+    modulesDone: Object.values(progress).filter((m) => m.completed).length,
+    modulesTotal: 5,
+    hours,
+    notes,
+    notesTotal: BINGO.length,
+    quizzes: quizzesPassed,
+  }
 
   const download = (a) => {
     const blob = new Blob([JSON.stringify(a.workflowJson, null, 2)], { type: 'application/json' })
@@ -22,7 +44,12 @@ export default function Portfolio() {
 
   return (
     <div>
-      <PageHeader kicker="Portfolio" title="Proof of work" sub="Real artifacts or nothing — every one ships with the acceptance checks it passed." />
+      <PageHeader
+        kicker="Portfolio"
+        title="Proof of work"
+        sub="Real artifacts or nothing — every one ships with the acceptance checks it passed."
+        right={artifacts.length > 0 ? <ProofCardBtn data={proofData} /> : null}
+      />
 
       <div className="grid c3">
         <StatTile icon={Package} value={artifacts.length} label={`artifact${artifacts.length === 1 ? '' : 's'} shipped`} />
@@ -32,10 +59,13 @@ export default function Portfolio() {
 
       {artifacts.length === 0 ? (
         <div className="mt20">
-          <EmptyNote>
-            Nothing here yet. The course capstone — after the last module — is what lands here: a real workflow JSON with its acceptance checks attached.
-            <div className="mt14"><Btn to="/course/n8n" variant="primary" size="sm">Go to the course <ArrowRight size={13} /></Btn></div>
-          </EmptyNote>
+          <EmptyState
+            title="No artifacts yet — and that's honest"
+            action={<Btn to="/course/n8n" variant="primary" size="sm">Go to the course <ArrowRight size={13} /></Btn>}
+          >
+            The course capstone — after the last module — is what lands here: a real workflow JSON with its
+            acceptance checks attached. Module quizzes and the sandbox build toward it.
+          </EmptyState>
         </div>
       ) : (
         <div className="stack-v mt20">

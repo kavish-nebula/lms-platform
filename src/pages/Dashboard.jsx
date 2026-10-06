@@ -1,27 +1,32 @@
 import { useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Play, BookOpen, Layers, PackageCheck, HeartPulse, Lock, Check, ArrowRight } from 'lucide-react'
+import { Play, BookOpen, Layers, PackageCheck, HeartPulse, Lock, Check, ArrowRight, Flame } from 'lucide-react'
 import { Btn, SectionTitle, StatTile } from '../ui/bits.jsx'
 import GlassCard from '../ui/GlassCard.jsx'
 import ProgressRing from '../ui/ProgressRing.jsx'
+import DailyChallenge from '../ui/DailyChallenge.jsx'
+import StreakStrip from '../ui/StreakStrip.jsx'
 import { useLearner, useAdaptation } from '../stores/learner.js'
 import { useCourse } from '../stores/course.js'
 import { useReview } from '../stores/review.js'
 import { usePortfolio } from '../stores/portfolio.js'
 import { usePatch } from '../stores/patch.js'
 import { usePlanData } from '../stores/plan.js'
+import { useStreak } from '../stores/streak.js'
 import { COURSE, MODULES, BINGO } from '../content/course.js'
 import { COURSES } from '../content/catalog.js'
 import { LEARNER } from '../content/session.js'
 import { courseNext, courseProgress, isEnrolled, fmtMinutes } from '../engine/progress.js'
 import { startOfDay, addDays, dayKey } from '../engine/plan.js'
 import { popIn } from '../motion.js'
+import { play } from '../sound.js'
 
 /* One health check = a mini maintenance scenario. */
 function HealthCheck({ item }) {
   const [choice, setChoice] = useState(null)
   const complete = useReview((s) => s.complete)
   const pushPatch = usePatch((s) => s.push)
+  const touch = useStreak((s) => s.touch)
   const right = choice === item.correct
   // true only when a Field Notes card is earned by this very check
   const earnsNote = BINGO.some((b) => !b.check({ stage: () => false, reviewDone: () => false }) && b.check({ stage: () => false, reviewDone: (id) => id === item.id }))
@@ -38,7 +43,7 @@ function HealthCheck({ item }) {
       <p className="small">{item.scenario}</p>
       <div className="mt14">
         {item.options.map((o, i) => (
-          <button key={i} className={`opt ${choice !== null && i === item.correct ? 'right' : ''} ${choice === i && !right ? 'wrong' : ''}`} onClick={() => setChoice(i)}>
+          <button key={i} className={`opt ${choice !== null && i === item.correct ? 'right' : ''} ${choice === i && !right ? 'wrong' : ''}`} onClick={() => { setChoice(i); play(i === item.correct ? 'correct' : 'wrong') }}>
             {o}
           </button>
         ))}
@@ -51,7 +56,7 @@ function HealthCheck({ item }) {
           </p>
           <div className="row between mt14">
             <span className="tag-mono">logged in your review history{earnsNote ? ' · field note earned' : ''}</span>
-            <Btn size="sm" variant={right ? 'primary' : ''} onClick={() => { complete(item.id); if (earnsNote) pushPatch('New field note unlocked — see Field Notes on the course page.') }}>
+            <Btn size="sm" variant={right ? 'primary' : ''} onClick={() => { complete(item.id); touch('drill'); if (earnsNote) pushPatch('New field note unlocked — see Field Notes on the course page.') }}>
               Mark handled <Check size={13} />
             </Btn>
           </div>
@@ -60,6 +65,8 @@ function HealthCheck({ item }) {
     </motion.div>
   )
 }
+
+/* the correct answer is only known after the click — this keeps the sound honest */
 
 /* Left column: every module at a glance; the current one opens up into its steps. */
 
@@ -137,6 +144,7 @@ export default function Dashboard() {
   const reviewItems = useReview((s) => s.items)
   const due = reviewItems.filter((r) => !r.done && r.dueAt <= Date.now())
   const artifactsN = usePortfolio((s) => s.artifacts.length)
+  const streak = useStreak((s) => s.streak)
 
   const enrolled = isEnrolled(precheck, progress)
   const overall = courseProgress(progress)
@@ -173,7 +181,7 @@ export default function Dashboard() {
         <div className="row between wrap" style={{ alignItems: 'flex-start' }}>
           <div>
             <div className="kicker">Dashboard</div>
-            <h1>{greeting()}, {LEARNER.name}.</h1>
+            <h1>{greeting()}, {LEARNER.name}.{streak > 0 && <> <span className="chip nav-streak" style={{ verticalAlign: '6px' }}><Flame size={12} /> {streak}-day streak</span></>}</h1>
             <p className="muted mt8">
               {!enrolled
                 ? 'Pick a course to begin. A few questions about you and a short pre-assessment set it up for you.'
@@ -231,8 +239,13 @@ export default function Dashboard() {
             <div>
               <SectionTitle kicker="Learning plan" title="This week" />
               <WeekTeaser />
+              <div className="mt20">
+                <StreakStrip />
+              </div>
             </div>
             <div>
+              <SectionTitle kicker="Keep it alive" title="Today's challenge" sub="One small drill a day — it keeps the streak alive even when there's no time for a lesson." />
+              <DailyChallenge />
               <SectionTitle kicker="Activity" title="Last 14 days" sub="A dot per day you studied. Missing days changes nothing." />
               <GlassCard>
                 <div className="rhythm">

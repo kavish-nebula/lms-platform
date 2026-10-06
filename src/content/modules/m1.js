@@ -384,9 +384,110 @@ export default {
 
   /* ---------------- CONSOLIDATED GUIDED BUILD ---------------- */
   guided: {
-    situation: "Monday, 9 AM. The lead form is live again and Ana wants every new lead in #new-leads within a minute — without the empty rows and double-clicks that flooded the channel last time. You have an empty canvas and four decisions to make. Build the workflow that does it.",
+    bigbuild: true, // the Big Build — a real end-to-end build session that replaces the video
+    situation: "Monday, 9 AM. The lead form is live again and Ana wants every new lead handled within a minute — no empty rows, no double-clicks, no weekend black holes. Before you build anything, you watch how a real one gets built.",
     title: 'Build the lead alert yourself',
     intro: 'Step by step, you assemble the real workflow. Each step tells you what will happen before you do it.',
+    /*
+      The case file: a narrated tour of a REAL solved workflow, in the REAL n8n editor
+      (screenshots from n8n's official docs — their own tutorial workflow). It plays like
+      a video: the camera glides to whatever the narrator is pointing at, and the video
+      pauses half-way for a check. Watch it, then run, break and fix the same shape here.
+    */
+    tour: {
+      id: 'm1-case',
+      title: 'The case file — a real workflow, read closely',
+      quizAfter: 2,
+      midQuiz: [
+        {
+          q: 'In that workflow, what starts an execution?',
+          options: ['The Schedule Trigger wakes it on its schedule', 'The If node decides when to run', 'The Test workflow button, once per day'],
+          correct: 0,
+          explain: 'One trigger event starts one execution — everything else happens because of it.',
+          hint: 'Which node has no arrow pointing into it?',
+        },
+        {
+          q: 'A node can run “successfully” and still not have done its job. What would you read to be sure?',
+          options: ['The node’s name', 'The response it got back', 'The workflow title'],
+          correct: 1,
+          explain: 'Green means it ran; the response says what actually happened.',
+          hint: 'What did the NASA node get back from the API?',
+        },
+      ],
+      endQuiz: [
+        {
+          q: 'What is the one-line shape of the workflow you just watched?',
+          options: ['trigger → work → decide → act', 'decide → trigger → act', 'act → work → trigger'],
+          correct: 0,
+          explain: 'A trigger wakes it, a node does the work, a guard decides, actions do the visible work — the same shape you are about to build.',
+          hint: 'What came first, and what came last?',
+        },
+      ],
+      slides: [
+        {
+          kind: 'title',
+          icon: 'eye',
+          kicker: 'Guided practice · the case file',
+          title: 'How a real one was built',
+          sub: 'This is a real workflow in the real n8n editor — n8n’s own tutorial workflow. Watch how it is put together, then build the same shape yourself.',
+          narration:
+            'Before you build anything, watch how a real one was built. What you are looking at is a genuine n8n editor, with one of n8n’s own tutorial workflows on the canvas. ' +
+            'We will read it together, piece by piece, exactly the way an experienced builder reads a workflow they have inherited. ' +
+            'By the end, the shape of it will be yours.',
+        },
+        {
+          kind: 'shot',
+          title: 'The whole picture',
+          cap: 'A real workflow, on the real canvas',
+          src: '/screenshots/tutorial-first.png',
+          alt: 'The n8n editor with a workflow: Schedule Trigger → NASA → If → two PostBin nodes on true and false branches',
+          cue: 0,
+          narration:
+            'Here is the whole picture. Read it left to right, like a sentence. ' +
+            'Something wakes the workflow up. Something does the work. Something decides. And then the workflow acts — twice, in fact, because this decision has two outcomes. ' +
+            'Four nodes, three wires. That is the entire story, and every workflow you will ever build is a version of it.',
+          hotspots: [
+            { cue: 1, x: 17.5, y: 50, label: 'Schedule Trigger' },
+            { cue: 2, x: 37, y: 50, label: 'NASA — the work' },
+            { cue: 3, x: 53.5, y: 49, label: 'If — the decision' },
+          ],
+          zoom: 1.6,
+        },
+        {
+          kind: 'shot',
+          title: 'The trigger — and a credential',
+          cap: 'Click a node and its settings open',
+          src: '/screenshots/tutorial-date.png',
+          alt: 'The NASA node open in n8n: credential to connect with, resource, operation, and an expression for the start date',
+          cue: 0,
+          narration:
+            'This is what a node looks like on the inside — the NASA node, opened. ' +
+            'At the top, the credential: which account this node talks with. Remember this field. In the story of your first week at Nebula, it is exactly where the lead alert died — an expired credential, silently failing. ' +
+            'Below it, the node’s parameters: which resource, which operation. And look at the start date — that purple expression does not say a fixed date. It says: seven days before today, whatever today is. ' +
+            'The workflow never grows old, because the date is computed fresh on every run.',
+          hotspots: [
+            { cue: 1, x: 50, y: 18.5, label: 'Credential to connect with' },
+            { cue: 2, x: 52.5, y: 45, label: 'An expression — computed per run' },
+          ],
+          zoom: 1.5,
+        },
+        {
+          kind: 'recap',
+          title: 'What you now know',
+          narration:
+            'So — you have read a real workflow in a real editor. ' +
+            'One: every workflow starts with a trigger, and nothing runs until it fires. ' +
+            'Two: nodes hold credentials and parameters, and expressions compute values fresh on every run. ' +
+            'Three: guards and branches route items — true goes one way, false goes another. ' +
+            'Now you will build that exact shape for Nebula: trigger, clean, guard, alert — and then, because this is Proofcraft, you will break it on purpose and watch it hold.',
+          points: [
+            { cue: 1, text: 'A trigger wakes the workflow — no trigger, no run' },
+            { cue: 2, text: 'Nodes hold credentials + parameters; expressions compute per run' },
+            { cue: 3, text: 'Guards and branches route items — true one way, false another' },
+          ],
+        },
+      ],
+    },
     steps: [
       {
         task: 'Drag the Sheet Trigger onto the empty canvas.',

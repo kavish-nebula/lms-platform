@@ -7,6 +7,9 @@ import { useCourse } from '../stores/course.js'
 import { useReview } from '../stores/review.js'
 import { useLearner } from '../stores/learner.js'
 import { usePatch } from '../stores/patch.js'
+import { useStreak } from '../stores/streak.js'
+import { burstConfetti } from '../ui/celebrate.jsx'
+import { play } from '../sound.js'
 import { popIn } from '../motion.js'
 
 /*
@@ -31,6 +34,7 @@ export default function QuizStage({ content, moduleId, onNext }) {
   const scheduleFor = useReview((s) => s.scheduleFor)
   const addTeachback = useLearner((s) => s.addTeachback)
   const pushPatch = usePatch((s) => s.push)
+  const touch = useStreak((s) => s.touch)
 
   const question = q.questions[idx]
   const total = q.questions.length
@@ -41,6 +45,7 @@ export default function QuizStage({ content, moduleId, onNext }) {
   const answer = (i) => {
     if (choice !== null) return
     setChoice(i)
+    play(i === question.correct ? 'correct' : 'wrong')
     setAnswers((a) => [...a, { q: question.q, sub: question.sub, explain: question.explain, correct: i === question.correct, recall: !!question.recall }])
   }
 
@@ -64,6 +69,10 @@ export default function QuizStage({ content, moduleId, onNext }) {
       scheduleFor(moduleId, content.reviews) // no-op if this module's checks already exist
       completeModule(moduleId)
       pushPatch('Module shipped. Health checks are scheduled — I’ll ping the dashboard when one needs attention.')
+      // the moment is worth marking: the module is real, shipped, and kept alive from here
+      touch('study')
+      play('ship')
+      burstConfetti({ count: 130 })
     }
     setFinished(true)
   }

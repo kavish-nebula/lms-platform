@@ -1,8 +1,10 @@
 import { useNavigate } from 'react-router-dom'
-import { BookOpen, RotateCcw, TriangleAlert } from 'lucide-react'
+import { BookOpen, Moon, RotateCcw, Sun, TriangleAlert, Volume2, VolumeX } from 'lucide-react'
 import { Btn, PageHeader, SectionTitle, EmptyNote } from '../ui/bits.jsx'
 import GlassCard from '../ui/GlassCard.jsx'
 import { useLearner, useAdaptation } from '../stores/learner.js'
+import { useUi } from '../stores/ui.js'
+import { useStreak } from '../stores/streak.js'
 import { MODULES } from '../content/course.js'
 import { QUESTIONS } from '../content/profile.js'
 import { LEARNER } from '../content/session.js'
@@ -26,6 +28,8 @@ export default function Profile() {
   const makeDue = useReview((s) => s.makeDue)
   const items = useReview((s) => s.items)
   const pushPatch = usePatch((s) => s.push)
+  const resetStreak = useStreak((s) => s.resetStreak)
+  const { dark, sound, toggleDark, toggleSound } = useUi()
 
   const adapt = useAdaptation()
   const navigate = useNavigate()
@@ -41,6 +45,7 @@ export default function Profile() {
     resetSignals()
     resetPortfolio()
     resetPlan()
+    resetStreak()
     navigate('/') // back to the front door, as a new learner
   }
 
@@ -103,6 +108,33 @@ export default function Profile() {
               })}
             </div>
           ))}
+        </GlassCard>
+      </div>
+
+      <div className="grid c2 mt20">
+        <GlassCard>
+          <div className="kicker mb8">Interface</div>
+          <p className="muted small mb14" style={{ lineHeight: 1.5 }}>
+            Comfort settings — they live in this browser only, and both are also in the top bar.
+          </p>
+          <div className="row wrap" style={{ gap: 10 }} role="group" aria-label="Interface preferences">
+            <Btn size="sm" variant={sound ? 'primary' : ''} aria-pressed={sound} onClick={toggleSound}>
+              {sound ? <><Volume2 size={13} /> Sounds on</> : <><VolumeX size={13} /> Sounds muted</>}
+            </Btn>
+            <Btn size="sm" variant={dark ? 'primary' : ''} aria-pressed={dark} onClick={toggleDark}>
+              {dark ? <><Sun size={13} /> Dark mode</> : <><Moon size={13} /> Light mode</>}
+            </Btn>
+          </div>
+          <p className="tag-mono mt8">sounds are feedback for your actions — answers, runs, shipped modules</p>
+        </GlassCard>
+
+        <GlassCard>
+          <div className="kicker mb8">Your streak</div>
+          <p className="muted small" style={{ lineHeight: 1.5 }}>
+            A day counts when you finish a lesson, handle a health check, or do the dashboard's daily challenge.
+            Miss a day and the streak restarts — the record of what you did never does. Wiping all data below
+            clears it too.
+          </p>
         </GlassCard>
       </div>
 

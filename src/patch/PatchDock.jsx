@@ -4,6 +4,8 @@ import { Bot, Send } from 'lucide-react'
 import { usePatch } from '../stores/patch.js'
 import { useSignals } from '../stores/signals.js'
 import { answerQuestion, SUGGESTIONS } from './knowledgeBase.js'
+import TypingDots from '../ui/TypingDots.jsx'
+import { play } from '../sound.js'
 import { popIn } from '../motion.js'
 
 /*
@@ -19,7 +21,11 @@ export default function PatchDock() {
   const setOpen = usePatch((s) => s.setChat)
   const [messages, setMessages] = useState([]) // {who:'you'|'patch', text}
   const [input, setInput] = useState('')
+  const [thinking, setThinking] = useState(false)
+  const thinkingTimer = useRef(null)
   const inputRef = useRef(null)
+
+  useEffect(() => () => clearTimeout(thinkingTimer.current), [])
 
   useEffect(() => {
     if (!current && queue.length) next()
@@ -48,10 +54,19 @@ export default function PatchDock() {
     const known = help?.prompts.find((p) => p.q === question)
     let reply = known ? { text: known.a } : answerQuestion(question, { confused: confused(), context: help?.title || contextLine() })
     if (!known && !reply.inScope && help) reply = { text: help.fallback }
-    setMessages((m) => [...m, { who: 'you', text: question }, { who: 'patch', text: reply.text }])
+    setMessages((m) => [...m, { who: 'you', text: question }])
     setInput('')
     setOpen(true)
+    play('pop')
+    // Patch "types" before answering — a short beat makes the reply feel composed, not canned
+    setThinking(true)
     setTimeout(() => inputRef.current?.focus(), 50)
+    clearTimeout(thinkingTimer.current)
+    thinkingTimer.current = setTimeout(() => {
+      setThinking(false)
+      setMessages((m) => [...m, { who: 'patch', text: reply.text }])
+      play('click')
+    }, Math.min(1500, 450 + reply.text.length * 5))
   }
 
   return (
@@ -93,6 +108,12 @@ export default function PatchDock() {
                   <span className="chat-text">{m.text}</span>
                 </div>
               ))}
+              {thinking && (
+                <div className="chat-msg patch">
+                  <span className="chat-who">patch</span>
+                  <TypingDots />
+                </div>
+              )}
             </div>
 
             <div className="row wrap" style={{ gap: 5, margin: '10px 0' }}>

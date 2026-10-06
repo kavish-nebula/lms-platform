@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Proofcraft · interactive case file</title>
+<style>
+:root{--bg:#f6f9fb;--panel:#fff;--line:#d4dde2;--text:#24343e;--muted:#4f606a;--faint:#627580;--acc:#5c7e8f;--accink:#3e5a68;--amber:#d98e2b;--ok:#2f8f6b;--err:#c0564e;--soft:#eef3f6}
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,sans-serif;padding:26px;line-height:1.5}
+.wrap{max-width:1020px;margin:0 auto}
+.kicker{font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--accink)}
+h1{font-size:29px;letter-spacing:-.02em;margin:6px 0 4px}
+.sub{color:var(--muted);font-size:15px;max-width:760px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(36,52,62,.06)}
+.canvas{position:relative;width:960px;height:320px;margin:18px auto 0;overflow:hidden;border-radius:14px;background:radial-gradient(circle,#d9e2e8 1px,transparent 1px);background-size:22px 22px}
+svg.wires{position:absolute;inset:0}
+svg.wires path{fill:none;stroke:#9fb1bb;stroke-width:2}
+.node{position:absolute;width:158px;background:#fff;border:2px solid var(--line);border-radius:12px;padding:10px 12px;transition:border-color .2s,box-shadow .2s,transform .2s}
+.node .top{display:flex;align-items:center;gap:9px}
+.node .ic{width:36px;height:36px;border-radius:9px;background:var(--soft);display:grid;place-items:center;font-size:17px;flex:0 0 36px}
+.node b{font-size:13.5px;display:block;line-height:1.2}
+.node small{color:var(--faint);font-size:11px}
+.node.click{cursor:pointer}
+.node.click:hover{border-color:var(--acc);transform:translateY(-2px);box-shadow:0 10px 26px -14px rgba(36,52,62,.35)}
+.node.target{border-color:var(--amber);animation:pulse 1.5s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(217,146,43,.5)}70%{box-shadow:0 0 0 14px rgba(217,146,43,0)}100%{box-shadow:0 0 0 0 rgba(217,146,43,0)}}
+.node.done{border-color:var(--ok)}
+.node.done::after{content:'✓';position:absolute;top:-9px;right:-9px;width:22px;height:22px;border-radius:50%;background:var(--ok);color:#fff;font-size:12px;font-weight:800;display:grid;place-items:center}
+.node.err{border-color:var(--err);animation:shake .45s}
+@keyframes shake{20%,60%{transform:translateX(-5px)}40%,80%{transform:translateX(5px)}}
+.node.flash{border-color:var(--ok);box-shadow:0 0 0 6px rgba(47,143,107,.18)}
+.wl{position:absolute;font:700 11px Inter,system-ui;color:var(--faint);background:#fff;border:1px solid var(--line);padding:3px 9px;border-radius:99px;cursor:default}
+.wl.click{cursor:pointer;color:var(--accink)}
+.wl.click:hover{border-color:var(--amber);color:var(--amber)}
+.bubble{position:absolute;padding:9px 12px;border-radius:10px;font-size:12.5px;font-weight:700;box-shadow:0 10px 30px -12px rgba(36,52,62,.4);opacity:0;transition:all .3s;transform:translateY(6px)}
+.bubble.on{opacity:1;transform:none}
+.bubble.bad{background:#fdeeec;color:#93413b;border:1px solid rgba(192,86,78,.4)}
+.dots{position:absolute;width:11px;height:11px;border-radius:50%;background:var(--acc);z-index:5;margin:-5px 0 0 -5px}
+.instr{margin-top:18px;padding:18px 20px}
+.row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.stepchip{font:700 12px Inter;background:var(--soft);color:var(--accink);border:1px solid rgba(92,126,143,.4);padding:4px 11px;border-radius:99px;white-space:nowrap}
+#say{font-size:16px;font-weight:600;min-height:24px}
+#help{color:var(--muted);font-size:13.5px;margin-top:4px;min-height:20px}
+.btn{border:1px solid var(--line);background:#fff;color:var(--text);padding:9px 15px;border-radius:10px;font:600 14px Inter,system-ui;cursor:pointer;transition:all .15s}
+.btn:hover{border-color:var(--acc);transform:translateY(-1px)}
+.btn.pri{background:linear-gradient(135deg,var(--accink),#4d6f80);color:#fff;border-color:transparent}
+.opts{display:flex;flex-direction:column;gap:8px;margin-top:12px;max-width:560px}
+.opt{text-align:left;padding:11px 14px;border-radius:11px;border:1.5px solid var(--line);background:#fff;font:500 14px Inter;cursor:pointer}
+.opt:hover{border-color:var(--acc)}
+.opt.right{border-color:var(--ok);background:rgba(47,143,107,.09)}
+.opt.wrong{border-color:var(--err);background:rgba(192,86,78,.07)}
+#log{font:600 12.5px ui-monospace,monospace;color:var(--muted);margin-top:12px;min-height:18px}
+#log.bad{color:var(--err)}#log.good{color:var(--ok)}
+.dotsrow{display:flex;gap:6px;margin-top:14px}
+.dstep{width:26px;height:6px;border-radius:99px;background:var(--line)}
+.dstep.on{background:var(--acc)}.dstep.done{background:var(--ok)}
+.panel{position:absolute;z-index:10;width:320px;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 24px 48px -20px rgba(36,52,62,.45);padding:15px;font-size:13px;right:20px;top:14px}
+.panel h3{font-size:14px;display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.panel .f{margin:8px 0}
+.panel label{display:block;font-weight:800;font-size:10.5px;color:var(--faint);text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px}
+.panel .v{border:1.5px solid var(--line);border-radius:8px;padding:6px 9px;background:#fbfdfe}
+.panel .v.ex{font-family:ui-monospace,monospace;font-size:12px;color:#5a3ea6;background:#f6f2ff;border-color:#d8c9f5}
+.cred{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.cred .btn{padding:4px 9px;font-size:12px;border-radius:8px}
+.x{position:absolute;top:8px;right:11px;border:0;background:none;font-size:15px;cursor:pointer;color:var(--faint)}
+.win{position:fixed;inset:0;display:grid;place-items:center;background:rgba(16,26,32,.45);backdrop-filter:blur(2px);z-index:50;opacity:0;pointer-events:none;transition:opacity .3s}
+.win.on{opacity:1;pointer-events:auto}
+.win .card{max-width:540px;padding:28px;text-align:center;margin:20px}
+.big{font-size:23px;font-weight:800;letter-spacing:-.02em;margin:6px 0 8px}
+.win ul{text-align:left;margin:12px 0 4px;padding-left:18px;color:var(--muted);font-size:14px}
+canvas#cf{position:fixed;inset:0;pointer-events:none;z-index:60}
+</style></head><body>
+<div class="wrap">
+  <div class="kicker">Proofcraft · guided practice · interactive case file</div>
+  <h1>Read a real workflow — by touching it</h1>
+  <p class="sub">n8n’s own tutorial workflow (Schedule Trigger → NASA → If → PostBin), rebuilt as a live page. Every instruction is something you <b>do</b>: click the nodes, answer inside the node, route an item, run it, break it, fix it.</p>
+  <div class="card canvas" id="cv">
+    <svg class="wires" width="960" height="320" viewBox="0 0 960 320">
+      <path id="p1" d="M198,146 L270,146"/><path id="p2" d="M428,146 L500,146"/>
+      <path id="p3" d="M658,146 C695,146 695,76 730,76"/><path id="p4" d="M658,146 C695,146 695,221 730,221"/>
+    </svg>
+    <div class="node" id="ntrigger" style="left:40px;top:110px"><div class="top"><span class="ic">⚡</span><div><b>Schedule Trigger</b><small>every 6 hours</small></div></div></div>
+    <div class="node" id="nnasa" style="left:270px;top:110px"><div class="top"><span class="ic">🛰️</span><div><b>NASA</b><small>get: DONKI flare</small></div></div></div>
+    <div class="node" id="nif" style="left:500px;top:110px"><div class="top"><span class="ic">🔀</span><div><b>If</b><small>class ≥ M ?</small></div></div></div>
+    <div class="node" id="ntrue" style="left:730px;top:40px"><div class="top"><span class="ic">🌐</span><div><b>PostBin(true)</b><small>send: request</small></div></div></div>
+    <div class="node" id="nfalse" style="left:730px;top:185px"><div class="top"><span class="ic">🌐</span><div><b>PostBin(false)</b><small>send: request</small></div></div></div>
+    <button class="wl" id="wltrue" style="left:672px;top:94px">true</button>
+    <button class="wl" id="wlfalse" style="left:672px;top:170px">false</button>
+    <div class="bubble bad" id="bub" style="left:224px;top:52px">NASA · 401 — invalid credentials</div>
+  </div>
+  <div class="card instr">
+    <div class="row"><span class="stepchip" id="chip">Step 1 of 7</span><span id="say"></span></div>
+    <div id="help"></div>
+    <div id="quiz"></div>
+    <div class="row" id="actions" style="margin-top:12px"></div>
+    <div id="log"></div>
+    <div class="dotsrow" id="dotsrow"></div>
+  </div>
+</div>
+<div class="win" id="win"><div class="card">
+  <div style="font-size:38px">🎉</div>
+  <div class="big">Case closed — you drove the whole thing.</div>
+  <ul><li>A trigger wakes the workflow — no trigger, no run</li><li>Nodes hold <b>credentials</b> — expired ones fail silently</li><li>Expressions like <b>$today.minus(7,'days')</b> compute fresh on every run</li><li>Guards route items — true one way, false another</li><li>Green ≠ proof: you read the 401, found the field, fixed it</li></ul>
+  <p style="font-size:13px;color:var(--muted);margin-top:8px">Back to the app: <a href="/player/1" style="color:var(--accink);font-weight:700">open Guided practice</a> — this interaction is being built into the lesson itself.</p>
+  <button class="btn pri" onclick="document.getElementById('win').classList.remove('on')">Close</button>
+</div></div>
+<canvas id="cf"></canvas>
+<script>
+var $=function(id){return document.getElementById(id)};
+var nodes={trigger:$('ntrigger'),nasa:$('nnasa'),ifs:$('nif'),ntrue:$('ntrue'),nfalse:$('nfalse')};
+var step=0,TOTAL=7,credOk=false;
+function log(t,bad){var l=$('log');l.textContent=t;l.className=bad?'bad':(t.indexOf('✓')>-1?'good':'')}
+function say(a,b){$('say').innerHTML=a;$('help').innerHTML=b||''}
+function target(id){nodes[id].classList.add('target','click')}
+function markDone(id){nodes[id].classList.add('done');nodes[id].classList.remove('target','click')}
+function dots(){$('dotsrow').innerHTML='';for(var i=0;i<TOTAL;i++){var d=document.createElement('span');d.className='dstep'+(i<step?' done':i===step?' on':'');$('dotsrow').appendChild(d)}}
+function chip(){$('chip').textContent='Step '+Math.min(step+1,TOTAL)+' of '+TOTAL}
+function actions(list){var r=$('actions');r.innerHTML='';(list||[]).forEach(function(b){var el=document.createElement('button');el.className='btn'+(b.pri?' pri':'');el.textContent=b.t;el.onclick=b.f;r.appendChild(el)})}
+function quiz(o){var q=$('quiz');q.innerHTML='';var p=document.createElement('div');p.className='opts';o.opts.forEach(function(t,i){var b=document.createElement('button');b.className='opt';b.textContent=t;b.onclick=function(){if(i===o.correct){b.classList.add('right');o.ok()}else{b.classList.add('wrong');$('help').innerHTML=o.hint}};p.appendChild(b)});q.appendChild(p)}
+function clearQuiz(){$('quiz').innerHTML=''}
+function along(pid,dur){return new Promise(function(res){var p=document.getElementById(pid);var d=document.createElement('div');d.className='dots';$('cv').appendChild(d);var L=p.getTotalLength();var t0=performance.now();(function f(t){var k=Math.min(1,(t-t0)/dur);var pt=p.getPointAtLength(k*L);d.style.left=pt.x+'px';d.style.top=pt.y+'px';if(k<1)requestAnimationFrame(f);else{d.remove();res()}})(t0)})}
+function flash(el){el.classList.add('flash');setTimeout(function(){el.classList.remove('flash')},900)}
+function openPanel(fixMode){var old=$('panel');if(old)old.remove();var p=document.createElement('div');p.className='panel';p.id='panel';
+p.innerHTML='<button class="x" onclick="this.parentNode.remove()">✕</button><h3>🛰️ NASA <span class="stepchip">Parameters</span></h3>'
++'<div class="f"><label>Credential to connect with</label><div class="v cred"><span>'+(fixMode&&!credOk?'NASA account ⚠ expired':'NASA account'+(credOk?' ✓':''))+'</span>'+(fixMode&&!credOk?'<button class="btn" onclick="fixCred()">↻ Reconnect</button>':'')+'</div></div>'
++'<div class="f"><label>Resource</label><div class="v">DONKI Solar Flare</div></div>'
++'<div class="f"><label>Operation</label><div class="v">Get</div></div>'
++'<div class="f"><label>Start date</label><div class="v ex">{{ $today.minus(7,\'days\') }}</div></div>';
+$('cv').appendChild(p)}
+function fixCred(){credOk=true;openPanel(true);log('credential reconnected ✓')}
+window.fixCred=fixCred;
+function closePanel(){var p=$('panel');if(p)p.remove()}
+function s1(){chip();dots();target('trigger');say('Start where every workflow starts.','This one solved a real problem: fetch recent solar flares every 6 hours and file the big ones. Click the Schedule Trigger.')}
+function s2(){markDone('trigger');say('The trigger is the doorbell.','One schedule tick = one execution. Nothing runs until it fires. Now click the NASA node — the one doing the work.');target('nasa')}
+function s3(){markDone('nasa');openPanel(false);say('Look at Start Date.','It is not a fixed date — it is an expression. Answer below, then close the panel.');
+quiz({opts:['It was fixed once, when the workflow was built','It resolves fresh on every run — always 7 days before today','It depends on the browser clock of the viewer'],correct:1,
+hint:'$today means today — at the moment the node executes.',
+ok:function(){clearQuiz();say('Exactly — the workflow never grows old.','Expressions are computed per item, per run. Close the panel to continue.');actions([{t:'Close the panel ✓',pri:true,f:function(){closePanel();s4()}}])}})}
+function s4(){say('Now you route an item.','The If node checks: class ≥ M? A flare arrives with class B1.2 — minor. Click the wire it travels down.');
+$('wltrue').classList.add('click');$('wlfalse').classList.add('click');
+$('wltrue').onclick=function(){this.classList.add('wrong')};
+$('wlfalse').onclick=function(){this.classList.remove('click');this.style.borderColor='var(--ok)';this.style.color='var(--ok)';
+along('p4',700).then(function(){flash(nodes.nfalse);log('B1.2 → false · minor flares never reach the big endpoint ✓');step++;chip();dots();s5()})}}
+function s5(){say('Run it.','Press the button — watch items travel the wires.');actions([{t:'▶ Run test',pri:true,f:runHealthy}])}
+async function runHealthy(){actions([]);log('running…');
+await along('p1',450);flash(nodes.trigger);await along('p2',450);flash(nodes.nasa);log('3 flares fetched · class check per item…');
+await along('p3',600);flash(nodes.ntrue);await along('p4',600);flash(nodes.nfalse);
+log('✓ 3 in · 2 major → true · 1 minor → false · all green');step++;chip();dots();s6()}
+function s6(){say('Green is not proof. Break it.','Real story: on a Friday night, the NASA credential expired. Inject that fault, then run it again.');actions([{t:'⚡ Inject fault: credential expires',f:function(){actions([{t:'▶ Run again',pri:true,f:runBroken}]);log('credential marked expired…')}},{t:'Skip',f:function(){s7(false,true)}}])}
+async function runBroken(){actions([]);log('running…');await along('p1',450);flash(nodes.trigger);await along('p2',450);
+nodes.nasa.classList.add('err');$('bub').classList.add('on');log('✖ NASA · 401 — invalid credentials · execution stopped',true);
+say('It died at NASA — and everything after it never ran.','Notice: the trigger and the wire were fine. Read the failure, then click the NASA node to find the field that told you.');target('nasa');
+nodes.nasa.onclick=function(){this.onclick=null;this.classList.remove('target','click','err');$('bub').classList.remove('on');s7(true,false)}}
+function s7(fromBreak,skipTarget){step=Math.max(step,6);chip();dots();say('Find the fix, then prove it holds.','Open the NASA node'+(fromBreak?' — you were right to look at the credential field.':'.')+' Reconnect the credential, close the panel, and run it once more.');
+if(!skipTarget)target('nasa');
+nodes.nasa.onclick=function(){openPanel(true);this.classList.remove('target','click');this.onclick=null;
+var wait=setInterval(function(){if(credOk){clearInterval(wait);closePanel();say('Fixed. One more run.','Same workflow, one field changed — watch the difference.');actions([{t:'▶ Run final test',pri:true,f:runFinal}])}},300)}}
+async function runFinal(){actions([]);log('running…');
+await along('p1',450);flash(nodes.trigger);await along('p2',450);flash(nodes.nasa);await along('p3',600);flash(nodes.ntrue);await along('p4',600);flash(nodes.nfalse);
+log('✓ all green — and this time you know why you can trust it');win()}
+function win(){step=TOTAL;dots();confetti();$('win').classList.add('on')}
+function confetti(){var c=$('cf'),x=c.getContext('2d');c.width=innerWidth;c.height=innerHeight;var cs=['#5c7e8f','#3e5a68','#d98e2b','#2f8f6b','#7b98a8'];var ps=[];for(var i=0;i<120;i++)ps.push({x:c.width/2,y:c.height/2.6,vx:(Math.random()-.5)*12,vy:-Math.random()*12-4,r:4+Math.random()*5,c:cs[i%5],a:1});
+(function f(){x.clearRect(0,0,c.width,c.height);var alive=0;ps.forEach(function(p){p.vy+=.28;p.x+=p.vx;p.y+=p.vy;if(p.y<c.height+30)alive++;x.globalAlpha=Math.max(0,p.a);x.fillStyle=p.c;x.fillRect(p.x,p.y,p.r,p.r*1.4)});p.a-=.008;if(alive)requestAnimationFrame(f)})}
+nodes.trigger.onclick=function(){if(step===0){step=1;chip();dots();s2()}};
+nodes.nasa.onclick=function(){if(step===1){step=2;chip();dots();s3()}};
+s1();
+</script></body></html>

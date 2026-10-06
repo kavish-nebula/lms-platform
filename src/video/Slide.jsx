@@ -223,4 +223,40 @@ const KIND = {
       ))}
     </ul>
   ),
+
+  /*
+    A real screenshot, toured like footage: the camera glides to each hotspot as
+    the narration reaches it, the rest of the shot dims, and a ring marks the spot.
+    Coordinates are percentages of the image, so the tour scales with the frame.
+  */
+  shot: (s, shown) => <ShotSlide s={s} shown={shown} />,
+}
+
+function ShotSlide({ s, shown }) {
+  const active = [...(s.hotspots || [])].filter((h) => shown(h.cue)).at(-1) || null
+  const z = active ? (s.zoom || 1.55) : 1
+  // keep the active spot centred: translate is the inverse of the scale around centre
+  const tx = active ? -(z * (active.x - 50)) : 0
+  const ty = active ? -(z * (active.y - 50)) : 0
+  return (
+    <div className="vl-shot">
+      <motion.div
+        className="vl-shot-cam"
+        animate={{ scale: z, x: `${tx}%`, y: `${ty}%` }}
+        transition={{ duration: 0.9, ease: [0.4, 0, 0.2, 1] }}
+      >
+        <img src={s.src} alt={s.alt || s.title} draggable={false} />
+        {s.hotspots?.map((h, i) => (
+          <span key={i} className={`vl-shot-mark ${active === h ? 'on' : ''}`} style={{ left: `${h.x}%`, top: `${h.y}%`, opacity: shown(h.cue) ? 1 : 0 }} />
+        ))}
+        {active && (
+          <span className="vl-shot-cut" style={{ left: `${active.x}%`, top: `${active.y}%`, width: `${130 / z}px` }}>
+            <span className="vl-shot-ring" />
+            <span className="vl-shot-label">{active.label}</span>
+          </span>
+        )}
+      </motion.div>
+      <R on={shown(s.cue)} className="vl-shot-cap"><Eye size={13} /> {s.cap}</R>
+    </div>
+  )
 }

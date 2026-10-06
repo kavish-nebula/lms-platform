@@ -40,5 +40,7 @@ export function audioItems(m) {
     { src: AUDIO.guidedBroken(m), text: m.guided.breakDrill?.brokenNarration },
     { src: AUDIO.guidedFix(m), text: m.guided.breakDrill?.fixNarration },
   )
+  // the case-file tour: narrated like video slides
+  if (m.guided?.tour) m.guided.tour.slides.forEach((s, i) => items.push({ src: AUDIO.slide(m.guided.tour, i), text: s.narration }))
   return items.filter((it) => it.text)
 }

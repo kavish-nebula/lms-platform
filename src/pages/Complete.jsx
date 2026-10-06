@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { Activity, Clock3, Package, HeartPulse, NotebookPen, Download, ArrowRight, CheckCircle2 } from 'lucide-react'
 import { Btn, SectionTitle, StatTile } from '../ui/bits.jsx'
@@ -6,10 +7,14 @@ import { useCourse } from '../stores/course.js'
 import { useReview } from '../stores/review.js'
 import { useLearner, useAdaptation } from '../stores/learner.js'
 import { usePortfolio, downloadArtifact } from '../stores/portfolio.js'
+import { useStreak } from '../stores/streak.js'
 import { COURSE, MODULES, BINGO } from '../content/course.js'
 import { LEARNER } from '../content/session.js'
 import { currentModule } from '../engine/progress.js'
 import { stagger, staggerChild } from '../motion.js'
+import { burstConfetti, CountUp } from '../ui/celebrate.jsx'
+import { ProofCardBtn } from '../ui/ProofCard.jsx'
+import { play } from '../sound.js'
 
 /*
   The end of the course as it stands today: everything available is shipped.
@@ -37,6 +42,17 @@ export default function Complete() {
   }
   const notes = BINGO.filter((b) => b.check(ctx)).length
   const name = `, ${LEARNER.name}`
+  const touch = useStreak((s) => s.touch)
+
+  // course complete deserves one real celebration — once, on arrival
+  const celebrated = useRef(false)
+  useEffect(() => {
+    if (celebrated.current) return
+    celebrated.current = true
+    touch('study')
+    play('ship')
+    burstConfetti({ count: 180 })
+  }, [])
 
   if (next && !(demoMode && final?.passed)) {
     return (
@@ -82,16 +98,25 @@ export default function Complete() {
         </p>
         <div className="row wrap mt20">
           <Btn variant="light" to="/portfolio">Open your portfolio <ArrowRight size={14} /></Btn>
+          <ProofCardBtn
+            variant=""
+            data={{
+              modulesDone: shipped.length, modulesTotal: built.length, hours,
+              notes, notesTotal: BINGO.length,
+              quizzes: shipped.filter((m) => progress[m.n]?.quiz?.passed).length,
+              finalScore: `${final.best}/${final.last.total}`,
+            }}
+          />
           <Btn variant="ghost" to={`/course/${COURSE.id}/stack`}>See the stack</Btn>
           <Btn variant="ghost" to="/dashboard">Dashboard</Btn>
         </div>
       </section>
 
       <div className="grid c4 mt20">
-        <StatTile icon={Activity} value={final.best} unit={`/${final.last.total}`} label={`final assessment · ${shipped.length} of ${built.length} modules shipped`} />
-        <StatTile icon={Clock3} tone="amber" value={hours} unit="hrs/wk" label="of manual work automated" />
-        <StatTile icon={Package} tone="ok" value={artifacts.length} label={`portfolio artifact${artifacts.length === 1 ? '' : 's'}`} />
-        <StatTile icon={NotebookPen} tone="info" value={notes} unit={`/${BINGO.length}`} label={`field notes survived · ${drillsDone.length} drilled`} />
+        <StatTile icon={Activity} value={<CountUp value={final.best} suffix={`/${final.last.total}`} />} label={`final assessment · ${shipped.length} of ${built.length} modules shipped`} />
+        <StatTile icon={Clock3} tone="amber" value={<CountUp value={hours} suffix=" hrs/wk" />} label="of manual work automated" />
+        <StatTile icon={Package} tone="ok" value={<CountUp value={artifacts.length} />} label={`portfolio artifact${artifacts.length === 1 ? '' : 's'}`} />
+        <StatTile icon={NotebookPen} tone="info" value={<CountUp value={notes} suffix={`/${BINGO.length}`} />} label={`field notes survived · ${drillsDone.length} drilled`} />
       </div>
 
       <SectionTitle kicker="Evidence" title="What you built" sub="Each artifact is the workflow you assembled, with the acceptance checks it passed." />
