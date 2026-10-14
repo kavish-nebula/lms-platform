@@ -1,0 +1,16 @@
+node_modules/
+.next/
+apps/web/public/pyodide/
+out/
+dist/
+*.log
+.DS_Store
+Thumbs.db
+.env
+.env.*
+!.env.example
+.tools/
+*.tsbuildinfo
+
+# local learner database (PGlite)
+.data/

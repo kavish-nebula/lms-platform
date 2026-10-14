@@ -1,0 +1,278 @@
+/*
+  Concept video: narrated HTML/CSS slides that play like a video. Ported from
+  the prototype (src/index.css .vl-*) onto the app's tokens. Every size is in
+  container units (cqw) so a slide looks the same at any width.
+*/
+.concept-video-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: calc(var(--r-lg) + 4px);
+  background: var(--panel2);
+  box-shadow: var(--shadow-sm);
+}
+.concept-text-cards { display: flex; flex-direction: column; gap: 12px; }
+.concept-text-card {
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  padding: 18px;
+  background: var(--panel);
+  box-shadow: var(--shadow-sm);
+}
+.concept-transcript-card { padding: 0; overflow: hidden; }
+.concept-video-shell:fullscreen .concept-video-card {
+  width: 100%;
+  max-width: min(100%, calc((100dvh - 120px) * 16 / 9));
+  border: 0;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.vl-stage {
+  position: relative;
+  container-type: inline-size;
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  border-radius: var(--r-lg);
+  border: 1px solid var(--line);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  background:
+    radial-gradient(60% 70% at 100% 0%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 60%),
+    radial-gradient(60% 70% at 0% 100%, color-mix(in srgb, var(--coral, #ef795e) 10%, transparent), transparent 60%),
+    var(--panel);
+  color: var(--text);
+}
+.vl-stage:fullscreen {
+  border-radius: 0;
+  aspect-ratio: auto;
+  height: 100%;
+}
+.vl-slide { position: absolute; inset: 0; padding: 4.4cqw 6cqw; }
+.vl-frame { width: 100%; height: 100%; overflow: hidden; }
+.vl-body { min-height: 100%; display: flex; flex-direction: column; gap: 2.2cqw; transform-origin: top left; }
+.vl-body * { overflow-wrap: break-word; }
+.vl-cols > *, .vl-define > *, .vl-split > *, .vl-cards > *, .vl-flow-step, .vl-node { min-width: 0; }
+.vl-title { font-size: clamp(18px, 3.5cqw, 44px); font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; padding-bottom: 1.4cqw; border-bottom: 3px solid var(--accent); align-self: flex-start; }
+.vl-slide p, .vl-slide li, .vl-slide b, .vl-slide span { font-size: clamp(12px, 2.05cqw, 26px); line-height: 1.45; }
+.vl-kicker { font-size: clamp(11px, 1.5cqw, 18px) !important; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--warn-ink); }
+.vl-lead { color: var(--muted); max-width: 60cqw; }
+.vl-slide ul, .vl-slide ol { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 1.3cqw; }
+
+.vl-cover { margin: auto; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1.6cqw; max-width: 70cqw; }
+.vl-cover-ic { width: 9cqw; height: 9cqw; min-width: 56px; min-height: 56px; border-radius: 26%; display: grid; place-items: center; background: linear-gradient(140deg, var(--accent-deep), var(--accent)); color: #fff; box-shadow: var(--shadow-lg); }
+.vl-cover-ic svg { width: 48%; height: 48%; }
+.vl-cover-title { font-size: clamp(24px, 6cqw, 76px); font-weight: 700; letter-spacing: -0.03em; line-height: 1.05; }
+.vl-cover-sub { color: var(--muted); font-size: clamp(13px, 2.3cqw, 28px) !important; }
+
+.vl-cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 3cqw; flex: 1; align-content: center; }
+.vl-col { border-radius: var(--r); padding: 2.6cqw; border: 1px solid var(--line); background: var(--panel2); box-shadow: var(--shadow-sm); }
+.vl-col.bad { border-top: 5px solid var(--err); }
+.vl-col.ok { border-top: 5px solid var(--ok); }
+.vl-col.info { border-top: 5px solid var(--accent); }
+.vl-col-head { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: clamp(14px, 2.4cqw, 30px); margin-bottom: 1.6cqw; }
+.vl-col.bad .vl-col-head { color: var(--err); }
+.vl-col.ok .vl-col-head { color: var(--ok); }
+.vl-col.info .vl-col-head { color: var(--accent-ink); }
+.vl-col li { padding-left: 2.2cqw; position: relative; }
+.vl-col li::before { content: ""; position: absolute; left: 0; top: 0.75em; width: 0.9cqw; height: 0.9cqw; min-width: 5px; min-height: 5px; border-radius: 50%; background: var(--faint); }
+
+.vl-define { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 3cqw; flex: 1; align-content: center; align-items: start; }
+.vl-def-card { border-radius: var(--r); padding: 3cqw; background: linear-gradient(150deg, var(--accent-deep), color-mix(in srgb, var(--accent-deep) 70%, var(--accent))); color: #fff; box-shadow: var(--shadow-lg); }
+.vl-def-card .vl-kicker { color: #f6c98a; }
+.vl-def { font-size: clamp(15px, 2.9cqw, 36px) !important; font-weight: 700; line-height: 1.3 !important; margin: 1.2cqw 0 2cqw; }
+.vl-def-parts { display: flex; flex-wrap: wrap; gap: 1cqw; }
+.vl-chip { padding: 0.6cqw 1.4cqw; border-radius: 99px; background: rgba(255, 255, 255, 0.14); border: 1px solid rgba(255, 255, 255, 0.3); font-weight: 600; font-size: clamp(11px, 1.7cqw, 21px); }
+.vl-aside { display: flex; gap: 1.4cqw; align-items: flex-start; padding: 2.2cqw; border-radius: var(--r); background: var(--warn-soft); border-left: 4px solid var(--amber); }
+.vl-aside svg { color: var(--warn-ink); flex: 0 0 auto; margin-top: 0.3cqw; width: 2.4cqw; height: 2.4cqw; min-width: 18px; min-height: 18px; }
+.vl-aside b { display: block; color: var(--warn-ink); margin-bottom: 0.4cqw; }
+.vl-aside.tall { align-self: center; }
+
+.vl-flowwrap { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 3.4cqw; }
+.vl-flow { display: flex; align-items: center; justify-content: center; }
+.vl-flow-step { display: flex; align-items: center; }
+.vl-node { width: min(21cqw, calc((88cqw - (var(--n, 3) - 1) * 5.4cqw) / var(--n, 3))); padding: 2.2cqw 1.6cqw; border-radius: var(--r); background: var(--panel2); border: 2px solid var(--line); text-align: center; display: flex; flex-direction: column; align-items: center; gap: 0.6cqw; box-shadow: var(--shadow-md); transition: border-color 0.4s, background 0.4s; }
+.vl-node b { font-size: clamp(13px, 2.3cqw, 28px); }
+.vl-node span:last-child { color: var(--muted); font-size: clamp(11px, 1.6cqw, 20px); }
+.vl-node-ic { width: 5.6cqw; height: 5.6cqw; min-width: 38px; min-height: 38px; border-radius: 30%; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent-ink); }
+.vl-node-ic svg { width: 50%; height: 50%; }
+.vl-node.trigger .vl-node-ic { background: var(--warn-soft); color: var(--warn-ink); }
+.vl-node.action .vl-node-ic { background: var(--ok-soft); color: var(--ok); }
+.vl-node.logic .vl-node-ic { background: var(--err-soft); color: var(--err); }
+.vl-node.user .vl-node-ic { background: var(--warn-soft); color: var(--warn-ink); }
+.vl-node.llm .vl-node-ic { background: var(--accent-soft); color: var(--accent-ink); }
+.vl-node.tool .vl-node-ic { background: var(--info-soft); color: var(--info); }
+.vl-node.memory .vl-node-ic { background: var(--stage-worked-soft); color: var(--stage-worked); }
+.vl-node.output .vl-node-ic { background: var(--ok-soft); color: var(--ok); }
+.vl-node.guard .vl-node-ic { background: var(--err-soft); color: var(--err); }
+.vl-node b, .vl-node span { overflow-wrap: anywhere; }
+.vl-node.ran { border-color: var(--ok); background: var(--ok-soft); }
+.vl-node.ran .vl-node-ic { background: var(--ok); color: var(--on-ok, #fff); }
+.vl-arrow { display: flex; align-items: center; color: var(--faint); margin: 0 0.6cqw; }
+.vl-arrow span { width: 4cqw; height: 3px; background: currentColor; border-radius: 2px; margin-right: -6px; }
+.vl-arrow.live { color: var(--ok); }
+.vl-note { align-self: center; text-align: center; padding: 1.5cqw 2.6cqw; border-radius: var(--r); background: var(--panel2); border: 1px solid var(--line); font-weight: 600; font-size: clamp(12px, 2.05cqw, 26px); max-width: 80cqw; }
+.vl-note.ok { background: var(--ok-soft); border-color: var(--ok-line); color: var(--ok); }
+
+.vl-split { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 3.4cqw; flex: 1; align-content: center; }
+.vl-bullets { margin-top: 1.8cqw !important; }
+.vl-bullet, .vl-step, .vl-recap-row { display: flex; align-items: center; gap: 1.4cqw; font-weight: 600; font-size: clamp(12px, 2.05cqw, 26px); }
+.vl-bullet-ic { flex: 0 0 auto; width: 4cqw; height: 4cqw; min-width: 28px; min-height: 28px; border-radius: 28%; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent-ink); }
+.vl-bullet-ic svg { width: 52%; height: 52%; }
+
+.vl-example { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 2cqw; }
+.vl-example .vl-lead { max-width: none; color: var(--text); }
+.vl-time-tag { font-family: var(--mono); font-size: clamp(10px, 1.5cqw, 19px) !important; color: var(--faint); min-width: 8.5cqw; }
+.vl-step { padding: 1.1cqw 1.6cqw; border-radius: var(--r-sm); background: var(--panel2); border: 1px solid var(--line); font-weight: 500; }
+
+.vl-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2.2cqw; flex: 1; align-content: center; }
+.vl-card { border-radius: var(--r); padding: 2.2cqw; background: var(--panel2); border: 1px solid var(--line); box-shadow: var(--shadow-md); display: flex; flex-direction: column; gap: 1.2cqw; }
+.vl-card-head { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: clamp(13px, 2.3cqw, 28px); color: var(--accent-ink); }
+.vl-card-head svg { width: 2.4cqw; height: 2.4cqw; min-width: 18px; min-height: 18px; }
+.vl-card-row { font-size: clamp(11px, 1.75cqw, 22px); line-height: 1.35; }
+.vl-card-tag { display: block; font-size: clamp(9px, 1.15cqw, 14px) !important; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--warn-ink); }
+
+.vl-tablewrap { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 2.6cqw; }
+.vl-table { border-radius: var(--r); overflow: hidden; border: 1px solid var(--line); background: var(--panel2); box-shadow: var(--shadow-md); }
+.vl-tr { display: grid; grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); gap: 1cqw; padding: 1.3cqw 2cqw; border-top: 1px solid var(--line); }
+.vl-tr span { overflow-wrap: anywhere; white-space: pre-wrap; }
+.vl-tr.head { border-top: 0; background: var(--accent-deep); color: #fff; }
+.vl-tr.head span { font-weight: 700; }
+.vl-tr.bad { background: var(--err-soft); }
+.vl-code { margin-top: 1.8cqw; display: flex; flex-direction: column; gap: 1.3cqw; }
+.vl-code-row { display: grid; grid-template-columns: minmax(0, 1.25fr) auto minmax(0, 1fr); align-items: center; gap: 1.2cqw; }
+.vl-code-row code { font-family: var(--mono); font-size: clamp(11px, 1.7cqw, 21px); padding: 1cqw 1.3cqw; border-radius: var(--r-sm); background: color-mix(in srgb, var(--accent-deep) 85%, black); color: #ece9f7; overflow-wrap: anywhere; }
+.vl-code-row svg { color: var(--faint); }
+.vl-code-row span { font-weight: 600; }
+.vl-recap { flex: 1; justify-content: center; gap: 2cqw !important; }
+.vl-recap-row { padding: 1.6cqw 2cqw; border-radius: var(--r); background: var(--panel2); border: 1px solid var(--line); box-shadow: var(--shadow-sm); }
+.vl-recap-row svg { color: var(--ok); flex: 0 0 auto; width: 2.6cqw; height: 2.6cqw; min-width: 18px; min-height: 18px; }
+
+/* hub: one thing in the middle, its parts round it */
+.vl-hubwrap, .vl-cyclewrap { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 2cqw; }
+.vl-hub { position: relative; width: 100%; height: 38cqw; }
+.vl-hub-lines, .vl-cycle-ring { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.vl-hub-lines line { stroke: var(--accent); stroke-opacity: 0.45; stroke-width: 2; stroke-dasharray: 5 5; transition: opacity 0.45s; }
+.vl-hub-pos, .vl-cycle-pos { position: absolute; transform: translate(-50%, -50%); }
+.vl-hub-pos { width: 24cqw; }
+.vl-hub-center { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 17cqw; padding: 1.2cqw; border-radius: var(--r); text-align: center; display: flex; flex-direction: column; align-items: center; gap: 0.5cqw; background: linear-gradient(150deg, var(--accent-deep), color-mix(in srgb, var(--accent-deep) 70%, var(--accent))); color: #fff; box-shadow: var(--shadow-lg); }
+.vl-hub-center .vl-node-ic { width: 4.2cqw; height: 4.2cqw; min-width: 30px; min-height: 30px; background: rgba(255, 255, 255, 0.16); color: #fff; }
+.vl-hub-center b { font-size: clamp(14px, 2.5cqw, 30px); }
+.vl-hub-center span:last-child { font-size: clamp(10px, 1.5cqw, 18px); opacity: 0.85; line-height: 1.25; }
+.vl-hub-spoke { display: flex; align-items: center; gap: 1.2cqw; padding: 1.1cqw 1.4cqw; border-radius: var(--r); background: var(--panel2); border: 1px solid var(--line); box-shadow: var(--shadow-md); }
+.vl-hub-txt { display: flex; flex-direction: column; min-width: 0; }
+.vl-hub-txt b { font-size: clamp(12px, 1.9cqw, 24px); line-height: 1.2; }
+.vl-hub-txt span { font-size: clamp(10px, 1.45cqw, 18px); color: var(--muted); line-height: 1.25; }
+
+/* cycle: steps that repeat round a loop */
+.vl-cycle { position: relative; width: 100%; height: 34cqw; }
+.vl-cycle-ring ellipse { fill: none; stroke: var(--accent); stroke-opacity: 0.35; stroke-width: 2.5; stroke-dasharray: 7 6; }
+.vl-cycle-center { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); text-align: center; display: flex; flex-direction: column; align-items: center; gap: 0.4cqw; max-width: 30cqw; }
+.vl-cycle-center b { font-size: clamp(15px, 2.8cqw, 34px); color: var(--accent-ink); letter-spacing: -0.01em; }
+.vl-cycle-center span { color: var(--muted); font-size: clamp(10px, 1.6cqw, 20px); }
+.vl-cycle-pos { width: 20cqw; }
+.vl-cycle-step { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 0.5cqw; padding: 1.2cqw; border-radius: var(--r); background: var(--panel2); border: 2px solid var(--line); box-shadow: var(--shadow-md); transition: border-color 0.4s, background 0.4s; }
+.vl-cycle-step.now { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, var(--panel2)); }
+.vl-cycle-step b { font-size: clamp(12px, 2cqw, 25px); line-height: 1.2; }
+.vl-cycle-step span:last-child { font-size: clamp(10px, 1.4cqw, 17px); color: var(--muted); line-height: 1.25; }
+.vl-cycle-step .vl-node-ic { width: 4.4cqw; height: 4.4cqw; min-width: 30px; min-height: 30px; }
+.vl-cycle-arrow { position: absolute; display: grid; place-items: center; width: 3cqw; height: 3cqw; min-width: 18px; min-height: 18px; margin: -1.5cqw 0 0 -1.5cqw; color: var(--accent-ink); transition: opacity 0.45s; }
+.vl-cycle-arrow svg { width: 100%; height: 100%; }
+
+/* chat: a conversation or an agent trace */
+.vl-chatwrap { flex: 1; display: grid; grid-template-columns: minmax(0, 1fr); gap: 3cqw; align-content: center; }
+.vl-chatwrap.has-aside { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); }
+.vl-chat { display: flex; flex-direction: column; gap: 1.1cqw; }
+.vl-msg { max-width: 86%; align-self: flex-start; padding: 1cqw 1.6cqw; border-radius: var(--r); border: 1px solid var(--line); background: var(--panel2); box-shadow: var(--shadow-sm); }
+.vl-msg.user { align-self: flex-end; background: var(--accent-soft); border-color: var(--accent-line); }
+.vl-msg.tool { margin-left: 3cqw; background: color-mix(in srgb, var(--accent-deep) 85%, black); border-color: transparent; color: #ece9f7; }
+.vl-msg.system { background: transparent; border-style: dashed; color: var(--muted); }
+.vl-msg-who { display: flex; align-items: center; gap: 0.6cqw; font-size: clamp(9px, 1.25cqw, 15px) !important; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--warn-ink); }
+.vl-msg.tool .vl-msg-who { color: #f6c98a; }
+.vl-msg-who svg { width: 1.6cqw; height: 1.6cqw; min-width: 12px; min-height: 12px; }
+.vl-msg p { font-size: clamp(11px, 1.8cqw, 23px); line-height: 1.4; }
+.vl-msg.tool p { font-family: var(--mono); font-size: clamp(10px, 1.55cqw, 20px); }
+
+/* the checks and the end screen sit over the (dimmed) slide */
+.vl-overlay { position: absolute; inset: 0; display: grid; place-items: center; padding: 16px; background: color-mix(in srgb, var(--panel) 55%, transparent); backdrop-filter: blur(3px); overflow: auto; }
+
+/* Visual Story turns the existing narrated slides into one focused, swipeable scene. */
+.story-mode-shell {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  overflow-x: hidden;
+  overflow-y: auto;
+  align-items: center;
+  justify-content: flex-start !important;
+  gap: 14px !important;
+  padding: clamp(16px, 3vh, 34px) clamp(18px, 4vw, 70px) 28px;
+  background:
+    radial-gradient(55% 45% at 50% 28%, color-mix(in srgb, var(--accent) 19%, transparent), transparent 75%),
+    linear-gradient(150deg, color-mix(in srgb, var(--bg) 96%, #130d36), var(--bg));
+}
+.story-mode-topbar {
+  display: grid;
+  width: min(1120px, calc((100dvh - 210px) * 16 / 9), calc(100vw - 80px));
+  grid-template-columns: minmax(0,1fr) auto minmax(0,1fr);
+  align-items: center;
+  gap: 18px;
+  color: var(--text);
+}
+.story-mode-heading { min-width: 0; }
+.story-mode-heading span { display: flex; align-items: center; gap: 6px; color: var(--accent-ink); font-size: 10px; font-weight: 850; letter-spacing: .13em; text-transform: uppercase; }
+.story-mode-heading span svg { width: 14px; height: 14px; }
+.story-mode-heading strong { display: block; overflow: hidden; margin-top: 3px; font-size: 15px; text-overflow: ellipsis; white-space: nowrap; }
+.story-scene-dots { display: flex; align-items: center; justify-content: center; gap: 6px; }
+.story-scene-dots button { width: 19px; height: 5px; border-radius: 999px; background: var(--line); transition: width 180ms var(--ease-out), background 180ms var(--ease-out); }
+.story-scene-dots button[aria-current=step] { width: 42px; background: var(--accent); }
+.story-mode-close { justify-self: end; display: grid; width: 38px; height: 38px; place-items: center; border: 1px solid var(--line); border-radius: 50%; color: var(--text); background: color-mix(in srgb, var(--panel) 88%, transparent); box-shadow: var(--shadow-sm); }
+.story-mode-close:hover { border-color: var(--accent-line); background: var(--accent-soft); color: var(--accent-ink); }
+.story-mode-close svg { width: 18px; height: 18px; }
+.story-mode-card { width: min(1120px, calc((100dvh - 210px) * 16 / 9), calc(100vw - 80px)); border-color: var(--accent-line); background: color-mix(in srgb, var(--panel2) 94%, transparent); box-shadow: 0 24px 80px color-mix(in srgb, #09051f 48%, transparent), 0 0 0 1px color-mix(in srgb, var(--accent) 16%, transparent); }
+.story-mode-stage { touch-action: pan-y; border-color: var(--accent-line); box-shadow: 0 22px 65px color-mix(in srgb, #08051c 44%, transparent); }
+.story-scene-nav { position: absolute; top: 50%; z-index: 25; display: grid; width: 46px; height: 46px; place-items: center; border: 1px solid color-mix(in srgb, white 24%, transparent); border-radius: 50%; color: white; background: color-mix(in srgb, #120d30 74%, transparent); box-shadow: 0 10px 30px rgba(0,0,0,.28); backdrop-filter: blur(10px); transform: translateY(-50%); transition: transform 180ms var(--ease-out), background 180ms var(--ease-out), opacity 180ms; }
+.story-scene-nav:hover { background: var(--accent-deep); transform: translateY(-50%) scale(1.06); }
+.story-scene-nav:disabled { pointer-events: none; opacity: 0; }
+.story-scene-nav svg { width: 22px; height: 22px; }
+.story-scene-prev { left: 16px; }
+.story-scene-next { right: 16px; }
+
+@media (max-width: 760px) {
+  .story-mode-shell { padding: 12px 10px 22px; }
+  .story-mode-topbar, .story-mode-card { width: 100%; }
+  .story-mode-topbar { grid-template-columns: minmax(0,1fr) auto; }
+  .story-scene-dots { grid-column: 1 / -1; grid-row: 2; }
+  .story-mode-close { grid-column: 2; grid-row: 1; }
+  .story-mode-stage { min-height: min(62dvh, 560px); }
+  .story-scene-nav { width: 40px; height: 40px; }
+  .story-scene-prev { left: 8px; }
+  .story-scene-next { right: 8px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .story-scene-dots button, .story-scene-nav { transition: none; }
+}
+.reduce-motion .story-scene-dots button, .reduce-motion .story-scene-nav { transition: none; }
+
+/* phones: the slide grows to fit its content instead of scaling down */
+@media (max-width: 760px) {
+  .concept-video-card { padding: 8px; }
+  .concept-text-card { padding: 15px; }
+  .concept-transcript-card { padding: 0; }
+  .vl-stage { aspect-ratio: auto; min-height: 520px; }
+  .vl-cols, .vl-define, .vl-split, .vl-cards { grid-template-columns: 1fr; }
+  .vl-flow { flex-direction: column; }
+  .vl-flow-step { flex-direction: column; }
+  .vl-arrow { transform: rotate(90deg); margin: 6px 0; }
+  .vl-node { width: 60cqw; }
+  .vl-hub, .vl-cycle { height: auto; display: grid; gap: 10px; }
+  .vl-hub-lines, .vl-cycle-ring, .vl-cycle-arrow { display: none; }
+  .vl-hub-pos, .vl-cycle-pos, .vl-hub-center, .vl-cycle-center { position: static; transform: none; width: auto; max-width: none; }
+  .vl-chatwrap.has-aside { grid-template-columns: 1fr; }
+  .vl-slide { position: relative; }
+  .vl-frame { overflow: visible; height: auto; }
+  .vl-body { transform: none !important; width: auto !important; }
+}
