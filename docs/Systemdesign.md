@@ -1,0 +1,10 @@
+# Adaptive teaching system design
+
+The current implementation is a Next.js LMS with PGlite locally and an optional PostgreSQL connection. The full-platform FastAPI roadmap in [backend-plan.md](../backend-plan.md) is separate from the implemented [adaptive teaching pilot](adaptive-teaching.md).
+
+For the pilot, the browser connects to Next.js for identity, enrollment, scoring, progress and SSE delivery. Next.js owns persistent generation jobs, immutable slide revisions and versioned performance summaries. A Python worker claims jobs through authenticated internal APIs, invokes the private FastAPI teaching editor, and returns validated output for narration and publication through the existing speech integrations. It renews job leases while generation and narration run.
+
+Enrollment creates Module 1 jobs from a snapshot of profile and course answers. Explicit explanation requests and wrong in-lesson checks create high-priority current-slide jobs. Completion of Module 1 persists verified evidence and an updated plan before queuing Module 2. Late evidence creates a new summary/content generation; it does not rewrite completed progress or change the final assessment. Stage identifiers and authored learning objectives are stable.
+
+The pilot uses the existing shared demo identity and local audio files. It is bound to loopback through the launcher. Multi-user authentication, object storage, provider-quality evaluation and production operations remain deployment work. The detailed contracts, failure handling, setup and checks are documented in [adaptive-teaching.md](adaptive-teaching.md).
+Automatic handoff: server-graded Module 1 answers refresh Module 2 jobs before Module 1 completion; completion remains a final flush/refresh point. Playback-only telemetry does not invalidate generated teaching. A separate background worker lane generates these revisions, and opening a slide promotes its preparation ahead of older background jobs. Matching text/audio pairs are adopted only before playback or on a later slide visit.

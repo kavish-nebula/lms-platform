@@ -216,12 +216,12 @@ export function Player({ module, moduleIndex, stage, video, courseHref, initialD
           checkId={`gate-${module.module_id}`}
           scope="module"
           afterPass={<ReflectionReview />}
-          onGraded={(r) => {
+          onGraded={(r, responses) => {
             recordLearning(module.course_id, { id: `gate:${module.module_id}`, moduleId: module.module_id, correct: r.passed, helped: false });
             ensureReviews(module.course_id, module.module_id);
             if (enrolled) {
               const lessonOf = (id: string) => objectives.find((o) => o.id === id)?.lesson ?? id.replace(/^obj-/,"");
-              queueSignal(module.course_id,{ kind: "module_check",moduleId: module.module_id,payload: { score: r.score,total: r.total,passed: r.passed,missedLessons: r.failedObjectives.map(lessonOf) } });
+              queueSignal(module.course_id,{ kind: "module_check",moduleId: module.module_id,payload: { responses, score: r.score,total: r.total,passed: r.passed,missedLessons: r.failedObjectives.map(lessonOf) } });
             }
           }}
           remediationHref={remediationHref}

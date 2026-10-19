@@ -1,5 +1,7 @@
 # Current learning experience extension
 
+The optional [adaptive teaching pilot](adaptive-teaching.md) adds a separate Python FastAPI editor and durable generation worker. Behind `ADAPTIVE_PYTHON_ENABLED`, the AI-agent player receives versioned slide/audio pairs over SSE, supports current-slide explanation requests, and supplies verified performance summaries to later modules. Next.js retains database ownership, enrollment scope, scoring, speech integration and offline/demo fallback. See the linked guide for startup commands, contracts and verification.
+
 This document covers the October 2026 learning UI changes in `apps/web`, merged with `ai-agent-backend`. The app uses Next.js, React and TypeScript. Enrollment, plans, course progress, Python projects, workflow projects and platform rewards remain backend-backed; the new practice notebook, review schedule and playback checkpoints are browser-local. See [adaptive-backend-merge.md](adaptive-backend-merge.md) for the integration decisions.
 
 ## Course flow
@@ -9,6 +11,8 @@ Signing in (email, company SSO or Google; all demo logins for now) leads to the 
 The AI Agent capstone mini-project opens one workspace (`/finale/capstone/workspace`): **Build workflow**, where the learner designs Scout's workflow from scratch. The canvas starts empty, with no starter steps, and the learner adds each step from "Add a step" and connects them. A browser draft or saved diagram that is still the old untouched starter is treated as empty. The workflow is saved and checked on the server. The Python "Code and run" workspace (editor, in-browser Pyodide sandbox and hidden tests) has been removed, along with its `/project` API. The `project_work` table is kept, so files learners wrote there aren't lost, but nothing writes to it. The learner finishes the project with "Submit project" on the brief.
 
 ## Learner profile ("About you")
+
+Every profile and enrollment question includes **Something else — type my answer**, which focuses the existing text box and clears pending multi-select choices. Replies of up to 200 characters are retained in the existing interview transcript even when no predefined category matches. The LLM sees that wording on the next turn and adapts its question and suggestions; fixed-value answers are captured only when they genuinely match permitted values. Typed multi-select tools and final typed answers are interpreted too, including at the turn cap. Offline fallback keeps the raw answer and continues with the question bank. This uses the existing JSON transcript shape and requires no data migration.
 
 The profile starts from the learner's field, and the field decides what comes next (`lib/setup.ts`, packs in `lib/profiling/packs.ts`):
 - **At work:** role, years in the field, the systems they use, and the first job they would hand to an agent. Each of the six fields has its own pack; a typed field is matched to the nearest pack when possible (see "Profiling backend" below), and otherwise gets the general roles and jobs plus up to two follow-up questions.
@@ -160,3 +164,4 @@ The course-player focus sprint uses the course-scoped localStorage key `lms-focu
 The wide learning dock communicates with existing course surfaces through browser events. `pip:notes` opens Pip directly on the notebook tab when assessment rules allow it. Assessment restrictions remain enforced by the companion itself.
 
 My notes PDF export uses an isolated, temporary print iframe (src/lib/notes-pdf.ts). User text is HTML-escaped before rendering, and native browser printing handles Unicode and pagination. No API, network, or persisted-state changes are needed; the user selects Save as PDF in the print dialog. The iframe is removed after printing, with a timeout cleanup fallback.
+The automatic Python teaching loop queues upcoming modules as soon as identifiable answers are graded, as well as at module completion. Background generation must be enabled for this path. Current-slide preparation is prioritised separately from explicit help requests. Evidence fingerprints ignore playback timing changes, and updated slide/audio pairs enter at safe playback boundaries.

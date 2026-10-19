@@ -66,9 +66,9 @@ export const InterviewTurnIn = z.object({
   last: z
     .object({
       slot: z.string().min(1).max(20),
-      q: z.string().max(200),
+      q: z.string().max(220),
       value: z.union([z.string().max(40), z.array(z.string().max(40)).max(8)]).optional(),
-      label: z.string().max(80).optional(),
+      label: z.string().max(200).optional(),
       text: z.string().trim().max(200).optional(),
       kind: z.enum(["engineer", "lead", "manager", "student", "other"]).optional(),
       skipped: z.boolean().optional(),
@@ -107,7 +107,7 @@ export const SignalsBody = z.object({
     .array(
       z.object({
         id: z.string().min(6).max(120),
-        kind: z.enum(["video_check", "recall_answer", "scenario_answer", "module_check", "final_check", "capstone_check"]),
+        kind: z.enum(["video_check", "recall_answer", "scenario_answer", "module_check", "final_check", "capstone_check", "slide_activity", "support_request"]),
         moduleId: z.string().max(20).nullable().default(null),
         lesson: z.string().max(20).nullable().default(null),
         payload: z.record(z.string(), z.unknown()),

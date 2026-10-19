@@ -48,7 +48,7 @@ export function ScenarioStage({ block, support, ...nav }: StageProps<ScenarioBlo
       <ScenarioCard key={s.id} scenario={s} n={index + 1} total={block.scenarios.length} support={support} saved={decisions[s.id]} onSave={(choice, committed, helped) => {
         writeLocal(key, JSON.stringify({ ...decisions, [s.id]: { choice, committed } }));
         if (committed && context) recordLearning(context.courseId, { id: s.question.step_id, moduleId: context.moduleId, correct: !!s.question.options.find((o) => o.id === choice)?.correct, helped });
-        if (committed && !decisions[s.id]?.committed) signal({ kind: "scenario_answer", moduleId: context?.moduleId ?? block.step_id.split(".")[0], lesson: s.lesson, payload: { stepId: s.question.step_id, correct: !!s.question.options.find((o) => o.id === choice)?.correct } });
+        if (committed && !decisions[s.id]?.committed) signal({ kind: "scenario_answer", moduleId: context?.moduleId ?? block.step_id.split(".")[0], lesson: s.lesson, payload: { stepId: s.question.step_id, response: choice, correct: !!s.question.options.find((o) => o.id === choice)?.correct } });
       }} />
       <div className="flex justify-between gap-3"><Button variant="ghost" disabled={index === 0} onClick={() => setIndex(index - 1)}><ArrowLeft />Previous case</Button><Button variant="outline" disabled={index === block.scenarios.length - 1 || !decisions[s.id]?.committed} onClick={() => setIndex(index + 1)}>Next case<ArrowRight /></Button></div>
     </>}

@@ -954,6 +954,7 @@
     "interviewFieldQ": "First, what field do you work or study in?",
     "interviewFieldPlaceholder": "e.g. Safety consulting, or studying computer science",
     "interviewOwnWords": "Or type your own answer",
+    "interviewSomethingElse": "Something else — type my answer",
     "interviewThinking": "Thinking about what to ask you next…",
     "interviewFailed": "I couldn’t reach the server just now.",
     "interviewRetry": "Try again",

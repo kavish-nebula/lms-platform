@@ -7,6 +7,7 @@ import type { ConceptVideo, ExplainerBlock, HookBlock, ModuleContent, WorkedBloc
 
 /** A module's pieces rewritten for this learner (GET /api/v1/enrollments/:course/modules/:module/adapted). */
 export type AdaptedModule = {
+  live?: boolean;
   pieces: Record<string, { status: "writing" | "voicing" | "ready" | "failed" }>;
   hook: HookBlock | null;
   videos: Record<string, ConceptVideo>;

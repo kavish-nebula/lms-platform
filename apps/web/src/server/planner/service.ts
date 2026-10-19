@@ -13,6 +13,7 @@ import { courseContext } from "./context";
 import { AI_COOLDOWN_MS, replanReason, ruleRevision } from "./policy";
 import { validatePlan } from "./validate";
 import { adaptFirstModule, adaptNextModule } from "@/server/adapt/service";
+import { liveEnabled, summarize, verifiedSignals } from "@/server/adapt/live";
 
 /**
  * The plan lifecycle. Enrolling stores a baseline plan at once and asks the
@@ -119,8 +120,19 @@ export async function saveSetup(user: SessionUser, courseId: string, setup: Setu
 /** Store answers from lessons; re-plan when the evidence calls for it. */
 export async function recordSignals(user: SessionUser, courseId: string, list: repo.NewSignal[], schedule: Schedule, api?: PlannerTransport) {
   const e = await mustFind(user, courseId);
-  const fresh = await repo.insertSignals(e.id, list.map((s) => ({ ...s, key: `${e.id}:${s.key}` })));
+  const checked = liveEnabled(courseId) ? await verifiedSignals(courseId, list) : list;
+  const fresh = await repo.insertSignals(e.id, checked.map((s) => ({ ...s, key: `${e.id}:${s.key}` })));
   const replanning = fresh.length ? await maybeReplan(user, e, fresh, schedule, api) : false;
+  if (liveEnabled(courseId) && fresh.length) {
+    for (const moduleId of new Set(fresh.map((s) => s.moduleId).filter((x): x is string => !!x))) {
+      await summarize(e.id, moduleId);
+      const progress = await repo.progressFor(e.id);
+      const mod = (await courseContext(courseId)).modules.find((m) => m.id === moduleId);
+      const graded = fresh.some((s) => s.moduleId === moduleId && s.payload.verified === true);
+      if (graded || (mod?.authored.length && mod.authored.every((stage) => progress.some((r) => r.moduleId === moduleId && r.stage === stage))))
+        await adaptNextModule(user, courseId, moduleId, schedule);
+    }
+  }
   return { accepted: fresh.length, replanning };
 }
 
@@ -138,7 +150,10 @@ export async function recordProgress(user: SessionUser, courseId: string, module
     const fresh = await repo.insertSignals(e.id, list);
     await maybeReplan(user, e, fresh, schedule, api);
     // a finished module: the next one is rewritten for this learner before they get there
-    if (!api && fresh.some((s) => s.kind === "module_complete")) await adaptNextModule(user, courseId, moduleId, schedule).catch((err) => console.warn(`[adapt] ${err instanceof Error ? err.message : err}`));
+    if (!api && fresh.some((s) => s.kind === "module_complete")) {
+      if (liveEnabled(courseId)) await summarize(e.id, moduleId);
+      await adaptNextModule(user, courseId, moduleId, schedule).catch((err) => console.warn(`[adapt] ${err instanceof Error ? err.message : err}`));
+    }
   }
   return viewOf(e);
 }
@@ -150,9 +165,15 @@ async function mustFind(user: SessionUser, courseId: string) {
 }
 
 async function maybeReplan(user: SessionUser, e: repo.EnrollmentRow, fresh: repo.SignalRow[], schedule: Schedule, api?: PlannerTransport) {
-  const unused = await repo.unusedSignals(e.id);
-  const reason = replanReason(fresh, unused);
+  const usable = (s: repo.SignalRow) => !liveEnabled(e.courseId) || s.payload.verified === true || s.kind === "topic_complete" || s.kind === "module_complete";
+  const unused = (await repo.unusedSignals(e.id)).filter(usable);
+  const reason = replanReason(fresh.filter(usable), unused);
   if (!reason) return false;
+  if (liveEnabled(e.courseId)) {
+    const current = (await repo.plansFor(e.id)).find((p) => p.status === "ready");
+    const revised = current?.plan ? ruleRevision(current.plan, unused.filter((s) => s.payload.verified === true)) : null;
+    if (revised) await repo.insertPlan(e.id, { status: "ready", source: current!.source, trigger: "signals", plan: revised, changes: revised.changes, completedAt: new Date() });
+  }
   if ((aiConfigured() || api) && (await startAi(user, e, "signals", schedule, api, true))) return true;
 
   // No AI planner, or it revised the plan minutes ago: apply the rule-based
@@ -188,7 +209,7 @@ async function runAi(user: SessionUser, enrollmentId: string, courseId: string, 
     const input = await inputOf(user, e);
     const plans = await repo.plansFor(e.id);
     const current = plans.find((p) => p.status === "ready" && p.version < row.version);
-    const evidence = trigger === "enrol" ? [] : await repo.unusedSignals(e.id);
+    const evidence = trigger === "enrol" ? [] : (await repo.unusedSignals(e.id)).filter((s) => !liveEnabled(courseId) || s.payload.verified === true || s.kind === "topic_complete" || s.kind === "module_complete");
     const previous = trigger === "enrol" || !current?.plan ? null : { version: current.version, plan: current.plan };
     const result = await generatePlan(
       {
@@ -214,6 +235,10 @@ async function runAi(user: SessionUser, enrollmentId: string, courseId: string, 
       evidence.map((s) => s.id),
       row.version,
     );
+    if (liveEnabled(courseId)) {
+      const completed = evidence.filter((s) => s.kind === "module_complete" && s.moduleId);
+      for (const s of completed) await adaptNextModule(user, courseId, s.moduleId!, (fn) => { void fn().catch((err) => console.warn("[adapt]", err)); });
+    }
   } catch (err) {
     const message = err instanceof PlannerError ? err.message : "The AI plan could not be written.";
     if (err instanceof PlannerError) console.warn("[planner]", err.detail);

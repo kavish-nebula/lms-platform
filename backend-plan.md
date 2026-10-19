@@ -1,5 +1,7 @@
 # Nebula KnowLab — Backend System Plan
 
+Implementation update (19 October 2026): the [adaptive teaching pilot](docs/adaptive-teaching.md) adds a Python FastAPI teaching service alongside the current Next.js backend. It supports personalised slide narration, durable generation jobs, current-slide requests and evidence-driven Module 2 generation. The older full-platform FastAPI design below remains a roadmap; it is not the current deployment layout.
+
 Current implementation note (12 October 2026): platform engagement runs in the existing Next.js backend using Drizzle and PGlite/Postgres, behind `PLATFORM_ENGAGEMENT_ENABLED`. Its additive learner row, serialized award processing, API contracts and privacy limits are described in [Platform engagement](docs/platform-engagement.md). The earlier target backend design below remains a separate roadmap.
 
 > Production-ready backend for the Proofcraft LMS prototype (`lms-feature/`).

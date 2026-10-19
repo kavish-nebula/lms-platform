@@ -5,6 +5,7 @@ import { api, refreshEnrollments, storeEnrollment, useLearnerData } from "@/lib/
 import { useLocalJson, useLocalString, writeLocal } from "@/lib/local-store";
 import type { EnrollmentView } from "@/lib/learner-plan";
 import type { StageId } from "@/lib/stages";
+import { flushSignals } from "@/lib/signals";
 
 /**
  * Topics done in one module, by stable step ID (agents.md hard rule 1).
@@ -29,6 +30,7 @@ export function useModuleProgress(courseId: string, moduleId: string, initialDon
         return;
       }
       await storeEnrollment({ ...enrollment, progress: { ...enrollment.progress, [moduleId]: [...done, stage] } });
+      await flushSignals(courseId);
       const res = await api<{ enrollment: EnrollmentView }>(`/api/v1/enrollments/${courseId}/progress`, { method: "POST", body: { moduleId, stage } }).catch(() => null);
       if (res) await storeEnrollment(res.enrollment);
       else await refreshEnrollments();

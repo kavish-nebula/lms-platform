@@ -409,7 +409,7 @@ function walk(raw: SetupAnswers | null | undefined, d?: ProfileDerived | null): 
       ? (list as InterviewTurn[])
           .filter((t) => t && typeof t.slot === "string" && typeof t.q === "string" && typeof t.a === "string")
           .slice(0, 16)
-          .map((t) => ({ slot: t.slot.slice(0, 20), q: t.q.slice(0, 200), a: t.a.slice(0, 160) }))
+          .map((t) => ({ slot: t.slot.slice(0, 20), q: t.q.slice(0, 220), a: t.a.slice(0, 200) }))
       : undefined;
   if (a.interview) out.interview = transcript(a.interview);
   if (a.courseInterview) out.courseInterview = transcript(a.courseInterview);

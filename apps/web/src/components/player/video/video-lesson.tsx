@@ -32,12 +32,13 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { useLocalString, useLocalJson, useHydrated, writeLocal } from "@/lib/local-store";
 import { VideoSlideView } from "@/components/player/video/video-slide";
 import type { ConceptVideo, VideoQuiz } from "@/data/types";
+import { useLiveSlides } from "@/lib/live-slides";
+import { useSignal, useSignalScope } from "@/lib/signals";
 
 const RATES = [0.75, 1, 1.25, 1.5] as const;
 const fmt = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
 /** seconds, until the clip's real length is known (or when a clip is missing) */
 const estimate = (text: string) => Math.max(4, text.split(/\s+/).length * 0.4);
-const audioSrc = (video: ConceptVideo, i: number) => (video.audio ? (video.audio[i] ?? "") : `/audio/video-${video.id}-s${i}.mp3`);
 
 type Phase = "play" | "mid" | "end" | "done";
 
@@ -65,18 +66,19 @@ export function VideoLesson({
 }) {
   const t = useTranslations("video");
   const learningContext = useLearningContext();
+  const signal = useSignal();
+  const signalScope = useSignalScope();
   const resumeKey = `lms-video-position:v1:${learningContext?.courseId ?? "course"}:${video.id}`;
   const storedPosition = useLocalJson<{ version: 1; slide: number; phase: Phase; mid: boolean; end: boolean; seen: number[] } | null>(resumeKey, null);
   const hydrated = useHydrated();
   const [restored, setRestored] = React.useState(false);
-  const slides = video.slides;
-  const last = slides.length - 1;
-  const quizAfter = video.quizAfter ?? -1;
-  const srcs = React.useMemo(() => slides.map((_, i) => audioSrc(video, i)), [video, slides]);
-
   const [idx, setIdx] = React.useState(0);
   const [playing, setPlaying] = React.useState(false);
   const [frac, setFrac] = React.useState(0);
+  const adaptation = useLiveSlides(video, learningContext?.courseId ?? "", learningContext?.moduleId ?? "", !!signalScope?.enabled, idx, !playing && frac === 0);
+  const { slides, srcs } = adaptation;
+  const last = slides.length - 1;
+  const quizAfter = video.quizAfter ?? -1;
   const [seen, setSeen] = React.useState<Set<number>>(() => new Set());
   const [phase, setPhase] = React.useState<Phase>("play");
   const [midPassed, setMidPassed] = React.useState(!video.midQuiz.length);
@@ -91,8 +93,8 @@ export function VideoLesson({
   const rate = (RATES as readonly number[]).includes(storedRate) ? storedRate : 1;
   const captionsOn = useLocalString("lms-video-cc") !== "off";
 
-  React.useEffect(() => {
-    if (!hydrated || restored) return;
+  // Restore once when the browser cache hydrates; no intermediate render starts playback.
+  if (hydrated && !restored) {
     if (storedPosition?.version === 1 && Number.isInteger(storedPosition.slide)) {
       setIdx(Math.max(0, Math.min(last, storedPosition.slide)));
       setPhase(["play", "mid", "end", "done"].includes(storedPosition.phase) ? storedPosition.phase : "play");
@@ -101,13 +103,38 @@ export function VideoLesson({
       setSeen(new Set(Array.isArray(storedPosition.seen) ? storedPosition.seen.filter((i) => Number.isInteger(i) && i >= 0 && i <= last) : []));
     }
     setRestored(true);
-  }, [hydrated, restored, storedPosition, last, video.midQuiz.length, video.endQuiz.length]);
+  }
   React.useEffect(() => {
     if (restored) writeLocal(resumeKey, JSON.stringify({ version: 1, slide: idx, phase, mid: midPassed, end: endPassed, seen: [...seen] }));
   }, [restored, resumeKey, idx, phase, midPassed, endPassed, seen]);
 
   const wrap = React.useRef<HTMLDivElement>(null);
   const audioRef = React.useRef<HTMLAudioElement | null>(null);
+  const resumeAfterAdapt = React.useRef(false);
+  const appliedRef = React.useRef("");
+  React.useEffect(() => {
+    if (!adaptation.applied || appliedRef.current === adaptation.applied) return;
+    appliedRef.current = adaptation.applied;
+    if (audioRef.current) { audioRef.current.pause(); audioRef.current.currentTime = 0; }
+    setFrac(0);
+    setSeen((s) => { const next = new Set(s); next.delete(idx); return next; });
+    setPlaying(resumeAfterAdapt.current);
+  }, [adaptation.applied, idx]);
+  React.useEffect(() => {
+    if (!adaptation.active || !playing) return;
+    let activeMs = 0;
+    let previous = Date.now();
+    const timer = setInterval(() => {
+      const now = Date.now();
+      if (document.visibilityState === "visible") activeMs += Math.min(now - previous, 1000);
+      previous = now;
+      if (activeMs >= 10_000) {
+        signal({ kind: "slide_activity", moduleId: learningContext?.moduleId, lesson: video.lesson, payload: { videoId: video.id, slide: idx, activeMs, replays: 0 } });
+        activeMs = 0;
+      }
+    }, 1000);
+    return () => { clearInterval(timer); if (activeMs) signal({ kind: "slide_activity", moduleId: learningContext?.moduleId, lesson: video.lesson, payload: { videoId: video.id, slide: idx, activeMs, replays: 0 } }); };
+  }, [adaptation.active, playing, idx, signal, learningContext?.moduleId, video.lesson, video.id]);
   React.useEffect(() => {
     const pauseForHelp = () => { audioRef.current?.pause(); setPlaying(false); };
     window.addEventListener("pip:opened", pauseForHelp);
@@ -174,21 +201,26 @@ export function VideoLesson({
     };
   }, []);
 
-  // a new slide: load its clip, and keep playing if the video was playing
+  const currentSrc = srcs[idx];
+  // A future slide becoming ready must not restart the current audio.
   React.useEffect(() => {
     const a = audioRef.current;
     if (!a) return;
-    a.src = srcs[idx]!;
+    silent.current[idx] = false;
+    a.src = currentSrc ?? "";
     a.muted = muted;
     a.playbackRate = rate;
-    if (live.current.playing)
-      a.play().catch((e: DOMException) => {
-        // a missing clip falls back to the timed clock; a blocked autoplay pauses
-        if (e?.name === "NotSupportedError") silent.current[live.current.idx] = true;
-        else if (!silent.current[live.current.idx]) setPlaying(false);
-      });
     // eslint-disable-next-line react-hooks/exhaustive-deps -- muted/rate are applied by their own effect
-  }, [idx, srcs]);
+  }, [idx, currentSrc]);
+
+  React.useEffect(() => {
+    if (playing && !silent.current[idx]) audioRef.current?.play().catch((e: DOMException) => {
+      // Missing clips retain the existing timed/caption fallback; blocked autoplay pauses.
+      if (e?.name === "NotSupportedError") silent.current[idx] = true;
+      else if (!silent.current[idx]) setPlaying(false);
+    });
+    else if (!playing) audioRef.current?.pause();
+  }, [playing, idx, currentSrc]);
 
   React.useEffect(() => {
     const a = audioRef.current;
@@ -219,6 +251,7 @@ export function VideoLesson({
   }, [playing, phase, idx, rate]);
 
   const play = () => {
+    if (adaptation.pending) return;
     setPlaying(true);
     if (!silent.current[idx]) audioRef.current?.play().catch(() => !silent.current[idx] && setPlaying(false));
   };
@@ -228,6 +261,7 @@ export function VideoLesson({
   };
   const jump = (to: number, andPlay = false) => {
     if (to === idx) {
+      if (adaptation.active) signal({ kind: "slide_activity", moduleId: learningContext?.moduleId, lesson: video.lesson, payload: { videoId: video.id, slide: idx, activeMs: 0, replays: 1 } });
       if (audioRef.current) audioRef.current.currentTime = 0;
       setFrac(0);
       if (andPlay) play();
@@ -304,6 +338,17 @@ export function VideoLesson({
   };
 
   const slide = slides[idx]!;
+  const requestAdaptation = (trigger: "simplify" | "example" | "wrong_answer") => {
+    resumeAfterAdapt.current = playing;
+    pause();
+    signal({ kind: "support_request", moduleId: learningContext?.moduleId, lesson: video.lesson, payload: { videoId: video.id, slide: idx, trigger } });
+    void adaptation.request(trigger);
+  };
+  const answerVideo = (section: "mid" | "end", question: number, response: number) => {
+    signal({ kind: "video_check", moduleId: learningContext?.moduleId, lesson: video.lesson, payload: { videoId: video.id, section, question, response } });
+    const q = (section === "mid" ? video.midQuiz : video.endQuiz)[question];
+    if (adaptation.active && q && response !== q.correct) { setPhase("play"); requestAdaptation("wrong_answer"); }
+  };
   useCompanionStep({ title: video.title === slide.title ? video.title : `${video.title} · ${slide.title}`, guidance: slide.narration, videoId: video.id, slideTitle: slide.title, phase: learningContext?.phase === "intro" ? "intro" : undefined });
   const sentences = React.useMemo(() => (slide.sentences.length ? slide.sentences : [slide.narration]), [slide]);
   // where in the narration (0-1) each sentence begins, by its share of the characters
@@ -347,6 +392,11 @@ export function VideoLesson({
       aria-label={t("player", { title: video.title })}
       role="region"
     >
+      {adaptation.active && phase === "play" ? <div className="flex flex-wrap items-center gap-2" aria-busy={adaptation.pending}>
+        <Button size="sm" variant="outline" disabled={adaptation.pending} onClick={() => requestAdaptation("simplify")}>Simplify</Button>
+        <Button size="sm" variant="outline" disabled={adaptation.pending} onClick={() => requestAdaptation("example")}>Give an example</Button>
+        <p role="status" className="text-sm text-ink-muted">{adaptation.message}</p>
+      </div> : null}
       {storyMode ? <div className="story-mode-topbar">
         <div className="story-mode-heading">
           <span><Sparkles aria-hidden />Visual Story</span>
@@ -381,6 +431,7 @@ export function VideoLesson({
             <QuizOverlay
               key="mid"
               questions={video.midQuiz}
+              onAnswer={(question, response) => answerVideo("mid", question, response)}
               doneLabel={t("continueVideo")}
               onDone={() => {
                 setMidPassed(true);
@@ -395,6 +446,7 @@ export function VideoLesson({
             <QuizOverlay
               key="end"
               questions={video.endQuiz}
+              onAnswer={(question, response) => answerVideo("end", question, response)}
               doneLabel={t("finish")}
               onDone={() => {
                 setEndPassed(true);
@@ -456,7 +508,7 @@ export function VideoLesson({
         <CtrlButton label={t("prevSlide")} onClick={() => goTo(idx - 1)} disabled={idx === 0 || phase !== "play"}>
           <SkipBack />
         </CtrlButton>
-        <Button size="sm" variant="brand" onClick={playing ? pause : play} disabled={phase !== "play"} aria-label={playing ? t("pause") : t("playVideo")}>
+        <Button size="sm" variant="brand" onClick={playing ? pause : play} disabled={phase !== "play" || adaptation.pending} aria-label={playing ? t("pause") : t("playVideo")}>
           {playing ? <Pause data-icon="inline-start" /> : <Play data-icon="inline-start" />}
           {playing ? t("pause") : t("play")}
         </Button>
@@ -610,7 +662,7 @@ function CtrlButton({
  * moves on; a wrong one gets a hint, not the answer, and the learner decides
  * whether to try again or carry on.
  */
-function QuizOverlay({ questions, onDone, doneLabel }: { questions: VideoQuiz[]; onDone: () => void; doneLabel: string }) {
+function QuizOverlay({ questions, onDone, doneLabel, onAnswer }: { questions: VideoQuiz[]; onDone: () => void; doneLabel: string; onAnswer?: (question: number, response: number) => void }) {
   const t = useTranslations("video");
   const [qi, setQi] = React.useState(0);
   const [choice, setChoice] = React.useState<number | null>(null);
@@ -650,7 +702,7 @@ function QuizOverlay({ questions, onDone, doneLabel }: { questions: VideoQuiz[];
               key={o}
               type="button"
               disabled={right}
-              onClick={() => setChoice(i)}
+              onClick={() => { setChoice(i); onAnswer?.(qi, i); }}
               className={cn(
                 "rounded-lg border px-3 py-2.5 text-left text-sm outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring/60",
                 choice === i

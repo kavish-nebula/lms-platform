@@ -14,6 +14,40 @@ import type { Workflow, WorkflowReport } from "@/lib/workflow-project";
 
 const created = () => timestamp("created_at", { withTimezone: true }).notNull().defaultNow();
 
+/** Durable slide jobs are also immutable revisions and resumable delivery records. */
+export const adaptationJobs = pgTable("adaptation_jobs", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  enrollmentId: uuid("enrollment_id").notNull().references(() => enrollments.id, { onDelete: "cascade" }),
+  moduleId: text("module_id").notNull(),
+  videoId: text("video_id").notNull(),
+  slide: integer("slide").notNull(),
+  fingerprint: text("fingerprint").notNull().unique(),
+  trigger: text("trigger").notNull(),
+  status: text("status").notNull().default("queued"),
+  priority: integer("priority").notNull().default(0),
+  attempts: integer("attempts").notNull().default(0),
+  lease: text("lease"),
+  leaseUntil: timestamp("lease_until", { withTimezone: true }),
+  input: jsonb("input").$type<Record<string, unknown>>().notNull(),
+  content: jsonb("content").$type<Record<string, unknown>>(),
+  audio: text("audio"),
+  error: text("error"),
+  model: text("model"),
+  metrics: jsonb("metrics").$type<Record<string, number>>(),
+  createdAt: created(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const moduleEvidence = pgTable("module_evidence", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  enrollmentId: uuid("enrollment_id").notNull().references(() => enrollments.id, { onDelete: "cascade" }),
+  moduleId: text("module_id").notNull(),
+  version: integer("version").notNull(),
+  fingerprint: text("fingerprint").notNull(),
+  summary: jsonb("summary").$type<Record<string, unknown>>().notNull(),
+  createdAt: created(),
+}, (t) => [uniqueIndex("module_evidence_version").on(t.enrollmentId, t.moduleId, t.version)]);
+
 /** Versioned platform records share a learner lock; no course data is rewritten. */
 export const platformEngagement = pgTable("platform_engagement", {
   userId: text("user_id").primaryKey().references(() => users.id, { onDelete: "cascade" }),

@@ -57,7 +57,7 @@ export function GateStage({
   remediationHref: (stepId: string) => string;
   /** locked: show what it covers, but it cannot be started */
   preview?: boolean;
-  onGraded?: (result: GateResult) => void;
+  onGraded?: (result: GateResult, responses: Record<string, GateResponse>) => void;
   /** Reflection and review planning shown as part of a passed module quiz. */
   afterPass?: React.ReactNode;
   /** a module's closing check, or the course's final check */
@@ -85,7 +85,7 @@ export function GateStage({
     setPhase("submitting");
     const r = await gradeGate(checkId, block, responses);
     writeLocal(resultKey, JSON.stringify(r));
-    onGraded?.(r);
+    onGraded?.(r, responses);
     setResult(r);
     setPhase("result");
   }

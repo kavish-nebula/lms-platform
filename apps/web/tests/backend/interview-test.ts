@@ -9,6 +9,7 @@ import { courseContext } from "@/server/planner/context";
 import { baselinePlan } from "@/server/planner/baseline";
 import { plannerPrompt } from "@/server/planner/llm";
 import { LlmError, type ChatRequest, type ChatResponse, type LlmTransport } from "@/server/ai/llm";
+import { InterviewTurnIn } from "@/server/validators";
 
 let failures = 0;
 const check = (label: string, cond: unknown, extra?: unknown) => {
@@ -154,6 +155,35 @@ check("student: their field becomes their subject, and the student questions fol
 await deleteUserData(user.id);
 const rules = await interviewTurn(user.id, { answers: {}, needs: [], last: { slot: "domain", q: "?", text: "I'm a student" } }, null);
 check("student: spotted by the rules too, without a model", rules.answers.domain === "student");
+
+/* ================================================================ own answers on every question */
+const student: SetupAnswers = { domain: "student", studyField: "other", studyFieldOther: "Biomedical engineering", studyLevel: "undergrad", project: "none", coding: "none", firstStep: "idea", style: "steps" };
+interviewer = () => reply({ captured: { slot: "needs", value: ["text", "motion", "invented"] }, ack: "I can use larger text and less motion.", done: true, next: null });
+const comfortable = await interviewTurn(user.id, { answers: student, needs: [], last: { slot: "needs", q: "What would make this easier to use?", text: "Larger writing and fewer moving animations, please." } }, stub);
+check("own answers: final typed comfort answer is interpreted even when no facts remain", comfortable.done && comfortable.needs.join() === "text,motion", comfortable);
+check("own answers: the system prompt guarantees a typed route for every question", lastCall().messages[0]!.content.includes("Every question accepts the learner's own typed answer") && lastCall().messages[0]!.content.includes("including unmatched typed answers"));
+
+const custom = "I learn through lab notebooks and explaining diagrams to my study group, rather than writing software. I would like examples that connect what I already do with the new concepts.";
+interviewer = () => reply({ captured: null, ack: "We can connect this to your lab notebooks.", next: { slot: "firstStep", q: "When exploring a new lab diagram, would you start with an example or its main idea?", options: [{ label: "A lab example first", value: "example" }, { label: "The main idea first", value: "idea" }] } });
+const customState = await interviewTurn(user.id, { answers: { ...student, coding: undefined, firstStep: undefined }, needs: ["none"], last: { slot: "coding", q: "What have you used so far?", text: custom } }, stub);
+check("own answers: unmatched text is preserved without a false category", customState.answers.interview?.at(-1)?.a === custom && !customState.answers.coding, customState.answers);
+check("own answers: the next model question uses the previous custom answer", lastPrompt().includes(custom) && customState.question?.source === "ai" && customState.question.q.includes("lab diagram"));
+check("own answers: a longer typed reply passes the API and normalisation", InterviewTurnIn.safeParse({ answers: student, needs: [], last: { slot: "coding", q: "What have you used so far?", text: custom } }).success && normalizeAnswers(customState.answers).interview?.at(-1)?.a === custom);
+const offlineCustom = await interviewTurn(user.id, { answers: { ...student, coding: undefined, firstStep: undefined }, needs: ["none"], last: { slot: "coding", q: "What have you used so far?", text: custom } }, null);
+check("own answers: no-model fallback preserves custom wording and continues", offlineCustom.answers.interview?.at(-1)?.a === custom && offlineCustom.question?.source === "rules");
+
+const toolsBase: SetupAnswers = { domain: "it", role: "engineer" };
+const toolValues = missingSlots(toolsBase, [], null).find((s) => s.slot === "tools")!.values.slice(0, 2).map((o) => o.value);
+interviewer = () => reply({ captured: { slot: "tools", value: [...toolValues, "invented"] }, next: null });
+const toolsOwn = await interviewTurn(user.id, { answers: toolsBase, needs: [], last: { slot: "tools", q: "Which systems do you use?", text: "I use a couple of our team's engineering tools." } }, stub);
+check("own answers: typed multi-select tools map only to permitted values", toolsOwn.answers.tools?.join() === toolValues.join(), toolsOwn.answers.tools);
+
+await saveProfile(user.id, toolsBase, []);
+const courseAnswers: SetupAnswers = { goal: "portfolio", experience: "little", firstJob: "other", firstJobOther: "Summarising support requests", known: [], expect: "Real examples", courseInterview: ["experience", "known", "expect", "firstJob"].map((slot) => ({ slot, q: "Already asked?", a: "Answered" })) };
+interviewer = () => reply({ captured: { slot: "goal", value: "portfolio" }, done: true, next: null });
+const courseFinal = await courseTurn(user.id, course, { answers: { ...courseAnswers, goal: undefined }, last: { slot: "goal", q: "What do you want from this course?", text: "A project to include in my portfolio" } }, stub);
+check("own answers: final course answer is interpreted at the turn cap", courseFinal.done && courseFinal.answers.goal === "portfolio", courseFinal.answers);
+check("own answers: enrollment prompt also adapts from the latest course answer", lastCall().messages[0]!.content.includes("Use their latest course answer and saved profile"));
 
 console.log(`\n${failures ? `${failures} FAILED` : "ALL PASSED"}`);
 process.exit(failures ? 1 : 0);

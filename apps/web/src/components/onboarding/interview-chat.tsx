@@ -188,7 +188,7 @@ export function InterviewChat({
   );
   const submitPicked = React.useCallback(() => {
     if (!q || !picked.length) return;
-    void send({ slot: q.slot, q: q.q, value: picked, label: q.options.filter((o) => picked.includes(o.value)).map((o) => o.label).join(", ") });
+    void send({ slot: q.slot, q: q.q, value: picked, label: q.options.filter((o) => picked.includes(o.value)).map((o) => o.label).join(", ").slice(0, 200) });
   }, [q, picked, send]);
   const toggle = React.useCallback((v: string) => setPicked((p) => (p.includes(v) ? p.filter((x) => x !== v) : [...p, v])), []);
 
@@ -217,7 +217,7 @@ export function InterviewChat({
     const text = draft.trim();
     if (!text) return;
     if (asksField) void send({ slot: "domain", q: t("interviewFieldQ"), text });
-    else if (q) void send({ slot: q.slot, q: q.q, text, label: text });
+    else if (q) void send({ slot: q.slot, q: q.q, text });
   };
 
   const restart = async () => {
@@ -430,6 +430,12 @@ export function InterviewChat({
                   );
                 })}
               </div>
+              <div className="sm:ml-10">
+                <Button type="button" variant="outline" aria-controls="interview-text" className="w-full justify-start" onClick={() => { setPicked([]); inputRef.current?.focus(); }}>
+                  <MessageSquareQuote aria-hidden data-icon="inline-start" />
+                  {t("interviewSomethingElse")}
+                </Button>
+              </div>
               {q.multi ? (
                 <div className="flex justify-end">
                   <Button variant="brand" disabled={!picked.length} onClick={submitPicked}>
@@ -466,7 +472,7 @@ export function InterviewChat({
               <Input
                 ref={inputRef}
                 id="interview-text"
-                maxLength={asksField ? 80 : 160}
+                maxLength={asksField ? 80 : 200}
                 value={draft}
                 onChange={(e) => setDraft(e.target.value)}
                 placeholder={asksField ? t("interviewFieldPlaceholder") : t("interviewOwnWordsLong")}

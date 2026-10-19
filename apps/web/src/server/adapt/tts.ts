@@ -158,7 +158,7 @@ export function gemini(o: GeminiVoice): Voicer {
             await sleep(Math.max(retryIn, backoff));
             continue;
           }
-          if (/quota|RESOURCE_EXHAUSTED|billing/i.test(body)) {
+          if ((retryIn !== null && retryIn > 90_000) || /quota|RESOURCE_EXHAUSTED|billing|per day|daily|free tier|upgrade your tier/i.test(body)) {
             const ms = retryIn ?? 15 * 60_000;
             spent.set(o.model, Date.now() + ms);
             console.warn(`[adapt] voice (${o.model}): quota used up; the backup voice speaks for ${Math.round(ms / 60_000)} min`);

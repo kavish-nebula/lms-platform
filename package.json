@@ -9,6 +9,8 @@
     "fixtures"
   ],
   "scripts": {
+    "dev:adaptive": "node scripts/adaptive-dev.mjs",
+    "start:adaptive": "node scripts/adaptive-dev.mjs --production",
     "dev": "npm run dev --workspace=apps/web",
     "build": "npm run build --workspace=apps/web",
     "start": "npm run start --workspace=apps/web",

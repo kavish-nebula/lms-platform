@@ -13,6 +13,7 @@ import { aiConfigured, type LlmTransport } from "../ai/llm";
 import { authoredWorld, pieceDir, piecesOf, type PieceDef } from "./pieces";
 import { audioRoot, defaultVoicer, type Voicer } from "./tts";
 import { ADAPT_PROMPT_VERSION, AdaptError, writePiece, type World } from "./write";
+import { jobsFor, liveEnabled, queueModule } from "./live";
 
 /**
  * Lessons rewritten for each learner. From their profile and their answers
@@ -70,6 +71,7 @@ const needsWork = (r: repo.AdaptedRow | undefined, hash: string) =>
  * already is: no model call happens here, the work runs through `schedule`.
  */
 export async function ensureModule(user: SessionUser, courseId: string, moduleId: string, schedule: Schedule, deps: AdaptDeps = {}): Promise<boolean> {
+  if (liveEnabled(courseId)) { await queueModule(user, courseId, moduleId); return true; }
   if (!deps.transport && !aiConfigured()) return false;
   const e = await repo.findEnrollment(user.id, courseId);
   const mod = await getModule(courseId, moduleId);
@@ -180,6 +182,7 @@ async function runModule(
 /* ---------------------------------------------------------------- what the player gets */
 
 export type AdaptedModuleView = {
+  live?: boolean;
   /** each piece's state, for "being written for you" notes */
   pieces: Record<string, { status: AdaptedStatus }>;
   hook: (HookBlock & { audio: Record<string, string> }) | null;
@@ -194,6 +197,22 @@ export async function adaptedModule(user: SessionUser, courseId: string, moduleI
   const empty: AdaptedModuleView = { pieces: {}, hook: null, videos: {}, worked: null, world: null };
   const e = await repo.findEnrollment(user.id, courseId);
   if (!e) return empty;
+  if (liveEnabled(courseId)) {
+    await queueModule(user, courseId, moduleId);
+    const rows = await jobsFor(e.id, moduleId);
+    const hook = rows.filter((r) => r.videoId === "hook" && r.status === "ready").at(-1);
+    const worked = rows.filter((r) => r.videoId === "worked" && r.status === "ready").at(-1);
+    return {
+      ...empty,
+      live: true,
+      pieces: Object.fromEntries(rows.filter((r) => r.input.piece).map((r) => [r.videoId, {
+        status: r.status === "ready" ? "ready" : r.status === "failed" ? "failed" : "writing",
+      }])),
+      hook: (hook?.content as AdaptedModuleView["hook"]) ?? null,
+      worked: (worked?.content as WorkedBlock) ?? null,
+      world: hook || worked ? { organisation: "Harbour Works" } : null,
+    };
+  }
   await ensureModule(user, courseId, moduleId, schedule, deps);
   const { hash } = await inputsOf(user, e);
   const rows = (await repo.adaptedFor(e.id, moduleId)).filter((r) => r.inputs === hash);

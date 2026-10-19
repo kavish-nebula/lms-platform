@@ -43,6 +43,13 @@
       "when": 1792135814042,
       "tag": "0005_stale_tinkerer",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1792386740016,
+      "tag": "0006_adaptive_slide_jobs",
+      "breakpoints": true
     }
   ]
 }
