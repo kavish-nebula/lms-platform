@@ -23,7 +23,6 @@ export function SiteNav() {
   }, []);
 
   const links = [
-    { href: "#teams", label: t("navTeams") },
     { href: "#faq", label: t("navFaq") },
   ];
 

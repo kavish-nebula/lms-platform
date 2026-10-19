@@ -3,7 +3,6 @@ import { SiteNav } from "@/components/marketing/site-nav";
 import { Hero } from "@/components/marketing/hero";
 import { TickerTape } from "@/components/kit/ticker-tape";
 import { RulesBento } from "@/components/marketing/rules-bento";
-import { Teams } from "@/components/marketing/teams";
 import { Faq } from "@/components/marketing/faq";
 import { SiteFooter } from "@/components/marketing/site-footer";
 import { getCourses } from "@/data";
@@ -50,7 +49,6 @@ export default async function HomePage() {
           />
         </div>
         <RulesBento />
-        <Teams />
         <Faq />
       </main>
       <SiteFooter />
