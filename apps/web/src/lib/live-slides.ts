@@ -8,7 +8,7 @@ type Revision = { id: string; requestId?: string; videoId: string; slide: number
 type Pending = { id?: string; slide: number; requestId: string; trigger: "simplify" | "example" | "wrong_answer" };
 
 /** Initial revisions enter at slide boundaries. Requested revisions can replace the current slide. */
-export function useLiveSlides(video: ConceptVideo, courseId: string, moduleId: string, enabled: boolean, idx: number, untouched: boolean) {
+export function useLiveSlides(video: ConceptVideo, courseId: string, moduleId: string, enabled: boolean, idx: number, untouched: boolean, reading = false) {
   const capability = useAdaptedModule(courseId, moduleId, enabled);
   const active = !!capability?.live && enabled;
   const base = `/api/v1/enrollments/${courseId}/modules/${moduleId}`;
@@ -58,7 +58,12 @@ export function useLiveSlides(video: ConceptVideo, courseId: string, moduleId: s
   const ready = available[idx];
   const entering = position !== idx;
   if (entering) setPosition(idx);
-  if ((untouched || entering) && ready && (!accepted[idx] || Date.parse(ready.updatedAt) > Date.parse(accepted[idx]!.updatedAt))) setAccepted({ ...accepted, [idx]: ready });
+  // Reading exposes several sections together. Adopt their text/audio pairs
+  // together while paused; the slide player keeps its existing boundary rule.
+  if (reading && untouched) {
+    const fresh = Object.values(available).filter(r => !accepted[r.slide] || Date.parse(r.updatedAt) > Date.parse(accepted[r.slide]!.updatedAt));
+    if (fresh.length) setAccepted({...accepted,...Object.fromEntries(fresh.map(r=>[r.slide,r]))});
+  } else if (!reading && (untouched || entering) && ready && (!accepted[idx] || Date.parse(ready.updatedAt) > Date.parse(accepted[idx]!.updatedAt))) setAccepted({ ...accepted, [idx]: ready });
   if (pending && pending.slide !== idx) { setPending(null); setMessage(""); }
 
   React.useEffect(() => {

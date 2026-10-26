@@ -279,6 +279,7 @@
     "previous": "Previous"
   },
   "nav": {
+    "workplace": "Workplace",
     "activity": "Activity",
     "dashboard": "Dashboard",
     "courses": "Courses",
@@ -1274,6 +1275,9 @@
     "right": "Right.",
     "hint": "Hint:",
     "tryOrCarryOn": "Pick another answer, or carry on",
+    "notQuite": "That’s not correct. Try again.",
+    "chooseAgain": "Use the hint and choose another answer.",
+    "tryAgain": "Try again",
     "nextQuestion": "Next question",
     "continueVideo": "Continue the video",
     "finish": "Finish",
@@ -1354,7 +1358,11 @@
   "cinema": {
     "personalAt": "Set at {organisation}, written around your work.",
     "personal": "Written around your work.",
-    "personalWriting": "Pip is rewriting this opening around your work. This is the standard version; yours is ready in a few minutes.",
+    "personalWriting": "Creating your scenario, visuals and matching narration from your profile and course answers. This screen updates automatically when the audio is ready.",
+    "personalFailed": "Your personalised opening could not be prepared. Your progress is safe. Please try opening this lesson again later.",
+    "personalPreparing": "Preparing your opening",
+    "personalTitle": "Your personalised problem",
+    "personalStart": "A scenario from your field, shaped by your profile and what you want to learn in this course.",
     "where": "{course} · Module {n}: {module}",
     "progress": "Opening scene progress",
     "soundOn": "Turn sound on",

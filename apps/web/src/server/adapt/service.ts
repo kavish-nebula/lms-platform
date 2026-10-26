@@ -5,7 +5,7 @@ import path from "node:path";
 import { getCourse, getModule } from "@/data";
 import type { ConceptVideo, HookBlock, WorkedBlock } from "@/data/types";
 import { planModule } from "@/lib/learner-plan";
-import { interviewLines, profileLines, type SetupAnswers } from "@/lib/setup";
+import { interviewLines, learnerAnswers, profileLines } from "@/lib/setup";
 import type { SessionUser } from "@/server/auth";
 import type { AdaptedStatus } from "@/server/db/schema";
 import * as repo from "@/server/repo";
@@ -13,7 +13,7 @@ import { aiConfigured, type LlmTransport } from "../ai/llm";
 import { authoredWorld, pieceDir, piecesOf, type PieceDef } from "./pieces";
 import { audioRoot, defaultVoicer, type Voicer } from "./tts";
 import { ADAPT_PROMPT_VERSION, AdaptError, writePiece, type World } from "./write";
-import { jobsFor, liveEnabled, queueModule } from "./live";
+import { liveEnabled, queueModule } from "./live";
 
 /**
  * Lessons rewritten for each learner. From their profile and their answers
@@ -42,7 +42,7 @@ const WORLD = "world" as const;
 /** What a rewrite depends on: the learner's answers (profile and this course), and the prompt. */
 async function inputsOf(user: SessionUser, e: repo.EnrollmentRow): Promise<{ hash: string; learner: string[] }> {
   const profile = await repo.getProfile(user.id);
-  const answers: SetupAnswers = { ...(profile?.answers ?? {}), ...e.answers };
+  const answers = learnerAnswers(profile?.answers, e.answers);
   const derived = profile?.derived ?? null;
   const learner = [
     ...profileLines(answers, derived)
@@ -193,22 +193,21 @@ export type AdaptedModuleView = {
 };
 
 /** The ready pieces of a module for this learner, with their clip urls; asks for the module to be rewritten if it isn't. */
-export async function adaptedModule(user: SessionUser, courseId: string, moduleId: string, schedule: Schedule, deps: AdaptDeps = {}): Promise<AdaptedModuleView> {
+export async function adaptedModule(user: SessionUser, courseId: string, moduleId: string, schedule: Schedule, deps: AdaptDeps = {}, openPiece?: "hook" | "worked"): Promise<AdaptedModuleView> {
   const empty: AdaptedModuleView = { pieces: {}, hook: null, videos: {}, worked: null, world: null };
   const e = await repo.findEnrollment(user.id, courseId);
   if (!e) return empty;
   if (liveEnabled(courseId)) {
-    await queueModule(user, courseId, moduleId);
-    const rows = await jobsFor(e.id, moduleId);
-    const hook = rows.filter((r) => r.videoId === "hook" && r.status === "ready").at(-1);
-    const worked = rows.filter((r) => r.videoId === "worked" && r.status === "ready").at(-1);
+    const current = await queueModule(user, courseId, moduleId, openPiece);
+    const hook = current.hook?.status === "ready" ? current.hook : null;
+    const worked = current.worked?.status === "ready" ? current.worked : null;
     return {
       ...empty,
       live: true,
-      pieces: Object.fromEntries(rows.filter((r) => r.input.piece).map((r) => [r.videoId, {
+      pieces: Object.fromEntries(Object.values(current).filter((r) => r !== null).map((r) => [r.videoId, {
         status: r.status === "ready" ? "ready" : r.status === "failed" ? "failed" : "writing",
       }])),
-      hook: (hook?.content as AdaptedModuleView["hook"]) ?? null,
+      hook: hook?.content ? { ...(hook.content as unknown as NonNullable<AdaptedModuleView["hook"]>), brand: { name: "Harbour Works", short: "Harbour" } } : null,
       worked: (worked?.content as WorkedBlock) ?? null,
       world: hook || worked ? { organisation: "Harbour Works" } : null,
     };

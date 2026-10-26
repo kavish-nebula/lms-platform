@@ -1,11 +1,11 @@
-type NotesExport = { courseTitle: string; notes: string; date: string };
+type NotesExport = { courseTitle: string; notes: string; date: string; documentTitle?: string };
 
 const escapeHtml = (text: string) => text.replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]!);
 
 /** Isolated print document: notes are text, including pasted markup, never executable HTML. */
-export function notesPrintHtml({ courseTitle, notes, date }: NotesExport): string {
+export function notesPrintHtml({ courseTitle, notes, date, documentTitle = "My notes" }: NotesExport): string {
   return `<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><title>${escapeHtml(courseTitle)} - My notes</title>
+<html lang="en"><head><meta charset="utf-8"><title>${escapeHtml(courseTitle)} - ${escapeHtml(documentTitle)}</title>
 <style>
   @page { size: A4; margin: 18mm; }
   :root { color-scheme: light; }
@@ -16,7 +16,7 @@ export function notesPrintHtml({ courseTitle, notes, date }: NotesExport): strin
   .course { margin: 0 0 8pt; font-size: 13pt; overflow-wrap: anywhere; }
   .notes { white-space: pre-wrap; overflow-wrap: anywhere; orphans: 3; widows: 3; }
 </style></head><body>
-<header><p class="brand">Nebula KnowLab</p><h1>My notes</h1><p class="course">${escapeHtml(courseTitle)}</p><p class="date">Exported ${escapeHtml(date)}</p></header>
+<header><p class="brand">Nebula KnowLab</p><h1>${escapeHtml(documentTitle)}</h1><p class="course">${escapeHtml(courseTitle)}</p><p class="date">Exported ${escapeHtml(date)}</p></header>
 <main class="notes">${escapeHtml(notes)}</main>
 </body></html>`;
 }

@@ -2,7 +2,7 @@ import "server-only";
 import { getCourse, getPrecheck } from "@/data";
 import { scorePrecheck } from "@/data/mock-grader";
 import type { EnrollmentView, PlanSource, PlanVersion } from "@/lib/learner-plan";
-import { normalizeAnswers, type PrecheckResult, type SetupAnswers, type SupportOverride } from "@/lib/setup";
+import { learnerAnswers, normalizeAnswers, type PrecheckResult, type SetupAnswers, type SupportOverride } from "@/lib/setup";
 import type { Pace, StoredPrecheck } from "@/server/db/schema";
 import type { SessionUser } from "@/server/auth";
 import { ApiError } from "@/server/http";
@@ -90,14 +90,17 @@ async function scored(courseId: string, p: PrecheckIn | undefined, keep: StoredP
 }
 
 /** What a plan is made from; the profile's `derived` explains a typed field (its pack, its nouns, follow-up answers). */
-const inputOf = async (user: SessionUser, e: repo.EnrollmentRow): Promise<PlannerInput> => ({
-  name: user.name,
-  answers: e.answers,
-  supportOverride: e.supportOverride,
-  pace: e.pace ?? null,
-  precheck: e.precheck ?? null,
-  derived: (await repo.getProfile(user.id))?.derived ?? null,
-});
+const inputOf = async (user: SessionUser, e: repo.EnrollmentRow): Promise<PlannerInput> => {
+  const profile = await repo.getProfile(user.id);
+  return {
+    name: user.name,
+    answers: normalizeAnswers(learnerAnswers(profile?.answers, e.answers), profile?.derived),
+    supportOverride: e.supportOverride,
+    pace: e.pace ?? null,
+    precheck: e.precheck ?? null,
+    derived: profile?.derived ?? null,
+  };
+};
 
 /** Enrol, or change the setup of an existing enrollment. Either way the plan is rebuilt. */
 export async function saveSetup(user: SessionUser, courseId: string, setup: SetupIn, schedule: Schedule, api?: PlannerTransport) {
@@ -107,7 +110,8 @@ export async function saveSetup(user: SessionUser, courseId: string, setup: Setu
   const existing = await repo.findEnrollment(user.id, courseId);
   const precheck = await scored(courseId, setup.precheck, existing?.precheck ?? null);
   // only answers that still apply are stored; a typed field's pack match and follow-up answers need the profile's derived result
-  const answers = normalizeAnswers(setup.answers, (await repo.getProfile(user.id))?.derived ?? null);
+  const profile = await repo.getProfile(user.id);
+  const answers = normalizeAnswers(learnerAnswers(profile?.answers, setup.answers), profile?.derived);
   const e = await repo.upsertEnrollment(user.id, courseId, { answers, supportOverride: setup.supportOverride, pace: setup.pace, precheck });
   const trigger = existing ? "setup" : "enrol";
   await repo.insertPlan(e.id, { status: "ready", source: "baseline", trigger, plan: baselinePlan(await inputOf(user, e), ctx), changes: [], completedAt: new Date() });
@@ -236,8 +240,14 @@ async function runAi(user: SessionUser, enrollmentId: string, courseId: string, 
       row.version,
     );
     if (liveEnabled(courseId)) {
-      const completed = evidence.filter((s) => s.kind === "module_complete" && s.moduleId);
-      for (const s of completed) await adaptNextModule(user, courseId, s.moduleId!, (fn) => { void fn().catch((err) => console.warn("[adapt]", err)); });
+      // The first queue may have captured the baseline plan. Publish new durable
+      // jobs after the AI plan is ready, including answers received before completion.
+      // Queue failures must not turn an already validated plan into a failed plan.
+      const queued = (task: Promise<unknown>) => task.catch((err) => console.warn("[adapt]", err));
+      const inline: Schedule = (fn) => { void fn().catch((err) => console.warn("[adapt]", err)); };
+      if (trigger === "enrol" || trigger === "setup") await queued(adaptFirstModule(user, courseId, inline));
+      const affected = new Set(evidence.filter((s) => s.payload.verified === true || s.kind === "module_complete").map((s) => s.moduleId).filter((id): id is string => !!id));
+      for (const moduleId of affected) await queued(adaptNextModule(user, courseId, moduleId, inline));
     }
   } catch (err) {
     const message = err instanceof PlannerError ? err.message : "The AI plan could not be written.";

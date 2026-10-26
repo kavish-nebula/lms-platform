@@ -2,6 +2,10 @@
 
 The optional [adaptive teaching pilot](adaptive-teaching.md) adds a separate Python FastAPI editor and durable generation worker. Behind `ADAPTIVE_PYTHON_ENABLED`, the AI-agent player receives versioned slide/audio pairs over SSE, supports current-slide explanation requests, and supplies verified performance summaries to later modules. Next.js retains database ownership, enrollment scope, scoring, speech integration and offline/demo fallback. See the linked guide for startup commands, contracts and verification.
 
+Planning and adaptation resolve learner context from the current saved profile plus course-specific enrollment answers. Enrollment-only legacy data remains supported. Finished AI plans refresh Module 1 for enrollment/setup and refresh subsequent modules for verified evidence, including evidence received before module completion. Revisions enter at the existing safe playback boundaries; progress and ready history are retained. See the adaptive-loop backend suite for the end-to-end handoff checks. Both supported build paths apply the same translation alias and Tailwind transform.
+
+The problem hook uses a text-map editor contract: Python owns and reconstructs the authored film/timeline structure, while the LLM returns prose only. Profile saves queue Module 1, open hooks receive background priority, and the API returns pieces matching current inputs. The hook start screen adopts a newly ready revision; Begin locks the story and audio for that visit. Personalised branding is applied in both live and legacy hook responses.
+
 This document covers the October 2026 learning UI changes in `apps/web`, merged with `ai-agent-backend`. The app uses Next.js, React and TypeScript. Enrollment, plans, course progress, Python projects, workflow projects and platform rewards remain backend-backed; the new practice notebook, review schedule and playback checkpoints are browser-local. See [adaptive-backend-merge.md](adaptive-backend-merge.md) for the integration decisions.
 
 ## Course flow
@@ -137,7 +141,11 @@ The activity unit is deliberately small: one video slide, worked-example frame, 
 
 The concept experiments (the Lesson/Experiment toggle, the dock's "Try the lab" and the course page's "Try an experiment") have been removed; concept topics are the narrated videos with their quick checks.
 
+Video quick checks stay mounted after an incorrect answer, including while an adaptive explanation is requested or arrives. The current question index and earlier answers are preserved. Wrong answers show explicit feedback, an authored hint and a Try again action; retry clears only the selected answer, keeps the hint and returns focus to the first option. Next question/Continue is offered after a correct answer, with the existing explicit Skip action retained. Every attempt still emits the same server-graded learning signal. This applies to mid-video and end-of-video practice checks, without changing module/final assessments.
+
 ## Validation
+
+The optional professional workplace demo is isolated in a versioned per-user `professional_workspaces` document, with compare-and-set writes and immutable submitted revisions. `/api/v1/professional-demo` validates saves, coaching, submissions, assignments and reviews; session identity determines the owner. The Team preview is a synthetic sandbox, not manager authorization. Coaching is tied to a saved draft revision, with stale-response rejection and authored fallback. None of these records contributes to assessment grades, adaptive performance evidence or course completion. See [workplace-practice.md](workplace-practice.md).
 
 Run from the repository root:
 
@@ -165,3 +173,14 @@ The wide learning dock communicates with existing course surfaces through browse
 
 My notes PDF export uses an isolated, temporary print iframe (src/lib/notes-pdf.ts). User text is HTML-escaped before rendering, and native browser printing handles Unicode and pagination. No API, network, or persisted-state changes are needed; the user selects Save as PDF in the print dialog. The iframe is removed after printing, with a timeout cleanup fallback.
 The automatic Python teaching loop queues upcoming modules as soon as identifiable answers are graded, as well as at module completion. Background generation must be enabled for this path. Current-slide preparation is prioritised separately from explicit help requests. Evidence fingerprints ignore playback timing changes, and updated slide/audio pairs enter at safe playback boundaries.
+
+Live problem hooks use text-map contract 7. Exact-length grouped prose arrays normalize into permitted leaf paths, and valid edits survive malformed sibling entries for a bounded repair. The reconstructed hook must use the current field in its film and opening narration. The client polls after readiness, waits for current paired audio before Begin, and remounts a changed hook at its start screen to stop old audio. Mechanical engineering prose selects a safe shaft/gear illustration; model output remains data rather than executable HTML/CSS.
+# Course reading modes
+
+Workplace is disabled in the main application: its navigation/dashboard entry points are removed and `PROFESSIONAL_DEMO_ENABLED=false` gates its page/API. Its stored demo data is retained separately from learner progress.
+
+The default reader is now an in-app presentation of all 245 authored AI-agent slides across 30 chapters. It reuses `VideoSlideView` and assistant context, displaying authored concepts and original narration/audio without learner revisions. Separate versioned slide-position bookmarks do not mutate video-watch or assessment completion. Explicit `view=article` and `book=1` select the optional reading modes.
+
+The AI-agent reader (`/[courseId]/[moduleId]/reader`) projects teaching-only chapter data from the authored concept videos. It does not consume module adaptation, SSE revision events or personalised audio. Profiling and performance leave this reference edition unchanged; the separate lesson player retains its adaptive behavior. Reading bookmarks use a separate versioned browser key and cannot award course completion or bypass checks. See [course-reader.md](course-reader.md).
+
+The course assistant's AssistantComposer prepares drafts from typed text, local .txt/.md files or browser speech recognition. Existing message limits (600 characters), companion API and assessment restrictions remain authoritative. Files are read locally and require an explicit Send action; there is no file upload service. Speech recognition availability and permission depend on the browser; browser speech synthesis reads the latest assistant reply. Voice stops when the panel closes or changes tabs. This is dictation and read-aloud, not a continuous voice conversation.

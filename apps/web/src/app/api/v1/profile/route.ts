@@ -1,4 +1,8 @@
 import { getSessionUser } from "@/server/auth";
+import { after } from "next/server";
+import { adaptFirstModule } from "@/server/adapt/service";
+import { liveEnabled } from "@/server/adapt/live";
+import { listEnrollments } from "@/server/repo";
 import { body, handle, ok } from "@/server/http";
 import { getProfile } from "@/server/repo";
 import { finishProfile } from "@/server/profiling/service";
@@ -16,5 +20,11 @@ export const PUT = handle(async (req: Request) => {
   const user = await getSessionUser();
   const { answers, needs } = await body(req, ProfileIn);
   // finishing "About you": the draft becomes the profile
-  return ok({ profile: view(await finishProfile(user.id, { answers, needs })) });
+  const profile = await finishProfile(user.id, { answers, needs });
+  after(async () => {
+    for (const enrollment of await listEnrollments(user.id)) {
+      if (liveEnabled(enrollment.courseId)) await adaptFirstModule(user, enrollment.courseId, after).catch((err) => console.warn("[adapt] profile refresh", err instanceof Error ? err.name : "Error"));
+    }
+  });
+  return ok({ profile: view(profile) });
 });

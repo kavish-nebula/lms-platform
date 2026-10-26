@@ -1,0 +1,23 @@
+# AI-agent course reader
+
+**Default view: course presentation.** "Read the course" and reader URLs without a mode now open a PowerPoint-style HTML slide viewer covering all 30 chapters across six modules. Previous/next slide and arrow keys cross chapter boundaries; chapter contents, slide selectors, full screen, narration and speaker notes remain available. A separate versioned key `lms-reader-slide:v1:<courseId>:<chapterId>` remembers each chapter's slide position. This is an in-app presentation, not a downloaded PPTX file. Article mode is explicitly selected with `&view=article`; `&book=1` retains the optional book layout.
+
+The course now has an optional article and book experience inspired by the supplied AlgoMaster reading reference, using Nebula's typography, colour tokens and existing content. Open **Read the course** on the AI-agent course page, or **Read** in a concept lesson. Direct route: `/learn/courses/ai-agent/m1/reader?chapter=m1-1`; add `&book=1` for facing pages.
+
+The chapter catalogue comes from all six authored modules. Only teaching material is sent to the reader: quiz questions, correct answers and assessment explanations are omitted by `readerModule`. Existing video/check routes remain authoritative. **Mark as read** is an optional reading bookmark and never calls course-completion APIs or marks videos watched.
+
+Article mode provides chapter search, a starred-only filter, collapsible module contents, an on-page outline, section position, reading size, narration speed, existing assistant notes, Ask AI and links back to slides/checks. Book mode offers facing pages, page numbers, previous/next spreads, arrow-key navigation, Escape to article mode, a contents drawer and full screen when supported. Narrow screens stack the facing pages so text stays readable.
+
+The reader is the original course reference edition. All six modules use authored concept slides, notes and narration from the course catalogue, paired only with their original audio clips. Profiling, enrollment answers and performance do not rewrite this edition. The reader does not load adapted modules, subscribe to adaptation events or request slide revisions; simplify/example controls have been removed. Ask AI remains an optional conversation and does not change the slides. Missing original audio leaves the text available. Adaptive teaching continues in the separate lesson player.
+
+Browser storage `lms-reader:v1:<courseId>` stores `{version:1,read,starred,pages,font}` with defensive parsing. Book spreads resume from saved page position. Notes continue to use the existing course notebook. No existing profile, enrollment, performance signals, assessment keys or progress-store migrations are changed.
+
+Validation: `node --test apps/web/tests/course-reader.test.cjs apps/web/tests/learning-experience.test.cjs`, focused ESLint, TypeScript and production build. Browser checks cover article and book layouts, chapter/search/outline navigation, reading/starring persistence, notes and AI access, narrated playback, mobile wrapping and keyboard focus. Real services are used only through the existing main-app transport.
+
+On 22 October 2026, all 34 checks and the production build passed. Browser testing verified a real mechanical-engineering Simplify revision with its paired audio, saved reader state, existing notes, AI help and mobile layouts. Main profile/enrollment snapshots were unchanged. The visual comparison and resolved findings are recorded in the repository-root `design-qa.md`.
+
+The earlier personalised-reader smoke results above describe the previous implementation. The current reference edition is intentionally fixed; regression checks verify authored slides and matching source audio across every module.
+
+Current reference-edition verification: 35 reader/learning checks, focused ESLint and the production build passed. Main-app browser testing confirmed the original comparison slide and playback from /audio/video-m1-2-s1.mp3. Screenshot: apps/web/.data/reader-original-edition.png.
+
+Full-course original-edition audit (22 October 2026): browser-tested all 245 slides in 30 chapters across six modules. Rendered slide text matched the authored VideoSlideView output, speaker notes matched narration verbatim, and every audio source pointed at its original clip. All 245 served clips matched the original files byte-for-byte; every clip decoded and started playing with a finite duration and no media error. Final-slide refresh retained the original edition. No browser errors were reported. All 35 existing reader/learning regression checks passed. Playback checks did not include full-duration listening or speech transcription. Machine-readable evidence: apps/web/.data/reader-original-verification.json.

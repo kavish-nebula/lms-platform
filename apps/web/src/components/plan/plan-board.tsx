@@ -14,7 +14,6 @@ import { Segmented } from "@/components/kit/segmented";
 import { StatTile } from "@/components/kit/stat-tile";
 import { Stagger, StaggerItem } from "@/components/kit/stagger";
 import { PlanCalendar } from "@/components/plan/plan-calendar";
-import { UpNextTicker } from "@/components/plan/up-next-ticker";
 import { keyDate, useCourseUnits, usePlanState } from "@/components/plan/use-plan";
 import {
   addDays,
@@ -41,7 +40,7 @@ export type PlanBoardProps = {
  * chosen day, set study days and session length, "Plan it for me", a course
  * outline, and the study calendar. Nothing here is a deadline.
  */
-export function PlanBoard({ courses, reviews, history, assignments, today }: PlanBoardProps) {
+export function PlanBoard({ courses, reviews, history, today }: PlanBoardProps) {
   const t = useTranslations("plan");
   const tc = useTranslations("common");
   const format = useFormatter();
@@ -130,8 +129,6 @@ export function PlanBoard({ courses, reviews, history, assignments, today }: Pla
 
   return (
     <div className="flex flex-col gap-6">
-      <UpNextTicker courses={courses} reviews={reviews} assignments={assignments} today={today} />
-
       <Stagger className="grid grid-cols-2 gap-3 md:gap-4 xl:grid-cols-4">
         <StaggerItem>
           <StatTile icon={<CalendarCheck2 />} value={openSessions.length} label={t("statPlanned")} />

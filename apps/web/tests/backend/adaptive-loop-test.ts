@@ -1,0 +1,87 @@
+import assert from "node:assert/strict";
+import { randomUUID } from "node:crypto";
+import { eq } from "drizzle-orm";
+import { getModule } from "@/data";
+import { getBlock } from "@/data/client";
+import { learnerAnswers } from "@/lib/setup";
+import { getSessionUser } from "@/server/auth";
+import { db } from "@/server/db/client";
+import { learnerPlans } from "@/server/db/schema";
+import * as repo from "@/server/repo";
+import { baselinePlan } from "@/server/planner/baseline";
+import { courseContext } from "@/server/planner/context";
+import { recordSignals, saveSetup } from "@/server/planner/service";
+import type { PlannerTransport } from "@/server/planner/llm";
+import { claimJob, finishJob, jobsFor, queueModule, queueSlide } from "@/server/adapt/live";
+
+process.env.ADAPTIVE_PYTHON_ENABLED = "true";
+const user = await getSessionUser();
+await repo.deleteUserData(user.id);
+const profile = { domain: "student", studyField: "other", studyFieldOther: "Biomedical engineering", coding: "none", interview: [{ slot: "studyField", q: "What do you study?", a: "Biomedical engineering" }] };
+await repo.saveProfile(user.id, profile, []);
+const courseAnswers = { domain: "it", coding: "python", expect: "Practical lab-report routing examples", experience: "new", courseInterview: [{ slot: "expect", q: "What should this course focus on?", a: "Practical lab-report routing examples" }] };
+assert.deepEqual(learnerAnswers(null, courseAnswers), courseAnswers, "Enrollment-only learners keep their existing answers");
+const ctx = await courseContext("ai-agent");
+const generated = baselinePlan({ name: user.name, answers: learnerAnswers(profile, courseAnswers), supportOverride: "auto", pace: null, precheck: null }, ctx);
+generated.summary = "Use practical lab examples to learn how agents work.";
+const prompts: string[] = [];
+const transport: PlannerTransport = async (req) => {
+  prompts.push(req.messages[1]!.content);
+  return { model: "test-planner", choices: [{ finish_reason: "stop", message: { content: JSON.stringify(generated) } }] };
+};
+const tasks: (() => Promise<void>)[] = [];
+const schedule = (task: () => Promise<void>) => { tasks.push(task); };
+const flush = async () => { while (tasks.length) await tasks.shift()!(); };
+
+await saveSetup(user, "ai-agent", { answers: courseAnswers, supportOverride: "auto", pace: null }, schedule, transport);
+const e = (await repo.findEnrollment(user.id, "ai-agent"))!;
+assert.equal(e.answers.domain, "student", "Enrollment uses the saved profile, even if its client snapshot is stale");
+assert.equal(e.answers.expect, courseAnswers.expect);
+await repo.addProgress(e.id, "m1", "hook");
+const progress = await repo.progressFor(e.id);
+// A lesson can open while the AI planner is still preparing its answer.
+await queueModule(user, "ai-agent", "m1");
+const baseline = (await jobsFor(e.id, "m1"))[0]!;
+await flush();
+const first = (await jobsFor(e.id, "m1")).filter((r) => r.status !== "superseded");
+assert(first.length > 0);
+assert(first.every((r) => (r.input.context as { planVersion: number }).planVersion === 2), "AI plan completion automatically refreshes Module 1 jobs");
+assert.equal((await jobsFor(e.id, "m1")).find((r) => r.id === baseline.id)!.status, "superseded");
+assert(prompts[0]!.includes("Biomedical engineering"));
+assert(prompts[0]!.includes(courseAnswers.expect));
+
+// A later profile edit must also reach an existing enrollment's generation jobs.
+await repo.saveProfile(user.id, { domain: "healthcare", role: "admin", coding: "none" }, []);
+const refreshed = await queueSlide(user, "ai-agent", "m1", "m1-1", 0, "initial");
+assert.equal((refreshed.input.context as { answers: { domain: string } }).answers.domain, "healthcare");
+const latestPlan = (await repo.plansFor(e.id)).find((p) => p.source === "ai")!;
+await (await db()).update(learnerPlans).set({ createdAt: new Date(0) }).where(eq(learnerPlans.id, latestPlan.id));
+const mod = (await getModule("ai-agent", "m1"))!;
+const video = getBlock(mod, "explainer")!.videos![0]!;
+const section = video.midQuiz.length ? "mid" : "end";
+const q = (section === "mid" ? video.midQuiz : video.endQuiz)[0]!;
+await recordSignals(user, "ai-agent", [0, 1].map((i) => ({ key: `loop-miss-${i}`, kind: "video_check", moduleId: "m1", lesson: null, payload: { videoId: video.id, section, question: 0, response: (q.correct + 1) % q.options.length, correct: true } })), schedule, transport);
+const beforeAi = (await jobsFor(e.id, "m2")).filter((r) => r.status !== "superseded");
+assert(beforeAi.length > 0, "Module 1 answers queue Module 2 before completion");
+await flush();
+const plan = (await repo.plansFor(e.id)).find((p) => p.status === "ready")!;
+const second = (await jobsFor(e.id, "m2")).filter((r) => r.status !== "superseded");
+assert(second.every((r) => (r.input.context as { planVersion: number }).planVersion === plan.version), "AI plan completion refreshes Module 2 without reopening it or completing Module 1");
+assert(beforeAi.every((r) => !second.some((current) => current.id === r.id)));
+const context = second[0]!.input.context as { answers: { domain: string; expect: string }; prerequisiteTeaching: { lessonId: string; keyIdeas: string[] }[]; evidence: { summary: { concepts: Record<string, { misses: number }> } }[] };
+assert.equal(context.answers.domain, "healthcare");
+assert.equal(context.answers.expect, courseAnswers.expect);
+assert.equal(context.evidence[0]!.summary.concepts[video.lesson]!.misses, 2, "Server grading ignores forged correctness");
+assert(context.prerequisiteTeaching.some((p) => p.lessonId === video.lesson && p.keyIdeas.length));
+
+const nextMod = (await getModule("ai-agent", "m2"))!;
+const nextVideo = getBlock(nextMod, "explainer")!.videos![0]!;
+const target = await queueSlide(user, "ai-agent", "m2", nextVideo.id, 0, "initial", randomUUID());
+const claimed = await claimJob("background");
+assert.equal(claimed?.id, target.id);
+await finishJob(target.id, claimed!.lease!, nextVideo.slides[0], "test-editor", {}, async (_dir, clips) => new Set(clips.map((clip) => clip.key)));
+const ready = (await jobsFor(e.id, "m2")).find((r) => r.id === target.id)!;
+assert.equal(ready.status, "ready");
+assert(ready.audio?.endsWith(".wav"));
+assert.deepEqual(await repo.progressFor(e.id), progress, "Adaptation never changes saved progress");
+console.log("PASS adaptive loop: current profile + course answers, Module 1 AI-plan refresh, server-verified performance, automatic Module 2 refresh, prerequisite context, paired audio and progress preservation");

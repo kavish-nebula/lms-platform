@@ -4,6 +4,7 @@ import type { PrecheckResult, SetupAnswers, SupportOverride } from "@/lib/setup"
 import type { ProfileDerived } from "@/lib/profiling/derived";
 import type { EngagementState } from "@/lib/engagement";
 import type { Workflow, WorkflowReport } from "@/lib/workflow-project";
+import type { Workspace } from "@/lib/workplace";
 
 /**
  * Learner data. Profile answers drive the course plan; plans are append-only
@@ -209,5 +210,12 @@ export const workflowProjects = pgTable("workflow_projects", {
   diagram: jsonb("diagram").$type<Workflow>().notNull(),
   report: jsonb("report").$type<WorkflowReport>(),
   revision: integer("revision").notNull().default(1),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+/** A per-owner sandbox. Team preview members are fictional, not user accounts. */
+export const professionalWorkspaces = pgTable("professional_workspaces", {
+  userId: text("user_id").primaryKey().references(() => users.id, { onDelete: "cascade" }),
+  state: jsonb("state").$type<Workspace>().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });

@@ -24,10 +24,11 @@ const failed = (a?: AdaptedModule) => !!a && Object.values(a.pieces).some((p) =>
  * voiced, and now and then while one has failed (asking again is what makes
  * the server retry it). Only for enrolled learners.
  */
-export function useAdaptedModule(courseId: string, moduleId: string, enabled: boolean) {
-  const { data } = useSWR(enabled ? `/api/v1/enrollments/${courseId}/modules/${moduleId}/adapted` : null, fetcher, {
-    refreshInterval: (latest) => (busy(latest) ? 8000 : failed(latest) ? 60_000 : 0),
-    revalidateOnFocus: false,
+export function useAdaptedModule(courseId: string, moduleId: string, enabled: boolean, openPiece?: string) {
+  const query = openPiece === "hook" || openPiece === "worked" ? `?piece=${openPiece}` : "";
+  const { data } = useSWR(enabled ? `/api/v1/enrollments/${courseId}/modules/${moduleId}/adapted${query}` : null, fetcher, {
+    refreshInterval: (latest) => (busy(latest) ? 4000 : failed(latest) ? 60_000 : 15_000),
+    revalidateOnFocus: true,
   });
   return data;
 }
@@ -53,10 +54,11 @@ export const pieceOf = (stage: string, videoId?: string) => (stage === "explaine
  * The adapted pieces as they were when this topic opened: a piece that becomes
  * ready while the learner is in the middle of it waits until they next open
  * the topic, so a story never changes under them. The first answer still
- * applies, since it arrives before they start.
+ * applies, since it arrives before they start. A hook may also adopt updates
+ * while its start screen is open; the parent locks it as playback begins.
  */
-export function useSteadyAdapted(latest: AdaptedModule | undefined, topicKey: string) {
+export function useSteadyAdapted(latest: AdaptedModule | undefined, topicKey: string, canAdopt = false) {
   const [held, setHeld] = React.useState<{ key: string; data: AdaptedModule | undefined }>({ key: topicKey, data: latest });
-  if (held.key !== topicKey || (held.data === undefined && latest !== undefined)) setHeld({ key: topicKey, data: latest });
+  if (held.key !== topicKey || (held.data === undefined && latest !== undefined) || (canAdopt && latest !== undefined && held.data !== latest)) setHeld({ key: topicKey, data: latest });
   return held.data;
 }

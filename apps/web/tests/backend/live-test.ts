@@ -12,6 +12,8 @@ import { ADAPTIVE_PROMPT_VERSION, claimJob, failJob, finishJob, heartbeat, inter
 import { POST as requestSlide } from "@/app/api/v1/enrollments/[courseId]/modules/[moduleId]/adaptation-requests/route";
 import { GET as events } from "@/app/api/v1/enrollments/[courseId]/modules/[moduleId]/adaptation-events/route";
 import { POST as workerAction } from "@/app/api/internal/adaptation/[action]/route";
+import { adaptedModule } from "@/server/adapt/service";
+import { PUT as saveProfileRoute } from "@/app/api/v1/profile/route";
 
 process.env.ADAPTIVE_PYTHON_ENABLED = "true";
 process.env.ADAPTIVE_INTERNAL_TOKEN = "test-internal-token-that-is-long-enough";
@@ -116,6 +118,33 @@ assert.deepEqual(await repo.progressFor(e.id), savedProgress);
 const [outdated] = await (await db()).insert(adaptationJobs).values({ enrollmentId: e.id, moduleId: "m3", videoId: v3.id, slide: 0, fingerprint: `v3-pending-${randomUUID()}`, trigger: "simplify", priority: 99, input: oldInput }).returning();
 assert.notEqual((await claimJob())?.id, outdated!.id);
 assert.equal((await jobsFor(e.id, "m3")).find((r) => r.id === outdated!.id)!.status, "superseded", "Old snapshots cannot be claimed under a new prompt");
+const opening = (await queueModule(user, "ai-agent", "m1", "hook")).hook!;
+assert.equal(opening.priority, 3, "The open hook precedes background slides");
+assert.equal(opening.input.textMapVersion, 7);
+const hookClaim = await claimJob("background");
+assert.equal(hookClaim?.id, opening.id);
+await assert.rejects(() => finishJob(opening.id, hookClaim!.lease!, opening.input.authored, "stub", {}), "An unchanged authored story cannot publish as personalised");
+const rewriteHook = (value: unknown): unknown => typeof value === "string" ? value.replace(/Orbit|Maya|Leo|Priya|ORB-\d+/gi, "Harbour") : Array.isArray(value) ? value.map(rewriteHook) : value && typeof value === "object" ? Object.fromEntries(Object.entries(value).map(([key, item]) => [key, rewriteHook(item)])) : value;
+let voicedHookClips = 0;
+await finishJob(opening.id, hookClaim!.lease!, rewriteHook(opening.input.authored), "stub", {}, async (_dir, clips) => { voicedHookClips = clips.length; return new Set(clips.map((clip) => clip.key)); });
+assert(voicedHookClips > 5, "The whole hook needs matching film and reveal narration");
+const hookView = await adaptedModule(user, "ai-agent", "m1", () => {}, {}, "hook");
+assert.equal(hookView.hook?.brand?.name, "Harbour Works", "Live films use the personalised brand and product art");
+assert(hookView.hook?.audio.open);
+await repo.saveProfile(user.id, { domain: "student", studyField: "other", studyFieldOther: "electrical electronics" }, []);
+const newHookView = await adaptedModule(user, "ai-agent", "m1", () => {}, {}, "hook");
+assert.equal(newHookView.hook, null, "An old-profile ready hook must not override current-profile preparation");
+assert.equal(newHookView.pieces.hook!.status, "writing");
+assert.equal((await jobsFor(e.id, "m1")).find((r) => r.id === opening.id)!.status, "ready", "Historical revisions remain intact");
+const profileSaved = await saveProfileRoute(new Request("http://localhost/api/v1/profile", { method: "PUT", headers: { "content-type": "application/json" }, body: JSON.stringify({ answers: { domain: "student", studyField: "other", studyFieldOther: "mechanical engineering" }, needs: [] }) }));
+assert.equal(profileSaved.status, 200);
+let profileQueued = false;
+for (let attempt = 0; attempt < 50; attempt++) {
+  profileQueued = (await jobsFor(e.id, "m1")).some((r) => r.videoId === "hook" && (r.input.context as { answers?: { studyFieldOther?: string } }).answers?.studyFieldOther === "mechanical engineering");
+  if (profileQueued) break;
+  await new Promise((resolve) => setTimeout(resolve, 20));
+}
+assert(profileQueued, "Saving the profile prepares Module 1 without a lesson-opening request");
 process.env.ADAPTIVE_PYTHON_ENABLED = "false";
 await assert.rejects(() => queueSlide(user, "ai-agent", "m1", video.id, 0, "initial"));
 console.log("PASS live adaptation: durable claims, lease recovery, retry bounds, matching audio, scoring, evidence handoff, supersession, authorization and SSE");

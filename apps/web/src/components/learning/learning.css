@@ -218,3 +218,20 @@ html[data-pip-chat] .pip-dock { display: none; }
 @keyframes typing-dot { 0%, 60%, 100% { opacity: .35; transform: translateY(0); } 30% { opacity: 1; transform: translateY(-3px); } }
 @media (prefers-reduced-motion: reduce) { .typing-dots > span { animation: none; opacity: .7; } }
 .reduce-motion .typing-dots > span { animation: none; opacity: .7; }
+
+/* A compact message bar, with speech and file actions kept keyboard accessible. */
+.assistant-composer-bar { min-height: 48px; gap: 1px; border-radius: 16px; padding: 4px 6px; }
+.assistant-composer-bar input:not([type=file]) { padding: 8px 5px; width: 0; }
+.assistant-composer-icon { display: inline-grid; place-items: center; flex-shrink: 0; width: 36px; height: 36px; border-radius: 10px; color: var(--ink); cursor: pointer; }
+.assistant-composer-icon:hover { background: var(--accent-soft); }
+.assistant-composer-icon[aria-pressed=true], .assistant-composer-send { color: var(--accent-ink); background: var(--accent-soft); }
+.assistant-composer-icon:focus-visible, .assistant-language:focus-within { outline: 2px solid var(--accent-ink); outline-offset: 2px; }
+.assistant-composer-icon:disabled { opacity: .45; cursor: default; }
+.assistant-language { position: relative; display: inline-grid; place-items: center; flex-shrink: 0; width: 22px; height: 36px; border-radius: 8px; color: var(--muted); }
+.assistant-language select { position: absolute; inset: 0; width: 100%; opacity: 0; cursor: pointer; }
+.assistant-language svg { pointer-events: none; }
+.assistant-composer-status { margin: 0 20px 8px; color: var(--muted); font-size: 11px; line-height: 1.5; overflow-wrap: anywhere; }
+.assistant-composer-status:empty { display: none; }
+
+/* The launcher wrapper must not intercept the composer behind its hidden button. */
+.pip-dock:has(> .pip-launcher.invisible) { pointer-events: none; }

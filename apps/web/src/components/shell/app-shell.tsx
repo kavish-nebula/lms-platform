@@ -12,6 +12,7 @@ import { useEngagement } from "@/components/engagement/provider";
 import { MobileNavigation } from "@/components/engagement/mobile-nav";
 
 export type AppShellProps = {
+  professionalDemo?: boolean;
   role: Role;
   heldRoles: Role[];
   user: ShellUser;
@@ -35,6 +36,7 @@ export function AppShell({
   badges,
   settingsHref,
   children,
+  professionalDemo = false,
 }: AppShellProps) {
   const t = useTranslations("common");
   const ts = useTranslations("shell");
@@ -51,7 +53,7 @@ export function AppShell({
       </a>
 
       <aside className="glass glass-sm sticky top-0 hidden h-dvh w-(--sidebar-w) shrink-0 border-y-0 border-l-0 shadow-none nav:block">
-        <Sidebar role={role} heldRoles={heldRoles} user={user} badges={badges} />
+        <Sidebar role={role} heldRoles={heldRoles} user={user} badges={badges} professionalDemo={professionalDemo} />
       </aside>
 
       <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
@@ -63,6 +65,7 @@ export function AppShell({
             heldRoles={heldRoles}
             user={user}
             badges={badges}
+            professionalDemo={professionalDemo}
             onNavigate={() => setMenuOpen(false)}
           />
         </SheetContent>
@@ -70,6 +73,7 @@ export function AppShell({
 
       <div className="flex min-w-0 flex-1 flex-col">
         <TopBar
+          professionalDemo={professionalDemo}
           role={role}
           user={user}
           courses={courses}

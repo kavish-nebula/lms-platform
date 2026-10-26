@@ -12,7 +12,6 @@ import { Surface } from "@/components/kit/surface";
 import { Chip } from "@/components/kit/chip";
 import { NebulaMark } from "@/components/kit/logo";
 import { CardSkeleton, EmptyState } from "@/components/kit/states";
-import { UpNextTicker } from "@/components/plan/up-next-ticker";
 import { ResumeCard } from "@/components/learn/resume-card";
 import { ProgramCard } from "@/components/course/program-card";
 import { ModuleArt } from "@/components/course/module-art";
@@ -27,14 +26,13 @@ import { useEngagement } from "@/components/engagement/provider";
 
 /**
  * S2 Learner home. Before enrolment: a spotlight on the course and how the
- * setup shapes it. After: what's up next, the resume point, live KPIs and
+ * setup shapes it. After: the resume point, live KPIs and
  * the course card.
  */
-export function HomeDashboard({ learner, courses, today }: { learner: Learner; courses: Course[]; today: string }) {
+export function HomeDashboard({ learner, courses }: { learner: Learner; courses: Course[]; today: string }) {
   const platform = useEngagement();
   const reconcile = platform?.request;
   React.useEffect(() => { if (reconcile) void reconcile("/api/v1/me/engagement/reconcile","POST").catch(() => {}); },[reconcile]);
-  today = platform?.data?.today ?? today;
   const hydrated = useLearnerReady();
   const enrollments = useEnrollments();
   const progress = useCoursesProgress(courses);
@@ -50,7 +48,7 @@ export function HomeDashboard({ learner, courses, today }: { learner: Learner; c
   }
 
   return enrolled.length ? (
-    <EnrolledHome learner={learner} courses={enrolled} progress={progress} today={today} />
+    <EnrolledHome learner={learner} courses={enrolled} progress={progress} />
   ) : (
     <><WelcomeHome course={courses[0]} /><WeeklyPanel courses={courses} /></>
   );
@@ -115,12 +113,10 @@ function EnrolledHome({
   learner,
   courses,
   progress,
-  today,
 }: {
   learner: Learner;
   courses: Course[];
   progress: Record<string, CourseProgress>;
-  today: string;
 }) {
   const t = useTranslations("home");
   const tc = useTranslations("common");
@@ -136,8 +132,6 @@ function EnrolledHome({
 
   return (
     <div className="flex flex-col gap-6 md:gap-8">
-      {!platform ? <UpNextTicker courses={courses} reviews={learner.due_reviews} assignments={[]} today={today} /> : null}
-
       <ResumeCard course={current} progress={progress[current.course_id]!} />
       <WeeklyPanel courses={courses} />
 

@@ -347,7 +347,9 @@ export function VideoLesson({
   const answerVideo = (section: "mid" | "end", question: number, response: number) => {
     signal({ kind: "video_check", moduleId: learningContext?.moduleId, lesson: video.lesson, payload: { videoId: video.id, section, question, response } });
     const q = (section === "mid" ? video.midQuiz : video.endQuiz)[question];
-    if (adaptation.active && q && response !== q.correct) { setPhase("play"); requestAdaptation("wrong_answer"); }
+    // Keep the quiz mounted while help is prepared, so its question and hint
+    // survive both the answer and the arrival of a revised explanation.
+    if (adaptation.active && q && response !== q.correct) requestAdaptation("wrong_answer");
   };
   useCompanionStep({ title: video.title === slide.title ? video.title : `${video.title} · ${slide.title}`, guidance: slide.narration, videoId: video.id, slideTitle: slide.title, phase: learningContext?.phase === "intro" ? "intro" : undefined });
   const sentences = React.useMemo(() => (slide.sentences.length ? slide.sentences : [slide.narration]), [slide]);
@@ -659,13 +661,14 @@ function CtrlButton({
 
 /**
  * A short check inside the video, as a popup over the slide. A right answer
- * moves on; a wrong one gets a hint, not the answer, and the learner decides
- * whether to try again or carry on.
+ * can move on; a wrong one gets feedback and a hint on the same question.
  */
 function QuizOverlay({ questions, onDone, doneLabel, onAnswer }: { questions: VideoQuiz[]; onDone: () => void; doneLabel: string; onAnswer?: (question: number, response: number) => void }) {
   const t = useTranslations("video");
   const [qi, setQi] = React.useState(0);
   const [choice, setChoice] = React.useState<number | null>(null);
+  const [hintVisible, setHintVisible] = React.useState(false);
+  const options = React.useRef<(HTMLButtonElement | null)[]>([]);
   const q = questions[qi]!;
   const right = choice === q.correct;
   const lastQ = qi === questions.length - 1;
@@ -674,6 +677,7 @@ function QuizOverlay({ questions, onDone, doneLabel, onAnswer }: { questions: Vi
     else {
       setQi(qi + 1);
       setChoice(null);
+      setHintVisible(false);
     }
   };
 
@@ -700,9 +704,10 @@ function QuizOverlay({ questions, onDone, doneLabel, onAnswer }: { questions: Vi
           {q.options.map((o, i) => (
             <button
               key={o}
+              ref={(node) => { options.current[i] = node; }}
               type="button"
               disabled={right}
-              onClick={() => { setChoice(i); onAnswer?.(qi, i); }}
+              onClick={() => { setChoice(i); if (i !== q.correct) setHintVisible(true); onAnswer?.(qi, i); }}
               className={cn(
                 "rounded-lg border px-3 py-2.5 text-left text-sm outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring/60",
                 choice === i
@@ -724,8 +729,9 @@ function QuizOverlay({ questions, onDone, doneLabel, onAnswer }: { questions: Vi
               {q.explain}
             </p>
           ) : null}
-          {choice !== null && !right ? (
+          {hintVisible && !right ? (
             <p>
+              {choice !== null ? <><b className="text-warn">{t("notQuite")}</b><br /></> : null}
               <b className="text-warn">{t("hint")} </b>
               {q.hint}
             </p>
@@ -733,10 +739,9 @@ function QuizOverlay({ questions, onDone, doneLabel, onAnswer }: { questions: Vi
         </div>
         {choice !== null ? (
           <div className="mt-4 flex items-center justify-between gap-3">
-            <span className="text-xs text-ink-faint">{right ? "" : t("tryOrCarryOn")}</span>
-            <Button size="sm" variant={right ? "brand" : "outline"} className={cn(!right && "bg-transparent")} onClick={move}>
-              {lastQ ? doneLabel : t("nextQuestion")}
-              <ArrowRight data-icon="inline-end" />
+            <span className="text-xs text-ink-faint">{right ? "" : t("chooseAgain")}</span>
+            <Button size="sm" variant={right ? "brand" : "outline"} className={cn(!right && "bg-transparent")} onClick={right ? move : () => { setChoice(null); options.current[0]?.focus(); }}>
+              {right ? <>{lastQ ? doneLabel : t("nextQuestion")}<ArrowRight data-icon="inline-end" /></> : t("tryAgain")}
             </Button>
           </div>
         ) : null}

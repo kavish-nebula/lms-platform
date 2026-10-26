@@ -11,7 +11,8 @@ type Ctx = { params: Promise<{ courseId: string; moduleId: string }> };
  * the state of the rest. Opening a module that isn't rewritten yet starts it
  * in the background; the player keeps the authored pieces until each is ready.
  */
-export const GET = handle(async (_req: Request, { params }: Ctx) => {
+export const GET = handle(async (req: Request, { params }: Ctx) => {
   const { courseId, moduleId } = await params;
-  return ok({ adapted: await adaptedModule(await getSessionUser(), courseId, moduleId, after) });
+  const piece = new URL(req.url).searchParams.get("piece");
+  return ok({ adapted: await adaptedModule(await getSessionUser(), courseId, moduleId, after, {}, piece === "hook" || piece === "worked" ? piece : undefined) });
 });

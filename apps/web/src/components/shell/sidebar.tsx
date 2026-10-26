@@ -23,6 +23,7 @@ import { useEngagement } from "@/components/engagement/provider";
 const hiddenLearnerItems = new Set(["reviews", "credentials", "history"]);
 
 export type SidebarProps = {
+  professionalDemo?: boolean;
   role: Role;
   /** roles this user actually holds; others are listed as unavailable */
   heldRoles: Role[];
@@ -47,7 +48,7 @@ export function useIsActive(role: Role) {
  * nav with an active pill, user card at the bottom. Rendered in a fixed column
  * at >= 900px and inside a Sheet below that.
  */
-export function Sidebar({ role, heldRoles, user, badges = {}, onNavigate, className }: SidebarProps) {
+export function Sidebar({ role, heldRoles, user, badges = {}, onNavigate, className, professionalDemo = false }: SidebarProps) {
   const t = useTranslations("nav");
   const platform = useEngagement();
   // the desktop column and the mobile sheet each get their own pill
@@ -69,7 +70,7 @@ export function Sidebar({ role, heldRoles, user, badges = {}, onNavigate, classN
       <nav aria-label={t("dashboard")} className="flex flex-1 flex-col gap-5 overflow-y-auto">
         {NAV[role].map((section, si) => (
           <ul key={si} className={cn("isolate flex flex-col gap-0.5", si > 0 && "border-t border-line pt-4")}>
-            {section.items.filter((item) => (platform || item.key !== "activity") && (role !== "learner" || !hiddenLearnerItems.has(item.key))).map((item) => {
+            {section.items.filter((item) => (professionalDemo || item.key !== "workplace") && (platform || item.key !== "activity") && (role !== "learner" || !hiddenLearnerItems.has(item.key))).map((item) => {
               const active = isActive(item.href);
               const Icon = item.icon;
               const badge = badges[item.key];

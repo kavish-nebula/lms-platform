@@ -4,7 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { ChevronLeft, ListOrdered, PanelLeftClose, PanelLeftOpen, Zap } from "lucide-react";
+import { BookOpen, ChevronLeft, ListOrdered, PanelLeftClose, PanelLeftOpen, Zap } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -68,15 +68,16 @@ export function Player({ module, moduleIndex, stage, video, courseHref, initialD
   const router = useRouter();
   const { done, complete } = useModuleProgress(module.course_id,module.module_id, initialDone);
   const { watched, markWatched } = useWatchedVideos();
-  const { enrolled, adaptation: startingAdaptation } = useEnrollment(module.course_id);
+  const { enrolled, ready: enrollmentReady, adaptation: startingAdaptation } = useEnrollment(module.course_id);
   const { state: learning, update: updateLearning } = useLearning(module.course_id);
   const baseline = supportFor(startingAdaptation, String(moduleIndex));
   // help follows the learner's setup and recent practice (there is no per-module guidance picker any more)
   const support = startingAdaptation.override ?? recommendedSupport(learning.attempts, module.module_id, baseline);
   const adaptation = React.useMemo(() => ({ ...startingAdaptation, support, override: support }), [startingAdaptation, support]);
   // the hook, concept videos and worked examples rewritten in the learner's own world (server/adapt), once ready
-  const latestAdapted = useAdaptedModule(module.course_id, module.module_id, enrolled);
-  const adapted = useSteadyAdapted(latestAdapted, `${stage}:${video ?? ""}`);
+  const topicKey = `${module.module_id}:${stage}:${video ?? ""}`;
+  const latestAdapted = useAdaptedModule(module.course_id, module.module_id, enrolled, stage);
+  const adapted = useSteadyAdapted(latestAdapted, topicKey, stage === "hook");
   const content = React.useMemo(() => withAdapted(module, adapted), [module, adapted]);
   const [railOpen, setRailOpen] = React.useState(false);
   const outlineKey = `lms-outline:v1:${module.course_id}`;
@@ -168,6 +169,8 @@ export function Player({ module, moduleIndex, stage, video, courseHref, initialD
     shown: stage === "hook" ? !!adapted?.hook : stage === "worked" ? !!adapted?.worked : !!(part?.video && adapted?.videos[part.video.id]),
     writing: pieceStatus === "writing" || pieceStatus === "voicing",
     organisation: latestAdapted?.world?.organisation,
+    required: !enrollmentReady || (enrolled && (!latestAdapted || latestAdapted.live === true)),
+    failed: pieceStatus === "failed",
   };
 
   // The problem hook plays full screen, with no map, tutor or banners around it.
@@ -175,6 +178,7 @@ export function Player({ module, moduleIndex, stage, video, courseHref, initialD
   if (hook) {
     return (
       <HookCinema
+        key={`${topicKey}:${adapted?.hook?.audio?.open ?? "preparing"}`}
         block={hook}
         moduleId={module.module_id}
         moduleIndex={moduleIndex}
@@ -266,6 +270,7 @@ export function Player({ module, moduleIndex, stage, video, courseHref, initialD
             </span>
           </div>
           <span className="hidden items-center gap-1 rounded-full border border-brand-line bg-brand-soft px-2 py-1 text-[10px] font-semibold text-brand-ink md:flex"><Zap className="size-3" />+{rewardFor(stage, !!part?.video)} XP</span>
+          {module.course_id === 'ai-agent' && part?.video ? <Button asChild variant="outline" size="sm"><Link href={`${moduleHref}/reader?chapter=${part.video.id}`}><BookOpen className="size-4"/>Read</Link></Button> : null}
           <Sheet open={railOpen} onOpenChange={setRailOpen}>
             <SheetTrigger asChild>
               <Button variant="outline" size="sm" className="nav:hidden">

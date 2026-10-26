@@ -7,6 +7,7 @@ import { getCourse, getModule } from "@/data";
 import { getBlock } from "@/data/client";
 import type { VideoSlide } from "@/data/types";
 import { gradeGate } from "@/data/mock-grader";
+import { learnerAnswers, normalizeAnswers } from "@/lib/setup";
 import type { SessionUser } from "@/server/auth";
 import { db } from "@/server/db/client";
 import { adaptationJobs, moduleEvidence, signals } from "@/server/db/schema";
@@ -136,6 +137,7 @@ export const PREREQUISITES: Record<string, string[]> = { m2: ["1.1", "1.2", "1.3
 async function contextOf(user: SessionUser, courseId: string, moduleId: string) {
   const e = await requireEnrollment(user, courseId);
   const profile = await repo.getProfile(user.id);
+  e.answers = normalizeAnswers(learnerAnswers(profile?.answers, e.answers), profile?.derived);
   const course = await getCourse(courseId);
   const index = course?.modules.findIndex((m) => m.module_id === moduleId) ?? -1;
   const evidence = [];
@@ -181,21 +183,25 @@ export async function queueSlide(user: SessionUser, courseId: string, moduleId: 
   return (await d.select().from(adaptationJobs).where(eq(adaptationJobs.fingerprint, fingerprint)))[0]!;
 }
 
-export async function queueModule(user: SessionUser, courseId: string, moduleId: string) {
+export async function queueModule(user: SessionUser, courseId: string, moduleId: string, openPiece?: "hook" | "worked") {
   const { videos, mod } = await videosOf(courseId, moduleId);
   const { e, context } = await contextOf(user, courseId, moduleId);
   const d = await db();
   const queuePiece = async (piece: "hook" | "worked") => {
     const def = piecesOf(mod).find((p) => p.piece === piece);
-    if (!def) return;
-    const fingerprint = hash({ enrollment: e.id, moduleId, piece, authored: def.authored, context: teachingContext(context) });
-    const inserted = await d.insert(adaptationJobs).values({ enrollmentId: e.id, moduleId, videoId: piece, slide: 0, fingerprint, trigger: "initial", input: { authored: def.authored, source: def.authored, context, trigger: "initial", piece, courseId } }).onConflictDoNothing().returning();
+    if (!def) return null;
+    const textMapVersion = piece === "hook" ? 7 : undefined;
+    const fingerprint = hash({ enrollment: e.id, moduleId, piece, textMapVersion, authored: def.authored, context: teachingContext(context) });
+    const inserted = await d.insert(adaptationJobs).values({ enrollmentId: e.id, moduleId, videoId: piece, slide: 0, fingerprint, trigger: "initial", priority: piece === "hook" ? 1 : 0, input: { authored: def.authored, source: def.authored, context, trigger: "initial", piece, courseId, textMapVersion } }).onConflictDoNothing().returning();
     if (inserted.length) await d.update(adaptationJobs).set({ status: "superseded", updatedAt: new Date() }).where(and(eq(adaptationJobs.enrollmentId, e.id), eq(adaptationJobs.moduleId, moduleId), eq(adaptationJobs.videoId, piece), or(eq(adaptationJobs.status, "queued"), eq(adaptationJobs.status, "running")), ne(adaptationJobs.fingerprint, fingerprint), lt(adaptationJobs.createdAt, inserted[0]!.createdAt)));
+    if (openPiece === piece) await d.update(adaptationJobs).set({ priority: 3 }).where(and(eq(adaptationJobs.fingerprint, fingerprint), eq(adaptationJobs.status, "queued")));
+    return (await d.select().from(adaptationJobs).where(eq(adaptationJobs.fingerprint, fingerprint)))[0] ?? null;
   };
-  await queuePiece("hook");
+  const hook = await queuePiece("hook");
   // The DB preserves playback order for equal priorities. No model runs in this request.
   for (const v of videos) for (let i = 0; i < v.slides.length; i++) await queueSlide(user, courseId, moduleId, v.id, i, "initial");
-  await queuePiece("worked");
+  const worked = await queuePiece("worked");
+  return { hook, worked };
 }
 
 export async function jobsFor(enrollmentId: string, moduleId: string) {
@@ -239,7 +245,7 @@ export async function finishJob(id: string, lease: string, generated: unknown, m
     const { mod } = await videosOf(String(row.input.courseId), row.moduleId);
     const def = piecesOf(mod).find((p) => p.piece === row.input.piece);
     if (!def) throw new ApiError(422, "invalid_content", "Unknown lesson piece.");
-    const merged = mergeShape(def.authored, generated);
+    const merged = mergeShape(def.authored, generated, row.input.piece === "hook" ? { banned: /\b(?:Orbit|ORB-\d+)\b/i } : {});
     if (merged.problems.length) throw new ApiError(422, "invalid_content", "Lesson structure changed.");
     const content = merged.value as Record<string, unknown>;
     const clips = def.clips(content).filter((c) => c.text.trim());

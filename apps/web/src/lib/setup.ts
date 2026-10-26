@@ -82,6 +82,12 @@ export function coursePart(a: SetupAnswers): SetupAnswers {
   return out as SetupAnswers;
 }
 
+/** Current person-level answers win over an enrollment's older profile snapshot.
+ * Keep enrollment-only learners working until they save a separate profile. */
+export function learnerAnswers(profile: SetupAnswers | null | undefined, enrollment: SetupAnswers): SetupAnswers {
+  return profile ? { ...profilePart(profile), ...coursePart(enrollment) } : enrollment;
+}
+
 /** A bank question, or one of the model's follow-ups (`fu:<id>`). */
 export type QuestionKey = QuestionId | `fu:${string}`;
 

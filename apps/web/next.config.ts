@@ -12,6 +12,13 @@ const nextConfig: NextConfig = {
   // PGlite (the built-in local Postgres) ships WASM; load it from node_modules
   // at runtime rather than through the bundler.
   serverExternalPackages: ["@electric-sql/pglite"],
+  // Keep the documented Webpack fallback equivalent to the Turbopack setup.
+  webpack(config) {
+    config.resolve.alias["next-intl/config"] = path.join(__dirname, "src/i18n/request.ts");
+    // Preprocess Tailwind while retaining Next's built-in CSS extraction rules.
+    config.module.rules.unshift({ oneOf: [{ test: /\.css$/, enforce: "pre", use: ["@tailwindcss/turbopack"] }] });
+    return config;
+  },
   turbopack: {
     root: monorepoRoot,
     resolveAlias: {

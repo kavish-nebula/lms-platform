@@ -1,5 +1,6 @@
 import secrets
 import logging
+import httpx
 from fastapi import FastAPI, Header, HTTPException
 from fastapi.concurrency import run_in_threadpool
 from pydantic import BaseModel, Field
@@ -36,5 +37,7 @@ async def generate_slide(job: GenerationRequest, authorization: str = Header(def
     except ValueError as exc:
         logging.getLogger("adaptive-api").warning("Slide validation failed: %s", exc)
         raise HTTPException(502, "Slide generation could not complete") from None
-    except Exception:
+    except Exception as exc:
+        status = exc.response.status_code if isinstance(exc, httpx.HTTPStatusError) else None
+        logging.getLogger("adaptive-api").warning("Slide generation failed (%s, provider status %s)", type(exc).__name__, status)
         raise HTTPException(502, "Slide generation could not complete") from None

@@ -1,10 +1,6 @@
-"""Two bounded attempts: author-context rewrite, structural validation, then delivery.
-
-No assessment answers are sent to this pipeline. Slide layout and technical code
-remain authored; learner text is data and cannot grant tool permissions.
-"""
 import copy
 import json
+import logging
 import re
 import time
 import httpx
@@ -251,6 +247,98 @@ def validate(authored, generated, key=""):
     return value
 
 
+def output_constraints(authored):
+    """Describe the existing validator's limits; do not relax them for the model."""
+    text_limits, array_lengths = {}, {}
+
+    def visit(value, key="", path="$"):
+        if key in LOCKED:
+            return
+        if isinstance(value, list):
+            array_lengths[path] = len(value)
+            for index, item in enumerate(value):
+                visit(item, path=f"{path}[{index}]")
+        elif isinstance(value, dict):
+            for name, item in value.items():
+                if name != "narration" or not isinstance(value.get("sentences"), list):
+                    visit(item, name, f"{path}.{name}")
+        elif isinstance(value, str) and value.strip():
+            text_limits[path] = max(40, round(len(value) * 1.8) + 30)
+
+    visit(authored)
+    return {"maximumCharacters": text_limits, "exactArrayLengths": array_lengths,
+            "instruction": "Keep every array at exactly the listed length. Replace existing sentence entries; never append reminder sentences as new entries. Narration is rebuilt by joining those entries."}
+
+
+PIECE_LOCKED = LOCKED | {"step_id", "stage", "lesson", "module", "objective_ids", "bloom", "load"}
+
+
+def hook_text_map(authored):
+    """Send words to the editor, while keeping the film's structure server-owned."""
+    texts = {}
+
+    def walk(value, key="", path="$"):
+        if key in PIECE_LOCKED:
+            return
+        if isinstance(value, dict):
+            for name, item in value.items():
+                if name != "narration" or not isinstance(value.get("sentences"), list):
+                    walk(item, name, f"{path}.{name}")
+        elif isinstance(value, list):
+            for index, item in enumerate(value):
+                walk(item, key, f"{path}[{index}]")
+        elif isinstance(value, str) and value.strip():
+            texts[path] = value
+
+    walk(authored)
+    return texts
+
+
+def normalize_hook_edits(authored, edits):
+    """Accept grouped text arrays without granting write access to their structure."""
+    expected = hook_text_map(authored)
+    if not isinstance(edits, dict):
+        raise ValueError("Return an object of SOURCE text paths")
+    result = {}
+    def expand(path, value):
+        if path in expected and isinstance(value, str):
+            result[path] = value
+        elif isinstance(value, list) and value and all(f"{path}[{i}]" in expected for i in range(len(value))) and not any(p.startswith(path + "[") and p not in {f"{path}[{i}]" for i in range(len(value))} for p in expected):
+            for i, item in enumerate(value):
+                expand(f"{path}[{i}]", item)
+        else:
+            raise ValueError("Unknown or protected text-map path: " + path)
+    for path, value in edits.items():
+        expand(path, value)
+    return result
+
+
+def apply_hook_text_map(authored, edits, sparse=False):
+    expected = hook_text_map(authored)
+    if not isinstance(edits, dict):
+        raise ValueError("Return only allowed text-map keys; do not change the hook structure")
+    unknown = set(edits) - set(expected)
+    if unknown:
+        raise ValueError("Unknown text-map paths: " + ", ".join(sorted(unknown)) + ". Return the SOURCE path keys, not a nested film object")
+    if not sparse and edits.keys() != expected.keys():
+        raise ValueError("Missing text-map keys: " + ", ".join(sorted(set(expected) - set(edits))))
+
+    def walk(value, key="", path="$"):
+        if key in PIECE_LOCKED:
+            return copy.deepcopy(value)
+        if isinstance(value, dict):
+            result = {name: walk(item, name, f"{path}.{name}") for name, item in value.items()
+                      if name != "narration" or not isinstance(value.get("sentences"), list)}
+            if "narration" in value and isinstance(value.get("sentences"), list):
+                result["narration"] = " ".join(result["sentences"])
+            return result
+        if isinstance(value, list):
+            return [walk(item, key, f"{path}[{index}]") for index, item in enumerate(value)]
+        return edits[path] if path in edits else copy.deepcopy(value)
+
+    return validate(authored, walk(authored))
+
+
 def call_model(client, config, model, messages):
     if config["provider"] == "anthropic":
         res = client.post(config["base"].removesuffix("/v1") + "/v1/messages", headers={
@@ -285,19 +373,78 @@ def generate(job, client=None):
     teaching_context["planGuidance"] = [{"moduleId": m.get("moduleId"), "support": m.get("support"), "emphasis": m.get("emphasis"), "lessons": [{"lessonId": l.get("lessonId"), "support": l.get("support")} for l in m.get("lessons", [])]} for m in (context.get("plan") or {}).get("modules", [])]
     generic = {"study", "studying", "work", "working", "field", "student", "other", "engineering", "with", "that", "this"}
     field_words = [w for w in re.findall(r"[a-z]+", (field or "").lower()) if len(w) > 3 and w not in generic]
-    messages = [{"role": "system", "content": SYSTEM}, {"role": "user", "content": json.dumps({
+    placement = None
+    authored = source["authored"]
+    text_map = source.get("piece") == "hook" and source.get("textMapVersion") in {1, 2, 3, 4, 5, 6, 7}
+    sparse_map = text_map and source.get("textMapVersion") in {2, 3, 4, 5, 6, 7}
+    if context.get("prerequisiteTeaching") and isinstance(authored.get("note"), dict) and isinstance(authored["note"].get("text"), str) and authored.get("sentences"):
+        placement = {"visiblePath": "$.note.text", "narrationPath": "$.sentences[0]",
+                     "instruction": "Place the brief Quick reminder in the existing note text and incorporate it into the first existing narration entry. Keep the original teaching, numeric facts, cue indexes and exact sentence-list length. Keep flow-node labels and sublabels short. Obey the supplied character limits."}
+    protocol = "\nHOOK TEXT-EDIT PROTOCOL: For this hook job, return one flat JSON object containing only changed path/text pairs from SOURCE. This replaces the full-structure output instruction above. Unchanged entries may be omitted: the server preserves them and reconstructs the complete film. Never return the film object or an edits wrapper. Never add unknown paths. Rewrite the authored organisation, people and industry examples into the learner's field throughout the hook, including film narration and visible text. Keep required teaching and prediction meanings. Do not repeat unchanged text. JSON only." if sparse_map else ""
+    if source.get("textMapVersion") in {6, 7}:
+        protocol += " Choose one authentic scenario in the learner's field and goal, then rewrite the title, visible artefact, conversations, stakes, film narration and replay consistently around it. The title must explicitly name the learner's subject. This is scenario adaptation, not organisation or noun substitution. For example, mechanical engineering can use a prototype bench-test or simulation assistant that needs access to test results before a design can be approved. For a student, use plausible academic/project actions. A calculation or report cannot be 'shipped'; do not inherit shop language for academic work. Keep the required lesson about a chatbot lacking tools/data access, including its prediction answer and causal explanation."
+    if source.get("textMapVersion") == 7 and answers.get("domain") == "student" and "mechanical" in field_words:
+        protocol += " For this mechanical engineering student use one prototype stress-test workflow throughout: a student needs test-bench results, the assistant cannot access the lab's test records, and an agent needs the corresponding data tool before reporting results. Every chat question and inbox subject must concern this same test workflow. Replace the retail product with the tested mechanical assembly. No shipping, parcels, tents, shopping, delivery orders or 2P product branding anywhere in this academic test scenario."
+    if source["trigger"] == "example":
+        protocol += " For this example request, create a fresh authentic example throughout the relevant visible fields AND spoken sentences; adding the field name to an unchanged example is insufficient. SOURCE is a previous draft and may contain poor phrasing or an unrelated retail story. Correct its grammar and replace such examples while preserving REQUIRED_TEACHING, protected code, numeric facts, cues and exact sentence/list lengths. Do not splice raw profile vocabulary into a sentence. Replace all editable Orbit/ORB identifiers consistently."
+        if answers.get("domain") == "student" and "mechanical" in field_words:
+            protocol += " Use mechanical project/lab scenarios: design checks, prototype tests, lab records or equipment requests. Replace gift-card and consumer-refund examples with lab guidance and an equally irreversible project-budget decision, retaining any authored amounts and the teaching about recoverability. Conversation memory should retain a specific test/design identifier across follow-ups rather than repeat a shop return policy."
+    messages = [{"role": "system", "content": SYSTEM + protocol}, {"role": "user", "content": json.dumps({
         "LEARNER_FOCUS": focus, "LEARNER": teaching_context, "TRIGGER": source["trigger"],
+        "OUTPUT_CONSTRAINTS": output_constraints(authored), "PREREQUISITE_BRIDGE_PLACEMENT": placement,
         "EXAMPLE_REQUIREMENT": f"For an example request, explicitly use at least one of these field words in a concrete example in visible prose and narration: {', '.join(field_words)}" if field_words else "Use the learner's stated context.",
-        "SOURCE": source["source"], "REQUIRED_TEACHING": source["authored"]})}]
+        "CONTENT_FORMAT": "Flat JSON changed-path/text pairs only; omit unchanged paths. The server owns the structure. Use the learner's field and goal throughout visible story and narration." if sparse_map else "A flat JSON text map with exactly the SOURCE keys" if text_map else "The authored JSON structure",
+        "SOURCE": hook_text_map(authored) if text_map else source["source"], "REQUIRED_TEACHING": authored})}]
     own_client = client is None
     client = client or httpx.Client(timeout=45)
     try:
+        model = c["model"]
+        pending_edits = {}
         for attempt in range(2):
-            model = c["fallback"] if attempt and c["fallback"] and c["fallback"] != "none" else c["model"]
             try:
                 text = call_model(client, c, model, messages)
                 text = re.sub(r"^```(?:json)?\s*|\s*```$", "", text.strip())
-                content = validate(source["authored"], json.loads(text))
+                candidate = json.loads(text)
+                if sparse_map:
+                    if isinstance(candidate, dict) and set(candidate) == {"edits"}:
+                        candidate = candidate["edits"]
+                    # Keep valid edits even when another entry needs repair.
+                    errors = []
+                    if not isinstance(candidate, dict):
+                        raise ValueError("Return an object of SOURCE text paths")
+                    for path, value in candidate.items():
+                        try:
+                            pending_edits.update(normalize_hook_edits(authored, {path: value}))
+                        except ValueError as exc:
+                            errors.append(str(exc))
+                    if errors:
+                        raise ValueError("; ".join(errors))
+                    candidate = pending_edits
+                content = apply_hook_text_map(authored, candidate, sparse=sparse_map) if text_map else validate(authored, candidate)
+                if text_map and source.get("courseId") == "ai-agent":
+                    # Fictional team members may stay for continuity; it is the
+                    # organisation and industry scenario that must be personalised.
+                    leftover = [key for key, value in hook_text_map(content).items() if re.search(r"\b(?:Orbit|ORB-\d+)\b", value, re.I)]
+                    if leftover:
+                        raise ValueError("Replace the authored story with Harbour Works in the learner's field in these text-map paths: " + ", ".join(leftover))
+                    if source.get("textMapVersion") in {5, 6, 7} and field_words:
+                        visible_story = json.dumps(content.get("film", {})).lower()
+                        spoken_story = content.get("narration", "").lower()
+                        if not any(re.search(r"\b" + re.escape(w) + r"\b", visible_story) for w in field_words) or not any(re.search(r"\b" + re.escape(w) + r"\b", spoken_story) for w in field_words):
+                            raise ValueError("Use the learner's actual field in the film scenario and opening narration: " + ", ".join(field_words))
+                        if source.get("textMapVersion") in {6, 7}:
+                            scenario_errors = []
+                            if not any(re.search(r"\b" + re.escape(w) + r"\b", content.get("title", ""), re.I) for w in field_words):
+                                scenario_errors.append("Rewrite $.title to explicitly name the learner's subject: " + ", ".join(field_words))
+                            implausible = [path for path, value in hook_text_map(content).items() if re.search(r"(?:calculation|report|simulation|grade|result).{0,45}\bshipp?", value, re.I)]
+                            if implausible:
+                                scenario_errors.append("Use plausible project actions instead of shipping academic work in: " + ", ".join(implausible))
+                            if source.get("textMapVersion") == 7 and answers.get("domain") == "student" and "mechanical" in field_words:
+                                retail = {path: value for path, value in hook_text_map(content).items() if re.search(r"\b(?:shipp?\w*|parcels?|tents?|cart|2P|Trailhead)\b", value, re.I)}
+                                if retail:
+                                    scenario_errors.append("Replace all these retail remnants with coherent prototype stress-test actions: " + json.dumps(retail))
+                            if scenario_errors:
+                                raise ValueError("; ".join(scenario_errors))
                 if context.get("prerequisiteTeaching") and "sentences" in content:
                     visible = json.dumps({k: v for k, v in content.items() if k not in {"sentences", "narration"}}).lower()
                     if "quick reminder" not in visible or "quick reminder" not in content.get("narration", "").lower():
@@ -307,14 +454,31 @@ def generate(job, client=None):
                     narration = content.get("narration", "").lower()
                     if not any(re.search(r"\b" + re.escape(w) + r"\b", visible) for w in field_words) or not any(re.search(r"\b" + re.escape(w) + r"\b", narration) for w in field_words):
                         raise ValueError("The example must explicitly refer to the learner's field in both visible prose and narration: " + ", ".join(field_words))
+                    remnants = {path: value for path, value in hook_text_map(content).items() if re.search(r"\b(?:Orbit|ORB-\d+)\b", value, re.I) or (answers.get("domain") == "student" and "mechanical" in field_words and re.search(r"\bgift cards?\b|\brefund\b", value, re.I))}
+                    if remnants:
+                        raise ValueError("Rewrite these editable examples consistently into the learner's project context, preserving the required teaching and numeric facts: " + json.dumps(remnants))
+                    event_phrase = ((context.get("derived") or {}).get("vocab") or {}).get("trigger", "")
+                    if event_phrase and ("answering " + event_phrase).lower() in narration:
+                        raise ValueError("The goal sentence incorrectly uses the profile's event phrase as the object of 'answering': " + event_phrase + ". Describe a grammatical goal such as answering the person's question with verified results; keep all sentence entries and align visible prose.")
                 return {"content": content, "model": model, "metrics": {"textMs": (time.monotonic() - started) * 1000}}
             except (ValueError, KeyError, httpx.HTTPError) as exc:
+                # Schema errors name constraints only; never log provider bodies.
+                detail = str(exc) if isinstance(exc, ValueError) else (f"HTTP {exc.response.status_code}" if isinstance(exc, httpx.HTTPStatusError) else type(exc).__name__)
+                logging.getLogger("adaptive-api").warning("Generation attempt %s (%s) failed: %s", attempt + 1, model, detail)
                 if attempt:
                     raise
+                # A schema repair needs the model that returned usable text.
+                # Switch providers/models only when the request itself failed.
+                if isinstance(exc, httpx.HTTPError) and c["fallback"] and c["fallback"] != "none":
+                    model = c["fallback"]
                 reason = str(exc) if isinstance(exc, ValueError) else "The previous request did not complete."
                 if isinstance(exc, ValueError) and 'text' in locals():
                     messages.append({"role": "assistant", "content": text})
-                messages.append({"role": "user", "content": reason + ". Return the complete JSON preserving every key, cue and list length. Use shorter prose where needed."})
+                repair = ". Return only a flat JSON object of changed SOURCE path/text pairs. Your earlier valid path edits are retained; correct the reported paths and keep each text short. Do not return a nested film, arrays, or unchanged entries." if sparse_map else ". Return the complete JSON preserving every key, cue and list length. Use shorter prose where needed."
+                if sparse_map:
+                    remaining = {path: pending_edits.get(path, value) for path, value in hook_text_map(authored).items() if re.search(r"\b(?:Orbit|ORB-\d+)\b", pending_edits.get(path, value), re.I)}
+                    repair += " These exact paths still contain the original organisation; rewrite all of them in the learner's field: " + json.dumps(remaining)
+                messages.append({"role": "user", "content": reason + repair})
     finally:
         if own_client:
             client.close()

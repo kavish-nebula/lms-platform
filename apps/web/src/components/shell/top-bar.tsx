@@ -23,6 +23,7 @@ import { EngagementNotifications } from "@/components/engagement/notifications";
 export type ShellNotification = { id: string; title: string; detail: string; href: string; unread?: boolean };
 
 export type TopBarProps = {
+  professionalDemo?: boolean;
   role: Role;
   user: ShellUser;
   courses: CommandCourse[];
@@ -32,7 +33,7 @@ export type TopBarProps = {
 };
 
 /** Sticky glass top bar: menu (mobile), search, notifications, account. */
-export function TopBar({ role, user, courses, notifications, onOpenMenu, settingsHref }: TopBarProps) {
+export function TopBar({ role, user, courses, notifications, onOpenMenu, settingsHref, professionalDemo = false }: TopBarProps) {
   const platform = useEngagement();
   const t = useTranslations("common");
   const ts = useTranslations("shell");
@@ -52,7 +53,7 @@ export function TopBar({ role, user, courses, notifications, onOpenMenu, setting
           <Menu />
         </Button>
 
-        <CommandMenu role={role} courses={courses} />
+        <CommandMenu role={role} courses={courses} professionalDemo={professionalDemo} />
 
         <div className="ml-auto flex shrink-0 items-center gap-1.5">
           {platform ? <EngagementNotifications /> : <Popover>

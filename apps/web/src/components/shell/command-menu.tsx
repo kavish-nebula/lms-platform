@@ -27,10 +27,12 @@ export function CommandMenu({
   role,
   courses,
   className,
+  professionalDemo = false,
 }: {
   role: Role;
   courses: CommandCourse[];
   className?: string;
+  professionalDemo?: boolean;
 }) {
   const t = useTranslations("common");
   const platform = useEngagement();
@@ -87,7 +89,7 @@ export function CommandMenu({
             </CommandGroup> : null}
             <CommandGroup heading={ts("groupNavigate")}>
               {NAV[role].flatMap((s) =>
-                s.items.filter((item) => platform || item.key !== "activity").map((item) => {
+                s.items.filter((item) => (professionalDemo || item.key !== "workplace") && (platform || item.key !== "activity")).map((item) => {
                   const Icon = item.icon;
                   const label = tn(item.key as Parameters<typeof tn>[0]);
                   return (

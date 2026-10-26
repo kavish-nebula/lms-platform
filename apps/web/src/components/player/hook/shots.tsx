@@ -118,7 +118,39 @@ const CHAT_REPLY = 1500;
 const CHAT_RUN: [number, number] = [7400, 11600];
 
 /** A plain product tile, for a rewritten story whose shop isn't selling tents. */
-function ProductArt() {
+function ProductArt({ context }: { context: string }) {
+  if (/bracket/i.test(context)) {
+    return (
+      <svg viewBox="0 0 400 260" className="text-primary" role="img" aria-label="Mechanical engineering drawing of a mounting bracket">
+        <rect width="400" height="260" fill="currentColor" opacity="0.07" />
+        <g stroke="currentColor" fill="none" strokeWidth="2">
+          <path d="M113 53H161V153H296V201H113Z" fill="currentColor" fillOpacity="0.08" />
+          <path d="M128 68H146V168H281V186H128Z" opacity="0.4" />
+          <circle cx="137" cy="94" r="9" /><circle cx="205" cy="177" r="9" /><circle cx="258" cy="177" r="9" />
+          <path d="M137 77V111M120 94H154M205 160V194M188 177H222M258 160V194M241 177H275" strokeDasharray="4 4" opacity="0.5" />
+          <path d="M113 213V238M296 213V238M113 230H296M107 224L119 236M290 224L302 236M79 53H101M79 201H101M88 53V201M82 47L94 59M82 195L94 207" opacity="0.65" />
+        </g>
+      </svg>
+    );
+  }
+  if (/mechanical|gear|pump|bearing|shaft|cad|finite element|machin/i.test(context)) {
+    return (
+      <svg viewBox="0 0 400 260" className="text-primary" role="img" aria-label="Mechanical engineering drawing of a shaft and gear assembly">
+        <rect width="400" height="260" fill="currentColor" opacity="0.07" />
+        <g stroke="currentColor" fill="none" strokeWidth="2">
+          <path d="M20 130H380M200 24V236" strokeDasharray="5 5" opacity="0.35" />
+          <rect x="74" y="112" width="252" height="36" rx="4" />
+          <rect x="104" y="91" width="25" height="78" rx="3" />
+          <rect x="272" y="91" width="25" height="78" rx="3" />
+          <circle cx="200" cy="130" r="64" />
+          <circle cx="200" cy="130" r="43" />
+          <circle cx="200" cy="130" r="13" />
+          {Array.from({ length: 16 }, (_, i) => <path key={i} d="M194 64V54H206V64" transform={`rotate(${i * 22.5} 200 130)`} />)}
+          <path d="M74 185V211M326 185V211M74 202H326M68 196L80 208M320 196L332 208" opacity="0.65" />
+        </g>
+      </svg>
+    );
+  }
   return (
     <div className="hf-tent flex items-center justify-center" aria-hidden>
       <Package className="size-[30%] text-white/70" strokeWidth={1.25} />
@@ -179,10 +211,10 @@ export function SiteChatShot({ shot, t, block, reduce, sfx, waiting }: ShotProps
         </div>
         <div className="hf-site">
           <div className="hf-site-art">
-            {block.brand ? <ProductArt /> : <TentArt />}
+            {block.brand ? <ProductArt context={`${shot.product} ${shot.say} ${block.narration}`} /> : <TentArt />}
             <div className="hf-site-info">
               <b>{shot.product}</b>
-              <span>Add to cart</span>
+              <span className="shrink-0 whitespace-nowrap">{block.brand ? "View details" : "Add to cart"}</span>
             </div>
           </div>
           <div className="hf-widget">

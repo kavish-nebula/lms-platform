@@ -1,7 +1,7 @@
 "use client";
 import * as React from "react";
 import Link from "next/link";
-import { ArrowRight, Check, Flag, LockKeyhole, MessageCircle, Route, Zap } from "lucide-react";
+import { ArrowRight, BookOpen, Check, Flag, LockKeyhole, MessageCircle, Route, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProgressBar } from "@/components/kit/progress-ring";
 import { moduleFlowStages, useCourseProgress } from "@/lib/course-progress";
@@ -36,6 +36,7 @@ export function CourseJourney({ course }: { course: Course }) {
         <div data-tour="progress"><GameStatus game={game} /></div>
         <div className="mt-6 flex flex-wrap gap-3">
           <Button asChild variant="brand" size="lg"><Link href={enrolled ? resume?.href ?? `${base}/m1/hook` : `${base}/enroll`}>{enrolled ? "Continue my journey" : "Make this course mine"}<ArrowRight /></Link></Button>
+          {course.course_id === 'ai-agent' ? <Button asChild variant="outline" size="lg"><Link href={`${base}/m1/reader`}><BookOpen/>Read the course</Link></Button> : null}
         </div>
         <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-xs text-ink-muted"><span>{course.modules.length} connected chapters</span><span>One final mini-project</span><span>Your pace. Your path.</span></div>
         {enrolled && <div className="mt-6 max-w-md"><div className="mb-2 flex justify-between text-xs text-ink-muted"><span>Your course progress</span><span>{progress.topicsDone} / {progress.topicsTotal} phases</span></div><ProgressBar value={progress.ratio} size="sm" /></div>}

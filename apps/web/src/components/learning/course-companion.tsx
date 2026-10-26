@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowUp, BookOpen, Check, Compass, Download, Lightbulb, MessageCircle, NotebookPen, ShieldCheck, Sparkles, X } from "lucide-react";
+import { BookOpen, Check, Compass, Download, Lightbulb, MessageCircle, NotebookPen, ShieldCheck, Sparkles, X } from "lucide-react";
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { AssistantAvatar, type PipReaction } from "./assistant-avatar";
@@ -12,6 +12,7 @@ import { api, ApiRequestError } from "@/lib/api";
 import { courseLabel } from "@/lib/course-labels";
 import { useLearning } from "@/lib/learning-state";
 import { exportNotesPdf } from "@/lib/notes-pdf";
+import { AssistantComposer } from "./assistant-composer";
 import "./learning.css";
 
 type Context = { courseId: string; moduleId: string; phase: string; setStep: (step: CompanionStep) => () => void };
@@ -265,11 +266,7 @@ function Companion({ data, moduleId, phase, step }: { data: CompanionCourse; mod
               ) : null}
             </div>
             {messages.at(-1)?.source && <button className="px-5 pb-2 text-left text-xs text-brand-ink" onClick={() => { const message = messages.at(-1)!; update((s) => ({ ...s, notes: `${s.notes}\n\n${message.text}\n${message.source?.title ?? ""}`.trim().slice(0, 10000) })); setSaved(true); }}><Check className="mr-1 inline size-3.5" />{saved ? "Added to my notes" : "Save this explanation to my notes"}</button>}
-            <form className="pip-input" onSubmit={(e) => { e.preventDefault(); if (waiting) return; setSaved(false); ask(input); }}>
-              <label htmlFor="pip-question" className="sr-only">Ask a question about this course</label>
-              <input ref={inputRef} id="pip-question" value={input} onChange={(e) => setInput(e.target.value)} maxLength={600} placeholder="Ask any question…" autoComplete="off" />
-              <Button type="submit" variant="brand" size="icon-sm" disabled={!input.trim() || waiting} aria-label="Send question"><ArrowUp /></Button>
-            </form>
+            <AssistantComposer value={input} onChange={setInput} onSend={()=>{setSaved(false);void ask(input);}} waiting={waiting} active={open&&tab==='chat'&&!restricted} reply={messages.findLast(m=>m.role==='assistant')?.text??''} inputRef={inputRef}/>
             <p className="px-5 pb-4 text-[11px] text-ink-muted">Answers come from this course’s material.</p>
           </>
         )}

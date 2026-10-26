@@ -17,6 +17,10 @@ python fixtures/scripts/make-audio.py              # narration MP3s for new or c
 
 ## Run it
 
+### Archived workplace demo
+
+Workplace is removed from the main app's navigation and dashboard and disabled with `PROFESSIONAL_DEMO_ENABLED=false`. Its page/API are unavailable. Existing demo records are retained without affecting course progress. [Archived implementation notes](docs/workplace-practice.md) remain for reference.
+
 ### Optional platform motivation features
 
 Set `PLATFORM_ENGAGEMENT_ENABLED=true` in `apps/web/.env.local` and restart the server to enable weekly goals, study logs, private activity points, streaks, achievements, dashboard frames, saved-course search, notifications and the interactive planner. It is disabled by default. The AI agent course and its learning behavior remain unchanged. Activity uses the existing backend; the study schedule stays browser-local. Real authentication is still required before a private multi-user deployment.

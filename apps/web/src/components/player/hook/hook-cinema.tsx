@@ -108,6 +108,7 @@ export function HookCinema({
   onComplete,
   onExit,
   personal,
+  onPlaybackStart,
 }: {
   block: HookBlock;
   moduleId: string;
@@ -120,8 +121,9 @@ export function HookCinema({
   done: boolean;
   onComplete: () => void;
   onExit: () => void;
-  /** this opening rewritten in the learner's world (shown), or being rewritten (the authored one plays meanwhile) */
-  personal?: { shown: boolean; writing: boolean; organisation?: string };
+  /** Enrolled live courses wait for a matching text/audio pair before playback. */
+  personal?: { shown: boolean; writing: boolean; organisation?: string; required?: boolean; failed?: boolean };
+  onPlaybackStart?: () => void;
 }) {
   const t = useTranslations("cinema");
   const reduce = useReducedMotionConfig() ?? false;
@@ -168,6 +170,8 @@ export function HookCinema({
   }, []);
 
   function begin() {
+    if (personal?.required && !personal.shown) return;
+    onPlaybackStart?.();
     // the narration starts a moment after this click, once the scene has drawn: let the browser allow it now
     unlockSfx();
     unlock();
@@ -271,21 +275,21 @@ export function HookCinema({
           {t("startKicker", { n: moduleIndex })}
         </motion.div>
         <motion.h1 {...appear(0.1)} id="hc-title" className="hc-title">
-          {block.title}
+          {personal?.required && !personal.shown ? t("personalTitle") : block.title}
         </motion.h1>
         <motion.p {...appear(0.25)} className="hc-lede">
-          {block.brand ? t("startLineAt", { organisation: block.brand.name }) : t("startLine")}
+          {personal?.required && !personal.shown ? t("personalStart") : block.brand ? t("startLineAt", { organisation: block.brand.name }) : t("startLine")}
         </motion.p>
-        {personal?.shown || personal?.writing ? (
-          <motion.p {...appear(0.32)} className="hc-hint flex items-center gap-2">
+        {personal?.shown || personal?.writing || personal?.required ? (
+          <motion.p {...appear(0.32)} className="hc-hint flex items-center gap-2" role="status" aria-live="polite">
             <Sparkles className="size-4 shrink-0" aria-hidden />
-            {personal.shown ? (personal.organisation ? t("personalAt", { organisation: personal.organisation }) : t("personal")) : t("personalWriting")}
+            {personal.shown ? (personal.organisation ? t("personalAt", { organisation: personal.organisation }) : t("personal")) : personal.failed ? t("personalFailed") : t("personalWriting")}
           </motion.p>
         ) : null}
         <motion.div {...appear(0.4)} className="flex flex-wrap items-center gap-5 pt-2">
-          <button type="button" className="hc-btn big" onClick={begin} autoFocus>
+          <button type="button" className="hc-btn big" onClick={begin} disabled={personal?.required && !personal.shown} autoFocus>
             <Play />
-            {t("begin")}
+            {personal?.required && !personal.shown ? t("personalPreparing") : t("begin")}
           </button>
           <span className="hc-hint">{soundOn ? t("beginHint", { minutes }) : t("beginHintMuted", { minutes })}</span>
         </motion.div>

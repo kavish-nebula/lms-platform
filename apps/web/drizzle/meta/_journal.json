@@ -50,6 +50,13 @@
       "when": 1792386740016,
       "tag": "0006_adaptive_slide_jobs",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1792645200000,
+      "tag": "0007_professional_workspace",
+      "breakpoints": true
     }
   ]
 }
