@@ -222,17 +222,6 @@ test('the lesson workspace shows the lesson alone, with no phase strip or guidan
   assert.ok(!html.includes('Guidance level'));
 });
 
-test('the wide learning dock keeps only the focus sprint beside the lesson', () => {
-  const React = require('react');
-  const { renderToString } = require('react-dom/server');
-  const { LearningFocusDock } = load('apps/web/src/components/learning/learning-focus-dock.tsx');
-  const html = renderToString(React.createElement(LearningFocusDock, { courseId: 'ai-agent' }));
-  assert.ok(html.includes('Focus sprint'));
-  assert.ok(!html.includes('Current mission'));
-  assert.ok(!html.includes('Learning tools'));
-  assert.ok(!html.includes('XP on completion'));
-});
-
 test('concept lessons render one media card before their supporting text cards', () => {
   const React = require('react');
   const { renderToString } = require('react-dom/server');

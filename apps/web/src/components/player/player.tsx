@@ -14,7 +14,6 @@ import { TopicContext } from "@/components/player/topic-context";
 import { useModuleProgress } from "@/components/player/progress";
 import { SignalProvider,queueSignal } from "@/lib/signals";
 import { LearningWorkspace } from "@/components/learning/learning-workspace";
-import { LearningFocusDock } from "@/components/learning/learning-focus-dock";
 import { ReflectionReview } from "@/components/learning/reflection-review";
 import { recommendedSupport } from "@/lib/learning-rules";
 import { recordActivity, recordLearning, ensureReviews, useLearning } from "@/lib/learning-state";
@@ -325,7 +324,6 @@ export function Player({ module, moduleIndex, stage, video, courseHref, initialD
             <SignalProvider courseId={module.course_id} enabled={enrolled}><LearningWorkspace key={`${module.module_id}:${stage}:${video ?? ""}`}>
               <TopicContext.Provider value={header}>{body}</TopicContext.Provider>
             </LearningWorkspace></SignalProvider>
-            <LearningFocusDock courseId={module.course_id} />
           </div>
         </main>
       </div>

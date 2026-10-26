@@ -13,7 +13,7 @@ import { deriveGameProgress } from "@/lib/gamification";
 import type { Course } from "@/data/types";
 import { AssistantAvatar } from "./assistant-avatar";
 import { PipTour } from "@/components/onboarding/pip-tour";
-import { DailyMission, GameStatus, MasteryStars } from "./game-ui";
+import { DailyMission, MasteryStars } from "./game-ui";
 
 export function CourseJourney({ course }: { course: Course }) {
   const progress = useCourseProgress(course);
@@ -33,7 +33,6 @@ export function CourseJourney({ course }: { course: Course }) {
         <Link href="/learn/courses" className="journey-kicker"><Route className="size-4" />Your learning adventure</Link>
         <h1>{course.title}</h1>
         <p className="max-w-lg text-sm leading-relaxed text-ink-muted">Join the team at Orbit Outdoor. Explore real problems, try your ideas, and build Scout into a dependable support agent.</p>
-        <div data-tour="progress"><GameStatus game={game} /></div>
         <div className="mt-6 flex flex-wrap gap-3">
           <Button asChild variant="brand" size="lg"><Link href={enrolled ? resume?.href ?? `${base}/m1/hook` : `${base}/enroll`}>{enrolled ? "Continue my journey" : "Make this course mine"}<ArrowRight /></Link></Button>
           {course.course_id === 'ai-agent' ? <Button asChild variant="outline" size="lg"><Link href={`${base}/m1/reader`}><BookOpen/>Read the course</Link></Button> : null}

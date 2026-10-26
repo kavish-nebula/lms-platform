@@ -10,7 +10,7 @@
 @keyframes assistant-pulse { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 45%, transparent); } 100% { box-shadow: 0 0 0 12px transparent; } }
 .pip-dock { position: fixed; bottom: 20px; right: 24px; z-index: 110; }
 .pip-dock[data-phase="hook"] { bottom: 100px; z-index: 110; }
-.pip-launcher:focus-visible, .pip-tab:focus-visible, .pip-suggestion:focus-visible, .pip-notes:focus-visible, .stair-step:focus-visible, .focus-lengths button:focus-visible { outline: 2px solid var(--accent-ink); outline-offset: 3px; }
+.pip-launcher:focus-visible, .pip-tab:focus-visible, .pip-suggestion:focus-visible, .pip-notes:focus-visible, .stair-step:focus-visible { outline: 2px solid var(--accent-ink); outline-offset: 3px; }
 .pip-launcher { position: relative; display: grid; width: 56px; height: 56px; place-items: center; border: 0; border-radius: 999px; padding: 0; background: transparent; cursor: pointer; transition: transform 180ms; }
 .pip-launcher:hover { transform: translateY(-3px); }
 
@@ -154,31 +154,6 @@ html[data-pip-chat] .pip-dock { display: none; }
 .focus-split { display: grid; grid-template-columns: minmax(0,.9fr) minmax(0,1.1fr); gap: 18px; align-items: start; }
 .focus-pane { min-width: 0; }
 .focus-pane-scroll { max-height: 390px; overflow: auto; overscroll-behavior: contain; scrollbar-width: thin; }
-.learning-focus-dock { display: none; min-width: 0; flex-direction: column; gap: 12px; padding-bottom: 88px; }
-.focus-dock-card { border: 1px solid var(--line); border-radius: 18px; padding: 15px; background: var(--panel); box-shadow: var(--shadow-sm); }
-.focus-dock-heading { display: flex; align-items: center; gap: 9px; }
-.focus-dock-heading > div, .focus-dock-heading span, .focus-dock-heading small { min-width: 0; display: block; }
-.focus-dock-heading > div > span { font-size: 12px; font-weight: 700; }
-.focus-dock-heading small { margin-top: 1px; overflow: hidden; color: var(--muted); font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
-.focus-dock-icon { display: grid !important; width: 31px; height: 31px; flex-shrink: 0; place-items: center; border: 1px solid var(--accent-line); border-radius: 10px; color: var(--accent-ink); background: var(--accent-soft); }
-.focus-dock-icon svg { width: 15px; height: 15px; }
-.focus-time { margin-top: 14px; font-family: var(--mono); font-size: 29px; font-weight: 650; letter-spacing: -.045em; font-variant-numeric: tabular-nums; }
-.focus-meter { height: 5px; overflow: hidden; border-radius: 999px; background: var(--line); }
-.focus-meter > span { display: block; height: 100%; border-radius: inherit; background: var(--accent-deep); transition: width 240ms var(--ease-out); }
-.focus-finished { display: flex; align-items: flex-start; gap: 5px; margin-top: 8px; color: var(--ok); font-size: 9px; font-weight: 700; }
-.focus-finished svg { width: 12px; height: 12px; flex-shrink: 0; }
-.focus-lengths { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-top: 10px; }
-.focus-lengths button { border: 1px solid var(--line); border-radius: 8px; padding: 5px; color: var(--muted); font-size: 10px; }
-.focus-lengths button[aria-pressed=true] { border-color: var(--accent-line); color: var(--accent-ink); background: var(--accent-soft); }
-.focus-lengths button:disabled { cursor: default; opacity: .55; }
-.focus-session-actions { display: flex; align-items: center; gap: 5px; margin-top: 10px; }
-.focus-session-actions > button:first-child { flex: 1; }
-.focus-dock-card h2 { margin-top: 4px; font-size: 16px; line-height: 1.25; }
-@media (min-width: 1500px) {
-  .learning-stage-layout { grid-template-columns: minmax(0,1fr) 270px; gap: 16px; }
-  .learning-stage-layout .stage-focus-shell { max-width: none; }
-  .learning-focus-dock { position: sticky; top: calc(var(--nav-h) + 20px); display: flex; max-height: calc(100dvh - var(--nav-h) - 28px); overflow-y: auto; scrollbar-width: thin; }
-}
 @media (min-width: 1024px) and (min-height: 720px) {
   #stage-main .stage-focus-shell { gap: 0; border: 1px solid var(--line); border-radius: 22px; background: var(--panel); box-shadow: var(--shadow-sm); }
   #stage-main .stage-focus-header { flex-shrink: 0; padding: 18px 22px 14px; border-bottom: 1px solid var(--line); }

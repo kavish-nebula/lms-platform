@@ -1,5 +1,7 @@
 # Learning experience UI
 
+The marketing homepage omits the scrolling learning-methods ticker below the hero.
+
 The shared Nebula mark uses the supplied logo image at `public/brand/nebula-mark.png`, including the sidebar and course branding. The adjacent wordmark uses the foreground ink for “Nebula” and the theme-aware, text-safe brand accent for “KnowLab”; full wordmarks use a 34px mark and compact marks remain 28px.
 
 The course details page omits the How it works section and its section-navigation link.
@@ -8,7 +10,7 @@ The course details page also omits the Reviews section and its section-navigatio
 
 The course details page omits the personalized “Set up for you” summary panel. Completing enrollment opens course details without a one-time setup banner.
 
-The course journey omits the Small wins that matter and Made for your next step panels. The dashboard omits Focus Session and Today’s study sessions; the optional focus sprint remains available inside the course player.
+The course journey omits the Small wins that matter and Made for your next step panels. The dashboard omits Focus Session and Today’s study sessions; the course player also omits the Focus sprint timer.
 
 The learner sidebar omits Reviews, Credentials and History on desktop and in the mobile menu. Their routes and search entries remain available.
 
@@ -73,12 +75,10 @@ These browser checks were not completed in the Codex session: Windows denied the
 
 Module and lesson navigation uses concise display labels, one part number, completion state, and duration. Descriptive subtitles are removed from both ModuleMap variants and journey chapter cards. Full teaching content and narration remain intact; labels are centralized in `src/lib/course-labels.ts`.
 
-The course journey now presents one connected game: a compact level/XP/streak/Sparks status bar, one actionable daily mission, six Scout capability upgrades, three mastery stars per module, meaningful badges, and a single Launch Day final mission. Rewards use the existing theme tokens and real progress only. Locked upgrades remain understandable, completed modules use the success palette, and reduced-motion settings disable card movement. Mobile layouts stack the mission CTA, status items, capabilities, and badges without hiding progress.
+The course journey now presents one connected game: one actionable daily mission, six Scout capability upgrades, three mastery stars per module, meaningful badges, and a single Launch Day final mission. Rewards use the existing theme tokens and real progress only. Locked upgrades remain understandable, completed modules use the success palette, and reduced-motion settings disable card movement. The course section omits the level, XP, day-streak and Sparks status panel and its rank-progress bar. Regular course-completion progress remains visible. Mobile layouts stack the mission CTA, capabilities and badges.
 # Course player width and focus dock
 
-On desktop displays at least 1500 px wide, the course player uses a two-column learning workspace beside the module map. The lesson owns the flexible center column and a 270 px learning dock uses the remaining area for the focus sprint, current mission, progress, next step, and contextual tools. The dock disappears below that breakpoint so the activity remains the only focal surface on narrower screens.
-
-The focus sprint is voluntary and offers 10, 15, and 25 minute choices. It does not force full screen, record tab changes, or penalize stopping. Progress and rewards describe real course actions. Course tools open the existing Pip and notebook surfaces rather than duplicating them.
+The course player uses the available lesson width beside the module map. The Focus sprint timer and its reserved 270 px dock column have been removed on every screen size.
 
 Concept lessons use two sibling surfaces instead of one enclosing lesson card. The first box contains the lesson heading and complete media experience: slide, caption, progress, playback controls, and transcript. The second box contains adaptive guidance, field-specific examples, and key ideas. A separate action bar follows both boxes. This keeps the video and related reading visually independent while preserving a natural top-to-bottom order on every screen size.
 
