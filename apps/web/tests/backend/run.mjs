@@ -6,7 +6,7 @@ import { execFileSync } from "node:child_process";
 import path from "node:path";
 
 const here = path.dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1"));
-const suites = { workplace: "workplace-test.ts", "adaptive-loop": "adaptive-loop-test.ts", live: "live-test.ts", engagement: "engagement-test.ts", workflow: "workflow-test.ts", companion: "companion-test.ts", profiling: "profiling-test.ts", "profiling-api": "profiling-api-test.ts", interview: "interview-test.ts", adapt: "adapt-test.ts" };
+const suites = { "enrollment-start": "enrollment-start-test.ts", workplace: "workplace-test.ts", "adaptive-loop": "adaptive-loop-test.ts", live: "live-test.ts", engagement: "engagement-test.ts", workflow: "workflow-test.ts", companion: "companion-test.ts", profiling: "profiling-test.ts", "profiling-api": "profiling-api-test.ts", interview: "interview-test.ts", adapt: "adapt-test.ts" };
 const suite = suites[process.argv[2]] || "backend-test.ts";
 // generated files go to the gitignored .data folder
 const out = path.join(here, "..", "..", ".data", "tests");

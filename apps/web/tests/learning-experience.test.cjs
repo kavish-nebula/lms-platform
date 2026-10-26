@@ -434,3 +434,13 @@ test('both navigation layouts render titles and durations without description su
     assert.doesNotMatch(html, /Watch, then|quick checks|See what went wrong|Predict, then watch/);
   }
 });
+
+test('quick enrollment renders exactly two optional questions and reuses the profile',()=>{
+  const React=require('react');
+  const {renderToStaticMarkup}=require('react-dom/server');
+  const {QuickEnrollment}=load('apps/web/src/components/enroll/quick-enrollment.tsx');
+  const html=renderToStaticMarkup(React.createElement(QuickEnrollment,{title:'Build Your First AI Agent',answers:{domain:'other',domainOther:'Mechanical engineering',role:'other',roleOther:'Design engineer',coding:'python',style:'short'},editProfileHref:'/learn/profile',onStart:()=>{},onOptions:()=>{}}));
+  assert.equal((html.match(/<fieldset/g)??[]).length,2);
+  assert(!/\srequired(?:[ =>])/.test(html));
+  for(const text of ['Two optional questions','Using your saved profile','Mechanical engineering','Start with the standard course','More setup options','Write my own answer'])assert(html.includes(text),text);
+});

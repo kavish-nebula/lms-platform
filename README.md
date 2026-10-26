@@ -5,7 +5,7 @@ Course content is mock data in `fixtures/`. Learner data (profile, enrolments, p
 
 ## The demo course
 
-**Build Your First AI Agent**: six modules, each running the same phases (problem hook, concept videos, worked example, guided practice, scenarios, spaced review), then one mini project, a final assessment and a reflection. Pip's "About you" chat after signing in sets the profile; enrolling asks four or five questions about the course itself, then lets the learner customise it.
+**Build Your First AI Agent**: six modules, each running the same phases (problem hook, concept videos, worked example, guided practice, scenarios, spaced review), then one mini project, a final assessment and a reflection. Pip's "About you" chat after signing in sets the profile; enrolling asks two optional questions about the course itself; extra customisation is optional.
 
 The course is written as compact JSON in `fixtures/src/ai-agent/` (see `AUTHORING.md` there) and built into the fixture files the app reads:
 
@@ -114,3 +114,9 @@ As they learn, answers come back as signals (in-video checks, scenario decisions
 # Adaptive experience integration
 
 The `ai-agent-backend` branch combines the adaptive learning UI with the existing backend, platform engagement and both capstone workspaces. See [merge decisions and validation](docs/adaptive-backend-merge.md).
+
+### Quick enrollment
+New enrollment asks only two optional questions: your course goal and familiarity with AI agents. Reuse your saved profile, choose Start learning, or skip both with Start with the standard course. More setup options is optional. Read the course remains the original, non-adaptive reference edition. Run the isolated checks with node tests/backend/run.mjs enrollment-start from apps/web.
+
+### Next.js security patch
+Next.js and eslint-config-next are pinned to 16.4.3, replacing 16.4.0 to address the [October 2026 Next.js security advisories](https://nextjs.org/blog/nextjs-security-update-october-14-2026). The lockfile includes matching framework packages. Production build, enrollment/adaptation/chatbot tests and reader narration smoke checks pass on the patched runtime. npm audit no longer reports Next.js as vulnerable; separate audit findings in other dependencies remain.

@@ -16,7 +16,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
 
 /**
  * Enrolling: /learn/courses/[courseId]/enroll (focused layout, no sidebar).
- * Pip's questions about this course -> customise -> build. "About you" comes before this, right
+ * Two optional questions -> build; extra customisation remains optional. "About you" comes before this, right
  * after signing in (/learn/welcome). `?step=` opens one step, e.g. from
  * "Edit setup".
  */

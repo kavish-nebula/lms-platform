@@ -114,3 +114,5 @@ The optional AI-agent article reader follows a chapter catalogue / reading colum
 The course assistant composer uses a compact rounded message bar with a text-file action, message input, microphone and dictation-language selector. An empty draft shows a read-aloud waveform button; typing reveals Send. Controls have accessible names, keyboard focus outlines, and a live status region. No new motion is introduced.
 
 The hidden assistant launcher wrapper ignores pointer events while the assistant panel is open, preventing it from covering the message bar's right-side controls.
+
+Quick enrollment presents the saved field/role, coding and explanation preferences with an Edit profile link, followed by exactly two optional radio groups. Each offers a typed answer and Skip this question. Start learning submits the selections directly; Start with the standard course skips both optional answers while retaining profile-based examples. Additional setup is an optional link. Semantic fieldsets, labels and existing focus/reduced-motion patterns are reused.

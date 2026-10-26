@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/kit/logo";
 import { CardSkeleton } from "@/components/kit/states";
-import { InterviewChat } from "@/components/onboarding/interview-chat";
+import { QuickEnrollment } from "@/components/enroll/quick-enrollment";
 import { CustomizeStep, type Pace } from "@/components/enroll/customize-step";
 import { BuildStep, type BuildServer } from "@/components/enroll/build-step";
 import { useCourseUnits, usePlanState } from "@/components/plan/use-plan";
@@ -26,19 +26,9 @@ export type EnrollPhase = "fit" | "customize" | "build";
 /** "About you" lives right after signing in; editing it from here comes back to this step. */
 export const welcomeHref = (back: string) => `/learn/welcome?return=${encodeURIComponent(back)}`;
 
-/**
- * Enrolling in a course: Pip's four or five questions about this course ->
- * customise the course -> build it -> the course page. The learner's profile was set in Pip's
- * welcome chat after signing in (ProfileGate sends anyone without one there
- * first), so enrolling starts from it and asks only what is specific to this
- * course (what they want from it, what they already know of it). Those answers
- * are stored with the enrolment, never in the profile, so a platform with many
- * courses never needs one profile to fit them all. Opening it on
- * an enrolled course goes straight to customising, to edit the setup. There
- * is no quick check: help per lesson starts from the profile answers and
- * follows the learner's answers inside lessons. An enrollment that already
- * has a quick-check result keeps it.
- */
+/** Enrollment asks only two optional course questions, then starts the course.
+ * The server reuses the canonical saved profile; extra setup is optional.
+ * Existing enrollments still open their editable setup and keep their progress. */
 export function EnrollFlow({
   course,
   name,
@@ -52,19 +42,20 @@ export function EnrollFlow({
   authoredModules: string[];
   initialPhase?: EnrollPhase;
 }) {
-  const PHASES: EnrollPhase[] = ["fit", "customize", "build"];
-  const first: EnrollPhase = PHASES[0]!;
+  const first: EnrollPhase = "fit";
   const t = useTranslations("enroll");
   const router = useRouter();
   const learnerReady = useLearnerReady();
   const courseHref = `/learn/courses/${course.course_id}`;
-  const { profile, ready: profileReady, save: saveProfile } = useProfile();
+  const { profile, ready: profileReady } = useProfile();
   const { enrollment, enrolled, save, adaptation: saved } = useEnrollment(course.course_id);
   const hydrated = learnerReady && profileReady;
   const { plan, setPlan } = usePlanState();
   const { byCourse } = useCourseUnits(React.useMemo(() => [course], [course]));
 
   const [phase, setPhase] = React.useState<EnrollPhase | null>(null);
+  const [showOptions, setShowOptions] = React.useState(initialPhase === "customize");
+  const PHASES: EnrollPhase[] = showOptions ? ["fit", "customize", "build"] : ["fit", "build"];
   const [answers, setAnswers] = React.useState<SetupAnswers>({});
   const [override, setOverride] = React.useState<SupportOverride>("auto");
   const [pace, setPace] = React.useState<Pace>({ sessionMinutes: 30, studyDays: [1, 3, 5], addToPlan: true });
@@ -80,21 +71,20 @@ export function EnrollFlow({
     setAnswers({ ...profilePart(profile?.answers ?? {}), ...coursePart(enrollment?.answers ?? {}) });
     setOverride(enrollment?.supportOverride ?? "auto");
     setPace({ sessionMinutes: plan.sessionMinutes, studyDays: plan.studyDays, addToPlan: !enrolled });
-    setPhase(initialPhase && PHASES.includes(initialPhase) ? initialPhase : enrolled ? "customize" : first);
+    setShowOptions(initialPhase === "customize" || (!initialPhase && enrolled));
+    setPhase(initialPhase ?? (enrolled ? "customize" : first));
   }
 
   React.useEffect(() => {
     window.scrollTo({ top: 0 });
   }, [phase]);
 
-  /** Saves the setup on the server (which plans the course), the profile, and this browser's study plan. */
-  async function commit() {
+  /** Saves enrollment and study preferences without rewriting the saved profile. */
+  async function commit(courseAnswers: SetupAnswers = answers) {
     setSaving({ state: "saving" });
     try {
       // answers from a branch the learner left are dropped here as on the server, so both hold the same profile
-      await save(normalizeAnswers(answers, profile?.derived), { supportOverride: override, pace: pace.studyDays.length ? { sessionMinutes: pace.sessionMinutes, studyDays: pace.studyDays } : null });
-      // course answers belong to this enrolment only; the profile keeps the person-level ones
-      await saveProfile(normalizeAnswers({ ...(profile?.answers ?? {}), ...profilePart(answers) }, profile?.derived), needs);
+      await save(normalizeAnswers(courseAnswers, profile?.derived), { supportOverride: override, pace: pace.studyDays.length ? { sessionMinutes: pace.sessionMinutes, studyDays: pace.studyDays } : null });
     } catch (e) {
       setSaving({ state: "error", message: e instanceof Error ? e.message : String(e) });
       return false;
@@ -124,16 +114,13 @@ export function EnrollFlow({
   let body: React.ReactNode = <CardSkeleton lines={6} />;
   if (phase === "fit")
     body = (
-      <InterviewChat
-        key={course.course_id}
-        name={name}
-        course={{ id: course.course_id, title: course.title }}
-        initial={{ answers: coursePart(answers), needs, derived: profile?.derived ?? null }}
-        continueLabel={t("fitContinue")}
-        onDone={(s) => {
-          setAnswers((a) => ({ ...profilePart(a), ...coursePart(s.answers) }));
-          setPhase("customize");
-        }}
+      <QuickEnrollment
+        title={course.title}
+        answers={answers}
+        derived={profile?.derived}
+        editProfileHref={welcomeHref(`${courseHref}/enroll?step=fit`)}
+        onStart={next=>{setAnswers(next);setPhase("build");void commit(next);}}
+        onOptions={next=>{setAnswers(next);setShowOptions(true);setPhase("customize");}}
       />
     );
   else if (phase === "customize")
