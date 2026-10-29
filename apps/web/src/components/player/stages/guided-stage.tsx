@@ -90,6 +90,12 @@ const PRACTICE_PHASES: PracticePhase[] = [
   },
 ];
 
+const PracticePresentation = React.createContext<GuidedBlock['presentation']>(undefined);
+function usePracticePhases() {
+  const presentation = React.useContext(PracticePresentation);
+  return React.useMemo(() => PRACTICE_PHASES.map((phase, i) => ({ ...phase, ...presentation?.phases[i] })), [presentation]);
+}
+
 /** Divide any module's practice steps across the five hands-on phases after Understand. */
 function phaseIndexForStep(index: number, total: number) {
   const boundaries = [0.375, 0.625, 0.75, 0.875].map((ratio) => Math.max(1, Math.round(total * ratio)));
@@ -131,10 +137,11 @@ function missionOf(block: GuidedBlock): GuidedMission {
  */
 export function GuidedStage({ block, adaptation, ...nav }: StageProps<GuidedBlock> & { adaptation: Adaptation }) {
   if (block.solved_case) return <SolvedCaseStage block={block} {...nav} />;
-  return <MissionGuidedStage block={block} adaptation={adaptation} {...nav} />;
+  return <PracticePresentation.Provider value={block.presentation}><MissionGuidedStage block={block} adaptation={adaptation} {...nav} /></PracticePresentation.Provider>;
 }
 
 function MissionGuidedStage({ block, adaptation, ...nav }: StageProps<GuidedBlock> & { adaptation: Adaptation }) {
+  const phases = usePracticePhases();
   const t = useTranslations("guide");
   const reduce = useReducedMotionConfig() ?? false;
   const mission = missionOf(block);
@@ -246,7 +253,7 @@ function MissionGuidedStage({ block, adaptation, ...nav }: StageProps<GuidedBloc
               n={view + 1}
               total={steps.length}
               mission={mission}
-              phase={PRACTICE_PHASES[activePhase]!}
+              phase={phases[activePhase]!}
               phaseNumber={activePhase + 1}
               done={done.has(steps[view]!.id)}
               helped={saved.helped.includes(steps[view]!.id)}
@@ -313,10 +320,11 @@ function MissionHud({
 
 /** Six named chapters make the practice read as one coherent story instead of a long checklist. */
 function PhaseRail({ current, completed, onSelect }: { current: number; completed: Set<number>; onSelect?: (phase: number) => void }) {
+  const phases = usePracticePhases();
   return (
     <nav aria-label="Guided practice phases" className="overflow-x-auto pb-1">
       <ol className="grid min-w-[720px] grid-cols-6 gap-2">
-        {PRACTICE_PHASES.map((phase, index) => {
+        {phases.map((phase, index) => {
           const Icon = phase.icon;
           const isCurrent = index === current;
           const isDone = completed.has(index);
@@ -356,7 +364,8 @@ function PhaseRail({ current, completed, onSelect }: { current: number; complete
 /** Scout visibly gains one working system at a time as the learner moves through the mission. */
 function ScoutBuild({ active, completed }: { active: number; completed: Set<number> }) {
   const reduce = useReducedMotionConfig() ?? false;
-  const parts = PRACTICE_PHASES.slice(1);
+  const presentation = React.useContext(PracticePresentation);
+  const parts = usePracticePhases().slice(1);
   return (
     <Surface pad="md" className="relative overflow-hidden border-stage-guided-line bg-stage-guided-soft/30">
       <div className="pointer-events-none absolute inset-0 opacity-40" aria-hidden>
@@ -365,9 +374,9 @@ function ScoutBuild({ active, completed }: { active: number; completed: Set<numb
       </div>
       <div className="relative flex items-start justify-between gap-4">
         <div>
-          <span className="text-[10px] font-semibold tracking-[0.18em] text-stage-guided uppercase">Scout build status</span>
-          <h3 className="mt-1 text-lg font-semibold">Bring one system online at a time</h3>
-          <p className="mt-1 text-sm text-ink-muted">Every completed phase becomes part of the agent you launch.</p>
+          <span className="text-[10px] font-semibold tracking-[0.18em] text-stage-guided uppercase">{presentation?.statusLabel ?? 'Scout build status'}</span>
+          <h3 className="mt-1 text-lg font-semibold">{presentation?.statusTitle ?? 'Bring one system online at a time'}</h3>
+          <p className="mt-1 text-sm text-ink-muted">{presentation?.statusBody ?? 'Every completed phase becomes part of the agent you launch.'}</p>
         </div>
         <motion.div
           animate={reduce ? undefined : active > 0 ? { scale: [1, 1.05, 1] } : undefined}
@@ -401,6 +410,7 @@ function ScoutBuild({ active, completed }: { active: number; completed: Set<numb
 /* ------------------------------------------------------------------ briefing */
 
 function Briefing({ block, mission, maxXp, onAccept }: { block: GuidedBlock; mission: GuidedMission; maxXp: number; onAccept: () => void }) {
+  const presentation = React.useContext(PracticePresentation);
   const t = useTranslations("guide");
   const reduce = useReducedMotionConfig() ?? false;
   const [packed, setPacked] = React.useState<number[]>([]);
@@ -412,7 +422,7 @@ function Briefing({ block, mission, maxXp, onAccept }: { block: GuidedBlock; mis
         <section className="focus-pane flex flex-col gap-4">
           <div className="flex flex-wrap items-center gap-2">
             <span className="flex items-center gap-2 text-xs font-semibold tracking-[0.18em] text-stage-guided uppercase"><Sparkles className="size-3.5" aria-hidden />Phase 1 · Understand</span>
-            <span className="rounded-full border border-warn-line bg-warn-soft px-2.5 py-1 text-xs font-semibold text-warn">400 tickets waiting</span>
+            <span className="rounded-full border border-warn-line bg-warn-soft px-2.5 py-1 text-xs font-semibold text-warn">{presentation?.briefTag ?? '400 tickets waiting'}</span>
           </div>
           <div>
             <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">{mission.codename}</h2>
@@ -446,7 +456,7 @@ function Briefing({ block, mission, maxXp, onAccept }: { block: GuidedBlock; mis
           </Surface>
           <Surface pad="md" className="flex flex-wrap items-center gap-x-5 gap-y-3 border-stage-guided-line bg-stage-guided-soft/40">
             <Reward icon={<Flag />} text="6 mission phases" /><Reward icon={<Zap />} text={t("rewardXp", { xp: maxXp })} /><Reward icon={<Award />} text={t("rewardBadge", { badge: mission.badge })} />
-            <Button size="lg" variant="brand" className="w-full" onClick={onAccept}>Begin the build<ArrowRight data-icon="inline-end" /></Button>
+            <Button size="lg" variant="brand" className="w-full" onClick={onAccept}>{presentation?.startLabel ?? 'Begin the build'}<ArrowRight data-icon="inline-end" /></Button>
           </Surface>
         </section>
       </div>

@@ -6,8 +6,8 @@ import { execFileSync } from "node:child_process";
 import path from "node:path";
 
 const here = path.dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1"));
-const suites = { "enrollment-start": "enrollment-start-test.ts", workplace: "workplace-test.ts", "adaptive-loop": "adaptive-loop-test.ts", live: "live-test.ts", engagement: "engagement-test.ts", workflow: "workflow-test.ts", companion: "companion-test.ts", profiling: "profiling-test.ts", "profiling-api": "profiling-api-test.ts", interview: "interview-test.ts", adapt: "adapt-test.ts" };
-const suite = suites[process.argv[2]] || "backend-test.ts";
+const suites = { "project-sandbox": "project-sandbox-test.ts", "authored-assessment": "authored-assessment-test.ts", "course-skills": "course-skills-test.ts", "authored-publication": "authored-publication-test.ts", "enrollment-start": "enrollment-start-test.ts", workplace: "workplace-test.ts", "adaptive-loop": "adaptive-loop-test.ts", live: "live-test.ts", engagement: "engagement-test.ts", workflow: "workflow-test.ts", companion: "companion-test.ts", profiling: "profiling-test.ts", "profiling-api": "profiling-api-test.ts", interview: "interview-test.ts", adapt: "adapt-test.ts" };
+const suite = process.argv[2] === "longform" ? "longform-test.ts" : process.argv[2] === "production-audio" ? "production-audio-test.ts" : process.argv[2] === "module-production" ? "module-production-test.ts" : process.argv[2] === "sme-review" ? "sme-review-test.ts" : process.argv[2] === "creator-blueprints" ? "creator-blueprints-test.ts" : process.argv[2] === "content-creator" ? "content-creator-test.ts" : process.argv[2] === "authored-course" ? "authored-course-test.ts" : suites[process.argv[2]] || "backend-test.ts";
 // generated files go to the gitignored .data folder
 const out = path.join(here, "..", "..", ".data", "tests");
 mkdirSync(out, { recursive: true });

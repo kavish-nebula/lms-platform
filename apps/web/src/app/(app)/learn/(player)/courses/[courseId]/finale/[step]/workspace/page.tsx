@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getCourse } from "@/data";
+import { getCourse, getFinale } from "@/data";
 import { WorkflowWorkspace } from "@/components/project/workflow-workspace";
+import { ProjectSandboxWorkspace } from '@/components/project/project-sandbox';
 
 type Params = { courseId: string; step: string };
 
@@ -15,6 +16,9 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
 export default async function ProjectWorkspacePage({ params }: { params: Promise<Params> }) {
   const { courseId, step } = await params;
   const course = await getCourse(courseId);
-  if (!course || courseId !== "ai-agent" || step !== "capstone") notFound();
+  if (!course || step !== 'capstone') notFound();
+  const finale = await getFinale(courseId);
+  if (finale?.capstone.sandbox) return <ProjectSandboxWorkspace project={finale.capstone.sandbox} />;
+  if (courseId !== 'ai-agent') notFound();
   return <WorkflowWorkspace course={course} />;
 }

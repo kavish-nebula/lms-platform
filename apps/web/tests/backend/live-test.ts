@@ -59,6 +59,7 @@ assert.equal(await claimJob(), null);
 const q = video.midQuiz[0] ?? video.endQuiz[0]!;
 const section = video.midQuiz.length ? "mid" : "end";
 assert(q);
+assert(q.selectionType !== "multiple", "The reference fixture uses single-answer checks.");
 const wrong = (q.correct + 1) % q.options.length;
 const checked = await verifiedSignals("ai-agent", [0, 1].map((i) => ({ key: `answer-${i}`, kind: "video_check", moduleId: "m1", lesson: "forged", payload: { videoId: video.id, section, question: 0, response: wrong, correct: true, verified: false } })));
 assert(checked.every((s) => s.payload.correct === false && s.payload.verified === true && s.lesson === video.lesson));

@@ -15,10 +15,26 @@
 import fs from "node:fs";
 import path from "node:path";
 import { KokoroTTS } from "kokoro-js";
+import { AutoTokenizer, StyleTextToSpeech2Model } from '@huggingface/transformers';
+import { synthesizeNarration } from './tts-chunks.mjs';
 
 const MODEL = process.env.KOKORO_MODEL ?? "onnx-community/Kokoro-82M-v1.0-ONNX";
 const DEVICE = process.env.KOKORO_DEVICE ?? "cpu";
 const DTYPE = process.env.KOKORO_DTYPE ?? "fp32";
+
+async function loadCpu() {
+  const dtype = DEVICE === 'cpu' ? DTYPE : 'fp32';
+  if (!job.chunkLong) return KokoroTTS.from_pretrained(MODEL, { dtype, device: 'cpu' });
+  // Several long-form video jobs can run together. Automatic per-session
+  // thread pools otherwise compete for the same cores and waste batch time.
+  const threads = Number(process.env.KOKORO_CPU_THREADS ?? 2);
+  if (!Number.isInteger(threads) || threads < 0 || threads > 64) throw new Error('KOKORO_CPU_THREADS must be an integer from 0 to 64.');
+  const [model, tokenizer] = await Promise.all([
+    StyleTextToSpeech2Model.from_pretrained(MODEL, { dtype, device: 'cpu', session_options: { intraOpNumThreads: threads, interOpNumThreads: 1 } }),
+    AutoTokenizer.from_pretrained(MODEL),
+  ]);
+  return new KokoroTTS(model, tokenizer);
+}
 
 async function load() {
   if (DEVICE !== "cpu") {
@@ -30,7 +46,7 @@ async function load() {
       console.error(`kokoro: ${DEVICE}/${DTYPE} failed (${String(e?.message ?? e).slice(0, 160)}); using the CPU`);
     }
   }
-  return KokoroTTS.from_pretrained(MODEL, { dtype: DEVICE === "cpu" ? DTYPE : "fp32", device: "cpu" });
+  return loadCpu();
 }
 
 function wav16(samples, rate) {
@@ -64,7 +80,7 @@ const tts = await load();
 
 for (const clip of job.clips) {
   try {
-    const audio = await tts.generate(clip.text, { voice: job.voice ?? "am_michael" });
+    const audio = job.chunkLong ? await synthesizeNarration(tts, clip.text, job.voice ?? 'am_michael') : await tts.generate(clip.text, { voice: job.voice ?? "am_michael" });
     fs.mkdirSync(path.dirname(clip.out), { recursive: true });
     const tmp = `${clip.out}.part`;
     fs.writeFileSync(tmp, wav16(audio.audio, audio.sampling_rate));

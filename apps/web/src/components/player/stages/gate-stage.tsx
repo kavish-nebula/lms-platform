@@ -66,7 +66,7 @@ export function GateStage({
   const t = useTranslations("player");
   const forModule = scope === "module";
   const context = useLearningContext();
-  const resultKey = `lms-gate:v1:${context?.courseId ?? "course"}:${checkId}`;
+  const resultKey = `lms-gate:v1:${context?.courseId ?? "course"}:${checkId}${block.authoredAssessment ? `:${block.authoredAssessment.revisionId}` : ''}`;
   const savedResult = useLocalJson<GateResult | null>(resultKey, null);
   const [phase, setPhase] = React.useState<Phase>("intro");
   const [retrying, setRetrying] = React.useState(false);
@@ -74,6 +74,7 @@ export function GateStage({
   const [questionIndex, setQuestionIndex] = React.useState(0);
   const [result, setResult] = React.useState<GateResult | null>(null);
   const [confirm, setConfirm] = React.useState(false);
+  const [submitError, setSubmitError] = React.useState('');
   const tested = objectives.filter((o) => block.objectives_tested.includes(o.id));
   const answeredCount = block.items.filter((i) => {
     const r = responses[i.id];
@@ -82,17 +83,25 @@ export function GateStage({
 
   async function submit() {
     setConfirm(false);
+    setSubmitError('');
     setPhase("submitting");
-    const r = await gradeGate(checkId, block, responses);
-    writeLocal(resultKey, JSON.stringify(r));
-    onGraded?.(r, responses);
-    setResult(r);
-    setPhase("result");
+    try {
+      const r = await gradeGate(checkId, block, responses);
+      writeLocal(resultKey, JSON.stringify(r));
+      onGraded?.(r, responses);
+      setResult(r);
+      setPhase("result");
+    } catch (e) {
+      setSubmitError(e instanceof Error ? e.message : 'Could not check your answers. Please retry.');
+      setPhase('running');
+    }
   }
 
   if (phase === "intro" && (!savedResult || retrying)) {
     return (
-      <StageShell stage="gate" title={t("gateIntroTitle")} minutes={block.duration_min} bloom={block.bloom} hideFooter>
+      <StageShell stage="gate" title={block.title ?? t("gateIntroTitle")} minutes={block.duration_min} bloom={block.bloom} hideFooter>
+        {block.instructions && <p className="text-ink-muted">{block.instructions}</p>}
+        {block.items.some(item => item.kind === 'multi') && <p className="text-sm text-ink-muted">For “Select all correct answers” questions, select every correct option and no incorrect options. There is no partial credit.</p>}
         <Surface pad="lg" className="flex flex-col gap-5">
           <div className="flex flex-col gap-2">
             <h2 className="flex items-center gap-2 font-semibold">
@@ -165,6 +174,8 @@ export function GateStage({
           {t("answeredOf", { done: answeredCount, total: block.items.length })}
         </span>
       </div>
+
+      {submitError && <p role="alert" className="text-sm text-destructive">{submitError}</p>}
 
       <nav aria-label="Quiz questions" className="flex flex-wrap items-center gap-2">
         {block.items.map((item, i) => {
@@ -250,7 +261,7 @@ function GateQuestion({
         {item.interleaved_from ? <Chip size="sm" tone="review">{t("fromModule", { module: item.interleaved_from })}</Chip> : null}
         {item.lessons?.length ? <Chip size="sm" tone="review">{t("fromLessons", { list: item.lessons.join(" · ") })}</Chip> : null}
         {item.transfer ? <Chip size="sm" tone="info">{t("scenarioChip")}</Chip> : null}
-        {item.kind === "multi" ? <Chip size="sm">{t("selectAll")}</Chip> : null}
+        {item.kind !== 'fill' && <Chip size="sm">{item.kind === 'multi' ? 'Select all correct answers' : 'Select one answer'}</Chip>}
       </div>
       {item.kind === "fill" ? (
         <div className="flex flex-col gap-2">
@@ -333,7 +344,7 @@ function GateResultView({
           <p className="mt-1 text-ink-muted">
             {passed
               ? forModule
-                ? t("gatePassedNextModule")
+                ? block.authoredAssessment ? 'Quiz passed. Continue to the next part of your course.' : t("gatePassedNextModule")
                 : t("gatePassedNext")
               : t("gateRetry", { hours: block.retry_policy.wait_hours })}
           </p>
@@ -431,7 +442,7 @@ function GateResultView({
         ) : null}
         {passed || DEMO_OPEN ? (
           <Button size="lg" variant={passed ? "brand" : "outline"} onClick={onContinue}>
-            {passed ? (forModule ? t("gateUnlockNext") : t("completeContinue")) : t("continueAnyway")}
+            {passed ? (forModule ? block.authoredAssessment ? 'Continue course' : t("gateUnlockNext") : t("completeContinue")) : t("continueAnyway")}
             <ArrowRight data-icon="inline-end" />
           </Button>
         ) : null}

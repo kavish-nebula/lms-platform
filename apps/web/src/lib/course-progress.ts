@@ -16,6 +16,7 @@ import type { Course, CourseModule, FinaleStep, ModuleState } from "@/data/types
 import type { StageId } from "@/lib/stages";
 
 const PREFIX = "lms-progress:";
+import { SCOPED_PROGRESS, previewFor } from './preview-progress';
 
 export type ModuleProgress = CourseModule & {
   index: number;
@@ -144,23 +145,22 @@ export function deriveProgress(
 function useStored() {
   const { enrollments } = useLearnerData();
   const local = useLocalPrefix<StageId[]>(PREFIX);
+  const scoped = useLocalPrefix<StageId[]>(SCOPED_PROGRESS);
   const finales = useLocalPrefix<FinaleState>(FINALE_PREFIX);
   return React.useMemo(() => {
-    const preview: Record<string, StageId[]> = {};
-    for (const [k, v] of Object.entries(local)) preview[k.slice(PREFIX.length)] = v;
     const finale: Record<string, FinaleState> = {};
     for (const [k, v] of Object.entries(finales)) finale[k.slice(FINALE_PREFIX.length)] = v;
     return (course: Course) => {
       const e = enrollments[course.course_id];
       return deriveProgress(
         course,
-        e ? (e.progress as Record<string, StageId[]>) : preview,
+        e ? (e.progress as Record<string, StageId[]>) : previewFor(course.course_id, local, scoped),
         finale[course.course_id],
         e ? adaptationOf(e.answers).order[0] === "example" : false,
         e?.plan?.plan ?? null,
       );
     };
-  }, [enrollments, local, finales]);
+  }, [enrollments, local, scoped, finales]);
 }
 
 export function useCourseProgress(course: Course): CourseProgress {

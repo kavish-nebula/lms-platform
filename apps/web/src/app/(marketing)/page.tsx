@@ -9,7 +9,7 @@ import { moduleTopics } from "@/lib/topics";
 /** S0 Marketing home (Aurora theme). */
 export default async function HomePage() {
   // the hero previews the first course's first module, when there is one
-  const course = (await getCourses())[0];
+  const course = (await getCourses(false))[0];
   const first = course?.modules[0];
   const preview =
     course && first

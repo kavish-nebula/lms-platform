@@ -112,27 +112,39 @@ export async function getLearner(): Promise<Learner> {
   return learner;
 }
 
-export async function getCourses(): Promise<Course[]> {
-  return courses;
+export async function getCourses(includePublished = true): Promise<Course[]> {
+  if (!includePublished) return courses;
+  const { listPublishedAuthoredCourses } = await import('@/server/authored-publication');
+  const { authoredDelivery } = await import('@/lib/authored-delivery');
+  return [...courses, ...(await listPublishedAuthoredCourses()).map(r => authoredDelivery(r).course)];
 }
 
 export async function getCourse(courseId: string): Promise<Course | undefined> {
-  return courses.find((c) => c.course_id === courseId);
+  return courses.find((c) => c.course_id === courseId) ?? (await releasedDelivery(courseId))?.course;
+}
+
+async function releasedDelivery(courseId: string) {
+  const { getPublishedAuthoredCourse } = await import('@/server/authored-publication');
+  const release = await getPublishedAuthoredCourse(courseId);
+  if (!release) return undefined;
+  const { authoredDelivery } = await import('@/lib/authored-delivery');
+  return authoredDelivery(release);
 }
 
 /** Module lesson content: full modules, or a module's concept videos and guided practice. */
 export async function getModule(courseId: string, moduleId: string): Promise<ModuleContent | undefined> {
-  return authored.find((m) => m.course_id === courseId && m.module_id === moduleId);
+  return authored.find((m) => m.course_id === courseId && m.module_id === moduleId) ?? (await releasedDelivery(courseId))?.modules.find(m => m.module_id === moduleId);
 }
 
 /** Ids of the modules that have lesson content. */
 export async function getAuthoredModuleIds(courseId: string): Promise<string[]> {
-  return authored.filter((m) => m.course_id === courseId).map((m) => m.module_id);
+  const ids = authored.filter((m) => m.course_id === courseId).map((m) => m.module_id);
+  return ids.length ? ids : (await releasedDelivery(courseId))?.modules.map(m => m.module_id) ?? [];
 }
 
 /** The course finale: capstone, final check and wrap-up, taken after all modules. */
 export async function getFinale(courseId: string): Promise<FinaleContent | undefined> {
-  return finales.find((f) => f.course_id === courseId);
+  return finales.find((f) => f.course_id === courseId) ?? (await releasedDelivery(courseId))?.finale;
 }
 
 /** The ungraded pre-check asked once, before Module 1. */

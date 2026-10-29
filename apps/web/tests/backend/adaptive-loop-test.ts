@@ -60,6 +60,7 @@ const mod = (await getModule("ai-agent", "m1"))!;
 const video = getBlock(mod, "explainer")!.videos![0]!;
 const section = video.midQuiz.length ? "mid" : "end";
 const q = (section === "mid" ? video.midQuiz : video.endQuiz)[0]!;
+assert(q.selectionType !== "multiple", "The reference fixture uses single-answer checks.");
 await recordSignals(user, "ai-agent", [0, 1].map((i) => ({ key: `loop-miss-${i}`, kind: "video_check", moduleId: "m1", lesson: null, payload: { videoId: video.id, section, question: 0, response: (q.correct + 1) % q.options.length, correct: true } })), schedule, transport);
 const beforeAi = (await jobsFor(e.id, "m2")).filter((r) => r.status !== "superseded");
 assert(beforeAi.length > 0, "Module 1 answers queue Module 2 before completion");

@@ -7,6 +7,7 @@ import { FINALE_PREFIX, type FinaleState } from "@/lib/finale";
 import { courseUnits, DEFAULT_PLAN, type PlanState, type PlanUnit } from "@/lib/plan";
 import type { Course } from "@/data/types";
 import type { StageId } from "@/lib/stages";
+import { SCOPED_PROGRESS, previewFor } from '@/lib/preview-progress';
 
 const KEY = "lms-plan";
 const PROGRESS = "lms-progress:";
@@ -26,21 +27,20 @@ export function usePlanState() {
 export function useCourseUnits(courses: Course[]) {
   const { enrollments } = useLearnerData();
   const raw = useLocalPrefix<StageId[]>(PROGRESS);
+  const scoped = useLocalPrefix<StageId[]>(SCOPED_PROGRESS);
   const finales = useLocalPrefix<FinaleState>(FINALE_PREFIX);
   return React.useMemo(() => {
-    const preview: Record<string, StageId[]> = {};
-    for (const [k, v] of Object.entries(raw)) preview[k.slice(PROGRESS.length)] = v;
     const byCourse = new Map<string, PlanUnit[]>();
     const all = new Map<string, PlanUnit>();
     for (const c of courses) {
       const e = enrollments[c.course_id];
-      const stored = e ? (e.progress as Record<string, StageId[]>) : preview;
+      const stored = e ? (e.progress as Record<string, StageId[]>) : previewFor(c.course_id, raw, scoped);
       const units = courseUnits(c, stored, finales[`${FINALE_PREFIX}${c.course_id}`]?.done ?? []);
       byCourse.set(c.course_id, units);
       for (const u of units) all.set(u.id, u);
     }
     return { byCourse, all };
-  }, [courses, enrollments, raw, finales]);
+  }, [courses, enrollments, raw, scoped, finales]);
 }
 
 /** UTC-noon Date for a day key, so formatting in any time zone shows that day. */

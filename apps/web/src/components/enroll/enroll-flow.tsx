@@ -116,6 +116,7 @@ export function EnrollFlow({
     body = (
       <QuickEnrollment
         title={course.title}
+        topic={course.authoredRevisionId ? course.subjectLabel ?? 'the course topic' : undefined}
         answers={answers}
         derived={profile?.derived}
         editProfileHref={welcomeHref(`${courseHref}/enroll?step=fit`)}

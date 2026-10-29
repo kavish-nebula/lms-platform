@@ -56,6 +56,8 @@ export function CommandMenu({
 
   function go(href: string) {
     setOpen(false);
+    // Editors can protect an unsaved draft even when navigation is not a link.
+    if (!window.dispatchEvent(new CustomEvent("lms:before-navigate", { cancelable: true, detail: { href } }))) return;
     router.push(href);
   }
 

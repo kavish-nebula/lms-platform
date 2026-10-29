@@ -6,6 +6,7 @@ import { useLocalJson, useLocalString, writeLocal } from "@/lib/local-store";
 import type { EnrollmentView } from "@/lib/learner-plan";
 import type { StageId } from "@/lib/stages";
 import { flushSignals } from "@/lib/signals";
+import { previewKey } from '@/lib/preview-progress';
 
 /**
  * Topics done in one module, by stable step ID (agents.md hard rule 1).
@@ -13,12 +14,11 @@ import { flushSignals } from "@/lib/signals";
  * the planner); a preview before enrolling stays in this browser and moves
  * to the server on enrolment.
  */
-const key = (moduleId: string) => `lms-progress:${moduleId}`;
 
 export function useModuleProgress(courseId: string, moduleId: string, initialDone: StageId[]) {
   const { enrollments } = useLearnerData();
   const enrollment = enrollments[courseId];
-  const local = useLocalJson<StageId[]>(key(moduleId), initialDone);
+  const local = useLocalJson<StageId[]>(previewKey(courseId, moduleId), initialDone);
   const serverDone = enrollment?.progress[moduleId];
   const done = React.useMemo(() => (enrollment ? ((serverDone ?? []) as StageId[]) : local), [enrollment, serverDone, local]);
 
@@ -26,7 +26,7 @@ export function useModuleProgress(courseId: string, moduleId: string, initialDon
     async (stage: StageId) => {
       if (done.includes(stage)) return;
       if (!enrollment) {
-        writeLocal(key(moduleId), JSON.stringify([...done, stage]));
+        writeLocal(previewKey(courseId, moduleId), JSON.stringify([...done, stage]));
         return;
       }
       await storeEnrollment({ ...enrollment, progress: { ...enrollment.progress, [moduleId]: [...done, stage] } });

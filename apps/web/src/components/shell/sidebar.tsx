@@ -8,7 +8,7 @@ import { useTranslations } from "next-intl";
 import { ChevronsUpDown, Check } from "lucide-react";
 import { motion } from "motion/react";
 import { Logo } from "@/components/kit/logo";
-import { NAV, ROLES, type Role } from "@/lib/nav";
+import { NAV, ROLES, ROLE_HOME, type Role } from "@/lib/nav";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -148,6 +148,7 @@ function RoleSwitcher({ role, heldRoles }: { role: Role; heldRoles: Role[] }) {
         <DropdownMenuSeparator />
         {ROLES.map((r) => {
           const held = heldRoles.includes(r);
+          if (held) return <DropdownMenuItem key={r} asChild className="justify-between"><Link href={ROLE_HOME[r]}>{t(r)}{r === role ? <Check className="size-4 text-brand-ink" aria-hidden /> : null}</Link></DropdownMenuItem>;
           return (
             <DropdownMenuItem key={r} disabled={!held} className="justify-between">
               {t(r)}

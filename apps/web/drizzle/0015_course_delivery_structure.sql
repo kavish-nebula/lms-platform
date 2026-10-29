@@ -1,0 +1,1 @@
+ALTER TABLE "creator_courses" ADD COLUMN "delivery_structure" text DEFAULT 'legacy' NOT NULL;

@@ -28,6 +28,8 @@ import {
   X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ChoiceList } from "@/components/player/items";
+import { correctChoiceIndices, exactChoices } from "@/lib/assessment-answers";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useLocalString, useLocalJson, useHydrated, writeLocal } from "@/lib/local-store";
 import { VideoSlideView } from "@/components/player/video/video-slide";
@@ -282,6 +284,11 @@ export function VideoLesson({
     jump(to);
   };
   const next = () => {
+    // A one-slide video has its midpoint on the final slide too.
+    if (quizAfter >= 0 && idx >= quizAfter && !midPassed) {
+      pause();
+      return setPhase('mid');
+    }
     if (idx === last) {
       pause();
       return setPhase(endPassed ? "done" : "end");
@@ -344,12 +351,12 @@ export function VideoLesson({
     signal({ kind: "support_request", moduleId: learningContext?.moduleId, lesson: video.lesson, payload: { videoId: video.id, slide: idx, trigger } });
     void adaptation.request(trigger);
   };
-  const answerVideo = (section: "mid" | "end", question: number, response: number) => {
+  const answerVideo = (section: "mid" | "end", question: number, response: number | number[]) => {
     signal({ kind: "video_check", moduleId: learningContext?.moduleId, lesson: video.lesson, payload: { videoId: video.id, section, question, response } });
     const q = (section === "mid" ? video.midQuiz : video.endQuiz)[question];
     // Keep the quiz mounted while help is prepared, so its question and hint
     // survive both the answer and the arrival of a revised explanation.
-    if (adaptation.active && q && response !== q.correct) requestAdaptation("wrong_answer");
+    if (adaptation.active && q && !exactChoices(Array.isArray(response) ? response : [response], correctChoiceIndices(q))) requestAdaptation("wrong_answer");
   };
   useCompanionStep({ title: video.title === slide.title ? video.title : `${video.title} · ${slide.title}`, guidance: slide.narration, videoId: video.id, slideTitle: slide.title, phase: learningContext?.phase === "intro" ? "intro" : undefined });
   const sentences = React.useMemo(() => (slide.sentences.length ? slide.sentences : [slide.narration]), [slide]);
@@ -437,10 +444,15 @@ export function VideoLesson({
               doneLabel={t("continueVideo")}
               onDone={() => {
                 setMidPassed(true);
-                setPhase("play");
-                setPlaying(true);
                 setFrac(0);
-                setIdx(quizAfter + 1);
+                if (quizAfter >= last) {
+                  setPlaying(false);
+                  setPhase(endPassed ? 'done' : 'end');
+                } else {
+                  setPhase('play');
+                  setPlaying(true);
+                  setIdx(quizAfter + 1);
+                }
               }}
             />
           ) : null}
@@ -663,88 +675,55 @@ function CtrlButton({
  * A short check inside the video, as a popup over the slide. A right answer
  * can move on; a wrong one gets feedback and a hint on the same question.
  */
-function QuizOverlay({ questions, onDone, doneLabel, onAnswer }: { questions: VideoQuiz[]; onDone: () => void; doneLabel: string; onAnswer?: (question: number, response: number) => void }) {
+function QuizOverlay({ questions, onDone, doneLabel, onAnswer }: { questions: VideoQuiz[]; onDone: () => void; doneLabel: string; onAnswer?: (question: number, response: number | number[]) => void }) {
   const t = useTranslations("video");
   const [qi, setQi] = React.useState(0);
-  const [choice, setChoice] = React.useState<number | null>(null);
-  const [hintVisible, setHintVisible] = React.useState(false);
-  const options = React.useRef<(HTMLButtonElement | null)[]>([]);
+  const [selections, setSelections] = React.useState<number[]>([]);
+  const [submitted, setSubmitted] = React.useState(false);
+  const options = React.useRef<HTMLDivElement>(null);
   const q = questions[qi]!;
-  const right = choice === q.correct;
+  const multiple = q.selectionType === 'multiple';
+  const right = submitted && exactChoices(selections, correctChoiceIndices(q));
   const lastQ = qi === questions.length - 1;
   const move = () => {
     if (lastQ) onDone();
-    else {
-      setQi(qi + 1);
-      setChoice(null);
-      setHintVisible(false);
-    }
+    else { setQi(qi + 1); setSelections([]); setSubmitted(false); }
   };
-
+  const check = (values: number[]) => {
+    setSubmitted(true);
+    onAnswer?.(qi, multiple ? values : values[0]!);
+  };
   return (
     <motion.div className="vl-overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-      <motion.div
-        key={qi}
-        role="dialog"
-        aria-label={t("quickCheck")}
-        initial={{ scale: 0.96, opacity: 0, y: 8 }}
-        animate={{ scale: 1, opacity: 1, y: 0 }}
-        className="w-[min(480px,100%)] rounded-card border border-line bg-panel p-5 text-left shadow-lg"
-      >
+      <motion.div key={qi} role="dialog" aria-label={t("quickCheck")}
+        initial={{ scale: 0.96, opacity: 0, y: 8 }} animate={{ scale: 1, opacity: 1, y: 0 }}
+        className="max-h-full w-[min(480px,100%)] overflow-y-auto rounded-card border border-line bg-panel p-5 text-left shadow-lg">
         <div className="flex items-center justify-between gap-3">
-          <div className="text-xs font-semibold tracking-wide text-warn uppercase">
-            {t("quickCheck")} · {t("nOfTotal", { n: qi + 1, total: questions.length })}
-          </div>
-          <button type="button" onClick={move} className="text-sm text-ink-muted hover:text-ink hover:underline">
-            {t("skip")}
-          </button>
+          <div className="text-xs font-semibold tracking-wide text-warn uppercase">{t("quickCheck")} · {t("nOfTotal", { n: qi + 1, total: questions.length })}</div>
+          <button type="button" onClick={move} className="text-sm text-ink-muted hover:text-ink hover:underline">{t("skip")}</button>
         </div>
-        <p className="mt-3 mb-3 leading-snug font-semibold">{q.q}</p>
-        <div className="flex flex-col gap-2">
-          {q.options.map((o, i) => (
-            <button
-              key={o}
-              ref={(node) => { options.current[i] = node; }}
-              type="button"
-              disabled={right}
-              onClick={() => { setChoice(i); if (i !== q.correct) setHintVisible(true); onAnswer?.(qi, i); }}
-              className={cn(
-                "rounded-lg border px-3 py-2.5 text-left text-sm outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring/60",
-                choice === i
-                  ? right
-                    ? "border-ok-line bg-ok-soft text-ok"
-                    : "border-warn-line bg-warn-soft"
-                  : "border-line bg-panel-2/60 hover:border-brand-line",
-                right && choice !== i && "opacity-60",
-              )}
-            >
-              {o}
-            </button>
-          ))}
+        <p id={`video-question-${qi}`} className="mt-3 mb-3 leading-snug font-semibold">{q.q}</p>
+        <p className="mb-3 text-sm text-ink-muted">{multiple ? 'Select all correct answers. Select every correct option and no incorrect options.' : 'Select one answer.'}</p>
+        <div ref={options}>
+          <ChoiceList name={`video-quiz-${qi}`} labelledBy={`video-question-${qi}`}
+            options={q.options.map((text, i) => ({ id: String(i), text }))}
+            multiple={multiple} disabled={right} value={selections.map(String)}
+            onChange={values => {
+              const next = values.map(Number);
+              setSelections(next);
+              setSubmitted(false);
+              if (!multiple) check(next);
+            }} />
         </div>
         <div aria-live="polite" className="mt-3 text-sm">
-          {choice !== null && right ? (
-            <p>
-              <b className="text-ok">{t("right")} </b>
-              {q.explain}
-            </p>
-          ) : null}
-          {hintVisible && !right ? (
-            <p>
-              {choice !== null ? <><b className="text-warn">{t("notQuite")}</b><br /></> : null}
-              <b className="text-warn">{t("hint")} </b>
-              {q.hint}
-            </p>
-          ) : null}
+          {submitted && (right ? <p><b className="text-ok">{t("right")} </b>{q.explain}</p> : <p><b className="text-warn">{t("notQuite")}</b><br /><b className="text-warn">{t("hint")} </b>{q.hint}</p>)}
         </div>
-        {choice !== null ? (
-          <div className="mt-4 flex items-center justify-between gap-3">
-            <span className="text-xs text-ink-faint">{right ? "" : t("chooseAgain")}</span>
-            <Button size="sm" variant={right ? "brand" : "outline"} className={cn(!right && "bg-transparent")} onClick={right ? move : () => { setChoice(null); options.current[0]?.focus(); }}>
-              {right ? <>{lastQ ? doneLabel : t("nextQuestion")}<ArrowRight data-icon="inline-end" /></> : t("tryAgain")}
-            </Button>
-          </div>
-        ) : null}
+        <div className="mt-4 flex items-center justify-end gap-3">
+          {multiple && !submitted && <Button size="sm" disabled={!selections.length} onClick={() => check(selections)}>Check answers</Button>}
+          {submitted && <Button size="sm" variant={right ? 'brand' : 'outline'} onClick={right ? move : () => {
+            setSelections([]); setSubmitted(false); options.current?.querySelector<HTMLElement>('input, button')?.focus();
+          }}>{right ? <>{lastQ ? doneLabel : t("nextQuestion")}<ArrowRight data-icon="inline-end" /></> : t("tryAgain")}</Button>}
+        </div>
       </motion.div>
     </motion.div>
   );

@@ -6,6 +6,7 @@
  */
 import keysJson from "@lms/fixtures/mock-gate-keys.json";
 import type { GateBlock } from "./types";
+import { exactChoices } from '@/lib/assessment-answers';
 
 const KEYS = keysJson as unknown as Record<string, Record<string, string | string[]>>;
 
@@ -25,9 +26,9 @@ export type GateResult = {
 function isCorrect(key: string | string[] | undefined, response: GateResponse) {
   if (key == null || response == null) return false;
   if (Array.isArray(key)) {
-    const r = Array.isArray(response) ? [...response].sort() : [response];
-    return r.length === key.length && [...key].sort().every((k, i) => k === r[i]);
+    return exactChoices(Array.isArray(response) ? response : [response], key);
   }
+  if (Array.isArray(response) && response.length !== 1) return false;
   const value = Array.isArray(response) ? response[0] : response;
   return (value ?? "").trim().toLowerCase() === key;
 }
@@ -51,10 +52,22 @@ export async function gradeGate(
   block: GateBlock,
   responses: Record<string, GateResponse>,
 ): Promise<GateResult> {
+  if (block.authoredAssessment) {
+    const { courseId, revisionId, moduleId } = block.authoredAssessment;
+    const response = await fetch(`/api/v1/courses/${courseId}/assessment`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ revisionId, moduleId, responses }) });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error?.message ?? 'Could not check your answers. Please retry.');
+    return result.result as GateResult;
+  }
   // Simulate network latency so loading states are visible.
   await new Promise((r) => setTimeout(r, 600));
   const keys = KEYS[checkId] ?? {};
   const explain = KEYS[`${checkId}_explain`] ?? {};
+  return gradeWithKeys(block, responses, keys, explain);
+}
+
+/** The same scoring rule with a server-selected key for a released package. */
+export function gradeWithKeys(block: GateBlock, responses: Record<string, GateResponse>, keys: Record<string, string | string[]>, explain: Record<string, string | string[]> = {}): GateResult {
   const review: GateResult["review"] = [];
 
   const per = new Map<string, { correct: number; total: number }>();
@@ -64,10 +77,12 @@ export async function gradeGate(
     if (ok) score++;
     const why = explain[item.id];
     review.push({ id: item.id, correct: ok, explain: typeof why === "string" ? why : undefined });
-    const row = per.get(item.objective_id) ?? { correct: 0, total: 0 };
-    row.total++;
-    if (ok) row.correct++;
-    per.set(item.objective_id, row);
+    for (const objective of new Set(item.objective_ids ?? [item.objective_id])) {
+      const row = per.get(objective) ?? { correct: 0, total: 0 };
+      row.total++;
+      if (ok) row.correct++;
+      per.set(objective, row);
+    }
   }
 
   const total = block.items.length;

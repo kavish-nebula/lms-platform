@@ -43,16 +43,18 @@ export async function saveEnrollment(courseId: string, current: Enrollment | nul
 
 /** Topics finished while previewing (before enrolling) move to the new enrollment. */
 async function moveLocalProgress(courseId: string) {
+  const { previewPrefix } = await import('./preview-progress');
+  const prefix = previewPrefix(courseId);
   const local: [string, string[]][] = [];
   try {
-    for (const k of Object.keys(localStorage)) if (k.startsWith("lms-progress:")) local.push([k, JSON.parse(localStorage.getItem(k) ?? "[]") as string[]]);
+    for (const k of Object.keys(localStorage)) if (k.startsWith(prefix)) local.push([k, JSON.parse(localStorage.getItem(k) ?? "[]") as string[]]);
   } catch {
     return;
   }
   if (!local.length) return;
   let last: Enrollment | null = null;
   for (const [k, stages] of local) {
-    const moduleId = k.slice("lms-progress:".length);
+    const moduleId = k.slice(prefix.length);
     for (const stage of stages) {
       last = await api<{ enrollment: Enrollment }>(`/api/v1/enrollments/${courseId}/progress`, { method: "POST", body: { moduleId, stage } })
         .then((r) => r.enrollment)

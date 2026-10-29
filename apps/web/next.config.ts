@@ -5,6 +5,8 @@ import type { NextConfig } from "next";
 const monorepoRoot = path.join(__dirname, "..", "..");
 
 const nextConfig: NextConfig = {
+  // Keep verification builds isolated when the developer server is using .next.
+  distDir: process.env.LMS_NEXT_DIST_DIR ?? ".next",
   async headers() {
     return [{ source: "/pyodide/:path*", headers: [{ key: "Access-Control-Allow-Origin", value: "*" }] }];
   },

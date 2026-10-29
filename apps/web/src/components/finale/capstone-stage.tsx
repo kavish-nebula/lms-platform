@@ -10,6 +10,8 @@ import { NumberTicker } from "@/components/kit/number-ticker";
 import { Button } from "@/components/ui/button";
 import { StageShell } from "@/components/player/stage-shell";
 import type { CapstoneBlock } from "@/data/types";
+import { AuthoredNotes } from '@/components/learning/authored-notes';
+import { ProjectSandboxWorkspace } from '@/components/project/project-sandbox';
 
 /**
  * The course capstone, once, after all modules. The brief is the scene and
@@ -31,6 +33,7 @@ export function CapstoneStage({
   done: boolean;
   onComplete: () => void;
 }) {
+  if (block.sandbox) return <ProjectSandboxWorkspace key={block.sandbox.revisionId} project={block.sandbox} embedded onContinue={onComplete} />;
   if (done) return <Done block={block} workspace={workspace} onComplete={onComplete} />;
   return <Brief block={block} preview={preview} workspace={workspace} onComplete={onComplete} />;
 }
@@ -75,6 +78,7 @@ function Brief({
         </div>
       </Surface>
 
+      {block.writing && !preview ? <Surface pad="lg"><AuthoredNotes storageKey={block.writing.storageKey} label={block.writing.label} /></Surface> : null}
       {workspace ? <WorkspaceCard workspace={workspace} preview={preview} /> : null}
 
       <Surface pad="md" className="flex flex-wrap items-center justify-between gap-4 border-stage-project-line">
@@ -122,6 +126,7 @@ function Done({ block, workspace, onComplete }: { block: CapstoneBlock; workspac
         </ul>
       </Surface>
 
+      {block.writing ? <Surface pad="lg"><AuthoredNotes storageKey={block.writing.storageKey} label={block.writing.label} /></Surface> : null}
       {workspace ? <WorkspaceCard workspace={workspace} preview={false} /> : null}
 
       {block.hours_saved != null ? (

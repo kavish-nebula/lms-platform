@@ -8,8 +8,8 @@ type Params={courseId:string;moduleId:string};
 export const metadata:Metadata={title:'Course reader'};
 export default async function ReaderPage({params,searchParams}:{params:Promise<Params>;searchParams:Promise<{chapter?:string;book?:string;view?:string}>}){
   const [{courseId,moduleId},query]=await Promise.all([params,searchParams]);
-  if(courseId!=='ai-agent')notFound();
   const course=await getCourse(courseId);if(!course)notFound();
+  if(courseId!=='ai-agent'&&!course.authoredRevisionId)notFound();
   const modules=(await Promise.all(course.modules.map(m=>getModule(courseId,m.module_id)))).filter(m=>m!==null&&m!==undefined).map(readerModule).filter(m=>m.chapters.length);
   const current=modules.find(m=>m.id===moduleId);if(!current)notFound();
   const chapter=query.chapter??current.chapters[0]!.id;if(!current.chapters.some(v=>v.id===chapter))notFound();

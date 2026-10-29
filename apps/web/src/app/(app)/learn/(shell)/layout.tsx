@@ -12,7 +12,7 @@ export default async function LearnShellLayout({ children }: { children: React.R
   const shell = (
     <AppShell
       role="learner"
-      heldRoles={["learner"]}
+      heldRoles={["learner", "content_creator"]}
       user={{ name: learner.user.name, email: learner.user.email }}
       courses={courses.map((c) => ({ id: c.course_id, title: c.title, href: `/learn/courses/${c.course_id}` }))}
       notifications={[

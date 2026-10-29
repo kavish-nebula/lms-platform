@@ -458,7 +458,7 @@ export function HookCinema({
   } else if (scene === "replay") {
     body = <Replay block={block} moduleId={moduleId} voice={voice} guessed={block.hunches.find((h) => h.id === guess)?.label} reduce={reduce} onDone={toVerdict} />;
   } else {
-    const roleText = adaptation.roleKey ? ROLE_HOOK[moduleIndex]?.[adaptation.roleKey as keyof (typeof ROLE_HOOK)[1]] : undefined;
+    const roleText = adaptation.roleKey ? block.roleNotes ? block.roleNotes[adaptation.roleKey] : ROLE_HOOK[moduleIndex]?.[adaptation.roleKey as keyof (typeof ROLE_HOOK)[1]] : undefined;
     const line = correct ? (sure === "certain" ? t("winSure") : t("win")) : sure === "certain" ? t("missSure") : t("miss");
     body = (
       <div className="hc-scene hc-verdict-grid">

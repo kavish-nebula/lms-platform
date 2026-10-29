@@ -95,7 +95,7 @@ export function deriveGameProgress(
   let xp = enrolled ? 25 : 0;
   for (const courseModule of progress.modules) {
     for (const stage of courseModule.done) if (stage !== "explainer") xp += STAGE_XP[stage] ?? 0;
-    const watchedHere = watched.filter((id) => id.startsWith(`${courseModule.module_id}-`)).length;
+    const watchedHere = watched.filter((id) => id.startsWith(course.authoredRevisionId ? `${course.course_id}-${courseModule.module_id}-` : `${courseModule.module_id}-`)).length;
     const allVideos = course.modules.find((m) => m.module_id === courseModule.module_id)?.lessons.length ?? 0;
     xp += Math.max(watchedHere, courseModule.done.includes("explainer") ? allVideos : 0) * 10;
   }
@@ -119,7 +119,7 @@ export function deriveGameProgress(
     return {
       moduleId: courseModule.module_id,
       stars,
-      upgrade: UPGRADE_NAMES[index] ?? "Scout upgrade",
+      upgrade: course.authoredRevisionId ? courseModule.title : UPGRADE_NAMES[index] ?? "Scout upgrade",
       icon: UPGRADE_ICONS[index] ?? "✦",
       earned: courseModule.liveState === "done",
     };
@@ -133,30 +133,30 @@ export function deriveGameProgress(
     { id: "builder", name: "Tool Builder", detail: "Complete Agent Tools", earned: mastery[2]?.earned ?? false },
     { id: "memory", name: "Memory Keeper", detail: "Complete Memory & Planning", earned: mastery[3]?.earned ?? false },
     { id: "recall", name: "Recall Streak", detail: "Complete three spaced reviews", earned: learning.reviews.filter((r) => r.completedAt).length >= 3 },
-    { id: "architect", name: "AI Architect", detail: "Launch Scout and finish the course", earned: progress.complete },
+    { id: "architect", name: course.authoredRevisionId ? 'Course Finisher' : "AI Architect", detail: course.authoredRevisionId ? 'Finish the project, final check and reflection' : "Launch Scout and finish the course", earned: progress.complete },
   ];
 
   const todayStamp = stamp(today);
   const dailyDone = learning.activityDays.includes(todayStamp);
   const resume = progress.resume;
-  const reviewModule = progress.modules.find((m) => learning.reviews.some((r) => r.moduleId === m.module_id && !r.completedAt && new Date(r.due) <= new Date(today)));
+  const reviewModule = progress.modules.find((m) => m.stages.includes('review') && learning.reviews.some((r) => r.moduleId === m.module_id && !r.completedAt && new Date(r.due) <= new Date(today)));
   const quest: GameQuest = dueReviews && reviewModule
     ? { eyebrow: dailyDone ? "BONUS MISSION" : "TODAY’S MISSION", title: "Recall one earlier idea", detail: "A quick return visit strengthens Scout’s memory.", href: `/learn/courses/${course.course_id}/${reviewModule.module_id}/review`, xp: 15, dailyDone }
     : resume
       ? { eyebrow: dailyDone ? "BONUS MISSION" : "TODAY’S MISSION", title: resume.kind === "finale" ? `Final mission: ${resume.title}` : `Continue: ${resume.title}`, detail: `${resume.minutesLeft} min remaining · ${resume.group}`, href: resume.href, xp: resume.kind === "finale" ? resume.n === 1 ? 150 : 100 : rewardFor(resume.stage), dailyDone }
-      : { eyebrow: "SCOUT IS READY", title: "Keep your skills sharp", detail: "Revisit a scenario or complete a spaced review.", href: `/learn/courses/${course.course_id}/m1/review`, xp: 15, dailyDone };
+      : { eyebrow: course.authoredRevisionId ? 'COURSE COMPLETE' : "SCOUT IS READY", title: "Keep your skills sharp", detail: course.authoredRevisionId ? 'Revisit a worked example or scenario.' : "Revisit a scenario or complete a spaced review.", href: course.authoredRevisionId ? `/learn/courses/${course.course_id}/${course.modules[0]?.module_id}/lab` : `/learn/courses/${course.course_id}/m1/review`, xp: 15, dailyDone };
 
   return {
     xp,
     sparks: Math.floor(xp / 50) * 10,
     level: rankIndex + 1,
-    rank: rank.title,
-    nextRank: next?.title,
+    rank: course.authoredRevisionId ? ['Explorer', 'Problem Solver', 'Practitioner', 'Collaborator', 'Specialist', 'Mentor'][rankIndex]! : rank.title,
+    nextRank: course.authoredRevisionId ? ['Explorer', 'Problem Solver', 'Practitioner', 'Collaborator', 'Specialist', 'Mentor'][rankIndex + 1] : next?.title,
     nextXp: next?.min,
     levelProgress,
     streak: learningStreak(learning.activityDays, today),
     mastery,
-    badges,
+    badges: course.authoredRevisionId ? badges.filter(b => !['builder', 'memory', 'recall'].includes(b.id)) : badges,
     quest,
   };
 }

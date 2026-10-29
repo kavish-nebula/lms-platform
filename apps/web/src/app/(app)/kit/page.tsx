@@ -16,6 +16,6 @@ const DEMO_CREDENTIAL: Credential = {
 };
 
 export default async function KitPage() {
-  const courses = await getCourses();
+  const courses = await getCourses(false);
   return <KitShowcase course={courses[0]} credential={DEMO_CREDENTIAL} />;
 }

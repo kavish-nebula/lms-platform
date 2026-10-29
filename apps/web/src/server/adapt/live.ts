@@ -7,6 +7,8 @@ import { getCourse, getModule } from "@/data";
 import { getBlock } from "@/data/client";
 import type { VideoSlide } from "@/data/types";
 import { gradeGate } from "@/data/mock-grader";
+import { correctChoiceIndices, exactChoices } from '@/lib/assessment-answers';
+import { gradeAuthoredAssessment } from '@/server/authored-assessment';
 import { learnerAnswers, normalizeAnswers } from "@/lib/setup";
 import type { SessionUser } from "@/server/auth";
 import { db } from "@/server/db/client";
@@ -65,9 +67,11 @@ export async function verifiedSignals(courseId: string, list: repo.NewSignal[]) 
       const qs = payload.section === "mid" ? v?.midQuiz : payload.section === "end" ? v?.endQuiz : undefined;
       const index = Number(payload.question);
       const q = Number.isInteger(index) && index >= 0 ? qs?.[index] : undefined;
-      if (!q || !Number.isInteger(payload.response) || Number(payload.response) < 0 || Number(payload.response) >= q.options.length)
+      const response = payload.response;
+      const selections = Array.isArray(response) ? response : [response];
+      if (!q || (q.selectionType === 'multiple') !== Array.isArray(response) || new Set(selections).size !== selections.length || selections.some(value => !Number.isInteger(value) || Number(value) < 0 || Number(value) >= q.options.length))
         throw new ApiError(400, "invalid_answer", "Unknown video question or option.");
-      payload.correct = payload.response === q.correct;
+      payload.correct = exactChoices(selections as number[], correctChoiceIndices(q));
       payload.verified = true;
       s.lesson = v!.lesson;
     } else if (s.kind === "module_check" && s.moduleId && payload.responses) {
@@ -78,7 +82,9 @@ export async function verifiedSignals(courseId: string, list: repo.NewSignal[]) 
       const responses = payload.responses as Record<string, string | string[]>;
       if (Object.values(responses).some((v) => typeof v !== "string" && !(Array.isArray(v) && v.every((x) => typeof x === "string"))))
         throw new ApiError(400, "invalid_answer", "Invalid module answer values.");
-      const r = await gradeGate(`gate-${s.moduleId}`, gate, responses);
+      const r = gate.authoredAssessment
+        ? await gradeAuthoredAssessment(courseId, { revisionId: gate.authoredAssessment.revisionId, moduleId: gate.authoredAssessment.moduleId, responses })
+        : await gradeGate(`gate-${s.moduleId}`, gate, responses);
       Object.assign(payload, { ...r, verified: true });
       payload.missedLessons = mod.metadata.objectives.filter((o) => r.failedObjectives.includes(o.id)).map((o) => o.lesson);
     } else if (s.kind === "scenario_answer" && s.moduleId && typeof payload.response === "string") {

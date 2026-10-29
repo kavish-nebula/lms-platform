@@ -218,10 +218,10 @@ export function Player({ module, moduleIndex, stage, video, courseHref, initialD
           objectives={objectives}
           checkId={`gate-${module.module_id}`}
           scope="module"
-          afterPass={<ReflectionReview />}
+          afterPass={gateBlock.authoredAssessment ? undefined : <ReflectionReview />}
           onGraded={(r, responses) => {
             recordLearning(module.course_id, { id: `gate:${module.module_id}`, moduleId: module.module_id, correct: r.passed, helped: false });
-            ensureReviews(module.course_id, module.module_id);
+            if (!gateBlock.authoredAssessment) ensureReviews(module.course_id, module.module_id);
             if (enrolled) {
               const lessonOf = (id: string) => objectives.find((o) => o.id === id)?.lesson ?? id.replace(/^obj-/,"");
               queueSignal(module.course_id,{ kind: "module_check",moduleId: module.module_id,payload: { responses, score: r.score,total: r.total,passed: r.passed,missedLessons: r.failedObjectives.map(lessonOf) } });
@@ -269,7 +269,7 @@ export function Player({ module, moduleIndex, stage, video, courseHref, initialD
             </span>
           </div>
           <span className="hidden items-center gap-1 rounded-full border border-brand-line bg-brand-soft px-2 py-1 text-[10px] font-semibold text-brand-ink md:flex"><Zap className="size-3" />+{rewardFor(stage, !!part?.video)} XP</span>
-          {module.course_id === 'ai-agent' && part?.video ? <Button asChild variant="outline" size="sm"><Link href={`${moduleHref}/reader?chapter=${part.video.id}`}><BookOpen className="size-4"/>Read</Link></Button> : null}
+          {part?.video ? <Button asChild variant="outline" size="sm"><Link href={`${moduleHref}/reader?chapter=${part.video.id}`}><BookOpen className="size-4"/>Read</Link></Button> : null}
           <Sheet open={railOpen} onOpenChange={setRailOpen}>
             <SheetTrigger asChild>
               <Button variant="outline" size="sm" className="nav:hidden">

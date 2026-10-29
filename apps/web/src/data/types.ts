@@ -88,6 +88,8 @@ export type HookFilm = { shots: FilmShot[] };
 
 export type HookBlock = BlockBase & {
   stage: "hook";
+  /** Optional course-specific role copy; an empty map suppresses the AI Agent template. */
+  roleNotes?: Record<string, string>;
   /** the opening as a film of illustrated scenes; without it the opening is shown as text */
   film?: HookFilm;
   kicker: string;
@@ -151,7 +153,10 @@ export type VideoSlide =
   | (SlideBase & { kind: "chat"; messages: (Cued & { role: "user" | "agent" | "tool" | "system"; label?: string; text: string })[]; aside?: Aside });
 
 /** A short check inside a video: a wrong answer gets a hint, not the answer. */
-export type VideoQuiz = { q: string; options: string[]; correct: number; explain: string; hint: string };
+export type VideoQuiz = { q: string; options: string[]; explain: string; hint: string } & (
+  { selectionType?: 'single'; correct: number; correctIndices?: never } |
+  { selectionType: 'multiple'; correctIndices: number[]; correct?: never }
+);
 
 /** A narrated slide video for one lesson (audio: /audio/video-{id}-s{n}.mp3). */
 export type ConceptVideo = {
@@ -264,6 +269,10 @@ export type SolvedCaseStudy = {
 
 export type GuidedBlock = BlockBase & {
   stage: "guided";
+  presentation?: {
+    statusLabel: string; statusTitle: string; statusBody: string; briefTag: string; startLabel: string;
+    phases: { label: string; title: string; body: string; outcome: string }[];
+  };
   title: string;
   situation: string;
   intro: string;
@@ -333,6 +342,8 @@ export type PlaceholderBlock = BlockBase & { stage: "project" };
 export type GateItem = {
   id: string;
   objective_id: string;
+  /** Authored items may assess more than one objective. */
+  objective_ids?: string[];
   kind: "mc" | "multi" | "fill";
   stem: string;
   options?: { id: string; text: string }[];
@@ -345,6 +356,10 @@ export type GateItem = {
 
 export type GateBlock = BlockBase & {
   stage: "gate";
+  /** Released authored assessments are graded from the pinned package on the server. */
+  authoredAssessment?: { courseId: string; revisionId: string; moduleId?: string };
+  title?: string;
+  instructions?: string;
   pass_threshold: number;
   min_correct_per_objective: number;
   retry_policy: { wait_hours: number; new_variants: boolean };
@@ -441,6 +456,8 @@ export type CourseModule = {
 };
 
 export type Course = {
+  authoredRevisionId?: string;
+  subjectLabel?: string;
   course_id: string;
   slug: string;
   title: string;
@@ -470,6 +487,8 @@ export type PrecheckContent = { course_id: string; version: string; items: Prech
 /* ---------------------------------------------------------------- finale content */
 
 export type CapstoneBlock = {
+  sandbox?: import('@/server/project-sandbox').PublicSandboxProject;
+  writing?: { storageKey: string; label: string };
   step_id: string;
   duration_min: number;
   kicker: string;

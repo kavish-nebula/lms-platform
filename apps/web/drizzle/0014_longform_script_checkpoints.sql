@@ -1,0 +1,1 @@
+ALTER TABLE "creator_production_jobs" ADD COLUMN "partial_slides" jsonb DEFAULT '[]'::jsonb NOT NULL;

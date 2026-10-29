@@ -17,6 +17,10 @@ python fixtures/scripts/make-audio.py              # narration MP3s for new or c
 
 ## Run it
 
+### Content Creator Studio
+
+Select **Content creator** from the sidebar role menu, or open `/content`, to create and save course briefs. Stage 2 generates a blueprint; Stage 3 records SME module decisions. An approved module can enter the Stage 4 pilot for editable slides, narration scripts, preview, version history and script review. Audio, interactive activity delivery, final release and publishing remain deferred. Creator records do not modify learner progress or published course content. See [creator setup, API and roadmap](docs/content-creator.md).
+
 ### Archived workplace demo
 
 Workplace is removed from the main app's navigation and dashboard and disabled with `PROFESSIONAL_DEMO_ENABLED=false`. Its page/API are unavailable. Existing demo records are retained without affecting course progress. [Archived implementation notes](docs/workplace-practice.md) remain for reference.
@@ -120,3 +124,9 @@ New enrollment asks only two optional questions: your course goal and familiarit
 
 ### Next.js security patch
 Next.js and eslint-config-next are pinned to 16.4.3, replacing 16.4.0 to address the [October 2026 Next.js security advisories](https://nextjs.org/blog/nextjs-security-update-october-14-2026). The lockfile includes matching framework packages. Production build, enrollment/adaptation/chatbot tests and reader narration smoke checks pass on the patched runtime. npm audit no longer reports Next.js as vulnerable; separate audit findings in other dependencies remain.
+
+Creator Module 1 narration: approve the Stage 3 module, generate/edit/save Stage 4 scripts, approve that script revision, then use **Generate approved narration**. Local Kokoro produces per-slide WAVs and reuses unchanged narration. Enable AUDIO and KOKORO; see [creator audio setup](docs/content-creator.md#approved-script-audio-narration). No course is published by generating audio.
+
+Long-form creator production: enable the five-video format in a saved course brief, approve the current Stage 3 module, generate/review its production plan and activities, then generate each video, review scripts and synthesize audio. Every one of the 7–9 slides in each of five videos must measure at least five minutes. Run migration 0013 automatically on startup and see [long-form setup](docs/content-creator.md#long-form-stage-4). Existing pilot packages remain historical.
+
+Long-form Kokoro CPU jobs use two ONNX threads per process by default. Set `KOKORO_CPU_THREADS` to tune local batch throughput (0 restores automatic threading). Original short-form narration uses its existing loader.
