@@ -1,0 +1,1233 @@
+{
+  "title": "Clear Task Handoffs — MCP Setup Verification",
+  "modules": [
+    {
+      "id": "M1",
+      "title": "Make the next action clear",
+      "sourceIds": [
+        "S1",
+        "S2",
+        "S3"
+      ],
+      "problemHook": {
+        "title": "Who does what by when?",
+        "question": "Which details would you need before accepting this handoff?",
+        "situation": "A fictional teammate receives: Someone prepare the agenda soon. Two people may duplicate the work while each assumes a different deadline.",
+        "sourceIds": [
+          "S1",
+          "S2",
+          "S3"
+        ],
+        "objectiveIds": [
+          "O1",
+          "O2",
+          "O3"
+        ]
+      },
+      "scenarioLab": {
+        "title": "Handle ambiguity",
+        "scenarios": [
+          {
+            "id": "SC1",
+            "title": "Missing owner and deadline",
+            "challenge": "Write focused clarification questions without guessing.",
+            "situation": "A new fictional request says Someone prepare the agenda soon.",
+            "sourceIds": [
+              "S1",
+              "S2"
+            ],
+            "objectiveIds": [
+              "O3"
+            ],
+            "expectedEvidence": "Questions for the owner, concrete due time with timezone, and acceptance check."
+          },
+          {
+            "id": "SC2",
+            "title": "Conflicting times — hypothetical variation",
+            "challenge": "Describe the discrepancy and the next step.",
+            "situation": "Two hypothetical requests give 15:00 and 16:00 for the same agenda.",
+            "sourceIds": [
+              "S3"
+            ],
+            "objectiveIds": [
+              "O3"
+            ],
+            "expectedEvidence": "Both values recorded; task-owner clarification requested; no invented resolution."
+          }
+        ]
+      },
+      "objectiveIds": [
+        "O1",
+        "O2",
+        "O3"
+      ],
+      "guidedPractice": {
+        "steps": [
+          {
+            "id": "GP1",
+            "hint": "Both are explicit in the case.",
+            "evidence": "Maya; a three-bullet demonstration agenda.",
+            "sourceIds": [
+              "S1",
+              "S2"
+            ],
+            "instruction": "List the owner and deliverable.",
+            "objectiveIds": [
+              "O1",
+              "O2"
+            ]
+          },
+          {
+            "id": "GP2",
+            "hint": "Include timezone and all three bullet topics.",
+            "evidence": "30 October 2026, 15:00 Asia/Kolkata; goal, sequence and open questions.",
+            "sourceIds": [
+              "S2"
+            ],
+            "instruction": "Add the due time and acceptance check.",
+            "objectiveIds": [
+              "O2"
+            ]
+          },
+          {
+            "id": "GP3",
+            "hint": "Do not imply the work is already done.",
+            "evidence": "A four-field draft with no invented facts or completion claim.",
+            "sourceIds": [
+              "S1",
+              "S2",
+              "S3"
+            ],
+            "instruction": "Check the draft against the source and mark anything unknown.",
+            "objectiveIds": [
+              "O2",
+              "O3"
+            ]
+          }
+        ],
+        "title": "Write and check a handoff",
+        "instructions": "Use only the fictional case pack. Spend about four minutes drafting and reviewing."
+      },
+      "workedExamples": [
+        {
+          "id": "EX1",
+          "title": "A complete agenda handoff",
+          "result": "Maya will prepare a three-bullet demonstration agenda by 30 October 2026 at 15:00 Asia/Kolkata, with one bullet each for goal, sequence and open questions.",
+          "problem": "Turn the Cedar case facts into a handoff.",
+          "reasoning": [
+            "Select Maya as the supplied owner.",
+            "Name the three-bullet agenda as the deliverable.",
+            "Copy the full due date, time and timezone.",
+            "State the three bullet topics as the acceptance check."
+          ],
+          "sourceIds": [
+            "S1",
+            "S2"
+          ],
+          "objectiveIds": [
+            "O1",
+            "O2"
+          ]
+        },
+        {
+          "id": "EX2",
+          "title": "Repair the vague request",
+          "result": "Ask: Who owns the agenda, when is it due including timezone, and which contents will satisfy the acceptance check?",
+          "problem": "Someone prepare the agenda soon.",
+          "reasoning": [
+            "An explicit owner is absent.",
+            "Soon supplies no concrete due time.",
+            "The request supplies no observable acceptance check."
+          ],
+          "sourceIds": [
+            "S1",
+            "S2"
+          ],
+          "objectiveIds": [
+            "O3"
+          ]
+        }
+      ],
+      "durationMinutes": 17,
+      "conceptExplainer": {
+        "videos": [
+          {
+            "id": "M1V1",
+            "title": "Four fields and one clarification habit",
+            "slides": [
+              {
+                "id": "SL1",
+                "body": [
+                  "Owner: who is responsible?",
+                  "Deliverable: what will they produce?"
+                ],
+                "title": "Make responsibility and output explicit",
+                "narration": "This short course uses an invented team convention for practice. It is not a policy for your workplace. In Cedar, the owner is the person responsible for the next action. The deliverable is the concrete output. Someone is not an owner. Prepare something is not a useful deliverable. In our supplied case, Maya owns a three-bullet demonstration agenda. Keep those facts separate from assumptions about who else might help.",
+                "sourceIds": [
+                  "S1",
+                  "S2"
+                ],
+                "objectiveIds": [
+                  "O1",
+                  "O2"
+                ],
+                "plannedNarrationSeconds": 40
+              },
+              {
+                "id": "SL2",
+                "body": [
+                  "Due: date, time and timezone",
+                  "Acceptance: a check someone can perform"
+                ],
+                "title": "Make timing and completion observable",
+                "narration": "Cedar adds a due time with timezone and an observable acceptance check. The supplied agenda is due on 30 October 2026 at 15:00 Asia/Kolkata. Its acceptance check is exactly three bullets: demonstration goal, sequence, and open questions. Soon does not preserve the source date. Looks good does not describe this check. Pause after this slide for two practice questions. Use the supplied facts instead of inventing a different deadline or format.",
+                "sourceIds": [
+                  "S1",
+                  "S2"
+                ],
+                "objectiveIds": [
+                  "O1",
+                  "O2"
+                ],
+                "plannedNarrationSeconds": 40
+              },
+              {
+                "id": "SL3",
+                "body": [
+                  "Maya owns the three-bullet agenda",
+                  "Copy the supplied due time",
+                  "State the three required bullet topics"
+                ],
+                "title": "Draft from facts",
+                "narration": "A complete draft can say: Maya will prepare a three-bullet demonstration agenda by 30 October 2026 at 15:00 Asia/Kolkata. Acceptance means exactly one bullet each for the demonstration goal, sequence, and open questions. Every field comes from the fictional case pack. Writing this draft does not mean Maya has accepted it, the agenda exists, or anyone has received a message. This exercise produces text for review.",
+                "sourceIds": [
+                  "S1",
+                  "S2",
+                  "S3"
+                ],
+                "objectiveIds": [
+                  "O2"
+                ],
+                "plannedNarrationSeconds": 40
+              },
+              {
+                "id": "SL4",
+                "body": [
+                  "Name the missing field",
+                  "Ask a focused question",
+                  "Record conflicts for the owner to clarify"
+                ],
+                "title": "Ask when facts are missing or conflict",
+                "narration": "For Someone prepare the agenda soon, ask who owns the work, what concrete due time and timezone apply, and how the agenda will be checked. Do not fill the gaps with guesses. In a hypothetical variation, one request says 15:00 and another says 16:00 on the same date. Record both and ask the task owner to clarify. That variation is invented for practice. It does not change the original source case. A draft remains a draft until the relevant people confirm it.",
+                "sourceIds": [
+                  "S1",
+                  "S2",
+                  "S3"
+                ],
+                "objectiveIds": [
+                  "O3"
+                ],
+                "plannedNarrationSeconds": 50
+              }
+            ],
+            "midpointQuiz": {
+              "questions": [
+                {
+                  "id": "MID1",
+                  "hint": "Use the fictional Cedar convention.",
+                  "prompt": "Which set contains all four Cedar handoff fields?",
+                  "choices": [
+                    "Owner, deliverable, due time with timezone, acceptance check",
+                    "Owner and a friendly greeting",
+                    "Deliverable and soon"
+                  ],
+                  "correct": 0,
+                  "sourceIds": [
+                    "S1"
+                  ],
+                  "explanation": "Cedar defines four explicit fields so that the recipient can identify responsibility, output, timing and completion criteria.",
+                  "objectiveIds": [
+                    "O1"
+                  ]
+                },
+                {
+                  "id": "MID2",
+                  "hint": "Keep both the date and timezone.",
+                  "prompt": "Which due time preserves the supplied case facts?",
+                  "choices": [
+                    "Soon",
+                    "30 October 2026 at 15:00 Asia/Kolkata",
+                    "Whenever Maya is free"
+                  ],
+                  "correct": 1,
+                  "sourceIds": [
+                    "S2"
+                  ],
+                  "explanation": "The case supplies a concrete date, time and timezone. Soon and guessed availability do not preserve it.",
+                  "objectiveIds": [
+                    "O2"
+                  ]
+                }
+              ],
+              "afterSlideId": "SL2"
+            },
+            "plannedMinutes": 3
+          }
+        ]
+      },
+      "moduleQuiz": {
+        "title": "Check your Cedar handoff decisions",
+        "instructions": "Answer all six questions using the fictional Cedar sources. Questions labelled Select all correct answers require every correct choice and no incorrect choices. The course pass rule is 80%; five of six questions must be correct. Nothing in this quiz sends a message or completes real work.",
+        "questions": [
+          {
+            "id": "M1-END-Q1",
+            "prompt": "Select all correct answers: which fields belong in a complete Cedar handoff?",
+            "choices": [
+              "A named person who owns the next action",
+              "A concrete output the owner will produce",
+              "A due date, clock time and named timezone",
+              "An observable check for the required output",
+              "A statement that the output has been sent"
+            ],
+            "selectionType": "multiple",
+            "correctIndices": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "hint": "Separate required handoff information from claims about completed actions.",
+            "explanation": "S1 requires owner, deliverable, due time with timezone, and an observable acceptance check. A sent-message claim is not a required field and is not established by a draft (S3).",
+            "objectiveIds": [
+              "O1"
+            ],
+            "sourceIds": [
+              "S1",
+              "S3"
+            ]
+          },
+          {
+            "id": "M1-END-Q2",
+            "prompt": "Select one answer: which draft preserves every fact in the original agenda case?",
+            "choices": [
+              "Omar owns a three-bullet agenda due 30 October 2026, 15:00 Asia/Kolkata; bullets cover goal, sequence and open questions.",
+              "Maya owns a three-bullet agenda due 30 October 2026, 15:00 Asia/Kolkata; bullets cover goal, sequence and open questions.",
+              "Maya owns a three-bullet agenda due 30 October 2026, 16:00 Asia/Kolkata; bullets cover goal, sequence and open questions.",
+              "Maya owns a three-bullet agenda due 30 October 2026, 15:00 Asia/Kolkata; bullets cover goal, sequence and final invoices."
+            ],
+            "correct": 1,
+            "hint": "Compare the owner, deadline and all three bullet topics with S2.",
+            "explanation": "Only the Maya/15:00/goal-sequence-open-questions option preserves all supplied facts. The other drafts change the owner, clock time or acceptance topics.",
+            "objectiveIds": [
+              "O1",
+              "O2"
+            ],
+            "sourceIds": [
+              "S1",
+              "S2"
+            ]
+          },
+          {
+            "id": "M1-END-Q3",
+            "prompt": "Select all correct answers: what must you clarify in “Someone prepare the agenda soon”?",
+            "choices": [
+              "Which named owner will take responsibility?",
+              "Which due date, time and timezone apply?",
+              "Which observable acceptance check applies?",
+              "Which greeting should accompany the draft?"
+            ],
+            "selectionType": "multiple",
+            "correctIndices": [
+              0,
+              1,
+              2
+            ],
+            "hint": "The case explicitly identifies three missing required details.",
+            "explanation": "S2 treats the owner, concrete due time/timezone and acceptance check as missing. A preferred greeting is not one of Cedar's four required fields. Ask rather than guess.",
+            "objectiveIds": [
+              "O3"
+            ],
+            "sourceIds": [
+              "S1",
+              "S2"
+            ]
+          },
+          {
+            "id": "M1-END-Q4",
+            "prompt": "Select one answer: two hypothetical requests give 15:00 and 16:00. What is the appropriate next step?",
+            "choices": [
+              "Keep only 15:00 and describe the earlier time as approved by the owner.",
+              "Keep only 16:00 and describe the later time as approved by the owner.",
+              "Record both times and ask the task owner which due time should apply.",
+              "Remove both times and describe the agenda as already sent to the team."
+            ],
+            "correct": 2,
+            "hint": "Do not invent approval, choose a deadline or claim a completed action.",
+            "explanation": "S3 requires recording both values and asking the task owner to clarify. Neither deadline is automatically approved, and the draft establishes no sent message.",
+            "objectiveIds": [
+              "O3"
+            ],
+            "sourceIds": [
+              "S3"
+            ]
+          },
+          {
+            "id": "M1-END-Q5",
+            "prompt": "Select all correct answers: what can you truthfully say immediately after writing a handoff draft?",
+            "choices": [
+              "The draft is available for review and clarification.",
+              "The named owner has accepted the work and deadline.",
+              "The draft proves neither sending nor completion.",
+              "The requested agenda has been finished and shared."
+            ],
+            "selectionType": "multiple",
+            "correctIndices": [
+              0,
+              2
+            ],
+            "hint": "Writing a draft is different from acceptance, sending or completion.",
+            "explanation": "A draft can be reviewed, but it does not prove acceptance, a sent message, completed work or a shared agenda. Both completion claims are unsupported (S3).",
+            "objectiveIds": [
+              "O2",
+              "O3"
+            ],
+            "sourceIds": [
+              "S3"
+            ]
+          },
+          {
+            "id": "M1-END-Q6",
+            "prompt": "Select all correct answers: which bullet topics belong in the original agenda acceptance check?",
+            "choices": [
+              "One bullet for the demonstration goal",
+              "One bullet for the demonstration sequence",
+              "One bullet for the open questions",
+              "One bullet for the final project invoice"
+            ],
+            "selectionType": "multiple",
+            "correctIndices": [
+              0,
+              1,
+              2
+            ],
+            "hint": "The original case names exactly three topics, not a generic quality judgement.",
+            "explanation": "S2 specifies exactly three bullets: goal, sequence and open questions. An invoice is not supplied and adding it would violate the three-bullet acceptance check.",
+            "objectiveIds": [
+              "O2"
+            ],
+            "sourceIds": [
+              "S2"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "S1",
+      "kind": "sme",
+      "title": "Simulated Cedar source S1",
+      "reference": "SIMULATED SME SOURCE FOR SETUP TEST — fictional training convention, requiring human review. In the fictional Cedar team, a complete handoff states an owner, a concrete deliverable, a due time with timezone, and an observable acceptance check. These are exercise rules, not a real company policy. If a required detail is absent, ask for it instead of guessing."
+    },
+    {
+      "id": "S2",
+      "kind": "sme",
+      "title": "Simulated Cedar source S2",
+      "reference": "FICTIONAL CASE PACK. Cedar needs a three-bullet demonstration agenda, owned by Maya, due 30 October 2026 at 15:00 Asia/Kolkata. Acceptance check: exactly three bullets, one each for demonstration goal, sequence, and open questions. A second request says only: Someone prepare the agenda soon. Treat its owner, due time and acceptance check as missing."
+    },
+    {
+      "id": "S3",
+      "kind": "sme",
+      "title": "Simulated Cedar source S3",
+      "reference": "FICTIONAL ESCALATION CONVENTION. When two task requests disagree on a due time, record both values and request clarification from the task owner. Drafting a handoff does not mean the work has been completed or a message has been sent."
+    }
+  ],
+  "subject": "Writing complete task handoffs in a fictional team",
+  "courseEnd": {
+    "reflection": {
+      "prompts": [
+        "Which field did you initially overlook, and how will you check it?",
+        "What would you ask before acting on a vague handoff in your own context?",
+        "This sample uses fictional conventions. Which parts require review before adapting it to your team?"
+      ]
+    },
+    "masteryGate": {
+      "title": "Handoff mastery check",
+      "questions": [
+        {
+          "id": "MG1",
+          "hint": "Use the fictional Cedar convention.",
+          "prompt": "Which set contains all four Cedar handoff fields?",
+          "choices": [
+            "Owner, deliverable, due time with timezone, acceptance check",
+            "Owner and a friendly greeting",
+            "Deliverable and soon"
+          ],
+          "correct": 0,
+          "sourceIds": [
+            "S1"
+          ],
+          "explanation": "Cedar defines four explicit fields so that the recipient can identify responsibility, output, timing and completion criteria.",
+          "objectiveIds": [
+            "O1"
+          ]
+        },
+        {
+          "id": "MG2",
+          "hint": "Compare every detail with S2.",
+          "prompt": "Which handoff matches the original Cedar case?",
+          "choices": [
+            "Maya: three-bullet demonstration agenda by 30 October 2026, 15:00 Asia/Kolkata; bullets cover goal, sequence and open questions.",
+            "Someone: agenda soon; check later.",
+            "Maya: ten-slide presentation due tomorrow."
+          ],
+          "correct": 0,
+          "sourceIds": [
+            "S1",
+            "S2"
+          ],
+          "explanation": "Only the first choice preserves the owner, deliverable, due time and acceptance check.",
+          "objectiveIds": [
+            "O2"
+          ]
+        },
+        {
+          "id": "MG3",
+          "hint": "Preserve uncertainty instead of inventing a resolution.",
+          "prompt": "Two hypothetical requests specify different due times. What should you do?",
+          "choices": [
+            "Choose the earlier time and say it was approved.",
+            "Record both times and ask the task owner to clarify.",
+            "Claim the agenda was already sent."
+          ],
+          "correct": 1,
+          "sourceIds": [
+            "S3"
+          ],
+          "explanation": "The fictional escalation convention requires owner clarification; drafting does not establish approval or completion.",
+          "objectiveIds": [
+            "O3"
+          ]
+        }
+      ],
+      "passPercent": 80,
+      "instructions": "Choose the best answer for each item. Pass threshold is 80%; with three equal-weight items all three must be correct. Use feedback and retry to learn."
+    },
+    "miniProject": {
+      "brief": "Build one Cedar handoff pack inside the course: a four-field original-case draft, three clarification questions for the vague request, and an owner-clarification note preserving both hypothetical due times. Use the supplied starter steps to generate and test the three outputs. All cases are fictional; no messages are sent. Allow about seven minutes.",
+      "title": "Your Cedar handoff card - practical sandbox",
+      "rubric": [
+        "All four fields match the original fictional source.",
+        "The date, time and timezone are preserved.",
+        "Clarification questions identify missing facts.",
+        "No claim that an action was sent or completed.",
+        "Both conflicting due times are preserved in the presented order and Maya is asked to clarify."
+      ],
+      "sourceIds": [
+        "S1",
+        "S2",
+        "S3"
+      ],
+      "deliverable": "One saved and submitted sandbox artifact with complete source-grounded fields and three generated outputs: handoff, clarification and conflict. Both test cases must satisfy the five grading criteria.",
+      "objectiveIds": [
+        "O1",
+        "O2",
+        "O3"
+      ],
+      "sandbox": {
+        "version": 1,
+        "runtime": "data-workflow",
+        "instructions": [
+          "This is one fictional writing-and-simulation project. Produce an original handoff card, a missing-information note, and a conflict note as one submission. Original facts: Maya owns a three-bullet demonstration agenda, due 30 October 2026 at 15:00 Asia/Kolkata; exactly one bullet each covers goal, sequence and open questions. The 16:00 request is a separate hypothetical conflict, not a change to the original case.",
+          "Complete all nine artifact fields from the case and S1-S3. The field hints state the observable terms checked by the grader. Write focused questions rather than filling missing facts with guesses. Keep the status as a draft; nothing is sent or completed.",
+          "The three starter steps are format scaffolds, not a solution. Leave each operation as template and retain the output names handoff, clarification and conflict. Double-brace references insert your artifact values and the current test input; they do not execute code or contact anyone.",
+          "For handoff, enter this format in Expression 1: {{input.label}} | Owner: {{values.owner}} | Deliverable: {{values.deliverable}} | Due: {{values.due}} | Acceptance: {{values.acceptance}} | {{values.status}}",
+          "For clarification, enter this format in Expression 2: Request: {{input.vague}} | {{values.askOwner}} {{values.askDue}} {{values.askAcceptance}}",
+          "For conflict, enter this format in Expression 3: Due times: {{input.firstDue}}; {{input.secondDue}} | {{values.askConflict}}",
+          "Select Run to inspect the draft outputs. Select Test project to check both labelled cases. The second test reverses the two hypothetical due-time inputs: preserve the presented order and ask Maya to clarify instead of choosing a time. Do not hard-code the case label or time sequence into the workflow.",
+          "Save draft to retain your work. Fix any failed criteria, then Submit project. All five criteria must pass to enable Continue to final assessment. The automated checks assess the listed facts, required terms and generated outputs; they do not replace human judgement about the quality of your writing. No external environment, account or installation is required. Allow about seven minutes."
+        ],
+        "fields": [
+          {
+            "id": "owner",
+            "label": "Original task owner",
+            "help": "Copy the named owner from the original case, with the supplied spelling.",
+            "starter": ""
+          },
+          {
+            "id": "deliverable",
+            "label": "Original deliverable",
+            "help": "Name the three-bullet demonstration agenda; retain the words three-bullet and agenda.",
+            "starter": ""
+          },
+          {
+            "id": "due",
+            "label": "Original due date, time and timezone",
+            "help": "Use the full date 30 October 2026, the clock time 15:00 and the timezone Asia/Kolkata.",
+            "starter": ""
+          },
+          {
+            "id": "acceptance",
+            "label": "Original observable acceptance check",
+            "help": "State exactly three bullets, including goal, sequence and open questions; use those supplied topic names.",
+            "starter": ""
+          },
+          {
+            "id": "askOwner",
+            "label": "Question for the missing owner",
+            "help": "Write a question containing owner and a question mark; do not supply a guessed person.",
+            "starter": ""
+          },
+          {
+            "id": "askDue",
+            "label": "Question for the missing due time",
+            "help": "Ask for the date, time and timezone; include timezone and a question mark.",
+            "starter": ""
+          },
+          {
+            "id": "askAcceptance",
+            "label": "Question for the missing acceptance check",
+            "help": "Ask for the observable acceptance check; include acceptance and a question mark.",
+            "starter": ""
+          },
+          {
+            "id": "askConflict",
+            "label": "Question to resolve conflicting due times",
+            "help": "Ask Maya to clarify the due time; include Maya, clarify and a question mark. Do not approve either time yourself.",
+            "starter": ""
+          },
+          {
+            "id": "status",
+            "label": "Draft status statement",
+            "help": "Use this truthful status: Draft only; not sent or completed.",
+            "starter": ""
+          }
+        ],
+        "inputs": [
+          {
+            "id": "label",
+            "label": "Draft label",
+            "sample": "Draft for review"
+          },
+          {
+            "id": "vague",
+            "label": "Ambiguous request from the case",
+            "sample": "Someone prepare the agenda soon."
+          },
+          {
+            "id": "firstDue",
+            "label": "First hypothetical due-time request",
+            "sample": "30 October 2026, 15:00 Asia/Kolkata"
+          },
+          {
+            "id": "secondDue",
+            "label": "Second hypothetical due-time request",
+            "sample": "30 October 2026, 16:00 Asia/Kolkata"
+          }
+        ],
+        "starterSteps": [
+          {
+            "id": "CEDAR_CARD",
+            "output": "handoff",
+            "operation": "template",
+            "expression": ""
+          },
+          {
+            "id": "CEDAR_MISSING",
+            "output": "clarification",
+            "operation": "template",
+            "expression": ""
+          },
+          {
+            "id": "CEDAR_CONFLICT",
+            "output": "conflict",
+            "operation": "template",
+            "expression": ""
+          }
+        ],
+        "tests": [
+          {
+            "id": "ORIGINAL_ORDER",
+            "label": "Original draft and hypothetical conflict",
+            "inputs": {
+              "label": "Draft for review",
+              "vague": "Someone prepare the agenda soon.",
+              "firstDue": "30 October 2026, 15:00 Asia/Kolkata",
+              "secondDue": "30 October 2026, 16:00 Asia/Kolkata"
+            }
+          },
+          {
+            "id": "REVERSED_ORDER",
+            "label": "Revised draft with reversed request order",
+            "inputs": {
+              "label": "Revised draft for review",
+              "vague": "Someone prepare the agenda soon",
+              "firstDue": "30 October 2026, 16:00 Asia/Kolkata",
+              "secondDue": "30 October 2026, 15:00 Asia/Kolkata"
+            }
+          }
+        ],
+        "criteria": [
+          {
+            "id": "CEDAR_FOUR_FIELDS",
+            "rubricIndex": 0,
+            "weight": 20,
+            "objectiveIds": [
+              "O1",
+              "O2"
+            ],
+            "sourceIds": [
+              "S1",
+              "S2"
+            ],
+            "videoIds": [
+              "M1V1"
+            ],
+            "checks": [
+              {
+                "testId": "ORIGINAL_ORDER",
+                "path": "values.owner",
+                "operator": "equals",
+                "expected": "Maya"
+              },
+              {
+                "testId": "ORIGINAL_ORDER",
+                "path": "values.deliverable",
+                "operator": "contains",
+                "expected": "three-bullet"
+              },
+              {
+                "testId": "ORIGINAL_ORDER",
+                "path": "values.deliverable",
+                "operator": "contains",
+                "expected": "agenda"
+              },
+              {
+                "testId": "ORIGINAL_ORDER",
+                "path": "values.acceptance",
+                "operator": "contains",
+                "expected": "three"
+              },
+              {
+                "testId": "ORIGINAL_ORDER",
+                "path": "values.acceptance",
+                "operator": "contains",
+                "expected": "goal"
+              },
+              {
+                "testId": "ORIGINAL_ORDER",
+                "path": "values.acceptance",
+                "operator": "contains",
+                "expected": "sequence"
+              },
+              {
+                "testId": "ORIGINAL_ORDER",
+                "path": "values.acceptance",
+                "operator": "contains",
+                "expected": "open questions"
+              },
+              {
+                "testId": "ORIGINAL_ORDER",
+                "path": "output.handoff",
+                "operator": "contains",
+                "expected": "Owner: Maya"
+              },
+              {
+                "testId": "ORIGINAL_ORDER",
+                "path": "output.handoff",
+                "operator": "contains",
+                "expected": "Acceptance:"
+              },
+              {
+                "testId": "ORIGINAL_ORDER",
+                "path": "output.handoff",
+                "operator": "contains",
+                "expected": "three-bullet"
+              },
+              {
+                "testId": "ORIGINAL_ORDER",
+                "path": "output.handoff",
+                "operator": "contains",
+                "expected": "agenda"
+              },
+              {
+                "testId": "ORIGINAL_ORDER",
+                "path": "output.handoff",
+                "operator": "contains",
+                "expected": "three"
+              },
+              {
+                "testId": "ORIGINAL_ORDER",
+                "path": "output.handoff",
+                "operator": "contains",
+                "expected": "goal"
+              },
+              {
+                "testId": "ORIGINAL_ORDER",
+                "path": "output.handoff",
+                "operator": "contains",
+                "expected": "sequence"
+              },
+              {
+                "testId": "ORIGINAL_ORDER",
+                "path": "output.handoff",
+                "operator": "contains",
+                "expected": "open questions"
+              },
+              {
+                "testId": "REVERSED_ORDER",
+                "path": "values.owner",
+                "operator": "equals",
+                "expected": "Maya"
+              },
+              {
+                "testId": "REVERSED_ORDER",
+                "path": "values.deliverable",
+                "operator": "contains",
+                "expected": "three-bullet"
+              },
+              {
+                "testId": "REVERSED_ORDER",
+                "path": "values.deliverable",
+                "operator": "contains",
+                "expected": "agenda"
+              },
+              {
+                "testId": "REVERSED_ORDER",
+                "path": "values.acceptance",
+                "operator": "contains",
+                "expected": "three"
+              },
+              {
+                "testId": "REVERSED_ORDER",
+                "path": "values.acceptance",
+                "operator": "contains",
+                "expected": "goal"
+              },
+              {
+                "testId": "REVERSED_ORDER",
+                "path": "values.acceptance",
+                "operator": "contains",
+                "expected": "sequence"
+              },
+              {
+                "testId": "REVERSED_ORDER",
+                "path": "values.acceptance",
+                "operator": "contains",
+                "expected": "open questions"
+              },
+              {
+                "testId": "REVERSED_ORDER",
+                "path": "output.handoff",
+                "operator": "contains",
+                "expected": "Owner: Maya"
+              },
+              {
+                "testId": "REVERSED_ORDER",
+                "path": "output.handoff",
+                "operator": "contains",
+                "expected": "Acceptance:"
+              },
+              {
+                "testId": "REVERSED_ORDER",
+                "path": "output.handoff",
+                "operator": "contains",
+                "expected": "three-bullet"
+              },
+              {
+                "testId": "REVERSED_ORDER",
+                "path": "output.handoff",
+                "operator": "contains",
+                "expected": "agenda"
+              },
+              {
+                "testId": "REVERSED_ORDER",
+                "path": "output.handoff",
+                "operator": "contains",
+                "expected": "three"
+              },
+              {
+                "testId": "REVERSED_ORDER",
+                "path": "output.handoff",
+                "operator": "contains",
+                "expected": "goal"
+              },
+              {
+                "testId": "REVERSED_ORDER",
+                "path": "output.handoff",
+                "operator": "contains",
+                "expected": "sequence"
+              },
+              {
+                "testId": "REVERSED_ORDER",
+                "path": "output.handoff",
+                "operator": "contains",
+                "expected": "open questions"
+              }
+            ]
+          },
+          {
+            "id": "CEDAR_FULL_DUE",
+            "rubricIndex": 1,
+            "weight": 20,
+            "objectiveIds": [
+              "O2"
+            ],
+            "sourceIds": [
+              "S2"
+            ],
+            "videoIds": [
+              "M1V1"
+            ],
+            "checks": [
+              {
+                "testId": "ORIGINAL_ORDER",
+                "path": "output.handoff",
+                "operator": "contains",
+                "expected": "Draft for review"
+              },
+              {
+                "testId": "ORIGINAL_ORDER",
+                "path": "output.handoff",
+                "operator": "contains",
+                "expected": "30 October 2026"
+              },
+              {
+                "testId": "ORIGINAL_ORDER",
+                "path": "output.handoff",
+                "operator": "contains",
+                "expected": "15:00"
+              },
+              {
+                "testId": "ORIGINAL_ORDER",
+                "path": "output.handoff",
+                "operator": "contains",
+                "expected": "Asia/Kolkata"
+              },
+              {
+                "testId": "REVERSED_ORDER",
+                "path": "output.handoff",
+                "operator": "contains",
+                "expected": "Revised draft for review"
+              },
+              {
+                "testId": "REVERSED_ORDER",
+                "path": "output.handoff",
+                "operator": "contains",
+                "expected": "30 October 2026"
+              },
+              {
+                "testId": "REVERSED_ORDER",
+                "path": "output.handoff",
+                "operator": "contains",
+                "expected": "15:00"
+              },
+              {
+                "testId": "REVERSED_ORDER",
+                "path": "output.handoff",
+                "operator": "contains",
+                "expected": "Asia/Kolkata"
+              }
+            ]
+          },
+          {
+            "id": "CEDAR_MISSING_FACTS",
+            "rubricIndex": 2,
+            "weight": 20,
+            "objectiveIds": [
+              "O3"
+            ],
+            "sourceIds": [
+              "S1",
+              "S2"
+            ],
+            "videoIds": [
+              "M1V1"
+            ],
+            "checks": [
+              {
+                "testId": "ORIGINAL_ORDER",
+                "path": "output.clarification",
+                "operator": "contains",
+                "expected": "Someone prepare the agenda soon."
+              },
+              {
+                "testId": "ORIGINAL_ORDER",
+                "path": "values.askOwner",
+                "operator": "contains",
+                "expected": "owner"
+              },
+              {
+                "testId": "ORIGINAL_ORDER",
+                "path": "values.askOwner",
+                "operator": "contains",
+                "expected": "?"
+              },
+              {
+                "testId": "ORIGINAL_ORDER",
+                "path": "values.askDue",
+                "operator": "contains",
+                "expected": "timezone"
+              },
+              {
+                "testId": "ORIGINAL_ORDER",
+                "path": "values.askDue",
+                "operator": "contains",
+                "expected": "?"
+              },
+              {
+                "testId": "ORIGINAL_ORDER",
+                "path": "values.askAcceptance",
+                "operator": "contains",
+                "expected": "acceptance"
+              },
+              {
+                "testId": "ORIGINAL_ORDER",
+                "path": "values.askAcceptance",
+                "operator": "contains",
+                "expected": "?"
+              },
+              {
+                "testId": "ORIGINAL_ORDER",
+                "path": "output.clarification",
+                "operator": "contains",
+                "expected": "owner"
+              },
+              {
+                "testId": "ORIGINAL_ORDER",
+                "path": "output.clarification",
+                "operator": "contains",
+                "expected": "timezone"
+              },
+              {
+                "testId": "ORIGINAL_ORDER",
+                "path": "output.clarification",
+                "operator": "contains",
+                "expected": "acceptance"
+              },
+              {
+                "testId": "REVERSED_ORDER",
+                "path": "output.clarification",
+                "operator": "contains",
+                "expected": "Someone prepare the agenda soon"
+              },
+              {
+                "testId": "REVERSED_ORDER",
+                "path": "values.askOwner",
+                "operator": "contains",
+                "expected": "owner"
+              },
+              {
+                "testId": "REVERSED_ORDER",
+                "path": "values.askOwner",
+                "operator": "contains",
+                "expected": "?"
+              },
+              {
+                "testId": "REVERSED_ORDER",
+                "path": "values.askDue",
+                "operator": "contains",
+                "expected": "timezone"
+              },
+              {
+                "testId": "REVERSED_ORDER",
+                "path": "values.askDue",
+                "operator": "contains",
+                "expected": "?"
+              },
+              {
+                "testId": "REVERSED_ORDER",
+                "path": "values.askAcceptance",
+                "operator": "contains",
+                "expected": "acceptance"
+              },
+              {
+                "testId": "REVERSED_ORDER",
+                "path": "values.askAcceptance",
+                "operator": "contains",
+                "expected": "?"
+              },
+              {
+                "testId": "REVERSED_ORDER",
+                "path": "output.clarification",
+                "operator": "contains",
+                "expected": "owner"
+              },
+              {
+                "testId": "REVERSED_ORDER",
+                "path": "output.clarification",
+                "operator": "contains",
+                "expected": "timezone"
+              },
+              {
+                "testId": "REVERSED_ORDER",
+                "path": "output.clarification",
+                "operator": "contains",
+                "expected": "acceptance"
+              }
+            ]
+          },
+          {
+            "id": "CEDAR_DRAFT_ONLY",
+            "rubricIndex": 3,
+            "weight": 20,
+            "objectiveIds": [
+              "O2",
+              "O3"
+            ],
+            "sourceIds": [
+              "S3"
+            ],
+            "videoIds": [
+              "M1V1"
+            ],
+            "checks": [
+              {
+                "testId": "ORIGINAL_ORDER",
+                "path": "values.status",
+                "operator": "equals",
+                "expected": "Draft only; not sent or completed."
+              },
+              {
+                "testId": "ORIGINAL_ORDER",
+                "path": "output.handoff",
+                "operator": "contains",
+                "expected": "Draft only; not sent or completed."
+              },
+              {
+                "testId": "REVERSED_ORDER",
+                "path": "values.status",
+                "operator": "equals",
+                "expected": "Draft only; not sent or completed."
+              },
+              {
+                "testId": "REVERSED_ORDER",
+                "path": "output.handoff",
+                "operator": "contains",
+                "expected": "Draft only; not sent or completed."
+              }
+            ]
+          },
+          {
+            "id": "CEDAR_CONFLICT_OWNER",
+            "rubricIndex": 4,
+            "weight": 20,
+            "objectiveIds": [
+              "O3"
+            ],
+            "sourceIds": [
+              "S3"
+            ],
+            "videoIds": [
+              "M1V1"
+            ],
+            "checks": [
+              {
+                "testId": "ORIGINAL_ORDER",
+                "path": "output.conflict",
+                "operator": "contains",
+                "expected": "Due times: 30 October 2026, 15:00 Asia/Kolkata; 30 October 2026, 16:00 Asia/Kolkata"
+              },
+              {
+                "testId": "ORIGINAL_ORDER",
+                "path": "values.askConflict",
+                "operator": "contains",
+                "expected": "Maya"
+              },
+              {
+                "testId": "ORIGINAL_ORDER",
+                "path": "values.askConflict",
+                "operator": "contains",
+                "expected": "clarify"
+              },
+              {
+                "testId": "ORIGINAL_ORDER",
+                "path": "values.askConflict",
+                "operator": "contains",
+                "expected": "?"
+              },
+              {
+                "testId": "ORIGINAL_ORDER",
+                "path": "output.conflict",
+                "operator": "contains",
+                "expected": "Maya"
+              },
+              {
+                "testId": "ORIGINAL_ORDER",
+                "path": "output.conflict",
+                "operator": "contains",
+                "expected": "clarify"
+              },
+              {
+                "testId": "REVERSED_ORDER",
+                "path": "output.conflict",
+                "operator": "contains",
+                "expected": "Due times: 30 October 2026, 16:00 Asia/Kolkata; 30 October 2026, 15:00 Asia/Kolkata"
+              },
+              {
+                "testId": "REVERSED_ORDER",
+                "path": "values.askConflict",
+                "operator": "contains",
+                "expected": "Maya"
+              },
+              {
+                "testId": "REVERSED_ORDER",
+                "path": "values.askConflict",
+                "operator": "contains",
+                "expected": "clarify"
+              },
+              {
+                "testId": "REVERSED_ORDER",
+                "path": "values.askConflict",
+                "operator": "contains",
+                "expected": "?"
+              },
+              {
+                "testId": "REVERSED_ORDER",
+                "path": "output.conflict",
+                "operator": "contains",
+                "expected": "Maya"
+              },
+              {
+                "testId": "REVERSED_ORDER",
+                "path": "output.conflict",
+                "operator": "contains",
+                "expected": "clarify"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "briefRevision": 1,
+  "schemaVersion": 1,
+  "durationMinutes": 28,
+  "objectiveEvidence": [
+    {
+      "objective": "Identify the four required fields in a Cedar task handoff.",
+      "sourceIds": [
+        "S1"
+      ],
+      "objectiveId": "O1"
+    },
+    {
+      "objective": "Write a complete handoff using the supplied Cedar case facts.",
+      "sourceIds": [
+        "S1",
+        "S2"
+      ],
+      "objectiveId": "O2"
+    },
+    {
+      "objective": "Evaluate an ambiguous handoff and request the missing information without guessing.",
+      "sourceIds": [
+        "S1",
+        "S2",
+        "S3"
+      ],
+      "objectiveId": "O3"
+    }
+  ]
+}
