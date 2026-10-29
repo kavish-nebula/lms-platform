@@ -1,0 +1,2555 @@
+{
+  "schemaVersion": 1,
+  "title": "Clean Data to Clear Decisions",
+  "subject": "Build and test a fictional operations summary in the in-course data-workflow sandbox",
+  "briefRevision": 2,
+  "durationMinutes": 90,
+  "objectiveEvidence": [
+    {
+      "objectiveId": "O1",
+      "objective": "Trace input, artifact and earlier-output references in an ordered sandbox workflow.",
+      "sourceIds": [
+        "S1"
+      ]
+    },
+    {
+      "objectiveId": "O2",
+      "objective": "Remove outer whitespace while preserving meaningful internal text.",
+      "sourceIds": [
+        "S2"
+      ]
+    },
+    {
+      "objectiveId": "O3",
+      "objective": "Normalize a comparison label with lowercase without changing the original input.",
+      "sourceIds": [
+        "S3"
+      ]
+    },
+    {
+      "objectiveId": "O4",
+      "objective": "Create an uppercase display code from a cleaned value.",
+      "sourceIds": [
+        "S4"
+      ]
+    },
+    {
+      "objectiveId": "O5",
+      "objective": "Compose a template from named inputs, artifact fields and prior outputs.",
+      "sourceIds": [
+        "S5"
+      ]
+    },
+    {
+      "objectiveId": "O6",
+      "objective": "Choose the second reference when the first value is empty or whitespace only.",
+      "sourceIds": [
+        "S6"
+      ]
+    },
+    {
+      "objectiveId": "O7",
+      "objective": "Calculate a total by summing finite numeric-string references.",
+      "sourceIds": [
+        "S7"
+      ]
+    },
+    {
+      "objectiveId": "O8",
+      "objective": "Multiply an earlier numeric total by a supplied numeric factor.",
+      "sourceIds": [
+        "S8"
+      ]
+    },
+    {
+      "objectiveId": "O9",
+      "objective": "Evaluate sample and changed-input runs against explicit project criteria before submission.",
+      "sourceIds": [
+        "S9"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "id": "S1",
+      "kind": "sme",
+      "title": "Fictional sandbox reference: Read and copy values",
+      "reference": "FICTIONAL TRAINING SOURCE 1 — authored for this course from the local data-workflow runtime contract, not an independently supplied company policy. A reference names one available value: input.name is supplied case data, values.name is an editable artifact field, and output.name is an earlier step result. Copy reads one reference without altering its text. Earlier outputs must be created before use; unknown or forward references stop the run. Case: input.ticket is T-104. Copy input.ticket into ticketId."
+    },
+    {
+      "id": "S2",
+      "kind": "sme",
+      "title": "Fictional sandbox reference: Trim outer spaces",
+      "reference": "FICTIONAL TRAINING SOURCE 2 — authored for this course from the local data-workflow runtime contract, not an independently supplied company policy. Trim removes whitespace from the beginning and end, not the middle. Copy preserves outer spaces. Case: input.name is \"  Ada Lee  \". Trim input.name into cleanName to obtain \"Ada Lee\"; the internal space remains. Do not use case conversion as a substitute for trimming."
+    },
+    {
+      "id": "S3",
+      "kind": "sme",
+      "title": "Fictional sandbox reference: Normalize text case",
+      "reference": "FICTIONAL TRAINING SOURCE 3 — authored for this course from the local data-workflow runtime contract, not an independently supplied company policy. Lowercase converts letters to lower case but does not remove spaces. First trim a label, then lowercase the earlier trimmed output. Case: input.team is \"  SuPPORT  \". Trim into teamTrim, then lowercase output.teamTrim into teamKey to produce \"support\". Input data stays unchanged."
+    },
+    {
+      "id": "S4",
+      "kind": "sme",
+      "title": "Fictional sandbox reference: Format a display code",
+      "reference": "FICTIONAL TRAINING SOURCE 4 — authored for this course from the local data-workflow runtime contract, not an independently supplied company policy. Uppercase converts letters to upper case and preserves nonletters. Trim input.code into codeTrim before uppercase output.codeTrim into displayCode. Case: \"  ab-7 \" becomes \"AB-7\". A display code can differ from a lowercase comparison key. Case conversion alone does not validate a code."
+    },
+    {
+      "id": "S5",
+      "kind": "sme",
+      "title": "Fictional sandbox reference: Compose a readable summary",
+      "reference": "FICTIONAL TRAINING SOURCE 5 — authored for this course from the local data-workflow runtime contract, not an independently supplied company policy. Template inserts references written in double braces and preserves surrounding literal text. Case format: {{values.prefix}} | {{output.ticketId}} | {{output.cleanName}} | {{output.teamKey}} | {{output.displayCode}} | {{output.contact}}. The prefix is the artifact field \"Review\". A template formats data; it does not send messages or approve work. Build referenced outputs first."
+    },
+    {
+      "id": "S6",
+      "kind": "sme",
+      "title": "Fictional sandbox reference: Choose a fallback safely",
+      "reference": "FICTIONAL TRAINING SOURCE 6 — authored for this course from the local data-workflow runtime contract, not an independently supplied company policy. Fallback takes two references separated by |. It keeps a nonblank first value; otherwise it uses the second. Trim input.contact into contactTrim, then fallback output.contactTrim | values.defaultContact into contact. Default artifact value is \"Unassigned\". Case: a blank contact uses Unassigned, while \" Ada \" becomes Ada and is kept. Fallback is a formatting convention, not permission to invent missing real facts."
+    },
+    {
+      "id": "S7",
+      "kind": "sme",
+      "title": "Fictional sandbox reference: Add numeric inputs",
+      "reference": "FICTIONAL TRAINING SOURCE 7 — authored for this course from the local data-workflow runtime contract, not an independently supplied company policy. Sum adds comma-separated references; literal numeric constants are not references. Every value must be a nonblank finite numeric string; blank or nonnumeric values stop the run. Sum input.base, input.extra into totalUnits. In a fictional kit case, base 8 and extra 2 produce 10. This is an exercise count, not a financial calculation."
+    },
+    {
+      "id": "S8",
+      "kind": "sme",
+      "title": "Fictional sandbox reference: Multiply a calculated total",
+      "reference": "FICTIONAL TRAINING SOURCE 8 — authored for this course from the local data-workflow runtime contract, not an independently supplied company policy. Multiply uses comma-separated numeric references and requires nonblank finite numbers. Multiply output.totalUnits, input.factor into plannedUnits, after totalUnits is created. For totalUnits 10 and factor 3 the result is 30. This computes a fictional planning quantity and neither reserves nor delivers real kits."
+    },
+    {
+      "id": "S9",
+      "kind": "sme",
+      "title": "Fictional sandbox reference: Test before submitting",
+      "reference": "FICTIONAL TRAINING SOURCE 9 — authored for this course from the local data-workflow runtime contract, not an independently supplied company policy. Run simulates the sample and shows outputs and step trace. Test project checks every declared case without recording a submission. Save draft persists editable work; Submit project recomputes the grade and records a submission. Check both changed inputs and missing-value behavior rather than hard-coding sample outputs. If all criteria are required, every criterion must pass. An interpreter error prevents passing. Test success does not establish a real external action."
+    }
+  ],
+  "modules": [
+    {
+      "id": "M1",
+      "title": "Read and clean the inputs",
+      "durationMinutes": 22,
+      "objectiveIds": [
+        "O1",
+        "O2",
+        "O3"
+      ],
+      "sourceIds": [
+        "S1",
+        "S2",
+        "S3"
+      ],
+      "problemHook": {
+        "title": "A messy intake label",
+        "situation": "A fictional ticket arrives with padded names and mixed-case team labels. A teammate wants to copy everything directly into a comparison key.",
+        "question": "What must you preserve, and what should you normalize?",
+        "objectiveIds": [
+          "O1",
+          "O2",
+          "O3"
+        ],
+        "sourceIds": [
+          "S1",
+          "S2",
+          "S3"
+        ]
+      },
+      "conceptExplainer": {
+        "videos": [
+          {
+            "id": "M1V1",
+            "title": "Read and copy values",
+            "plannedMinutes": 2.5,
+            "slides": [
+              {
+                "id": "M1V1SL1",
+                "title": "Read and copy values",
+                "body": [
+                  "Name the value scope",
+                  "Copy keeps the text unchanged"
+                ],
+                "narration": "In this fictional operations desk, our task is to read and copy values. Name the value scope. A reference names one available value: input.name is supplied case data, values.name is an editable artifact field, and output.name is an earlier step result. Copy reads one reference without altering its text. Look at the named values, rather than assuming a label is the value itself. Nothing in this example changes an outside system.",
+                "plannedNarrationSeconds": 29,
+                "objectiveIds": [
+                  "O1"
+                ],
+                "sourceIds": [
+                  "S1"
+                ]
+              },
+              {
+                "id": "M1V1SL2",
+                "title": "Follow one concrete case",
+                "body": [
+                  "input.ticket = T-104 → copy → ticketId = T-104"
+                ],
+                "narration": "Follow the example from left to right: input.ticket = T-104 → copy → ticketId = T-104. Copy keeps the text unchanged. Earlier outputs must be created before use; unknown or forward references stop the run. Case: input.ticket is T-104. Copy input.ticket into ticketId. The visible arrows describe an ordered transformation, not movement you must see. Pause now for two questions about the rule and this example.",
+                "plannedNarrationSeconds": 27,
+                "objectiveIds": [
+                  "O1"
+                ],
+                "sourceIds": [
+                  "S1"
+                ]
+              },
+              {
+                "id": "M1V1SL3",
+                "title": "Apply and inspect",
+                "body": [
+                  "Create ticketId first; later templates may read output.ticketId.",
+                  "Reading output.ticketId before its step exists stops the run."
+                ],
+                "narration": "Now apply the rule in the course sandbox. Create ticketId first; later templates may read output.ticketId. Check the operation, expression and output name as separate choices. Reading output.ticketId before its step exists stops the run. If the trace differs from the expected result, inspect the earliest step that diverges before changing later steps.",
+                "plannedNarrationSeconds": 22,
+                "objectiveIds": [
+                  "O1"
+                ],
+                "sourceIds": [
+                  "S1"
+                ]
+              },
+              {
+                "id": "M1V1SL4",
+                "title": "Recap and transfer",
+                "body": [
+                  "Check: Name the value scope",
+                  "Remember: Reading output.ticketId before its step exists stops the run."
+                ],
+                "narration": "Recap: Name the value scope; Copy keeps the text unchanged. input.ticket = T-104 → copy → ticketId = T-104. Explain the result in words before moving on. Reading output.ticketId before its step exists stops the run. You will combine this topic with the other module topics in the worked example, then practise and make a scenario decision. The transcript remains a reading alternative.",
+                "plannedNarrationSeconds": 26,
+                "objectiveIds": [
+                  "O1"
+                ],
+                "sourceIds": [
+                  "S1"
+                ]
+              }
+            ],
+            "midpointQuiz": {
+              "afterSlideId": "M1V1SL2",
+              "questions": [
+                {
+                  "id": "M1V1MID1",
+                  "prompt": "Select one answer: Where does a supplied case field come from?",
+                  "choices": [
+                    "input.name",
+                    "values.name",
+                    "output.name"
+                  ],
+                  "selectionType": "single",
+                  "correct": 0,
+                  "hint": "Name the value scope; Copy keeps the text unchanged",
+                  "explanation": "input names supplied case data; values names editable artifact fields; output names earlier step results.",
+                  "objectiveIds": [
+                    "O1"
+                  ],
+                  "sourceIds": [
+                    "S1"
+                  ]
+                },
+                {
+                  "id": "M1V1MID2",
+                  "prompt": "Select one answer: What does copy change in its referenced text?",
+                  "choices": [
+                    "It removes outer spaces",
+                    "It changes letter case",
+                    "It preserves the text"
+                  ],
+                  "selectionType": "single",
+                  "correct": 2,
+                  "hint": "Name the value scope; Copy keeps the text unchanged",
+                  "explanation": "Copy preserves the text; trim removes outer spaces and case operations change letters.",
+                  "objectiveIds": [
+                    "O1"
+                  ],
+                  "sourceIds": [
+                    "S1"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "M1V2",
+            "title": "Trim outer spaces",
+            "plannedMinutes": 2.5,
+            "slides": [
+              {
+                "id": "M1V2SL1",
+                "title": "Trim outer spaces",
+                "body": [
+                  "Remove beginning and ending whitespace",
+                  "Keep meaningful internal spaces"
+                ],
+                "narration": "In this fictional operations desk, our task is to trim outer spaces. Remove beginning and ending whitespace. Trim removes whitespace from the beginning and end, not the middle. Copy preserves outer spaces. Look at the named values, rather than assuming a label is the value itself. Nothing in this example changes an outside system.",
+                "plannedNarrationSeconds": 22,
+                "objectiveIds": [
+                  "O2"
+                ],
+                "sourceIds": [
+                  "S2"
+                ]
+              },
+              {
+                "id": "M1V2SL2",
+                "title": "Follow one concrete case",
+                "body": [
+                  "\"  Ada Lee  \" → trim → \"Ada Lee\""
+                ],
+                "narration": "Follow the example from left to right: \"  Ada Lee  \" → trim → \"Ada Lee\". Keep meaningful internal spaces. Case: input.name is \"  Ada Lee  \". Trim input.name into cleanName to obtain \"Ada Lee\"; the internal space remains. Do not use case conversion as a substitute for trimming. The visible arrows describe an ordered transformation, not movement you must see. Pause now for two questions about the rule and this example.",
+                "plannedNarrationSeconds": 29,
+                "objectiveIds": [
+                  "O2"
+                ],
+                "sourceIds": [
+                  "S2"
+                ]
+              },
+              {
+                "id": "M1V2SL3",
+                "title": "Apply and inspect",
+                "body": [
+                  "Apply trim to input.name and call the result cleanName.",
+                  "Copy retains the padding; lowercase changes letters but retains spaces."
+                ],
+                "narration": "Now apply the rule in the course sandbox. Apply trim to input.name and call the result cleanName. Check the operation, expression and output name as separate choices. Copy retains the padding; lowercase changes letters but retains spaces. If the trace differs from the expected result, inspect the earliest step that diverges before changing later steps.",
+                "plannedNarrationSeconds": 22,
+                "objectiveIds": [
+                  "O2"
+                ],
+                "sourceIds": [
+                  "S2"
+                ]
+              },
+              {
+                "id": "M1V2SL4",
+                "title": "Recap and transfer",
+                "body": [
+                  "Check: Remove beginning and ending whitespace",
+                  "Remember: Copy retains the padding; lowercase changes letters but retains spaces."
+                ],
+                "narration": "Recap: Remove beginning and ending whitespace; Keep meaningful internal spaces. \"  Ada Lee  \" → trim → \"Ada Lee\". Explain the result in words before moving on. Copy retains the padding; lowercase changes letters but retains spaces. You will combine this topic with the other module topics in the worked example, then practise and make a scenario decision. The transcript remains a reading alternative.",
+                "plannedNarrationSeconds": 26,
+                "objectiveIds": [
+                  "O2"
+                ],
+                "sourceIds": [
+                  "S2"
+                ]
+              }
+            ],
+            "midpointQuiz": {
+              "afterSlideId": "M1V2SL2",
+              "questions": [
+                {
+                  "id": "M1V2MID1",
+                  "prompt": "Select one answer: What is the trimmed form of \"  Ada Lee  \"?",
+                  "choices": [
+                    "\"AdaLee\"",
+                    "\"Ada Lee\"",
+                    "\"ada lee\""
+                  ],
+                  "selectionType": "single",
+                  "correct": 1,
+                  "hint": "Remove beginning and ending whitespace; Keep meaningful internal spaces",
+                  "explanation": "Trim removes outer padding only; the internal space and letter case remain.",
+                  "objectiveIds": [
+                    "O2"
+                  ],
+                  "sourceIds": [
+                    "S2"
+                  ]
+                },
+                {
+                  "id": "M1V2MID2",
+                  "prompt": "Select one answer: Which text does trim preserve?",
+                  "choices": [
+                    "Spaces between the words",
+                    "Padding before the words",
+                    "Padding after the words"
+                  ],
+                  "selectionType": "single",
+                  "correct": 0,
+                  "hint": "Remove beginning and ending whitespace; Keep meaningful internal spaces",
+                  "explanation": "Internal spaces remain; beginning and ending whitespace is removed.",
+                  "objectiveIds": [
+                    "O2"
+                  ],
+                  "sourceIds": [
+                    "S2"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "M1V3",
+            "title": "Normalize text case",
+            "plannedMinutes": 2.5,
+            "slides": [
+              {
+                "id": "M1V3SL1",
+                "title": "Normalize text case",
+                "body": [
+                  "Lowercase changes letter case",
+                  "Trim before lowercasing padded labels"
+                ],
+                "narration": "In this fictional operations desk, our task is to normalize text case. Lowercase changes letter case. Lowercase converts letters to lower case but does not remove spaces. First trim a label, then lowercase the earlier trimmed output. Look at the named values, rather than assuming a label is the value itself. Nothing in this example changes an outside system.",
+                "plannedNarrationSeconds": 24,
+                "objectiveIds": [
+                  "O3"
+                ],
+                "sourceIds": [
+                  "S3"
+                ]
+              },
+              {
+                "id": "M1V3SL2",
+                "title": "Follow one concrete case",
+                "body": [
+                  "\"  SuPPORT  \" → trim → \"SuPPORT\" → lowercase → \"support\""
+                ],
+                "narration": "Follow the example from left to right: \"  SuPPORT  \" → trim → \"SuPPORT\" → lowercase → \"support\". Trim before lowercasing padded labels. Case: input.team is \"  SuPPORT  \". Trim into teamTrim, then lowercase output.teamTrim into teamKey to produce \"support\". Input data stays unchanged. The visible arrows describe an ordered transformation, not movement you must see. Pause now for two questions about the rule and this example.",
+                "plannedNarrationSeconds": 27,
+                "objectiveIds": [
+                  "O3"
+                ],
+                "sourceIds": [
+                  "S3"
+                ]
+              },
+              {
+                "id": "M1V3SL3",
+                "title": "Apply and inspect",
+                "body": [
+                  "Create teamTrim from input.team; lowercase output.teamTrim into teamKey.",
+                  "Lowercasing the original value alone leaves its outer spaces."
+                ],
+                "narration": "Now apply the rule in the course sandbox. Create teamTrim from input.team; lowercase output.teamTrim into teamKey. Check the operation, expression and output name as separate choices. Lowercasing the original value alone leaves its outer spaces. If the trace differs from the expected result, inspect the earliest step that diverges before changing later steps.",
+                "plannedNarrationSeconds": 22,
+                "objectiveIds": [
+                  "O3"
+                ],
+                "sourceIds": [
+                  "S3"
+                ]
+              },
+              {
+                "id": "M1V3SL4",
+                "title": "Recap and transfer",
+                "body": [
+                  "Check: Lowercase changes letter case",
+                  "Remember: Lowercasing the original value alone leaves its outer spaces."
+                ],
+                "narration": "Recap: Lowercase changes letter case; Trim before lowercasing padded labels. \"  SuPPORT  \" → trim → \"SuPPORT\" → lowercase → \"support\". Explain the result in words before moving on. Lowercasing the original value alone leaves its outer spaces. You will combine this topic with the other module topics in the worked example, then practise and make a scenario decision. The transcript remains a reading alternative.",
+                "plannedNarrationSeconds": 26,
+                "objectiveIds": [
+                  "O3"
+                ],
+                "sourceIds": [
+                  "S3"
+                ]
+              }
+            ],
+            "midpointQuiz": {
+              "afterSlideId": "M1V3SL2",
+              "questions": [
+                {
+                  "id": "M1V3MID1",
+                  "prompt": "Select one answer: What does lowercase change?",
+                  "choices": [
+                    "The surrounding spaces",
+                    "The letter capitalization",
+                    "The source field names"
+                  ],
+                  "selectionType": "single",
+                  "correct": 1,
+                  "hint": "Lowercase changes letter case; Trim before lowercasing padded labels",
+                  "explanation": "Lowercase changes letters, not whitespace or field names.",
+                  "objectiveIds": [
+                    "O3"
+                  ],
+                  "sourceIds": [
+                    "S3"
+                  ]
+                },
+                {
+                  "id": "M1V3MID2",
+                  "prompt": "Select one answer: Which order creates the clean key \"support\"?",
+                  "choices": [
+                    "Copy then add padding",
+                    "Uppercase then add padding",
+                    "Trim then lowercase"
+                  ],
+                  "selectionType": "single",
+                  "correct": 2,
+                  "hint": "Lowercase changes letter case; Trim before lowercasing padded labels",
+                  "explanation": "Trim removes outer padding; lowercase normalizes capitalization. The other sequences do not produce the key.",
+                  "objectiveIds": [
+                    "O3"
+                  ],
+                  "sourceIds": [
+                    "S3"
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "workedExamples": [
+        {
+          "id": "M1W1",
+          "title": "A complete read and clean the inputs example",
+          "problem": "Use T-104, padded Ada Lee and mixed-case SuPPORT to prepare three named outputs.",
+          "reasoning": [
+            "input.ticket = T-104 → copy → ticketId = T-104. Create ticketId first; later templates may read output.ticketId. Reading output.ticketId before its step exists stops the run.",
+            "\"  Ada Lee  \" → trim → \"Ada Lee\". Apply trim to input.name and call the result cleanName. Copy retains the padding; lowercase changes letters but retains spaces.",
+            "\"  SuPPORT  \" → trim → \"SuPPORT\" → lowercase → \"support\". Create teamTrim from input.team; lowercase output.teamTrim into teamKey. Lowercasing the original value alone leaves its outer spaces."
+          ],
+          "result": "ticketId = T-104; cleanName = Ada Lee; teamKey = support. The original inputs remain unchanged.",
+          "objectiveIds": [
+            "O1",
+            "O2",
+            "O3"
+          ],
+          "sourceIds": [
+            "S1",
+            "S2",
+            "S3"
+          ]
+        }
+      ],
+      "guidedPractice": {
+        "title": "Practise: read and clean the inputs",
+        "instructions": "Use the synthetic example shown in this module. Work through the three checkpoints in order. Explain the transformation and compare your result with the stated evidence; the executable integrated workflow is the final sandbox project.",
+        "steps": [
+          {
+            "id": "M1G1",
+            "instruction": "Copy input.ticket into ticketId before later references.",
+            "hint": "Name the value scope; Copy keeps the text unchanged",
+            "evidence": "input.ticket = T-104 → copy → ticketId = T-104",
+            "objectiveIds": [
+              "O1"
+            ],
+            "sourceIds": [
+              "S1"
+            ]
+          },
+          {
+            "id": "M1G2",
+            "instruction": "Create cleanName by trimming input.name.",
+            "hint": "Remove beginning and ending whitespace; Keep meaningful internal spaces",
+            "evidence": "\"  Ada Lee  \" → trim → \"Ada Lee\"",
+            "objectiveIds": [
+              "O2"
+            ],
+            "sourceIds": [
+              "S2"
+            ]
+          },
+          {
+            "id": "M1G3",
+            "instruction": "Create teamTrim, then lowercase it into teamKey.",
+            "hint": "Lowercase changes letter case; Trim before lowercasing padded labels",
+            "evidence": "\"  SuPPORT  \" → trim → \"SuPPORT\" → lowercase → \"support\"",
+            "objectiveIds": [
+              "O3"
+            ],
+            "sourceIds": [
+              "S3"
+            ]
+          }
+        ]
+      },
+      "scenarioLab": {
+        "title": "Choose a defensible next step",
+        "scenarios": [
+          {
+            "id": "M1SC1",
+            "title": "Variation: read and copy values",
+            "situation": "A fictional teammate proposes a shortcut. Reading output.ticketId before its step exists stops the run.",
+            "challenge": "Describe a correction using read and copy values and explain what the result does not prove.",
+            "expectedEvidence": "Create ticketId first; later templates may read output.ticketId. Reading output.ticketId before its step exists stops the run.",
+            "objectiveIds": [
+              "O1"
+            ],
+            "sourceIds": [
+              "S1"
+            ]
+          },
+          {
+            "id": "M1SC2",
+            "title": "Variation: trim outer spaces",
+            "situation": "A fictional teammate proposes a shortcut. Copy retains the padding; lowercase changes letters but retains spaces.",
+            "challenge": "Describe a correction using trim outer spaces and explain what the result does not prove.",
+            "expectedEvidence": "Apply trim to input.name and call the result cleanName. Copy retains the padding; lowercase changes letters but retains spaces.",
+            "objectiveIds": [
+              "O2"
+            ],
+            "sourceIds": [
+              "S2"
+            ]
+          },
+          {
+            "id": "M1SC3",
+            "title": "Variation: normalize text case",
+            "situation": "A fictional teammate proposes a shortcut. Lowercasing the original value alone leaves its outer spaces.",
+            "challenge": "Describe a correction using normalize text case and explain what the result does not prove.",
+            "expectedEvidence": "Create teamTrim from input.team; lowercase output.teamTrim into teamKey. Lowercasing the original value alone leaves its outer spaces.",
+            "objectiveIds": [
+              "O3"
+            ],
+            "sourceIds": [
+              "S3"
+            ]
+          }
+        ]
+      },
+      "moduleQuiz": {
+        "title": "Check: Read and clean the inputs",
+        "instructions": "Answer all four items after the Scenario Lab. Select-all items require every correct option and no incorrect options; no partial credit. The module inherits the course pass mark of 80%.",
+        "questions": [
+          {
+            "id": "M1ENDT1Q1",
+            "prompt": "Select one answer: Where does a supplied case field come from?",
+            "choices": [
+              "input.name",
+              "values.name",
+              "output.name"
+            ],
+            "selectionType": "single",
+            "correct": 0,
+            "hint": "Name the value scope; Copy keeps the text unchanged",
+            "explanation": "input names supplied case data; values names editable artifact fields; output names earlier step results.",
+            "objectiveIds": [
+              "O1"
+            ],
+            "sourceIds": [
+              "S1"
+            ]
+          },
+          {
+            "id": "M1ENDT2Q1",
+            "prompt": "Select one answer: What is the trimmed form of \"  Ada Lee  \"?",
+            "choices": [
+              "\"AdaLee\"",
+              "\"Ada Lee\"",
+              "\"ada lee\""
+            ],
+            "selectionType": "single",
+            "correct": 1,
+            "hint": "Remove beginning and ending whitespace; Keep meaningful internal spaces",
+            "explanation": "Trim removes outer padding only; the internal space and letter case remain.",
+            "objectiveIds": [
+              "O2"
+            ],
+            "sourceIds": [
+              "S2"
+            ]
+          },
+          {
+            "id": "M1ENDT3Q1",
+            "prompt": "Select one answer: What does lowercase change?",
+            "choices": [
+              "The surrounding spaces",
+              "The letter capitalization",
+              "The source field names"
+            ],
+            "selectionType": "single",
+            "correct": 1,
+            "hint": "Lowercase changes letter case; Trim before lowercasing padded labels",
+            "explanation": "Lowercase changes letters, not whitespace or field names.",
+            "objectiveIds": [
+              "O3"
+            ],
+            "sourceIds": [
+              "S3"
+            ]
+          },
+          {
+            "id": "M1ENDMULTI",
+            "prompt": "Select all correct answers: which steps produce a clean lowercase team key?",
+            "choices": [
+              "Trim the supplied team text.",
+              "Lowercase the trimmed output.",
+              "Keep the outer space padding.",
+              "Read a not-yet-created output."
+            ],
+            "correctIndices": [
+              0,
+              1
+            ],
+            "explanation": "Trimming removes outer whitespace and lowercasing normalizes case. Keeping padding prevents the clean key; a forward reference stops the run.",
+            "objectiveIds": [
+              "O1",
+              "O2",
+              "O3"
+            ],
+            "sourceIds": [
+              "S1",
+              "S2",
+              "S3"
+            ],
+            "selectionType": "multiple",
+            "hint": "Use the taught operation and evidence rules; select all supported choices."
+          }
+        ]
+      }
+    },
+    {
+      "id": "M2",
+      "title": "Compose a trustworthy review card",
+      "durationMinutes": 22,
+      "objectiveIds": [
+        "O4",
+        "O5",
+        "O6"
+      ],
+      "sourceIds": [
+        "S4",
+        "S5",
+        "S6"
+      ],
+      "problemHook": {
+        "title": "A summary that hides missing information",
+        "situation": "A fictional review card needs a readable code and contact. A teammate wants the word Review to mean the record has been approved.",
+        "question": "How can you format the card without inventing a contact or approval?",
+        "objectiveIds": [
+          "O4",
+          "O5",
+          "O6"
+        ],
+        "sourceIds": [
+          "S4",
+          "S5",
+          "S6"
+        ]
+      },
+      "conceptExplainer": {
+        "videos": [
+          {
+            "id": "M2V1",
+            "title": "Format a display code",
+            "plannedMinutes": 2.5,
+            "slides": [
+              {
+                "id": "M2V1SL1",
+                "title": "Format a display code",
+                "body": [
+                  "Uppercase changes letters only",
+                  "Clean the value before display formatting"
+                ],
+                "narration": "In this fictional operations desk, our task is to format a display code. Uppercase changes letters only. Uppercase converts letters to upper case and preserves nonletters. Trim input.code into codeTrim before uppercase output.codeTrim into displayCode. Look at the named values, rather than assuming a label is the value itself. Nothing in this example changes an outside system.",
+                "plannedNarrationSeconds": 23,
+                "objectiveIds": [
+                  "O4"
+                ],
+                "sourceIds": [
+                  "S4"
+                ]
+              },
+              {
+                "id": "M2V1SL2",
+                "title": "Follow one concrete case",
+                "body": [
+                  "\"  ab-7 \" → trim → \"ab-7\" → uppercase → \"AB-7\""
+                ],
+                "narration": "Follow the example from left to right: \"  ab-7 \" → trim → \"ab-7\" → uppercase → \"AB-7\". Clean the value before display formatting. Case: \"  ab-7 \" becomes \"AB-7\". A display code can differ from a lowercase comparison key. Case conversion alone does not validate a code. The visible arrows describe an ordered transformation, not movement you must see. Pause now for two questions about the rule and this example.",
+                "plannedNarrationSeconds": 29,
+                "objectiveIds": [
+                  "O4"
+                ],
+                "sourceIds": [
+                  "S4"
+                ]
+              },
+              {
+                "id": "M2V1SL3",
+                "title": "Apply and inspect",
+                "body": [
+                  "Create codeTrim, then uppercase output.codeTrim into displayCode.",
+                  "AB-7 is a display convention, not proof that the code is valid."
+                ],
+                "narration": "Now apply the rule in the course sandbox. Create codeTrim, then uppercase output.codeTrim into displayCode. Check the operation, expression and output name as separate choices. AB-7 is a display convention, not proof that the code is valid. If the trace differs from the expected result, inspect the earliest step that diverges before changing later steps.",
+                "plannedNarrationSeconds": 22,
+                "objectiveIds": [
+                  "O4"
+                ],
+                "sourceIds": [
+                  "S4"
+                ]
+              },
+              {
+                "id": "M2V1SL4",
+                "title": "Recap and transfer",
+                "body": [
+                  "Check: Uppercase changes letters only",
+                  "Remember: AB-7 is a display convention, not proof that the code is valid."
+                ],
+                "narration": "Recap: Uppercase changes letters only; Clean the value before display formatting. \"  ab-7 \" → trim → \"ab-7\" → uppercase → \"AB-7\". Explain the result in words before moving on. AB-7 is a display convention, not proof that the code is valid. You will combine this topic with the other module topics in the worked example, then practise and make a scenario decision. The transcript remains a reading alternative.",
+                "plannedNarrationSeconds": 28,
+                "objectiveIds": [
+                  "O4"
+                ],
+                "sourceIds": [
+                  "S4"
+                ]
+              }
+            ],
+            "midpointQuiz": {
+              "afterSlideId": "M2V1SL2",
+              "questions": [
+                {
+                  "id": "M2V1MID1",
+                  "prompt": "Select one answer: Which display value follows trim then uppercase?",
+                  "choices": [
+                    "AB-7",
+                    "ab-7",
+                    "Ab-7"
+                  ],
+                  "selectionType": "single",
+                  "correct": 0,
+                  "hint": "Uppercase changes letters only; Clean the value before display formatting",
+                  "explanation": "Uppercase makes both letters capitals; trimming removes the outer spaces.",
+                  "objectiveIds": [
+                    "O4"
+                  ],
+                  "sourceIds": [
+                    "S4"
+                  ]
+                },
+                {
+                  "id": "M2V1MID2",
+                  "prompt": "Select one answer: What remains unchanged by uppercase?",
+                  "choices": [
+                    "Lowercase letter forms",
+                    "Nonletter symbols",
+                    "Leading letter case"
+                  ],
+                  "selectionType": "single",
+                  "correct": 1,
+                  "hint": "Uppercase changes letters only; Clean the value before display formatting",
+                  "explanation": "The hyphen and digit remain; lowercase letters change to uppercase forms.",
+                  "objectiveIds": [
+                    "O4"
+                  ],
+                  "sourceIds": [
+                    "S4"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "M2V2",
+            "title": "Compose a readable summary",
+            "plannedMinutes": 2.5,
+            "slides": [
+              {
+                "id": "M2V2SL1",
+                "title": "Compose a readable summary",
+                "body": [
+                  "Double braces insert a named value",
+                  "Literal text stays in the format"
+                ],
+                "narration": "In this fictional operations desk, our task is to compose a readable summary. Double braces insert a named value. Template inserts references written in double braces and preserves surrounding literal text. Case format: {{values.prefix}} | {{output.ticketId}} | {{output.cleanName}} | {{output.teamKey}} | {{output.displayCode}} | {{output.contact}}. Look at the named values, rather than assuming a label is the value itself. Nothing in this example changes an outside system.",
+                "plannedNarrationSeconds": 27,
+                "objectiveIds": [
+                  "O5"
+                ],
+                "sourceIds": [
+                  "S5"
+                ]
+              },
+              {
+                "id": "M2V2SL2",
+                "title": "Follow one concrete case",
+                "body": [
+                  "{{values.prefix}} | {{output.ticketId}} → Review | T-104"
+                ],
+                "narration": "Follow the example from left to right: {{values.prefix}} | {{output.ticketId}} → Review | T-104. Literal text stays in the format. The prefix is the artifact field \"Review\". A template formats data; it does not send messages or approve work. Build referenced outputs first. The visible arrows describe an ordered transformation, not movement you must see. Pause now for two questions about the rule and this example.",
+                "plannedNarrationSeconds": 27,
+                "objectiveIds": [
+                  "O5"
+                ],
+                "sourceIds": [
+                  "S5"
+                ]
+              },
+              {
+                "id": "M2V2SL3",
+                "title": "Apply and inspect",
+                "body": [
+                  "Build referenced outputs first, then join the six review fields in the stated order.",
+                  "Formatting a card sends nothing and grants no operational approval."
+                ],
+                "narration": "Now apply the rule in the course sandbox. Build referenced outputs first, then join the six review fields in the stated order. Check the operation, expression and output name as separate choices. Formatting a card sends nothing and grants no operational approval. If the trace differs from the expected result, inspect the earliest step that diverges before changing later steps.",
+                "plannedNarrationSeconds": 24,
+                "objectiveIds": [
+                  "O5"
+                ],
+                "sourceIds": [
+                  "S5"
+                ]
+              },
+              {
+                "id": "M2V2SL4",
+                "title": "Recap and transfer",
+                "body": [
+                  "Check: Double braces insert a named value",
+                  "Remember: Formatting a card sends nothing and grants no operational approval."
+                ],
+                "narration": "Recap: Double braces insert a named value; Literal text stays in the format. {{values.prefix}} | {{output.ticketId}} → Review | T-104. Explain the result in words before moving on. Formatting a card sends nothing and grants no operational approval. You will combine this topic with the other module topics in the worked example, then practise and make a scenario decision. The transcript remains a reading alternative.",
+                "plannedNarrationSeconds": 26,
+                "objectiveIds": [
+                  "O5"
+                ],
+                "sourceIds": [
+                  "S5"
+                ]
+              }
+            ],
+            "midpointQuiz": {
+              "afterSlideId": "M2V2SL2",
+              "questions": [
+                {
+                  "id": "M2V2MID1",
+                  "prompt": "Select one answer: Which placeholder inserts an artifact prefix?",
+                  "choices": [
+                    "{{input.prefix}}",
+                    "{{output.prefix}}",
+                    "{{values.prefix}}"
+                  ],
+                  "selectionType": "single",
+                  "correct": 2,
+                  "hint": "Double braces insert a named value; Literal text stays in the format",
+                  "explanation": "values refers to the editable artifact prefix; input and output refer to different scopes.",
+                  "objectiveIds": [
+                    "O5"
+                  ],
+                  "sourceIds": [
+                    "S5"
+                  ]
+                },
+                {
+                  "id": "M2V2MID2",
+                  "prompt": "Select one answer: What happens to the literal separator | in a template?",
+                  "choices": [
+                    "It remains in the text",
+                    "It approves the record",
+                    "It sends the summary"
+                  ],
+                  "selectionType": "single",
+                  "correct": 0,
+                  "hint": "Double braces insert a named value; Literal text stays in the format",
+                  "explanation": "A template retains literal text and inserts placeholders; it performs no approval or sending.",
+                  "objectiveIds": [
+                    "O5"
+                  ],
+                  "sourceIds": [
+                    "S5"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "M2V3",
+            "title": "Choose a fallback safely",
+            "plannedMinutes": 2.5,
+            "slides": [
+              {
+                "id": "M2V3SL1",
+                "title": "Choose a fallback safely",
+                "body": [
+                  "Keep a nonblank first value",
+                  "Use the second for a blank first value"
+                ],
+                "narration": "In this fictional operations desk, our task is to choose a fallback safely. Keep a nonblank first value. Fallback takes two references separated by |. It keeps a nonblank first value; otherwise it uses the second. Look at the named values, rather than assuming a label is the value itself. Nothing in this example changes an outside system.",
+                "plannedNarrationSeconds": 24,
+                "objectiveIds": [
+                  "O6"
+                ],
+                "sourceIds": [
+                  "S6"
+                ]
+              },
+              {
+                "id": "M2V3SL2",
+                "title": "Follow one concrete case",
+                "body": [
+                  "contactTrim = \"\"; defaultContact = \"Unassigned\" → fallback → Unassigned"
+                ],
+                "narration": "Follow the example from left to right: contactTrim = \"\"; defaultContact = \"Unassigned\" → fallback → Unassigned. Use the second for a blank first value. Trim input.contact into contactTrim, then fallback output.contactTrim | values.defaultContact into contact. Default artifact value is \"Unassigned\". Case: a blank contact uses Unassigned, while \" Ada \" becomes Ada and is kept. Fallback is a formatting convention, not permission to invent missing real facts. The visible arrows describe an ordered transformation, not movement you must see. Pause now for two questions about the rule and this example.",
+                "plannedNarrationSeconds": 37,
+                "objectiveIds": [
+                  "O6"
+                ],
+                "sourceIds": [
+                  "S6"
+                ]
+              },
+              {
+                "id": "M2V3SL3",
+                "title": "Apply and inspect",
+                "body": [
+                  "Trim the contact first, then use output.contactTrim | values.defaultContact.",
+                  "Fallback checks blankness, not accuracy or permission to invent real facts."
+                ],
+                "narration": "Now apply the rule in the course sandbox. Trim the contact first, then use output.contactTrim | values.defaultContact. Check the operation, expression and output name as separate choices. Fallback checks blankness, not accuracy or permission to invent real facts. If the trace differs from the expected result, inspect the earliest step that diverges before changing later steps.",
+                "plannedNarrationSeconds": 23,
+                "objectiveIds": [
+                  "O6"
+                ],
+                "sourceIds": [
+                  "S6"
+                ]
+              },
+              {
+                "id": "M2V3SL4",
+                "title": "Recap and transfer",
+                "body": [
+                  "Check: Keep a nonblank first value",
+                  "Remember: Fallback checks blankness, not accuracy or permission to invent real facts."
+                ],
+                "narration": "Recap: Keep a nonblank first value; Use the second for a blank first value. contactTrim = \"\"; defaultContact = \"Unassigned\" → fallback → Unassigned. Explain the result in words before moving on. Fallback checks blankness, not accuracy or permission to invent real facts. You will combine this topic with the other module topics in the worked example, then practise and make a scenario decision. The transcript remains a reading alternative.",
+                "plannedNarrationSeconds": 28,
+                "objectiveIds": [
+                  "O6"
+                ],
+                "sourceIds": [
+                  "S6"
+                ]
+              }
+            ],
+            "midpointQuiz": {
+              "afterSlideId": "M2V3SL2",
+              "questions": [
+                {
+                  "id": "M2V3MID1",
+                  "prompt": "Select one answer: When does fallback use its second reference?",
+                  "choices": [
+                    "When the first is blank",
+                    "When the first is valid",
+                    "When the first is named"
+                  ],
+                  "selectionType": "single",
+                  "correct": 0,
+                  "hint": "Keep a nonblank first value; Use the second for a blank first value",
+                  "explanation": "An empty or whitespace-only first value triggers the fallback; a named, nonblank value is kept.",
+                  "objectiveIds": [
+                    "O6"
+                  ],
+                  "sourceIds": [
+                    "S6"
+                  ]
+                },
+                {
+                  "id": "M2V3MID2",
+                  "prompt": "Select one answer: What happens when the first value is Ada?",
+                  "choices": [
+                    "The second value wins",
+                    "The first value stays",
+                    "Both values are added"
+                  ],
+                  "selectionType": "single",
+                  "correct": 1,
+                  "hint": "Keep a nonblank first value; Use the second for a blank first value",
+                  "explanation": "The nonblank first value is kept. Fallback neither prefers the second nor performs addition.",
+                  "objectiveIds": [
+                    "O6"
+                  ],
+                  "sourceIds": [
+                    "S6"
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "workedExamples": [
+        {
+          "id": "M2W1",
+          "title": "A complete compose a trustworthy review card example",
+          "problem": "Use code ab-7, a blank contact and prefix Review to prepare a readable summary from earlier cleaned outputs.",
+          "reasoning": [
+            "\"  ab-7 \" → trim → \"ab-7\" → uppercase → \"AB-7\". Create codeTrim, then uppercase output.codeTrim into displayCode. AB-7 is a display convention, not proof that the code is valid.",
+            "{{values.prefix}} | {{output.ticketId}} → Review | T-104. Build referenced outputs first, then join the six review fields in the stated order. Formatting a card sends nothing and grants no operational approval.",
+            "contactTrim = \"\"; defaultContact = \"Unassigned\" → fallback → Unassigned. Trim the contact first, then use output.contactTrim | values.defaultContact. Fallback checks blankness, not accuracy or permission to invent real facts."
+          ],
+          "result": "displayCode = AB-7; contact = Unassigned; summary = Review | T-104 | Ada Lee | support | AB-7 | Unassigned. This is a draft review card, not an approved or sent message.",
+          "objectiveIds": [
+            "O4",
+            "O5",
+            "O6"
+          ],
+          "sourceIds": [
+            "S4",
+            "S5",
+            "S6"
+          ]
+        }
+      ],
+      "guidedPractice": {
+        "title": "Practise: compose a trustworthy review card",
+        "instructions": "Use the synthetic example shown in this module. Work through the three checkpoints in order. Explain the transformation and compare your result with the stated evidence; the executable integrated workflow is the final sandbox project.",
+        "steps": [
+          {
+            "id": "M2G1",
+            "instruction": "Trim input.code, then uppercase the result into displayCode.",
+            "hint": "Uppercase changes letters only; Clean the value before display formatting",
+            "evidence": "\"  ab-7 \" → trim → \"ab-7\" → uppercase → \"AB-7\"",
+            "objectiveIds": [
+              "O4"
+            ],
+            "sourceIds": [
+              "S4"
+            ]
+          },
+          {
+            "id": "M2G2",
+            "instruction": "Trim input.contact and choose the nonblank value or the Unassigned fallback.",
+            "hint": "Double braces insert a named value; Literal text stays in the format",
+            "evidence": "{{values.prefix}} | {{output.ticketId}} → Review | T-104",
+            "objectiveIds": [
+              "O5"
+            ],
+            "sourceIds": [
+              "S5"
+            ]
+          },
+          {
+            "id": "M2G3",
+            "instruction": "Build summary from the prefix and five prior outputs in the documented order.",
+            "hint": "Keep a nonblank first value; Use the second for a blank first value",
+            "evidence": "contactTrim = \"\"; defaultContact = \"Unassigned\" → fallback → Unassigned",
+            "objectiveIds": [
+              "O6"
+            ],
+            "sourceIds": [
+              "S6"
+            ]
+          }
+        ]
+      },
+      "scenarioLab": {
+        "title": "Choose a defensible next step",
+        "scenarios": [
+          {
+            "id": "M2SC1",
+            "title": "Variation: format a display code",
+            "situation": "A fictional teammate proposes a shortcut. AB-7 is a display convention, not proof that the code is valid.",
+            "challenge": "Describe a correction using format a display code and explain what the result does not prove.",
+            "expectedEvidence": "Create codeTrim, then uppercase output.codeTrim into displayCode. AB-7 is a display convention, not proof that the code is valid.",
+            "objectiveIds": [
+              "O4"
+            ],
+            "sourceIds": [
+              "S4"
+            ]
+          },
+          {
+            "id": "M2SC2",
+            "title": "Variation: compose a readable summary",
+            "situation": "A fictional teammate proposes a shortcut. Formatting a card sends nothing and grants no operational approval.",
+            "challenge": "Describe a correction using compose a readable summary and explain what the result does not prove.",
+            "expectedEvidence": "Build referenced outputs first, then join the six review fields in the stated order. Formatting a card sends nothing and grants no operational approval.",
+            "objectiveIds": [
+              "O5"
+            ],
+            "sourceIds": [
+              "S5"
+            ]
+          },
+          {
+            "id": "M2SC3",
+            "title": "Variation: choose a fallback safely",
+            "situation": "A fictional teammate proposes a shortcut. Fallback checks blankness, not accuracy or permission to invent real facts.",
+            "challenge": "Describe a correction using choose a fallback safely and explain what the result does not prove.",
+            "expectedEvidence": "Trim the contact first, then use output.contactTrim | values.defaultContact. Fallback checks blankness, not accuracy or permission to invent real facts.",
+            "objectiveIds": [
+              "O6"
+            ],
+            "sourceIds": [
+              "S6"
+            ]
+          }
+        ]
+      },
+      "moduleQuiz": {
+        "title": "Check: Compose a trustworthy review card",
+        "instructions": "Answer all four items after the Scenario Lab. Select-all items require every correct option and no incorrect options; no partial credit. The module inherits the course pass mark of 80%.",
+        "questions": [
+          {
+            "id": "M2ENDT1Q1",
+            "prompt": "Select one answer: Which display value follows trim then uppercase?",
+            "choices": [
+              "AB-7",
+              "ab-7",
+              "Ab-7"
+            ],
+            "selectionType": "single",
+            "correct": 0,
+            "hint": "Uppercase changes letters only; Clean the value before display formatting",
+            "explanation": "Uppercase makes both letters capitals; trimming removes the outer spaces.",
+            "objectiveIds": [
+              "O4"
+            ],
+            "sourceIds": [
+              "S4"
+            ]
+          },
+          {
+            "id": "M2ENDT2Q1",
+            "prompt": "Select one answer: Which placeholder inserts an artifact prefix?",
+            "choices": [
+              "{{input.prefix}}",
+              "{{output.prefix}}",
+              "{{values.prefix}}"
+            ],
+            "selectionType": "single",
+            "correct": 2,
+            "hint": "Double braces insert a named value; Literal text stays in the format",
+            "explanation": "values refers to the editable artifact prefix; input and output refer to different scopes.",
+            "objectiveIds": [
+              "O5"
+            ],
+            "sourceIds": [
+              "S5"
+            ]
+          },
+          {
+            "id": "M2ENDT3Q1",
+            "prompt": "Select one answer: When does fallback use its second reference?",
+            "choices": [
+              "When the first is blank",
+              "When the first is valid",
+              "When the first is named"
+            ],
+            "selectionType": "single",
+            "correct": 0,
+            "hint": "Keep a nonblank first value; Use the second for a blank first value",
+            "explanation": "An empty or whitespace-only first value triggers the fallback; a named, nonblank value is kept.",
+            "objectiveIds": [
+              "O6"
+            ],
+            "sourceIds": [
+              "S6"
+            ]
+          },
+          {
+            "id": "M2ENDMULTI",
+            "prompt": "Select all correct answers: which statements describe the review-card workflow?",
+            "choices": [
+              "Uppercase preserves nonletters.",
+              "Fallback keeps nonblank text.",
+              "Templates approve the record.",
+              "Templates send live messages."
+            ],
+            "correctIndices": [
+              0,
+              1
+            ],
+            "explanation": "Uppercase retains nonletter characters and fallback keeps a nonblank first value. Templates only format text: neither approval nor sending happens.",
+            "objectiveIds": [
+              "O4",
+              "O5",
+              "O6"
+            ],
+            "sourceIds": [
+              "S4",
+              "S5",
+              "S6"
+            ],
+            "selectionType": "multiple",
+            "hint": "Use the taught operation and evidence rules; select all supported choices."
+          }
+        ]
+      }
+    },
+    {
+      "id": "M3",
+      "title": "Calculate, test and submit",
+      "durationMinutes": 22,
+      "objectiveIds": [
+        "O7",
+        "O8",
+        "O9"
+      ],
+      "sourceIds": [
+        "S7",
+        "S8",
+        "S9"
+      ],
+      "problemHook": {
+        "title": "A sample that passes by accident",
+        "situation": "A fictional planning card shows the right sample quantity, but the workflow contains a hard-coded result and has never used changed inputs.",
+        "question": "What evidence would show the workflow handles both supplied cases?",
+        "objectiveIds": [
+          "O7",
+          "O8",
+          "O9"
+        ],
+        "sourceIds": [
+          "S7",
+          "S8",
+          "S9"
+        ]
+      },
+      "conceptExplainer": {
+        "videos": [
+          {
+            "id": "M3V1",
+            "title": "Add numeric inputs",
+            "plannedMinutes": 2.5,
+            "slides": [
+              {
+                "id": "M3V1SL1",
+                "title": "Add numeric inputs",
+                "body": [
+                  "Sum adds referenced numeric strings",
+                  "Blank or nonnumeric input stops execution"
+                ],
+                "narration": "In this fictional operations desk, our task is to add numeric inputs. Sum adds referenced numeric strings. Sum adds comma-separated references; literal numeric constants are not references. Every value must be a nonblank finite numeric string; blank or nonnumeric values stop the run. Look at the named values, rather than assuming a label is the value itself. Nothing in this example changes an outside system.",
+                "plannedNarrationSeconds": 26,
+                "objectiveIds": [
+                  "O7"
+                ],
+                "sourceIds": [
+                  "S7"
+                ]
+              },
+              {
+                "id": "M3V1SL2",
+                "title": "Follow one concrete case",
+                "body": [
+                  "base = 8; extra = 2 → sum → totalUnits = 10"
+                ],
+                "narration": "Follow the example from left to right: base = 8; extra = 2 → sum → totalUnits = 10. Blank or nonnumeric input stops execution. Sum input.base, input.extra into totalUnits. In a fictional kit case, base 8 and extra 2 produce 10. This is an exercise count, not a financial calculation. The visible arrows describe an ordered transformation, not movement you must see. Pause now for two questions about the rule and this example.",
+                "plannedNarrationSeconds": 30,
+                "objectiveIds": [
+                  "O7"
+                ],
+                "sourceIds": [
+                  "S7"
+                ]
+              },
+              {
+                "id": "M3V1SL3",
+                "title": "Apply and inspect",
+                "body": [
+                  "Use input.base, input.extra as comma-separated references.",
+                  "A literal 8 is not input.base; a blank value is not silently treated as zero."
+                ],
+                "narration": "Now apply the rule in the course sandbox. Use input.base, input.extra as comma-separated references. Check the operation, expression and output name as separate choices. A literal 8 is not input.base; a blank value is not silently treated as zero. If the trace differs from the expected result, inspect the earliest step that diverges before changing later steps.",
+                "plannedNarrationSeconds": 23,
+                "objectiveIds": [
+                  "O7"
+                ],
+                "sourceIds": [
+                  "S7"
+                ]
+              },
+              {
+                "id": "M3V1SL4",
+                "title": "Recap and transfer",
+                "body": [
+                  "Check: Sum adds referenced numeric strings",
+                  "Remember: A literal 8 is not input.base; a blank value is not silently treated as zero."
+                ],
+                "narration": "Recap: Sum adds referenced numeric strings; Blank or nonnumeric input stops execution. base = 8; extra = 2 → sum → totalUnits = 10. Explain the result in words before moving on. A literal 8 is not input.base; a blank value is not silently treated as zero. You will combine this topic with the other module topics in the worked example, then practise and make a scenario decision. The transcript remains a reading alternative.",
+                "plannedNarrationSeconds": 30,
+                "objectiveIds": [
+                  "O7"
+                ],
+                "sourceIds": [
+                  "S7"
+                ]
+              }
+            ],
+            "midpointQuiz": {
+              "afterSlideId": "M3V1SL2",
+              "questions": [
+                {
+                  "id": "M3V1MID1",
+                  "prompt": "Select one answer: Which result follows base 8 plus extra 2?",
+                  "choices": [
+                    "6",
+                    "10",
+                    "16"
+                  ],
+                  "selectionType": "single",
+                  "correct": 1,
+                  "hint": "Sum adds referenced numeric strings; Blank or nonnumeric input stops execution",
+                  "explanation": "Sum adds 8 and 2 to make 10; 6 is subtraction and 16 is multiplication.",
+                  "objectiveIds": [
+                    "O7"
+                  ],
+                  "sourceIds": [
+                    "S7"
+                  ]
+                },
+                {
+                  "id": "M3V1MID2",
+                  "prompt": "Select one answer: Which value causes the numeric step to stop?",
+                  "choices": [
+                    "A numeric string",
+                    "A finite number string",
+                    "A blank input string"
+                  ],
+                  "selectionType": "single",
+                  "correct": 2,
+                  "hint": "Sum adds referenced numeric strings; Blank or nonnumeric input stops execution",
+                  "explanation": "Blank numeric input is rejected; finite numeric strings are accepted.",
+                  "objectiveIds": [
+                    "O7"
+                  ],
+                  "sourceIds": [
+                    "S7"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "M3V2",
+            "title": "Multiply a calculated total",
+            "plannedMinutes": 2.5,
+            "slides": [
+              {
+                "id": "M3V2SL1",
+                "title": "Multiply a calculated total",
+                "body": [
+                  "Multiply combines numeric references",
+                  "Create referenced totals before using them"
+                ],
+                "narration": "In this fictional operations desk, our task is to multiply a calculated total. Multiply combines numeric references. Multiply uses comma-separated numeric references and requires nonblank finite numbers. Multiply output.totalUnits, input.factor into plannedUnits, after totalUnits is created. Look at the named values, rather than assuming a label is the value itself. Nothing in this example changes an outside system.",
+                "plannedNarrationSeconds": 24,
+                "objectiveIds": [
+                  "O8"
+                ],
+                "sourceIds": [
+                  "S8"
+                ]
+              },
+              {
+                "id": "M3V2SL2",
+                "title": "Follow one concrete case",
+                "body": [
+                  "totalUnits = 10; factor = 3 → multiply → plannedUnits = 30"
+                ],
+                "narration": "Follow the example from left to right: totalUnits = 10; factor = 3 → multiply → plannedUnits = 30. Create referenced totals before using them. For totalUnits 10 and factor 3 the result is 30. This computes a fictional planning quantity and neither reserves nor delivers real kits. The visible arrows describe an ordered transformation, not movement you must see. Pause now for two questions about the rule and this example.",
+                "plannedNarrationSeconds": 29,
+                "objectiveIds": [
+                  "O8"
+                ],
+                "sourceIds": [
+                  "S8"
+                ]
+              },
+              {
+                "id": "M3V2SL3",
+                "title": "Apply and inspect",
+                "body": [
+                  "Use output.totalUnits, input.factor after the sum step.",
+                  "The calculation produces a fictional quantity; it reserves no real kits."
+                ],
+                "narration": "Now apply the rule in the course sandbox. Use output.totalUnits, input.factor after the sum step. Check the operation, expression and output name as separate choices. The calculation produces a fictional quantity; it reserves no real kits. If the trace differs from the expected result, inspect the earliest step that diverges before changing later steps.",
+                "plannedNarrationSeconds": 22,
+                "objectiveIds": [
+                  "O8"
+                ],
+                "sourceIds": [
+                  "S8"
+                ]
+              },
+              {
+                "id": "M3V2SL4",
+                "title": "Recap and transfer",
+                "body": [
+                  "Check: Multiply combines numeric references",
+                  "Remember: The calculation produces a fictional quantity; it reserves no real kits."
+                ],
+                "narration": "Recap: Multiply combines numeric references; Create referenced totals before using them. totalUnits = 10; factor = 3 → multiply → plannedUnits = 30. Explain the result in words before moving on. The calculation produces a fictional quantity; it reserves no real kits. You will combine this topic with the other module topics in the worked example, then practise and make a scenario decision. The transcript remains a reading alternative.",
+                "plannedNarrationSeconds": 28,
+                "objectiveIds": [
+                  "O8"
+                ],
+                "sourceIds": [
+                  "S8"
+                ]
+              }
+            ],
+            "midpointQuiz": {
+              "afterSlideId": "M3V2SL2",
+              "questions": [
+                {
+                  "id": "M3V2MID1",
+                  "prompt": "Select one answer: Which quantity follows total 10 and factor 3?",
+                  "choices": [
+                    "13",
+                    "7",
+                    "30"
+                  ],
+                  "selectionType": "single",
+                  "correct": 2,
+                  "hint": "Multiply combines numeric references; Create referenced totals before using them",
+                  "explanation": "Multiplication gives 30; addition gives 13 and subtraction gives 7.",
+                  "objectiveIds": [
+                    "O8"
+                  ],
+                  "sourceIds": [
+                    "S8"
+                  ]
+                },
+                {
+                  "id": "M3V2MID2",
+                  "prompt": "Select one answer: Which step must exist before multiplying the total?",
+                  "choices": [
+                    "The total-producing sum",
+                    "The final text reflection",
+                    "The credential display"
+                  ],
+                  "selectionType": "single",
+                  "correct": 0,
+                  "hint": "Multiply combines numeric references; Create referenced totals before using them",
+                  "explanation": "The output total must exist first; reflection and credentials are unrelated to calculating it.",
+                  "objectiveIds": [
+                    "O8"
+                  ],
+                  "sourceIds": [
+                    "S8"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "M3V3",
+            "title": "Test before submitting",
+            "plannedMinutes": 2.5,
+            "slides": [
+              {
+                "id": "M3V3SL1",
+                "title": "Test before submitting",
+                "body": [
+                  "Run shows one sample; Test checks all cases",
+                  "Save retains drafts; Submit records a grade"
+                ],
+                "narration": "In this fictional operations desk, our task is to test before submitting. Run shows one sample; Test checks all cases. Run simulates the sample and shows outputs and step trace. Test project checks every declared case without recording a submission. Look at the named values, rather than assuming a label is the value itself. Nothing in this example changes an outside system.",
+                "plannedNarrationSeconds": 25,
+                "objectiveIds": [
+                  "O9"
+                ],
+                "sourceIds": [
+                  "S9"
+                ]
+              },
+              {
+                "id": "M3V3SL2",
+                "title": "Follow one concrete case",
+                "body": [
+                  "Sample passes; changed contact case fails → revise the workflow before submission"
+                ],
+                "narration": "Follow the example from left to right: Sample passes; changed contact case fails → revise the workflow before submission. Save retains drafts; Submit records a grade. Save draft persists editable work; Submit project recomputes the grade and records a submission. Check both changed inputs and missing-value behavior rather than hard-coding sample outputs. If all criteria are required, every criterion must pass. An interpreter error prevents passing. Test success does not establish a real external action. The visible arrows describe an ordered transformation, not movement you must see. Pause now for two questions about the rule and this example.",
+                "plannedNarrationSeconds": 40,
+                "objectiveIds": [
+                  "O9"
+                ],
+                "sourceIds": [
+                  "S9"
+                ]
+              },
+              {
+                "id": "M3V3SL3",
+                "title": "Apply and inspect",
+                "body": [
+                  "Use both cases, inspect outputs, then Save draft and Submit project after tests pass.",
+                  "A sample-only success or a saved draft does not establish a passing submission."
+                ],
+                "narration": "Now apply the rule in the course sandbox. Use both cases, inspect outputs, then Save draft and Submit project after tests pass. Check the operation, expression and output name as separate choices. A sample-only success or a saved draft does not establish a passing submission. If the trace differs from the expected result, inspect the earliest step that diverges before changing later steps.",
+                "plannedNarrationSeconds": 26,
+                "objectiveIds": [
+                  "O9"
+                ],
+                "sourceIds": [
+                  "S9"
+                ]
+              },
+              {
+                "id": "M3V3SL4",
+                "title": "Recap and transfer",
+                "body": [
+                  "Check: Run shows one sample; Test checks all cases",
+                  "Remember: A sample-only success or a saved draft does not establish a passing submission."
+                ],
+                "narration": "Recap: Run shows one sample; Test checks all cases; Save retains drafts; Submit records a grade. Sample passes; changed contact case fails → revise the workflow before submission. Explain the result in words before moving on. A sample-only success or a saved draft does not establish a passing submission. You will combine this topic with the other module topics in the worked example, then practise and make a scenario decision. The transcript remains a reading alternative.",
+                "plannedNarrationSeconds": 31,
+                "objectiveIds": [
+                  "O9"
+                ],
+                "sourceIds": [
+                  "S9"
+                ]
+              }
+            ],
+            "midpointQuiz": {
+              "afterSlideId": "M3V3SL2",
+              "questions": [
+                {
+                  "id": "M3V3MID1",
+                  "prompt": "Select one answer: Which control checks all supplied cases without submitting?",
+                  "choices": [
+                    "Save draft",
+                    "Submit project",
+                    "Test project"
+                  ],
+                  "selectionType": "single",
+                  "correct": 2,
+                  "hint": "Run shows one sample; Test checks all cases; Save retains drafts; Submit records a grade",
+                  "explanation": "Test project checks every declared case without recording submission; Save retains work and Submit records a recomputed grade.",
+                  "objectiveIds": [
+                    "O9"
+                  ],
+                  "sourceIds": [
+                    "S9"
+                  ]
+                },
+                {
+                  "id": "M3V3MID2",
+                  "prompt": "Select one answer: Which control records the server-computed project grade?",
+                  "choices": [
+                    "Submit project",
+                    "Run the sample",
+                    "Save the draft"
+                  ],
+                  "selectionType": "single",
+                  "correct": 0,
+                  "hint": "Run shows one sample; Test checks all cases; Save retains drafts; Submit records a grade",
+                  "explanation": "Submit records the recomputed grade; Run simulates one sample and Save persists editable work.",
+                  "objectiveIds": [
+                    "O9"
+                  ],
+                  "sourceIds": [
+                    "S9"
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "workedExamples": [
+        {
+          "id": "M3W1",
+          "title": "A complete calculate, test and submit example",
+          "problem": "Use base 8, extra 2 and factor 3, then repeat with base 3, extra 4 and factor 2.",
+          "reasoning": [
+            "base = 8; extra = 2 → sum → totalUnits = 10. Use input.base, input.extra as comma-separated references. A literal 8 is not input.base; a blank value is not silently treated as zero.",
+            "totalUnits = 10; factor = 3 → multiply → plannedUnits = 30. Use output.totalUnits, input.factor after the sum step. The calculation produces a fictional quantity; it reserves no real kits.",
+            "Sample passes; changed contact case fails → revise the workflow before submission. Use both cases, inspect outputs, then Save draft and Submit project after tests pass. A sample-only success or a saved draft does not establish a passing submission."
+          ],
+          "result": "The two total/planned pairs are 10/30 and 7/14. Testing both cases detects a fixed sample result; save the draft and submit only after all required criteria pass.",
+          "objectiveIds": [
+            "O7",
+            "O8",
+            "O9"
+          ],
+          "sourceIds": [
+            "S7",
+            "S8",
+            "S9"
+          ]
+        }
+      ],
+      "guidedPractice": {
+        "title": "Practise: calculate, test and submit",
+        "instructions": "Use the synthetic example shown in this module. Work through the three checkpoints in order. Explain the transformation and compare your result with the stated evidence; the executable integrated workflow is the final sandbox project.",
+        "steps": [
+          {
+            "id": "M3G1",
+            "instruction": "Sum input.base and input.extra into totalUnits.",
+            "hint": "Sum adds referenced numeric strings; Blank or nonnumeric input stops execution",
+            "evidence": "base = 8; extra = 2 → sum → totalUnits = 10",
+            "objectiveIds": [
+              "O7"
+            ],
+            "sourceIds": [
+              "S7"
+            ]
+          },
+          {
+            "id": "M3G2",
+            "instruction": "Multiply output.totalUnits by input.factor into plannedUnits.",
+            "hint": "Multiply combines numeric references; Create referenced totals before using them",
+            "evidence": "totalUnits = 10; factor = 3 → multiply → plannedUnits = 30",
+            "objectiveIds": [
+              "O8"
+            ],
+            "sourceIds": [
+              "S8"
+            ]
+          },
+          {
+            "id": "M3G3",
+            "instruction": "Test both synthetic cases; explain why Run, Save and Submit are different.",
+            "hint": "Run shows one sample; Test checks all cases; Save retains drafts; Submit records a grade",
+            "evidence": "Sample passes; changed contact case fails → revise the workflow before submission",
+            "objectiveIds": [
+              "O9"
+            ],
+            "sourceIds": [
+              "S9"
+            ]
+          }
+        ]
+      },
+      "scenarioLab": {
+        "title": "Choose a defensible next step",
+        "scenarios": [
+          {
+            "id": "M3SC1",
+            "title": "Variation: add numeric inputs",
+            "situation": "A fictional teammate proposes a shortcut. A literal 8 is not input.base; a blank value is not silently treated as zero.",
+            "challenge": "Describe a correction using add numeric inputs and explain what the result does not prove.",
+            "expectedEvidence": "Use input.base, input.extra as comma-separated references. A literal 8 is not input.base; a blank value is not silently treated as zero.",
+            "objectiveIds": [
+              "O7"
+            ],
+            "sourceIds": [
+              "S7"
+            ]
+          },
+          {
+            "id": "M3SC2",
+            "title": "Variation: multiply a calculated total",
+            "situation": "A fictional teammate proposes a shortcut. The calculation produces a fictional quantity; it reserves no real kits.",
+            "challenge": "Describe a correction using multiply a calculated total and explain what the result does not prove.",
+            "expectedEvidence": "Use output.totalUnits, input.factor after the sum step. The calculation produces a fictional quantity; it reserves no real kits.",
+            "objectiveIds": [
+              "O8"
+            ],
+            "sourceIds": [
+              "S8"
+            ]
+          },
+          {
+            "id": "M3SC3",
+            "title": "Variation: test before submitting",
+            "situation": "A fictional teammate proposes a shortcut. A sample-only success or a saved draft does not establish a passing submission.",
+            "challenge": "Describe a correction using test before submitting and explain what the result does not prove.",
+            "expectedEvidence": "Use both cases, inspect outputs, then Save draft and Submit project after tests pass. A sample-only success or a saved draft does not establish a passing submission.",
+            "objectiveIds": [
+              "O9"
+            ],
+            "sourceIds": [
+              "S9"
+            ]
+          }
+        ]
+      },
+      "moduleQuiz": {
+        "title": "Check: Calculate, test and submit",
+        "instructions": "Answer all four items after the Scenario Lab. Select-all items require every correct option and no incorrect options; no partial credit. The module inherits the course pass mark of 80%.",
+        "questions": [
+          {
+            "id": "M3ENDT1Q1",
+            "prompt": "Select one answer: Which result follows base 8 plus extra 2?",
+            "choices": [
+              "6",
+              "10",
+              "16"
+            ],
+            "selectionType": "single",
+            "correct": 1,
+            "hint": "Sum adds referenced numeric strings; Blank or nonnumeric input stops execution",
+            "explanation": "Sum adds 8 and 2 to make 10; 6 is subtraction and 16 is multiplication.",
+            "objectiveIds": [
+              "O7"
+            ],
+            "sourceIds": [
+              "S7"
+            ]
+          },
+          {
+            "id": "M3ENDT2Q1",
+            "prompt": "Select one answer: Which quantity follows total 10 and factor 3?",
+            "choices": [
+              "13",
+              "7",
+              "30"
+            ],
+            "selectionType": "single",
+            "correct": 2,
+            "hint": "Multiply combines numeric references; Create referenced totals before using them",
+            "explanation": "Multiplication gives 30; addition gives 13 and subtraction gives 7.",
+            "objectiveIds": [
+              "O8"
+            ],
+            "sourceIds": [
+              "S8"
+            ]
+          },
+          {
+            "id": "M3ENDT3Q1",
+            "prompt": "Select one answer: Which control checks all supplied cases without submitting?",
+            "choices": [
+              "Save draft",
+              "Submit project",
+              "Test project"
+            ],
+            "selectionType": "single",
+            "correct": 2,
+            "hint": "Run shows one sample; Test checks all cases; Save retains drafts; Submit records a grade",
+            "explanation": "Test project checks every declared case without recording submission; Save retains work and Submit records a recomputed grade.",
+            "objectiveIds": [
+              "O9"
+            ],
+            "sourceIds": [
+              "S9"
+            ]
+          },
+          {
+            "id": "M3ENDMULTI",
+            "prompt": "Select all correct answers: which actions support a reliable project submission?",
+            "choices": [
+              "Use changed inputs when testing.",
+              "Check the calculated quantities.",
+              "Ignore the numeric-input errors.",
+              "Submit only the saved screenshot."
+            ],
+            "correctIndices": [
+              0,
+              1
+            ],
+            "explanation": "Changed cases and computed quantities reveal sample hard-coding. Numeric errors stop passing; the deliverable is the sandbox artifact, not a screenshot.",
+            "objectiveIds": [
+              "O7",
+              "O8",
+              "O9"
+            ],
+            "sourceIds": [
+              "S7",
+              "S8",
+              "S9"
+            ],
+            "selectionType": "multiple",
+            "hint": "Use the taught operation and evidence rules; select all supported choices."
+          }
+        ]
+      }
+    }
+  ],
+  "courseEnd": {
+    "miniProject": {
+      "title": "Build a tested operations review card",
+      "brief": "Combine all nine topics in one ordered sandbox workflow. Clean synthetic text, choose a safe blank-contact label, compose a review summary, calculate a fictional planning quantity and verify both cases. This is a bounded simulation, with no external actions.",
+      "deliverable": "One saved and submitted sandbox artifact containing the four completed fields, ordered transformation steps and eight required named outputs, passing all nine criteria across both supplied cases.",
+      "rubric": [
+        "Copy the current ticket without alteration.",
+        "Trim outer name padding and retain the internal space.",
+        "Normalize the current team key after trimming.",
+        "Create a clean uppercase display code.",
+        "Compose the exact review format from current outputs.",
+        "Handle both blank and present contacts.",
+        "Add the supplied counts for both cases.",
+        "Multiply the computed total by the supplied factor.",
+        "Validate both cases and document the evidence boundary."
+      ],
+      "sandbox": {
+        "version": 1,
+        "runtime": "data-workflow",
+        "instructions": [
+          "1. Inspect the two synthetic test cases and grading criteria. Build one review-card workflow; all work stays inside this course. No message is sent and no real kit is reserved.",
+          "2. Fill prefix with Review and defaultContact with Unassigned. In testPlan explain why you check both blank and present contact cases. Set status to Simulation only; no real action. These are editable artifact fields, referenced through values.name.",
+          "3. Create ticketId with copy from input.ticket. Trim input.name into cleanName. Trim input.team into teamTrim, then lowercase output.teamTrim into teamKey. Keep the output names exactly as stated.",
+          "4. Trim input.code into codeTrim, then uppercase output.codeTrim into displayCode. Trim input.contact into contactTrim. Use fallback with output.contactTrim | values.defaultContact to create contact.",
+          "5. After those outputs exist, create summary with template. Format exactly: {{values.prefix}} | {{output.ticketId}} | {{output.cleanName}} | {{output.teamKey}} | {{output.displayCode}} | {{output.contact}}. Literal spaces and separators are part of the required format.",
+          "6. Use sum with input.base, input.extra to create totalUnits. Use multiply with output.totalUnits, input.factor to create plannedUnits. Numeric expressions use references, not literal sample values.",
+          "7. Run to inspect sample outputs and step trace. Test project checks both cases, including changed strings, a present contact and different counts. A fixed sample output fails the changed case; blank or nonnumeric count data causes an error rather than silently becoming zero.",
+          "8. Save draft, inspect any failed criteria, revise and retest. Submit project records the artifact and server-computed grade. Every one of the nine criteria must pass. Only a passing submission enables the final assessment. Allow about twelve minutes; no external tools are required."
+        ],
+        "fields": [
+          {
+            "id": "prefix",
+            "label": "Review prefix",
+            "help": "Use Review as the fictional card prefix.",
+            "starter": ""
+          },
+          {
+            "id": "defaultContact",
+            "label": "Blank-contact label",
+            "help": "Use Unassigned when the trimmed contact is blank.",
+            "starter": ""
+          },
+          {
+            "id": "testPlan",
+            "label": "Test evidence note",
+            "help": "Explain the blank and present contact cases; use both words. Describe why changed values detect hard-coding.",
+            "starter": ""
+          },
+          {
+            "id": "status",
+            "label": "Simulation boundary",
+            "help": "Use Simulation only; no real action.",
+            "starter": ""
+          }
+        ],
+        "inputs": [
+          {
+            "id": "ticket",
+            "label": "Synthetic ticket",
+            "sample": "T-104"
+          },
+          {
+            "id": "name",
+            "label": "Synthetic name",
+            "sample": "  Ada Lee  "
+          },
+          {
+            "id": "team",
+            "label": "Synthetic team",
+            "sample": "  SuPPORT  "
+          },
+          {
+            "id": "code",
+            "label": "Synthetic code",
+            "sample": "  ab-7 "
+          },
+          {
+            "id": "contact",
+            "label": "Synthetic contact",
+            "sample": "   "
+          },
+          {
+            "id": "base",
+            "label": "Synthetic base",
+            "sample": "8"
+          },
+          {
+            "id": "extra",
+            "label": "Synthetic extra",
+            "sample": "2"
+          },
+          {
+            "id": "factor",
+            "label": "Synthetic factor",
+            "sample": "3"
+          }
+        ],
+        "starterSteps": [],
+        "tests": [
+          {
+            "id": "BLANK_CONTACT",
+            "label": "Padded fields and blank contact",
+            "inputs": {
+              "ticket": "T-104",
+              "name": "  Ada Lee  ",
+              "team": "  SuPPORT  ",
+              "code": "  ab-7 ",
+              "contact": "   ",
+              "base": "8",
+              "extra": "2",
+              "factor": "3"
+            }
+          },
+          {
+            "id": "PRESENT_CONTACT",
+            "label": "Changed fields and supplied contact",
+            "inputs": {
+              "ticket": "T-205",
+              "name": "  Bo Chen ",
+              "team": " OpS ",
+              "code": " xy-2 ",
+              "contact": "  Jo  ",
+              "base": "3",
+              "extra": "4",
+              "factor": "2"
+            }
+          }
+        ],
+        "criteria": [
+          {
+            "id": "CD_CRIT_1",
+            "rubricIndex": 0,
+            "weight": 10,
+            "objectiveIds": [
+              "O1"
+            ],
+            "sourceIds": [
+              "S1"
+            ],
+            "videoIds": [
+              "M1V1"
+            ],
+            "checks": [
+              {
+                "testId": "BLANK_CONTACT",
+                "path": "output.ticketId",
+                "operator": "equals",
+                "expected": "T-104"
+              },
+              {
+                "testId": "PRESENT_CONTACT",
+                "path": "output.ticketId",
+                "operator": "equals",
+                "expected": "T-205"
+              }
+            ]
+          },
+          {
+            "id": "CD_CRIT_2",
+            "rubricIndex": 1,
+            "weight": 10,
+            "objectiveIds": [
+              "O2"
+            ],
+            "sourceIds": [
+              "S2"
+            ],
+            "videoIds": [
+              "M1V2"
+            ],
+            "checks": [
+              {
+                "testId": "BLANK_CONTACT",
+                "path": "output.cleanName",
+                "operator": "equals",
+                "expected": "Ada Lee"
+              },
+              {
+                "testId": "PRESENT_CONTACT",
+                "path": "output.cleanName",
+                "operator": "equals",
+                "expected": "Bo Chen"
+              }
+            ]
+          },
+          {
+            "id": "CD_CRIT_3",
+            "rubricIndex": 2,
+            "weight": 10,
+            "objectiveIds": [
+              "O3"
+            ],
+            "sourceIds": [
+              "S3"
+            ],
+            "videoIds": [
+              "M1V3"
+            ],
+            "checks": [
+              {
+                "testId": "BLANK_CONTACT",
+                "path": "output.teamKey",
+                "operator": "equals",
+                "expected": "support"
+              },
+              {
+                "testId": "PRESENT_CONTACT",
+                "path": "output.teamKey",
+                "operator": "equals",
+                "expected": "ops"
+              }
+            ]
+          },
+          {
+            "id": "CD_CRIT_4",
+            "rubricIndex": 3,
+            "weight": 10,
+            "objectiveIds": [
+              "O4"
+            ],
+            "sourceIds": [
+              "S4"
+            ],
+            "videoIds": [
+              "M2V1"
+            ],
+            "checks": [
+              {
+                "testId": "BLANK_CONTACT",
+                "path": "output.displayCode",
+                "operator": "equals",
+                "expected": "AB-7"
+              },
+              {
+                "testId": "PRESENT_CONTACT",
+                "path": "output.displayCode",
+                "operator": "equals",
+                "expected": "XY-2"
+              }
+            ]
+          },
+          {
+            "id": "CD_CRIT_5",
+            "rubricIndex": 4,
+            "weight": 10,
+            "objectiveIds": [
+              "O5"
+            ],
+            "sourceIds": [
+              "S5"
+            ],
+            "videoIds": [
+              "M2V2"
+            ],
+            "checks": [
+              {
+                "testId": "BLANK_CONTACT",
+                "path": "output.summary",
+                "operator": "equals",
+                "expected": "Review | T-104 | Ada Lee | support | AB-7 | Unassigned"
+              },
+              {
+                "testId": "PRESENT_CONTACT",
+                "path": "output.summary",
+                "operator": "equals",
+                "expected": "Review | T-205 | Bo Chen | ops | XY-2 | Jo"
+              }
+            ]
+          },
+          {
+            "id": "CD_CRIT_6",
+            "rubricIndex": 5,
+            "weight": 10,
+            "objectiveIds": [
+              "O6"
+            ],
+            "sourceIds": [
+              "S6"
+            ],
+            "videoIds": [
+              "M2V3"
+            ],
+            "checks": [
+              {
+                "testId": "BLANK_CONTACT",
+                "path": "output.contact",
+                "operator": "equals",
+                "expected": "Unassigned"
+              },
+              {
+                "testId": "PRESENT_CONTACT",
+                "path": "output.contact",
+                "operator": "equals",
+                "expected": "Jo"
+              }
+            ]
+          },
+          {
+            "id": "CD_CRIT_7",
+            "rubricIndex": 6,
+            "weight": 10,
+            "objectiveIds": [
+              "O7"
+            ],
+            "sourceIds": [
+              "S7"
+            ],
+            "videoIds": [
+              "M3V1"
+            ],
+            "checks": [
+              {
+                "testId": "BLANK_CONTACT",
+                "path": "output.totalUnits",
+                "operator": "equals",
+                "expected": "10"
+              },
+              {
+                "testId": "PRESENT_CONTACT",
+                "path": "output.totalUnits",
+                "operator": "equals",
+                "expected": "7"
+              }
+            ]
+          },
+          {
+            "id": "CD_CRIT_8",
+            "rubricIndex": 7,
+            "weight": 10,
+            "objectiveIds": [
+              "O8"
+            ],
+            "sourceIds": [
+              "S8"
+            ],
+            "videoIds": [
+              "M3V2"
+            ],
+            "checks": [
+              {
+                "testId": "BLANK_CONTACT",
+                "path": "output.plannedUnits",
+                "operator": "equals",
+                "expected": "30"
+              },
+              {
+                "testId": "PRESENT_CONTACT",
+                "path": "output.plannedUnits",
+                "operator": "equals",
+                "expected": "14"
+              }
+            ]
+          },
+          {
+            "id": "CD_CRIT_9",
+            "rubricIndex": 8,
+            "weight": 10,
+            "objectiveIds": [
+              "O9"
+            ],
+            "sourceIds": [
+              "S9"
+            ],
+            "videoIds": [
+              "M3V3"
+            ],
+            "checks": [
+              {
+                "testId": "BLANK_CONTACT",
+                "path": "values.testPlan",
+                "operator": "contains",
+                "expected": "blank"
+              },
+              {
+                "testId": "BLANK_CONTACT",
+                "path": "values.testPlan",
+                "operator": "contains",
+                "expected": "present"
+              },
+              {
+                "testId": "BLANK_CONTACT",
+                "path": "values.status",
+                "operator": "equals",
+                "expected": "Simulation only; no real action."
+              },
+              {
+                "testId": "BLANK_CONTACT",
+                "path": "output.plannedUnits",
+                "operator": "equals",
+                "expected": "30"
+              },
+              {
+                "testId": "PRESENT_CONTACT",
+                "path": "values.testPlan",
+                "operator": "contains",
+                "expected": "blank"
+              },
+              {
+                "testId": "PRESENT_CONTACT",
+                "path": "values.testPlan",
+                "operator": "contains",
+                "expected": "present"
+              },
+              {
+                "testId": "PRESENT_CONTACT",
+                "path": "values.status",
+                "operator": "equals",
+                "expected": "Simulation only; no real action."
+              },
+              {
+                "testId": "PRESENT_CONTACT",
+                "path": "output.plannedUnits",
+                "operator": "equals",
+                "expected": "14"
+              }
+            ]
+          }
+        ]
+      },
+      "objectiveIds": [
+        "O1",
+        "O2",
+        "O3",
+        "O4",
+        "O5",
+        "O6",
+        "O7",
+        "O8",
+        "O9"
+      ],
+      "sourceIds": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5",
+        "S6",
+        "S7",
+        "S8",
+        "S9"
+      ]
+    },
+    "masteryGate": {
+      "title": "From messy inputs to tested outputs",
+      "instructions": "Final assessment: all nine topics across the three modules. Answer twelve items; pass mark 80% (at least ten correct). Select one answer for single items. For Select all correct answers, choose every correct option and no incorrect options; no partial credit.",
+      "passPercent": 80,
+      "questions": [
+        {
+          "id": "FINALT1Q1",
+          "prompt": "Select one answer: What does copy change in its referenced text?",
+          "choices": [
+            "It removes outer spaces",
+            "It changes letter case",
+            "It preserves the text"
+          ],
+          "selectionType": "single",
+          "correct": 2,
+          "hint": "Name the value scope; Copy keeps the text unchanged",
+          "explanation": "Copy preserves the text; trim removes outer spaces and case operations change letters.",
+          "objectiveIds": [
+            "O1"
+          ],
+          "sourceIds": [
+            "S1"
+          ]
+        },
+        {
+          "id": "FINALT2Q1",
+          "prompt": "Select one answer: Which text does trim preserve?",
+          "choices": [
+            "Spaces between the words",
+            "Padding before the words",
+            "Padding after the words"
+          ],
+          "selectionType": "single",
+          "correct": 0,
+          "hint": "Remove beginning and ending whitespace; Keep meaningful internal spaces",
+          "explanation": "Internal spaces remain; beginning and ending whitespace is removed.",
+          "objectiveIds": [
+            "O2"
+          ],
+          "sourceIds": [
+            "S2"
+          ]
+        },
+        {
+          "id": "FINALT3Q1",
+          "prompt": "Select one answer: Which order creates the clean key \"support\"?",
+          "choices": [
+            "Copy then add padding",
+            "Uppercase then add padding",
+            "Trim then lowercase"
+          ],
+          "selectionType": "single",
+          "correct": 2,
+          "hint": "Lowercase changes letter case; Trim before lowercasing padded labels",
+          "explanation": "Trim removes outer padding; lowercase normalizes capitalization. The other sequences do not produce the key.",
+          "objectiveIds": [
+            "O3"
+          ],
+          "sourceIds": [
+            "S3"
+          ]
+        },
+        {
+          "id": "FINALT4Q1",
+          "prompt": "Select one answer: What remains unchanged by uppercase?",
+          "choices": [
+            "Lowercase letter forms",
+            "Nonletter symbols",
+            "Leading letter case"
+          ],
+          "selectionType": "single",
+          "correct": 1,
+          "hint": "Uppercase changes letters only; Clean the value before display formatting",
+          "explanation": "The hyphen and digit remain; lowercase letters change to uppercase forms.",
+          "objectiveIds": [
+            "O4"
+          ],
+          "sourceIds": [
+            "S4"
+          ]
+        },
+        {
+          "id": "FINALT5Q1",
+          "prompt": "Select one answer: What happens to the literal separator | in a template?",
+          "choices": [
+            "It remains in the text",
+            "It approves the record",
+            "It sends the summary"
+          ],
+          "selectionType": "single",
+          "correct": 0,
+          "hint": "Double braces insert a named value; Literal text stays in the format",
+          "explanation": "A template retains literal text and inserts placeholders; it performs no approval or sending.",
+          "objectiveIds": [
+            "O5"
+          ],
+          "sourceIds": [
+            "S5"
+          ]
+        },
+        {
+          "id": "FINALT6Q1",
+          "prompt": "Select one answer: What happens when the first value is Ada?",
+          "choices": [
+            "The second value wins",
+            "The first value stays",
+            "Both values are added"
+          ],
+          "selectionType": "single",
+          "correct": 1,
+          "hint": "Keep a nonblank first value; Use the second for a blank first value",
+          "explanation": "The nonblank first value is kept. Fallback neither prefers the second nor performs addition.",
+          "objectiveIds": [
+            "O6"
+          ],
+          "sourceIds": [
+            "S6"
+          ]
+        },
+        {
+          "id": "FINALT7Q1",
+          "prompt": "Select one answer: Which value causes the numeric step to stop?",
+          "choices": [
+            "A numeric string",
+            "A finite number string",
+            "A blank input string"
+          ],
+          "selectionType": "single",
+          "correct": 2,
+          "hint": "Sum adds referenced numeric strings; Blank or nonnumeric input stops execution",
+          "explanation": "Blank numeric input is rejected; finite numeric strings are accepted.",
+          "objectiveIds": [
+            "O7"
+          ],
+          "sourceIds": [
+            "S7"
+          ]
+        },
+        {
+          "id": "FINALT8Q1",
+          "prompt": "Select one answer: Which step must exist before multiplying the total?",
+          "choices": [
+            "The total-producing sum",
+            "The final text reflection",
+            "The credential display"
+          ],
+          "selectionType": "single",
+          "correct": 0,
+          "hint": "Multiply combines numeric references; Create referenced totals before using them",
+          "explanation": "The output total must exist first; reflection and credentials are unrelated to calculating it.",
+          "objectiveIds": [
+            "O8"
+          ],
+          "sourceIds": [
+            "S8"
+          ]
+        },
+        {
+          "id": "FINALT9Q1",
+          "prompt": "Select one answer: Which control records the server-computed project grade?",
+          "choices": [
+            "Submit project",
+            "Run the sample",
+            "Save the draft"
+          ],
+          "selectionType": "single",
+          "correct": 0,
+          "hint": "Run shows one sample; Test checks all cases; Save retains drafts; Submit records a grade",
+          "explanation": "Submit records the recomputed grade; Run simulates one sample and Save persists editable work.",
+          "objectiveIds": [
+            "O9"
+          ],
+          "sourceIds": [
+            "S9"
+          ]
+        },
+        {
+          "id": "FINALM1MULTI",
+          "prompt": "Select all correct answers: which steps produce a clean lowercase team key?",
+          "choices": [
+            "Trim the supplied team text.",
+            "Lowercase the trimmed output.",
+            "Keep the outer space padding.",
+            "Read a not-yet-created output."
+          ],
+          "correctIndices": [
+            0,
+            1
+          ],
+          "explanation": "Trimming removes outer whitespace and lowercasing normalizes case. Keeping padding prevents the clean key; a forward reference stops the run.",
+          "objectiveIds": [
+            "O1",
+            "O2",
+            "O3"
+          ],
+          "sourceIds": [
+            "S1",
+            "S2",
+            "S3"
+          ],
+          "selectionType": "multiple",
+          "hint": "Use the taught operation and evidence rules; select all supported choices."
+        },
+        {
+          "id": "FINALM2MULTI",
+          "prompt": "Select all correct answers: which statements describe the review-card workflow?",
+          "choices": [
+            "Uppercase preserves nonletters.",
+            "Fallback keeps nonblank text.",
+            "Templates approve the record.",
+            "Templates send live messages."
+          ],
+          "correctIndices": [
+            0,
+            1
+          ],
+          "explanation": "Uppercase retains nonletter characters and fallback keeps a nonblank first value. Templates only format text: neither approval nor sending happens.",
+          "objectiveIds": [
+            "O4",
+            "O5",
+            "O6"
+          ],
+          "sourceIds": [
+            "S4",
+            "S5",
+            "S6"
+          ],
+          "selectionType": "multiple",
+          "hint": "Use the taught operation and evidence rules; select all supported choices."
+        },
+        {
+          "id": "FINALM3MULTI",
+          "prompt": "Select all correct answers: which actions support a reliable project submission?",
+          "choices": [
+            "Use changed inputs when testing.",
+            "Check the calculated quantities.",
+            "Ignore the numeric-input errors.",
+            "Submit only the saved screenshot."
+          ],
+          "correctIndices": [
+            0,
+            1
+          ],
+          "explanation": "Changed cases and computed quantities reveal sample hard-coding. Numeric errors stop passing; the deliverable is the sandbox artifact, not a screenshot.",
+          "objectiveIds": [
+            "O7",
+            "O8",
+            "O9"
+          ],
+          "sourceIds": [
+            "S7",
+            "S8",
+            "S9"
+          ],
+          "selectionType": "multiple",
+          "hint": "Use the taught operation and evidence rules; select all supported choices."
+        }
+      ]
+    },
+    "reflection": {
+      "prompts": [
+        "Which transformation initially surprised you, and what before-and-after example explains it?",
+        "How did the changed-input case affect your confidence in the workflow?",
+        "What would require review before using a similar transformation on real workplace data?"
+      ]
+    }
+  }
+}

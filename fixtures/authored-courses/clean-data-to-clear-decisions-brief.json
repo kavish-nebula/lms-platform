@@ -1,0 +1,54 @@
+{
+  "title": "Clean Data to Clear Decisions",
+  "subject": "Build and test a fictional operations summary in the in-course data-workflow sandbox",
+  "audience": "Workplace beginners who handle small text and count fields; no programming experience required.",
+  "contexts": "A fictional Cedar operations desk prepares a review card for training kits from synthetic ticket, name, team, code, contact and count fields. It sends no messages, changes no records outside the course and makes no real operational decision.",
+  "delivery": "Self-paced",
+  "duration": "90 minutes; planned playback 22.5 minutes; activities and assessment 67.5 minutes. Audio unmeasured.",
+  "outcomes": "Build one ordered, tested workflow that cleans synthetic case fields, composes a review summary and calculates a fictional planning quantity.",
+  "objectives": [
+    {
+      "text": "Trace input, artifact and earlier-output references in an ordered sandbox workflow.",
+      "bloom": "Understand"
+    },
+    {
+      "text": "Remove outer whitespace while preserving meaningful internal text.",
+      "bloom": "Apply"
+    },
+    {
+      "text": "Normalize a comparison label with lowercase without changing the original input.",
+      "bloom": "Apply"
+    },
+    {
+      "text": "Create an uppercase display code from a cleaned value.",
+      "bloom": "Apply"
+    },
+    {
+      "text": "Compose a template from named inputs, artifact fields and prior outputs.",
+      "bloom": "Create"
+    },
+    {
+      "text": "Choose the second reference when the first value is empty or whitespace only.",
+      "bloom": "Analyze"
+    },
+    {
+      "text": "Calculate a total by summing finite numeric-string references.",
+      "bloom": "Apply"
+    },
+    {
+      "text": "Multiply an earlier numeric total by a supplied numeric factor.",
+      "bloom": "Apply"
+    },
+    {
+      "text": "Evaluate sample and changed-input runs against explicit project criteria before submission.",
+      "bloom": "Evaluate"
+    }
+  ],
+  "references": "",
+  "sourceText": "FICTIONAL TRAINING SOURCE 1 — authored for this course from the local data-workflow runtime contract, not an independently supplied company policy. A reference names one available value: input.name is supplied case data, values.name is an editable artifact field, and output.name is an earlier step result. Copy reads one reference without altering its text. Earlier outputs must be created before use; unknown or forward references stop the run. Case: input.ticket is T-104. Copy input.ticket into ticketId.\n\nFICTIONAL TRAINING SOURCE 2 — authored for this course from the local data-workflow runtime contract, not an independently supplied company policy. Trim removes whitespace from the beginning and end, not the middle. Copy preserves outer spaces. Case: input.name is \"  Ada Lee  \". Trim input.name into cleanName to obtain \"Ada Lee\"; the internal space remains. Do not use case conversion as a substitute for trimming.\n\nFICTIONAL TRAINING SOURCE 3 — authored for this course from the local data-workflow runtime contract, not an independently supplied company policy. Lowercase converts letters to lower case but does not remove spaces. First trim a label, then lowercase the earlier trimmed output. Case: input.team is \"  SuPPORT  \". Trim into teamTrim, then lowercase output.teamTrim into teamKey to produce \"support\". Input data stays unchanged.\n\nFICTIONAL TRAINING SOURCE 4 — authored for this course from the local data-workflow runtime contract, not an independently supplied company policy. Uppercase converts letters to upper case and preserves nonletters. Trim input.code into codeTrim before uppercase output.codeTrim into displayCode. Case: \"  ab-7 \" becomes \"AB-7\". A display code can differ from a lowercase comparison key. Case conversion alone does not validate a code.\n\nFICTIONAL TRAINING SOURCE 5 — authored for this course from the local data-workflow runtime contract, not an independently supplied company policy. Template inserts references written in double braces and preserves surrounding literal text. Case format: {{values.prefix}} | {{output.ticketId}} | {{output.cleanName}} | {{output.teamKey}} | {{output.displayCode}} | {{output.contact}}. The prefix is the artifact field \"Review\". A template formats data; it does not send messages or approve work. Build referenced outputs first.\n\nFICTIONAL TRAINING SOURCE 6 — authored for this course from the local data-workflow runtime contract, not an independently supplied company policy. Fallback takes two references separated by |. It keeps a nonblank first value; otherwise it uses the second. Trim input.contact into contactTrim, then fallback output.contactTrim | values.defaultContact into contact. Default artifact value is \"Unassigned\". Case: a blank contact uses Unassigned, while \" Ada \" becomes Ada and is kept. Fallback is a formatting convention, not permission to invent missing real facts.\n\nFICTIONAL TRAINING SOURCE 7 — authored for this course from the local data-workflow runtime contract, not an independently supplied company policy. Sum adds comma-separated references; literal numeric constants are not references. Every value must be a nonblank finite numeric string; blank or nonnumeric values stop the run. Sum input.base, input.extra into totalUnits. In a fictional kit case, base 8 and extra 2 produce 10. This is an exercise count, not a financial calculation.\n\nFICTIONAL TRAINING SOURCE 8 — authored for this course from the local data-workflow runtime contract, not an independently supplied company policy. Multiply uses comma-separated numeric references and requires nonblank finite numbers. Multiply output.totalUnits, input.factor into plannedUnits, after totalUnits is created. For totalUnits 10 and factor 3 the result is 30. This computes a fictional planning quantity and neither reserves nor delivers real kits.\n\nFICTIONAL TRAINING SOURCE 9 — authored for this course from the local data-workflow runtime contract, not an independently supplied company policy. Run simulates the sample and shows outputs and step trace. Test project checks every declared case without recording a submission. Save draft persists editable work; Submit project recomputes the grade and records a submission. Check both changed inputs and missing-value behavior rather than hard-coding sample outputs. If all criteria are required, every criterion must pass. An interpreter error prevents passing. Test success does not establish a real external action.",
+  "dependencies": "Module 1: references, copy, trim and lowercase. Module 2: uppercase, templates and fallback, using Module 1 outputs. Module 3: sum, multiply and criteria-based testing; combines all earlier outputs. Practice stays in the bounded in-course sandbox; no external services.",
+  "difficulties": "Confusing literals with references; reading an output before it exists; assuming case conversion trims spaces; hard-coding the sample; treating Run as Test or Test as Submit.",
+  "physicalNotes": "Accessible text and editable narration; essential transformations described in words; no meaning relies only on color or motion. Individual accessibility needs are unknown.",
+  "prerequisites": "Read simple labels, add and multiply small whole numbers, and use a browser.",
+  "physicalSkills": false
+}
