@@ -14,6 +14,7 @@ import { useUnsavedGuard } from '@/lib/use-unsaved-guard';
 import { runSandbox, type SandboxRun } from '@/lib/project-sandbox';
 import type { GuidedReport, GuidedWork } from '@/lib/guided-project';
 import type { PublicSandboxProject } from '@/server/project-sandbox';
+import { GuidedWorkflowCanvas } from './guided-workflow-canvas';
 import './guided-project.css';
 
 export function GuidedProjectWorkspace({ project }: { project: PublicSandboxProject }) {
@@ -99,6 +100,8 @@ export function GuidedProjectWorkspace({ project }: { project: PublicSandboxProj
         <p className="mt-5 text-xs text-ink-muted">Writing an answer marks progress. Submission checks your explanations separately.</p>
       </aside>
       <div className="guided-mobile-switch" aria-label="Workspace view"><Button variant={mobilePanel === 'explore' ? 'default' : 'outline'} aria-pressed={mobilePanel === 'explore'} onClick={() => setMobilePanel('explore')}>Explore & explain</Button><Button variant={mobilePanel === 'results' ? 'default' : 'outline'} aria-pressed={mobilePanel === 'results'} onClick={() => setMobilePanel('results')}>Examples & results</Button></div>
+      <GuidedWorkflowCanvas artifact={guided.artifact} activeIds={stage.stepIds} run={run} disabled={locked} onInspect={stepId => { const next = guided.stages.findIndex(s => s.stepIds.includes(stepId)); if (next >= 0) void go(next); }} />
+      <div className="guided-project-inspector">
       <main className="guided-project-main" data-mobile-hidden={mobilePanel !== 'explore'}>
         <p className="text-sm text-brand-ink">Step {index + 1} of {guided.stages.length}</p>
         <h1 ref={heading} tabIndex={-1} className="guided-project-title">{stage.title}</h1>
@@ -121,6 +124,7 @@ export function GuidedProjectWorkspace({ project }: { project: PublicSandboxProj
         <div className="guided-output"><h3 className="font-semibold">{run ? 'Observed results' : 'Your results appear here'}</h3>{run ? <dl>{run.trace.filter(s => !steps.length || stage.stepIds.includes(s.stepId)).map(s => <div key={s.stepId}><dt>{s.output}</dt><dd>{JSON.stringify(s.value)}</dd></div>)}</dl> : <p className="mt-2 text-sm text-ink-muted">Run this example to see the workflow’s output. You can switch examples at any step.</p>}</div>
         <p className="mt-5 text-xs text-ink-muted">Simulation only. Nothing is sent, reserved or changed outside this course.</p>
       </aside>
+      </div>
     </div>
     <footer className="guided-project-footer">
       <div className="guided-save-state"><span role="status" aria-live="polite">{busy ? 'Saving…' : dirty ? 'Unsaved explanations' : 'All changes saved'}</span><Button variant="ghost" size="sm" disabled={locked || !dirty} onClick={() => void action('save')}>Save explanations</Button><Button variant="ghost" size="sm" disabled={busy || !enrolled} onClick={() => void reload()}><RotateCcw aria-hidden />Reload saved copy</Button></div>
