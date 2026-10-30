@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { getCourse, getFinale } from "@/data";
 import { WorkflowWorkspace } from "@/components/project/workflow-workspace";
 import { ProjectSandboxWorkspace } from '@/components/project/project-sandbox';
+import { GuidedProjectWorkspace } from '@/components/project/guided-project';
 
 type Params = { courseId: string; step: string };
 
@@ -18,6 +19,7 @@ export default async function ProjectWorkspacePage({ params }: { params: Promise
   const course = await getCourse(courseId);
   if (!course || step !== 'capstone') notFound();
   const finale = await getFinale(courseId);
+  if (finale?.capstone.sandbox?.sandbox.guided) return <GuidedProjectWorkspace key={finale.capstone.sandbox.revisionId} project={finale.capstone.sandbox} />;
   if (finale?.capstone.sandbox) return <ProjectSandboxWorkspace project={finale.capstone.sandbox} />;
   if (courseId !== 'ai-agent') notFound();
   return <WorkflowWorkspace course={course} />;

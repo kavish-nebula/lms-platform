@@ -1845,32 +1845,29 @@
   ],
   "courseEnd": {
     "miniProject": {
-      "title": "Build a tested operations review card",
-      "brief": "Combine all nine topics in one ordered sandbox workflow. Clean synthetic text, choose a safe blank-contact label, compose a review summary, calculate a fictional planning quantity and verify both cases. This is a bounded simulation, with no external actions.",
-      "deliverable": "One saved and submitted sandbox artifact containing the four completed fields, ordered transformation steps and eight required named outputs, passing all nine criteria across both supplied cases.",
+      "title": "Explore a ready-made operations review workflow",
+      "brief": "Follow a completed workflow one step at a time. Run two fictional examples, compare their transformed text and calculated quantities, and explain the results. The workflow is read-only; no building, editing or external tools are required.",
+      "deliverable": "Nine saved explanations of the observed results, with both supplied examples run in the guided workspace. Submit explanations for the stated concept checks.",
       "rubric": [
-        "Copy the current ticket without alteration.",
-        "Trim outer name padding and retain the internal space.",
-        "Normalize the current team key after trimming.",
-        "Create a clean uppercase display code.",
-        "Compose the exact review format from current outputs.",
-        "Handle both blank and present contacts.",
-        "Add the supplied counts for both cases.",
-        "Multiply the computed total by the supplied factor.",
-        "Validate both cases and document the evidence boundary."
+        "Explain copy and the order of references.",
+        "Explain outer versus internal spaces.",
+        "Explain trim and lowercase as separate operations.",
+        "Explain uppercase and preservation of nonletters.",
+        "Explain template composition without external action.",
+        "Explain blank and present contact fallback behavior.",
+        "Explain addition and invalid numeric input.",
+        "Explain multiplication using the earlier total and factor.",
+        "Explain why both changed-input cases matter."
       ],
       "sandbox": {
         "version": 1,
         "runtime": "data-workflow",
         "instructions": [
-          "1. Inspect the two synthetic test cases and grading criteria. Build one review-card workflow; all work stays inside this course. No message is sent and no real kit is reserved.",
-          "2. Fill prefix with Review and defaultContact with Unassigned. In testPlan explain why you check both blank and present contact cases. Set status to Simulation only; no real action. These are editable artifact fields, referenced through values.name.",
-          "3. Create ticketId with copy from input.ticket. Trim input.name into cleanName. Trim input.team into teamTrim, then lowercase output.teamTrim into teamKey. Keep the output names exactly as stated.",
-          "4. Trim input.code into codeTrim, then uppercase output.codeTrim into displayCode. Trim input.contact into contactTrim. Use fallback with output.contactTrim | values.defaultContact to create contact.",
-          "5. After those outputs exist, create summary with template. Format exactly: {{values.prefix}} | {{output.ticketId}} | {{output.cleanName}} | {{output.teamKey}} | {{output.displayCode}} | {{output.contact}}. Literal spaces and separators are part of the required format.",
-          "6. Use sum with input.base, input.extra to create totalUnits. Use multiply with output.totalUnits, input.factor to create plannedUnits. Numeric expressions use references, not literal sample values.",
-          "7. Run to inspect sample outputs and step trace. Test project checks both cases, including changed strings, a present contact and different counts. A fixed sample output fails the changed case; blank or nonnumeric count data causes an error rather than silently becoming zero.",
-          "8. Save draft, inspect any failed criteria, revise and retest. Submit project records the artifact and server-computed grade. Every one of the nine criteria must pass. Only a passing submission enables the final assessment. Allow about twelve minutes; no external tools are required."
+          "Open the guided project workspace. The complete workflow is supplied read-only.",
+          "Explore each prepared transformation and run the two supplied examples.",
+          "Write an explanation at each topic step using the observed output and the optional hint.",
+          "Review the nine explanations, then submit them. Both examples must be run; all nine length and concept checks must pass.",
+          "Feedback uses transparent phrase and length checks, not a human judgement of every nuance of reasoning. Revise and resubmit as needed."
         ],
         "fields": [
           {
@@ -2260,7 +2257,411 @@
               }
             ]
           }
-        ]
+        ],
+        "guided": {
+          "estimatedMinutes": 12,
+          "artifact": {
+            "version": 1,
+            "values": {
+              "prefix": "Review",
+              "defaultContact": "Unassigned",
+              "testPlan": "Check both blank and present contact cases with changed inputs; inspect the outputs before submission.",
+              "status": "Simulation only; no real action."
+            },
+            "steps": [
+              {
+                "id": "COPY_TICKET",
+                "output": "ticketId",
+                "operation": "copy",
+                "expression": "input.ticket"
+              },
+              {
+                "id": "TRIM_NAME",
+                "output": "cleanName",
+                "operation": "trim",
+                "expression": "input.name"
+              },
+              {
+                "id": "TRIM_TEAM",
+                "output": "teamTrim",
+                "operation": "trim",
+                "expression": "input.team"
+              },
+              {
+                "id": "LOWER_TEAM",
+                "output": "teamKey",
+                "operation": "lowercase",
+                "expression": "output.teamTrim"
+              },
+              {
+                "id": "TRIM_CODE",
+                "output": "codeTrim",
+                "operation": "trim",
+                "expression": "input.code"
+              },
+              {
+                "id": "UPPER_CODE",
+                "output": "displayCode",
+                "operation": "uppercase",
+                "expression": "output.codeTrim"
+              },
+              {
+                "id": "TRIM_CONTACT",
+                "output": "contactTrim",
+                "operation": "trim",
+                "expression": "input.contact"
+              },
+              {
+                "id": "FALLBACK_CONTACT",
+                "output": "contact",
+                "operation": "fallback",
+                "expression": "output.contactTrim | values.defaultContact"
+              },
+              {
+                "id": "MAKE_SUMMARY",
+                "output": "summary",
+                "operation": "template",
+                "expression": "{{values.prefix}} | {{output.ticketId}} | {{output.cleanName}} | {{output.teamKey}} | {{output.displayCode}} | {{output.contact}}"
+              },
+              {
+                "id": "SUM_COUNTS",
+                "output": "totalUnits",
+                "operation": "sum",
+                "expression": "input.base, input.extra"
+              },
+              {
+                "id": "MULTIPLY_PLAN",
+                "output": "plannedUnits",
+                "operation": "multiply",
+                "expression": "output.totalUnits, input.factor"
+              }
+            ]
+          },
+          "stages": [
+            {
+              "id": "welcome",
+              "title": "Start here",
+              "instruction": "Explore the completed workflow, run the two supplied examples, and explain what you notice. You do not need to build or edit anything.",
+              "stepIds": [],
+              "promptIds": []
+            },
+            {
+              "id": "trace_value",
+              "title": "Trace a value",
+              "instruction": "Run an example and compare the original ticket with the copied ticketId. Notice why later steps can use this output.",
+              "stepIds": [
+                "COPY_TICKET"
+              ],
+              "promptIds": [
+                "trace"
+              ]
+            },
+            {
+              "id": "clean_name",
+              "title": "Clean a name",
+              "instruction": "Look at the spaces around and inside the customer name. Compare the input data with the trim result.",
+              "stepIds": [
+                "TRIM_NAME"
+              ],
+              "promptIds": [
+                "trim"
+              ]
+            },
+            {
+              "id": "team_key",
+              "title": "Normalize the team",
+              "instruction": "Follow the two prepared steps: first remove outer spaces, then normalize letter case.",
+              "stepIds": [
+                "TRIM_TEAM",
+                "LOWER_TEAM"
+              ],
+              "promptIds": [
+                "normalize"
+              ]
+            },
+            {
+              "id": "display_code",
+              "title": "Format the code",
+              "instruction": "Inspect how the prepared workflow cleans and capitalizes the code without changing its nonletter characters.",
+              "stepIds": [
+                "TRIM_CODE",
+                "UPPER_CODE"
+              ],
+              "promptIds": [
+                "display"
+              ]
+            },
+            {
+              "id": "missing_contact",
+              "title": "Handle missing contact",
+              "instruction": "Run both examples. Compare a blank contact with a supplied contact and observe the fallback decision.",
+              "stepIds": [
+                "TRIM_CONTACT",
+                "FALLBACK_CONTACT"
+              ],
+              "promptIds": [
+                "contact"
+              ]
+            },
+            {
+              "id": "review_card",
+              "title": "Compose the summary",
+              "instruction": "Inspect the ready-made template and the readable review card. Consider which values were produced by earlier steps.",
+              "stepIds": [
+                "MAKE_SUMMARY"
+              ],
+              "promptIds": [
+                "compose"
+              ]
+            },
+            {
+              "id": "add_counts",
+              "title": "Add the counts",
+              "instruction": "Compare the two numeric inputs with their total. Explain what would happen if a count were blank.",
+              "stepIds": [
+                "SUM_COUNTS"
+              ],
+              "promptIds": [
+                "add"
+              ]
+            },
+            {
+              "id": "scale_quantity",
+              "title": "Scale the quantity",
+              "instruction": "Compare the earlier total with the factor and resulting planning quantity.",
+              "stepIds": [
+                "MULTIPLY_PLAN"
+              ],
+              "promptIds": [
+                "scale"
+              ]
+            },
+            {
+              "id": "compare_cases",
+              "title": "Compare the examples",
+              "instruction": "Switch between the two supplied cases and inspect their outputs. Explain what the second case helps detect.",
+              "stepIds": [],
+              "promptIds": [
+                "compare"
+              ]
+            },
+            {
+              "id": "review_submit",
+              "title": "Review & submit",
+              "instruction": "Review your explanations and run evidence. Submit your explanations when you are ready; feedback lets you revise and submit again.",
+              "stepIds": [],
+              "promptIds": []
+            }
+          ],
+          "prompts": [
+            {
+              "id": "trace",
+              "label": "Why does ticketId match the ticket in each example, and why must this step run before the summary?",
+              "hint": "Compare input.ticket with ticketId. Think about copy and the order in which output values become available.",
+              "criterionId": "CD_CRIT_1",
+              "minWords": 15,
+              "conceptGroups": [
+                [
+                  "copy",
+                  "unchanged",
+                  "preserve",
+                  "same"
+                ],
+                [
+                  "before",
+                  "earlier",
+                  "order"
+                ]
+              ]
+            },
+            {
+              "id": "trim",
+              "label": "What changed in the customer name, and what stayed the same?",
+              "hint": "Compare the spaces before, between and after the names. Explain trim rather than just repeating the result.",
+              "criterionId": "CD_CRIT_2",
+              "minWords": 15,
+              "conceptGroups": [
+                [
+                  "trim",
+                  "outer",
+                  "leading",
+                  "trailing"
+                ],
+                [
+                  "between",
+                  "internal",
+                  "middle"
+                ]
+              ]
+            },
+            {
+              "id": "normalize",
+              "label": "Why does the team key need both trim and lowercase?",
+              "hint": "Look at the mixed-case, padded input. Each operation solves a different problem.",
+              "criterionId": "CD_CRIT_3",
+              "minWords": 15,
+              "conceptGroups": [
+                [
+                  "trim",
+                  "spaces",
+                  "whitespace"
+                ],
+                [
+                  "lowercase",
+                  "lower case",
+                  "capitalization"
+                ]
+              ]
+            },
+            {
+              "id": "display",
+              "label": "How is the display code transformed, and what happens to its hyphen and number?",
+              "hint": "Compare the letter case with the nonletter characters in AB-7 and XY-2.",
+              "criterionId": "CD_CRIT_4",
+              "minWords": 15,
+              "conceptGroups": [
+                [
+                  "uppercase",
+                  "upper case",
+                  "capital"
+                ],
+                [
+                  "hyphen",
+                  "digit",
+                  "number",
+                  "nonletter"
+                ]
+              ]
+            },
+            {
+              "id": "compose",
+              "label": "How does the summary combine the earlier results, and does it send or approve anything?",
+              "hint": "Identify the template placeholders and the literal separators. Distinguish formatted output from an external action.",
+              "criterionId": "CD_CRIT_5",
+              "minWords": 15,
+              "conceptGroups": [
+                [
+                  "template",
+                  "placeholder",
+                  "references"
+                ],
+                [
+                  "not send",
+                  "does not send",
+                  "no message",
+                  "nothing is sent",
+                  "not approve",
+                  "no approval"
+                ]
+              ]
+            },
+            {
+              "id": "contact",
+              "label": "Why is the contact Unassigned in the first example but Jo in the second?",
+              "hint": "Compare the blank contact with the present contact. Explain which value fallback keeps.",
+              "criterionId": "CD_CRIT_6",
+              "minWords": 15,
+              "conceptGroups": [
+                [
+                  "blank",
+                  "empty",
+                  "whitespace"
+                ],
+                [
+                  "fallback",
+                  "default",
+                  "second"
+                ],
+                [
+                  "nonblank",
+                  "present",
+                  "jo",
+                  "first"
+                ]
+              ]
+            },
+            {
+              "id": "add",
+              "label": "How are totalUnits calculated in both examples, and what would a blank count mean?",
+              "hint": "Explain addition of base and extra. A blank numeric input causes an error instead of silently becoming zero.",
+              "criterionId": "CD_CRIT_7",
+              "minWords": 15,
+              "conceptGroups": [
+                [
+                  "sum",
+                  "add",
+                  "addition",
+                  "plus"
+                ],
+                [
+                  "base"
+                ],
+                [
+                  "extra"
+                ],
+                [
+                  "blank"
+                ],
+                [
+                  "error",
+                  "stop",
+                  "reject"
+                ]
+              ]
+            },
+            {
+              "id": "scale",
+              "label": "How does plannedUnits depend on the earlier total and the example’s factor?",
+              "hint": "Compare 10 × 3 with 7 × 2. Explain the dependency rather than writing only the final numbers.",
+              "criterionId": "CD_CRIT_8",
+              "minWords": 15,
+              "conceptGroups": [
+                [
+                  "multiply",
+                  "multiplication",
+                  "multiplies",
+                  "times"
+                ],
+                [
+                  "total",
+                  "totalunits"
+                ],
+                [
+                  "factor"
+                ]
+              ]
+            },
+            {
+              "id": "compare",
+              "label": "Why is running both examples stronger evidence than running only the first one?",
+              "hint": "Consider the blank versus present contact and changed numeric inputs. Explain what a hard-coded sample could miss.",
+              "criterionId": "CD_CRIT_9",
+              "minWords": 15,
+              "conceptGroups": [
+                [
+                  "both",
+                  "two"
+                ],
+                [
+                  "blank"
+                ],
+                [
+                  "present",
+                  "jo",
+                  "nonblank"
+                ],
+                [
+                  "hard coded",
+                  "hardcoding",
+                  "hardcode",
+                  "fixed sample",
+                  "fixed output",
+                  "changed inputs"
+                ]
+              ]
+            }
+          ]
+        }
       },
       "objectiveIds": [
         "O1",

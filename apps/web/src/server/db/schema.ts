@@ -14,6 +14,7 @@ import type { ScriptChecks } from "@/lib/module-production";
 import type { ProductionAudioClip, ProductionVoice } from "@/lib/production-audio";
 import type { AuthoredCoursePackageData, CourseReviewChecklist } from "@/lib/authored-course";
 import type { SandboxArtifactData, SandboxReport } from '@/lib/project-sandbox';
+import type { GuidedReport } from '@/lib/guided-project';
 
 /** A release pins immutable content and its approval; authoring edits never replace it. */
 export const publishedAuthoredCourses = pgTable('published_authored_courses', {
@@ -386,6 +387,28 @@ export const authoredProjectSubmissions = pgTable('authored_project_submissions'
   revisionId: uuid('revision_id').notNull().references(() => creatorAuthoredCourseRevisions.id),
   artifact: jsonb('artifact').$type<SandboxArtifactData>().notNull(),
   report: jsonb('report').$type<SandboxReport>().notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
+/** Exploration answers are separate from historical learner-built artifacts. */
+export const guidedProjectWork = pgTable('guided_project_work', {
+  enrollmentId: uuid('enrollment_id').notNull().references(() => enrollments.id, { onDelete: 'cascade' }),
+  revisionId: uuid('revision_id').notNull().references(() => creatorAuthoredCourseRevisions.id),
+  answers: jsonb('answers').$type<Record<string, string>>().notNull(),
+  runCaseIds: jsonb('run_case_ids').$type<string[]>().notNull(),
+  stageId: text('stage_id').notNull(), version: integer('version').notNull(),
+  report: jsonb('report').$type<GuidedReport>(), submissionId: uuid('submission_id'),
+  submittedAt: timestamp('submitted_at', { withTimezone: true }),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+}, t => [primaryKey({ columns: [t.enrollmentId, t.revisionId] })]);
+
+export const guidedProjectSubmissions = pgTable('guided_project_submissions', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  enrollmentId: uuid('enrollment_id').notNull().references(() => enrollments.id, { onDelete: 'cascade' }),
+  revisionId: uuid('revision_id').notNull().references(() => creatorAuthoredCourseRevisions.id),
+  answers: jsonb('answers').$type<Record<string, string>>().notNull(),
+  runCaseIds: jsonb('run_case_ids').$type<string[]>().notNull(),
+  report: jsonb('report').$type<GuidedReport>().notNull(),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 });
 

@@ -44,6 +44,7 @@ function checkFields(artifact: SandboxArtifactData, fields: { id: string }[]) {
 export async function sandboxAction(userId: string, courseId: string, request: z.infer<typeof SandboxRequest>) {
   const input = SandboxRequest.parse(request);
   const { definition, enrollment } = await scoped(userId, courseId, input.revisionId);
+  if (definition.guided) throw new ApiError(400, 'read_only_project', 'This project is a guided exploration. Run the supplied examples and submit explanations through its guided workspace.');
   checkFields(input.artifact, definition.fields);
   if (input.action === 'run') return { run: runSandbox(input.artifact, Object.fromEntries(definition.inputs.map(i => [i.id, i.sample]))) };
   if (input.action === 'test') return { report: gradeSandbox(definition, input.artifact) };

@@ -11,6 +11,23 @@ export const SandboxArtifact = z.object({ version: z.literal(1), values: record,
 });
 export type SandboxArtifactData = z.infer<typeof SandboxArtifact>;
 
+/** A guided project supplies the implementation; learners submit interpretations only. */
+export const GuidedExploration = z.object({
+  estimatedMinutes: z.number().int().min(1).max(240),
+  artifact: SandboxArtifact,
+  stages: z.array(z.object({
+    id: key, title: text.min(1).max(200), instruction: text.min(1),
+    stepIds: z.array(key).max(40), promptIds: z.array(key).max(30),
+  }).strict()).min(2).max(20),
+  prompts: z.array(z.object({
+    id: key, label: text.min(1), hint: text.min(1), criterionId: key,
+    minWords: z.number().int().min(5).max(100),
+    // These concept groups stay server-side; equivalent phrases may satisfy a group.
+    conceptGroups: z.array(z.array(text.min(1).max(200)).min(1).max(20)).min(1).max(10),
+  }).strict()).min(1).max(30),
+}).strict();
+export type GuidedExplorationData = z.infer<typeof GuidedExploration>;
+
 export const ProjectSandbox = z.object({
   version: z.literal(1), runtime: z.literal('data-workflow'),
   instructions: z.array(z.string().trim().min(1).max(2000)).min(1).max(20),
@@ -25,6 +42,7 @@ export const ProjectSandbox = z.object({
   }).strict()).min(1).max(30),
   // Without an explicit creator override every criterion is required.
   passPercent: z.number().int().min(1).max(100).optional(),
+  guided: GuidedExploration.optional(),
 }).strict().superRefine((s, ctx) => {
   const error = (message: string) => ctx.addIssue({ code: 'custom', message });
   for (const items of [s.fields, s.inputs, s.tests, s.criteria]) if (new Set(items.map(i => i.id)).size !== items.length) error('Sandbox identifiers must be unique within each list.');
@@ -41,10 +59,26 @@ export const ProjectSandbox = z.object({
   if (s.tests.some(t => !usedTests.has(t.id))) error('Every test must contribute to a grading criterion.');
   const starter = SandboxArtifact.safeParse({ version: 1, values: Object.fromEntries(s.fields.map(f => [f.id, f.starter])), steps: s.starterSteps });
   if (!starter.success) error('Starter steps must form a valid artifact.');
+  if (s.guided) {
+    const g = s.guided;
+    if (Object.keys(g.artifact.values).length !== fields.size || s.fields.some(f => !Object.hasOwn(g.artifact.values, f.id))) error('The ready-made workflow must supply exactly the project fields.');
+    for (const items of [g.stages, g.prompts]) if (new Set(items.map(i => i.id)).size !== items.length) error('Guided stage and prompt IDs must be unique.');
+    const stepIds = new Set(g.artifact.steps.map(step => step.id));
+    const promptIds = new Set(g.prompts.map(p => p.id));
+    if (g.stages.some(stage => stage.stepIds.some(id => !stepIds.has(id)) || stage.promptIds.some(id => !promptIds.has(id)))) error('Guided stages must reference existing workflow steps and explanation prompts.');
+    if (g.prompts.some(p => !g.stages.some(stage => stage.promptIds.includes(p.id)))) error('Every explanation prompt needs a guided stage.');
+    if (g.artifact.steps.some(step => !g.stages.some(stage => stage.stepIds.includes(step.id)))) error('Every ready-made workflow step needs a guided stage.');
+    if (new Set(g.prompts.map(p => p.criterionId)).size !== g.prompts.length || s.criteria.some(c => !g.prompts.some(p => p.criterionId === c.id)) || g.prompts.some(p => !s.criteria.some(c => c.id === p.criterionId))) error('Guided explanation prompts must map one-to-one to the project criteria.');
+    for (const test of s.tests) if (runSandbox(g.artifact, test.inputs).error) error('The ready-made workflow must run successfully for every supplied example.');
+  }
 });
 export type ProjectSandboxData = z.infer<typeof ProjectSandbox>;
-export type PublicSandbox = Omit<ProjectSandboxData, 'criteria'> & { criteria: Omit<ProjectSandboxData['criteria'][number], 'checks'>[] };
-export const publicSandbox = (s: ProjectSandboxData): PublicSandbox => ({ ...s, criteria: s.criteria.map(c => ({ id: c.id, rubricIndex: c.rubricIndex, weight: c.weight, objectiveIds: c.objectiveIds, sourceIds: c.sourceIds, videoIds: c.videoIds })) });
+export type PublicSandbox = Omit<ProjectSandboxData, 'criteria' | 'guided'> & { criteria: Omit<ProjectSandboxData['criteria'][number], 'checks'>[]; guided?: Omit<GuidedExplorationData, 'prompts'> & { prompts: Omit<GuidedExplorationData['prompts'][number], 'conceptGroups'>[] } };
+export const publicSandbox = (s: ProjectSandboxData): PublicSandbox => {
+  const { guided, ...rest } = s;
+  return { ...rest, criteria: s.criteria.map(c => ({ id: c.id, rubricIndex: c.rubricIndex, weight: c.weight, objectiveIds: c.objectiveIds, sourceIds: c.sourceIds, videoIds: c.videoIds })),
+    ...(guided ? { guided: { ...guided, prompts: guided.prompts.map(p => ({ id: p.id, label: p.label, hint: p.hint, criterionId: p.criterionId, minWords: p.minWords })) } } : {}) };
+};
 export const starterArtifact = (s: PublicSandbox): SandboxArtifactData => ({ version: 1, values: Object.fromEntries(s.fields.map(f => [f.id, f.starter])), steps: s.starterSteps });
 
 export type SandboxRun = { outputs: Record<string, string>; trace: { stepId: string; output: string; value: string }[]; error: string | null };

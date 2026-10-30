@@ -12,6 +12,7 @@ import { StageShell } from "@/components/player/stage-shell";
 import type { CapstoneBlock } from "@/data/types";
 import { AuthoredNotes } from '@/components/learning/authored-notes';
 import { ProjectSandboxWorkspace } from '@/components/project/project-sandbox';
+import { GuidedProjectIntro } from '@/components/project/guided-project-intro';
 
 /**
  * The course capstone, once, after all modules. The brief is the scene and
@@ -33,6 +34,7 @@ export function CapstoneStage({
   done: boolean;
   onComplete: () => void;
 }) {
+  if (block.sandbox?.sandbox.guided) return <GuidedProjectIntro project={block.sandbox} />;
   if (block.sandbox) return <ProjectSandboxWorkspace key={block.sandbox.revisionId} project={block.sandbox} embedded onContinue={onComplete} />;
   if (done) return <Done block={block} workspace={workspace} onComplete={onComplete} />;
   return <Brief block={block} preview={preview} workspace={workspace} onComplete={onComplete} />;

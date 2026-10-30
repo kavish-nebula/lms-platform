@@ -72,3 +72,7 @@ Every edit is a new saved revision. Final review records apply to one exact revi
 ## Later phase
 
 Direct LMS generation requires a durable background job service and provider credentials on the server. It must use the same package schema, validation, revision history and final human sign-off. A Codex MCP connection must not be treated as the production LMS generation worker.
+
+## Explicit read-only project requests
+
+When the creator explicitly requests exploration rather than implementation, `miniProject.sandbox.guided` holds the completed artifact, estimated minutes, named stages (`id`, `title`, `instruction`, workflow `stepIds` and `promptIds`) and explanation prompts (`id`, `label`, `hint`, `criterionId`, `minWords`, private `conceptGroups`). This is a supported user override of the normal build-project authoring guidance. Stages cover all supplied steps/prompts, prompts map one-to-one to existing rubric criteria, and the artifact must execute all supplied cases. Course-objective/video/source coverage still applies. Only the coordinator saves the assembled package through the unchanged three MCP tools and current revision checks; review/publication remain separate. Learner delivery hides concept groups and records server-run evidence, explanation drafts and immutable submissions independently of historical build projects.

@@ -3,7 +3,7 @@
 ## Clean Data to Clear Decisions
 
 `clean-data-to-clear-decisions.json` is the complete package created with all six
-updated skills and published as revision 1 on 29 October 2026. Its companion
+updated skills and subsequently published as revision 2 on 29 October 2026. Its companion
 `clean-data-to-clear-decisions-brief.json` preserves the corrected saved brief
 (brief revision 2). The user selected an 80% final-assessment pass mark.
 
@@ -21,12 +21,28 @@ Sources are fictional training references authored from the local sandbox
 contract, not independent human SME evidence or company policy. The separate
 release review records automated checks and this provenance. Structural validation,
 exact objective wording, ID/source links, midpoint placement, timing estimates and
-project coverage passed. The model project passed; the blank starter, missing
+project coverage passed. In the original build-mode release, the model project passed; the blank starter, missing
 required fields, hard-coded sample outputs and invalid numeric inputs failed the
 appropriate checks. Learner-side enrollment, video midpoint feedback, module
 select-all grading and project Run/Test/Save were exercised. The sandbox returned
 90/90 points across both cases. Course-skill, sandbox, authored-assessment and
 publication regression suites passed.
+
+Revision 2 replaces only the mini project with the explicitly requested guided
+exploration: learners inspect a supplied read-only workflow, run both examples,
+and submit nine explanations in a separate workspace. Eleven short stages replace
+the long editor page. No implementation or input editing is accepted by the guided
+API, and only actual server runs count as run evidence. The submitted workflow,
+lessons, source evidence, stable IDs, quizzes, reflection and 80% final pass mark
+remain unchanged. Historical build-mode drafts and submissions are retained.
+
+The new explanation checks are deterministic minimum-length and phrase-group
+checks, explicitly disclosed rather than described as human semantic grading.
+Learner verification covered both case runs, saved position/answers after reload,
+revision feedback for a short response (80/90), corrected submission (90/90) and
+the final-assessment handoff. New backend tests cover ownership, release/version
+conflicts, fixed workflows, private concept groups, server-owned run evidence,
+resubmission and immutable history. All 36 existing narration clips were reused.
 
 All 36 narration clips finished rendering. The nine measured narration totals
 range from 113.58 to 145.93 seconds (all below seven minutes), totaling about 1,160

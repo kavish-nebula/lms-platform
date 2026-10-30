@@ -114,10 +114,11 @@ export function authoredDelivery({ courseId, revisionId, content: pkg }: Release
     };
   });
   const end = pkg.courseEnd;
+  const projectMinutes = end.miniProject.sandbox?.guided?.estimatedMinutes ?? 4;
   const final = gateFor(end.masteryGate);
   const finale: FinaleContent = {
     course_id: courseId, version, objectives: pkg.objectiveEvidence.map(o => ({ id: o.objectiveId, text: o.objective, lesson: lessonFor(o.objectiveId) })), final,
-    capstone: { step_id: `${courseId}.finale.capstone`, duration_min: 4, kicker: 'Mini project', title: end.miniProject.title, project_name: end.miniProject.deliverable, scene: end.miniProject.brief,
+    capstone: { step_id: `${courseId}.finale.capstone`, duration_min: projectMinutes, kicker: 'Mini project', title: end.miniProject.title, project_name: end.miniProject.deliverable, scene: end.miniProject.brief,
       requirements: end.miniProject.rubric.map((text, i) => ({ id: `r${i}`, text })), edge_cases: [], closing: end.miniProject.deliverable, reactions: [],
       ...(end.miniProject.sandbox ? { sandbox: { courseId, revisionId, title: end.miniProject.title, brief: end.miniProject.brief, deliverable: end.miniProject.deliverable, rubric: end.miniProject.rubric, sandbox: publicSandbox(end.miniProject.sandbox) } } : { writing: { storageKey: `authored:${revisionId}:project`, label: end.miniProject.deliverable } }),
     },
@@ -130,8 +131,8 @@ export function authoredDelivery({ courseId, revisionId, content: pkg }: Release
     modules: pkg.modules.map((m, i) => ({ module_id: m.id, title: m.title, minutes: m.durationMinutes, stages: moduleStages(m), authored: moduleStages(m), state: i === 0 ? 'available' : 'locked', lite: false, pain: m.problemHook.situation, lead_in: null,
       lessons: m.conceptExplainer.videos.map(v => ({ id: String(i + 1), title: v.title, notes: v.slides.flatMap(s => s.body) })), topics: topicsFor(m), outcomes: m.objectiveIds.map(objective), skills: ['Clear handoffs', 'Source-grounded decisions'],
     })),
-    finale: { title: 'Put your handoff into practice', summary: end.miniProject.brief, steps: [
-      { id: 'capstone', stage: 'project', kicker: 'Mini project', title: end.miniProject.title, summary: end.miniProject.deliverable, minutes: 4, outcomes: end.miniProject.rubric },
+    finale: { title: end.miniProject.sandbox?.guided ? 'Explore your course project' : 'Put your handoff into practice', summary: end.miniProject.brief, steps: [
+      { id: 'capstone', stage: 'project', kicker: 'Mini project', title: end.miniProject.title, summary: end.miniProject.deliverable, minutes: projectMinutes, outcomes: end.miniProject.rubric },
       { id: 'final-check', stage: 'gate', kicker: 'Final check', title: end.masteryGate.title, summary: end.masteryGate.instructions, minutes: 2, outcomes: pkg.objectiveEvidence.map(o => o.objective) },
       { id: 'wrap-up', stage: 'reflection', kicker: 'Reflection', title: 'Your handoff routine', summary: 'Reflect on the course and finish your learning journey.', minutes: 1, outcomes: end.reflection.prompts },
     ] },
