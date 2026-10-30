@@ -315,6 +315,53 @@ class PipelineTests(unittest.TestCase):
         self.assertIn("Biomedical", result["content"]["narration"])
         self.assertNotIn("maritime shop", calls[0]["messages"][1]["content"])
 
+    def test_example_repair_targets_visible_and_spoken_fields_without_relaxing_gate(self):
+        import copy
+        job = copy.deepcopy(JOB)
+        job["input"]["trigger"] = "example"
+        job["input"]["context"]["answers"] = {"domain": "student", "studyFieldOther": "biomedical engineering"}
+        calls = []
+        def model(req):
+            payload = json.loads(req.content)
+            calls.append(payload)
+            slide = {**SLIDE, "title": "Biomedical lab agents", "sentences": ["An agent uses lab tools."]} if len(calls) == 1 else {**SLIDE, "title": "Biomedical lab agents", "sentences": ["A biomedical agent uses lab tools."]}
+            return httpx.Response(200, json={"choices": [{"message": {"content": json.dumps(slide)}}]})
+        with httpx.Client(transport=httpx.MockTransport(model)) as client:
+            result = generate(job, client)["content"]
+        first = json.loads(calls[0]["messages"][1]["content"])
+        self.assertEqual(first["EXAMPLE_PLACEMENT"]["visiblePath"], "$.title")
+        self.assertEqual(first["EXAMPLE_PLACEMENT"]["narrationPath"], "$.sentences[0]")
+        self.assertIn("$.sentences[0]", calls[1]["messages"][-1]["content"])
+        self.assertIn("biomedical", result["narration"].lower())
+        self.assertEqual(len(result["sentences"]), 1)
+
+        invalid = {**SLIDE, "title": "Biomedical lab agents", "sentences": ["An agent uses lab tools."]}
+        with httpx.Client(transport=httpx.MockTransport(lambda req: httpx.Response(200, json={"choices": [{"message": {"content": json.dumps(invalid)}}]}))) as client:
+            with self.assertRaisesRegex(ValueError, "both visible prose and narration"):
+                generate(job, client)
+
+    def test_released_course_uses_course_specific_prompt_and_rejects_changed_numbers(self):
+        import copy
+        job = copy.deepcopy(JOB)
+        slide = {**SLIDE, "title": "Proposed 18 November", "sentences": ["The date 18 is proposed, not approved."]}
+        job["input"].update(authored=slide, source=slide, trigger="example", courseId="test-course")
+        job["input"]["context"].update(authoredCourse=True, courseTitle="AI Essentials", answers={"domain": "student", "studyFieldOther": "biomedical engineering"})
+        calls = []
+        def model(req):
+            payload = json.loads(req.content)
+            calls.append(payload)
+            date = "19" if len(calls) == 1 else "18"
+            result = {**slide, "title": f"Biomedical date {date}", "sentences": [f"A biomedical date {date} is proposed, not approved."]}
+            return httpx.Response(200, json={"choices": [{"message": {"content": json.dumps(result)}}]})
+        with httpx.Client(transport=httpx.MockTransport(model)) as client:
+            result = generate(job, client)["content"]
+        self.assertEqual(len(calls), 2)
+        self.assertIn("same numerical facts", calls[1]["messages"][-1]["content"])
+        self.assertNotIn("Keep the agent name Scout", calls[0]["messages"][0]["content"])
+        self.assertIn("released master and its assessments remain unchanged", calls[0]["messages"][0]["content"])
+        self.assertIn("18", result["narration"])
+        self.assertNotIn("19", result["narration"])
+
     def test_performance_evidence_requires_visible_and_spoken_bridge(self):
         import copy
         job = copy.deepcopy(JOB)

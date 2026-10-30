@@ -137,3 +137,23 @@ A subsequent October 22 main-app regression used the learner's newly saved mecha
 The full October 22 review found and corrected an old ORB identifier, a gift-card/refund example and an event phrase incorrectly inserted into a goal sentence. Example requests now explicitly ask for a fresh coherent scenario, reject authored organisation identifiers, reject gift-card/refund examples for mechanical engineering students, and detect the profile event phrase being incorrectly used as the object of “answering”. Repairs remain bounded. All 40 real recordings and content checks passed after three reviewed revisions; all 40 previews rendered with the actual slide component without frame overflow at the tested desktop size. This is not a comprehensive grammar, factual or instructional-quality guarantee.
 
 `node apps/web/tests/backend/serve-module1-review.mjs` serves a loopback-only review at port 3011 with the real app's slide renderer/CSS, authored comparisons and all recorded audio. It also presents a fresh isolated mechanical-profile Module 2 before/after test: two server-scored simulated misses in lesson 1.1 introduced a visible and spoken “Quick reminder”, retaining the token-prediction teaching and producing distinct audio. Main profile, enrollment answers and progress were verified unchanged. By default it reads `.data/tests/mechanical-module1` and `.data/loop-demo/mechanical-2026-10-22`; override `MODULE1_TEST_OUTPUT`, `LOOP_OUTPUT_DIR` and `MODULE1_REVIEW_PORT` for other runs. The review contains recorded outputs and never submits learner answers.
+
+For profile-specific example requests, the editor identifies an existing visible
+text field and narration sentence when the slide supports them. The prompt and
+its bounded repair point to those fields explicitly; the field-specific
+validation, existing layout limits, sentence counts and source constraints
+remain in force. If the model cannot satisfy them, the original lesson remains
+available and the request fails rather than publishing an invalid adaptation.
+
+## Opt-in adaptation for released courses
+
+`ADAPTIVE_AUTHORED_COURSE_IDS` is a comma-separated list of published course IDs
+allowed to use live concept-slide adaptation when the Python service is enabled.
+For these courses, hooks, worked examples, guided practice, scenarios, project and
+assessments remain the approved release; only learner-specific concept slides and
+matching audio are adapted. The master package remains unchanged. The prompt uses
+the released slide and its course topic rather than the AI Agent workplace, and
+checks preserve the slide structure and numerical facts. These checks do not prove
+all generated statements factually correct; failed generation retains the original.
+The stream and worker reject stale results when the learner profile or published
+revision changes. Audio uses bounded sentence chunks, with a separate cache policy.

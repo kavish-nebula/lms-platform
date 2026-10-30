@@ -153,6 +153,9 @@ Use existing panel, text, line and accent tokens and shared buttons/surfaces. No
 # Guided project workflow canvas
 
 The Clean Data guided mini project follows the agent project's canvas layout: exploration steps on the left, the complete ready-made workflow in the center, and the current instruction, explanation and example results in an inspector on the right. React Flow arrows indicate execution order. Selecting a node opens its existing guided stage; nodes and connections cannot be edited. Run results appear on nodes and in the inspector. Desktop panels scroll independently; smaller screens stack the canvas and offer the existing explanation/results switch.
+# Content workspace overview
+
+The content workspace focuses on creating courses and continuing saved drafts. The ILD stage overview and future-feature roadmap are omitted from this page. Shared course cards show the title, draft revision, last-saved time in IST (Asia/Kolkata), and continue action; subject descriptions and input-check/review text are omitted. The underlying timestamp remains unchanged.
 
 For Codex ILD module production, the audio section includes a concept-topic selector and continuous narrated slide preview with a two-question midpoint pause. The module-end quiz is shown separately for creator review. Applied-stage clips remain individually accessible. Speech, planned visual pauses and learner activity time are reported separately; a successful file playback check is not a teaching-quality review.
 

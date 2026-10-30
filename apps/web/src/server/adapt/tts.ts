@@ -37,6 +37,10 @@ export const kokoro: Voicer = (dir, clips) => {
   return next;
 };
 
+export const adaptiveSpeechPayload = (dir: string, clips: Clip[], voice: string) => ({
+  voice, chunkLong: true, clips: clips.map(c => ({ text: spoken(c.text), out: path.join(dir, `${c.key}.wav`) })),
+});
+
 function speak(dir: string, clips: Clip[]): Promise<Set<string>> {
   const todo = clips.filter((c) => c.text.trim());
   if (!todo.length) return Promise.resolve(new Set());
@@ -69,7 +73,7 @@ function speak(dir: string, clips: Clip[]): Promise<Set<string>> {
       resolve(written);
     });
     fs.mkdirSync(dir, { recursive: true });
-    child.stdin.end(JSON.stringify({ voice: VOICE(), clips: todo.map((c) => ({ text: spoken(c.text), out: outOf(c.key) })) }));
+    child.stdin.end(JSON.stringify(adaptiveSpeechPayload(dir, todo, VOICE())));
   });
 }
 

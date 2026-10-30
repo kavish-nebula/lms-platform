@@ -71,9 +71,9 @@ const needsWork = (r: repo.AdaptedRow | undefined, hash: string) =>
  * already is: no model call happens here, the work runs through `schedule`.
  */
 export async function ensureModule(user: SessionUser, courseId: string, moduleId: string, schedule: Schedule, deps: AdaptDeps = {}): Promise<boolean> {
-  // Released authored content must keep its reviewed fictional case and source boundaries.
-  if ((await getCourse(courseId))?.authoredRevisionId) return false;
   if (liveEnabled(courseId)) { await queueModule(user, courseId, moduleId); return true; }
+  // Other released courses remain pinned to their reviewed content.
+  if ((await getCourse(courseId))?.authoredRevisionId) return false;
   if (!deps.transport && !aiConfigured()) return false;
   const e = await repo.findEnrollment(user.id, courseId);
   const mod = await getModule(courseId, moduleId);

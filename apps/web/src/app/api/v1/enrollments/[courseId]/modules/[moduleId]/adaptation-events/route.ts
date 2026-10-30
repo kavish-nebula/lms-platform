@@ -1,6 +1,7 @@
+import { getCourse } from "@/data";
 import { getSessionUser } from "@/server/auth";
 import { handle, ApiError } from "@/server/http";
-import { jobsFor, liveEnabled, publicJob, queueModule, requireEnrollment } from "@/server/adapt/live";
+import { jobsFor, liveEnabled, publicJob, queueModule, requireEnrollment, currentLearnerContextKey, matchesLearnerContext } from "@/server/adapt/live";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -23,7 +24,10 @@ export const GET = handle(async (req: Request, ctx: { params: Promise<{ courseId
         if (stopped) return;
         try {
           const rows = await jobsFor(e.id, moduleId);
+          const course = await getCourse(courseId);
+          const current = course?.authoredRevisionId ? await currentLearnerContextKey(user.id, courseId) : null;
           for (const r of rows) {
+            if (current && !matchesLearnerContext(r.input.context, current)) continue;
             const stamp = `${r.status}:${r.updatedAt.getTime()}`;
             if (seen.get(r.id) === stamp) continue;
             seen.set(r.id, stamp);

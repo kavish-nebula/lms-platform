@@ -5,7 +5,7 @@ import { mergeShape, acceptable, skeletonOf } from "@/server/adapt/shape";
 import { writePiece, AdaptError, type PieceBrief } from "@/server/adapt/write";
 import { piecesOf, authoredWorld } from "@/server/adapt/pieces";
 import { adaptedAudioFile, adaptedModule, adaptNextModule, ensureModule } from "@/server/adapt/service";
-import { audioRoot, gemini, retryDelayMs, spoken, withFallback, type Voicer } from "@/server/adapt/tts";
+import { audioRoot, gemini, retryDelayMs, spoken, withFallback, adaptiveSpeechPayload, type Voicer } from "@/server/adapt/tts";
 import { getSessionUser } from "@/server/auth";
 import { deleteUserData, findEnrollment, saveProfile, upsertEnrollment, adaptedFor } from "@/server/repo";
 import { getModule } from "@/data";
@@ -171,6 +171,8 @@ const clips = [
   { key: "s1", text: "Then reply to the patient." },
   { key: "s2", text: "" },
 ];
+const adaptivePayload = adaptiveSpeechPayload(vdir, [{key: 'long', text: 'A complete explanation. '.repeat(40)}], 'test-voice');
+check('adaptive voice: long scripts are sent to the chunked speech path', adaptivePayload.chunkLong && adaptivePayload.clips[0]!.text.includes('complete explanation'));
 const g = gemini({ key: "test", model: "tts-model", voice: "Charon", fetchImpl: fakeFetch, backoffMs: 1 });
 const got = await g(vdir, clips);
 check("gemini voice: one request per spoken line, with the voice, the model and a narrator style", sent.length === 2 && sent.every((x) => x.model === "tts-model" && x.voice === "Charon" && x.style.length > 10));

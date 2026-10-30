@@ -12,14 +12,14 @@ import { gradeAuthoredAssessment } from '@/server/authored-assessment';
 import { learnerAnswers, normalizeAnswers } from "@/lib/setup";
 import type { SessionUser } from "@/server/auth";
 import { db } from "@/server/db/client";
-import { adaptationJobs, moduleEvidence, signals } from "@/server/db/schema";
+import { adaptationJobs, moduleEvidence, signals, enrollments } from "@/server/db/schema";
 import * as repo from "@/server/repo";
 import { ApiError } from "@/server/http";
 import { mergeShape } from "./shape";
 import { audioRoot, defaultVoicer, type Voicer } from "./tts";
 import { piecesOf } from "./pieces";
 
-export const liveEnabled = (courseId: string) => process.env.ADAPTIVE_PYTHON_ENABLED === "true" && courseId === "ai-agent";
+export const liveEnabled = (courseId: string) => process.env.ADAPTIVE_PYTHON_ENABLED === "true" && (courseId === "ai-agent" || (process.env.ADAPTIVE_AUTHORED_COURSE_IDS ?? "").split(",").map(id => id.trim()).includes(courseId));
 export const ADAPTIVE_PROMPT_VERSION = 4;
 const hash = (x: unknown) => createHash("sha256").update(JSON.stringify(x)).digest("hex");
 // Keep the full evidence snapshot for audit, but do not rewrite a module every
@@ -30,7 +30,7 @@ function teachingContext(context: Awaited<ReturnType<typeof contextOf>>["context
     insufficientEvidence: r.summary.insufficientEvidence, supportRequests: r.summary.supportRequests,
   } })) };
 }
-const voiceSettings = () => ({ provider: process.env.AUDIO_PROVIDER, model: process.env.AUDIO_MODEL, voice: process.env.AUDIO_VOICE, style: process.env.AUDIO_STYLE, kokoroVoice: process.env.KOKORO_VOICE });
+const voiceSettings = () => ({ speechPolicy: 2, provider: process.env.AUDIO_PROVIDER, model: process.env.AUDIO_MODEL, voice: process.env.AUDIO_VOICE, style: process.env.AUDIO_STYLE, kokoroVoice: process.env.KOKORO_VOICE });
 const clipKey = (text: string) => hash({ text, voice: voiceSettings() });
 type Job = typeof adaptationJobs.$inferSelect;
 export type Trigger = "initial" | "simplify" | "example" | "wrong_answer";
@@ -159,8 +159,25 @@ async function contextOf(user: SessionUser, courseId: string, moduleId: string) 
       if (weak.includes(v.lesson)) prerequisiteTeaching.push({ lessonId: v.lesson, title: v.title, keyIdeas: v.notes });
     }
   }
-  return { e, context: { profile: profile?.answers, derived: profile?.derived, answers: e.answers, precheck: e.precheck?.lessons, supportOverride: e.supportOverride, plan: plan?.plan, planVersion: plan?.version ?? 0, courseVersion: course?.version, voice: voiceSettings(), evidence: evidence.map((r) => ({ moduleId: r.moduleId, version: r.version, summary: r.summary })), prerequisiteReminders: weak, prerequisiteTeaching, promptVersion: ADAPTIVE_PROMPT_VERSION, world: "Harbour Works is the fictional organisation; adapt its activities to the learner's field. Retain the agent name Scout." } };
+  return { e, context: { profile: profile?.answers, derived: profile?.derived, answers: e.answers, precheck: e.precheck?.lessons, supportOverride: e.supportOverride, plan: plan?.plan, planVersion: plan?.version ?? 0, courseVersion: course?.version, voice: voiceSettings(), evidence: evidence.map((r) => ({ moduleId: r.moduleId, version: r.version, summary: r.summary })), prerequisiteReminders: weak, prerequisiteTeaching, promptVersion: ADAPTIVE_PROMPT_VERSION, authoredCourse: !!course?.authoredRevisionId, courseTitle: course?.title, world: course?.authoredRevisionId ? "Preserve the released course facts and teach using the learner's field without introducing unsupported claims." : "Harbour Works is the fictional organisation; adapt its activities to the learner's field. Retain the agent name Scout." } };
 }
+
+type ProfileContext = { profile?: unknown; derived?: unknown; answers?: unknown; courseVersion?: string };
+// PostgreSQL JSONB can reorder object keys; compare semantic content, not serialization order.
+function canonical(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(canonical);
+  if (value && typeof value === "object") return Object.fromEntries(Object.entries(value).sort(([a], [b]) => a.localeCompare(b)).map(([key, item]) => [key, canonical(item)]));
+  return value;
+}
+const learnerContextKey = (context: ProfileContext) => hash(canonical({ profile: context.profile ?? null, derived: context.derived ?? null, answers: context.answers ?? null, courseVersion: context.courseVersion ?? null }));
+export async function currentLearnerContextKey(userId: string, courseId: string) {
+  const enrollment = await repo.findEnrollment(userId, courseId);
+  if (!enrollment) throw new ApiError(404, "not_enrolled", "Enrollment not found.");
+  const profile = await repo.getProfile(userId);
+  const course = await getCourse(courseId);
+  return learnerContextKey({ profile: profile?.answers, derived: profile?.derived, answers: normalizeAnswers(learnerAnswers(profile?.answers, enrollment.answers), profile?.derived), courseVersion: course?.version });
+}
+export const matchesLearnerContext = (context: unknown, current: string) => learnerContextKey((context ?? {}) as ProfileContext) === current;
 
 export async function queueSlide(user: SessionUser, courseId: string, moduleId: string, videoId: string, slide: number, trigger: Trigger, requestId?: string, baseRevision?: string) {
   if (!liveEnabled(courseId)) throw new ApiError(409, "disabled", "Live adaptation is disabled.");
@@ -173,13 +190,13 @@ export async function queueSlide(user: SessionUser, courseId: string, moduleId: 
   let source = authored;
   if (baseRevision) {
     const base = (await d.select().from(adaptationJobs).where(and(eq(adaptationJobs.id, baseRevision), eq(adaptationJobs.enrollmentId, e.id), eq(adaptationJobs.moduleId, moduleId), eq(adaptationJobs.videoId, videoId), eq(adaptationJobs.slide, slide), eq(adaptationJobs.status, "ready"))).limit(1))[0];
-    if (!base?.content) throw new ApiError(409, "invalid_revision", "The slide revision is no longer available.");
+    if (!base?.content || !matchesLearnerContext(base.input.context, learnerContextKey(context))) throw new ApiError(409, "invalid_revision", "The slide revision is no longer available.");
     source = base.content as VideoSlide;
   }
   const fingerprint = trigger === "initial"
     ? hash({ enrollment: e.id, moduleId, videoId, slide, authored, context: teachingContext(context), trigger })
     : hash({ enrollment: e.id, requestId });
-  const inserted = await d.insert(adaptationJobs).values({ enrollmentId: e.id, moduleId, videoId, slide, fingerprint, trigger, priority: trigger === "initial" ? 0 : 10, input: { authored, source, context, lesson: video!.lesson, trigger, baseRevision, requestId } }).onConflictDoNothing().returning();
+  const inserted = await d.insert(adaptationJobs).values({ enrollmentId: e.id, moduleId, videoId, slide, fingerprint, trigger, priority: trigger === "initial" ? 0 : 10, input: { authored, source, context, courseId, lesson: video!.lesson, trigger, baseRevision, requestId } }).onConflictDoNothing().returning();
   if (inserted.length && trigger === "initial") {
     await d.update(adaptationJobs).set({ status: "superseded", updatedAt: new Date() }).where(and(eq(adaptationJobs.enrollmentId, e.id), eq(adaptationJobs.moduleId, moduleId), eq(adaptationJobs.videoId, videoId), eq(adaptationJobs.slide, slide), eq(adaptationJobs.trigger, "initial"), or(eq(adaptationJobs.status, "queued"), eq(adaptationJobs.status, "running")), ne(adaptationJobs.fingerprint, fingerprint), lt(adaptationJobs.createdAt, inserted[0]!.createdAt)));
   }
@@ -203,10 +220,11 @@ export async function queueModule(user: SessionUser, courseId: string, moduleId:
     if (openPiece === piece) await d.update(adaptationJobs).set({ priority: 3 }).where(and(eq(adaptationJobs.fingerprint, fingerprint), eq(adaptationJobs.status, "queued")));
     return (await d.select().from(adaptationJobs).where(eq(adaptationJobs.fingerprint, fingerprint)))[0] ?? null;
   };
-  const hook = await queuePiece("hook");
+  const released = !!(await getCourse(courseId))?.authoredRevisionId;
+  const hook = released ? null : await queuePiece("hook");
   // The DB preserves playback order for equal priorities. No model runs in this request.
   for (const v of videos) for (let i = 0; i < v.slides.length; i++) await queueSlide(user, courseId, moduleId, v.id, i, "initial");
-  const worked = await queuePiece("worked");
+  const worked = released ? null : await queuePiece("worked");
   return { hook, worked };
 }
 
@@ -247,6 +265,15 @@ export async function heartbeat(id: string, lease: string) {
 
 export async function finishJob(id: string, lease: string, generated: unknown, model: string, metrics: Record<string, number>, voice: Voicer | null = defaultVoicer()) {
   const row = await leasedJob(id, lease);
+  const context = row.input.context as { authoredCourse?: boolean; courseVersion?: string };
+  const checkRelease = async () => {
+    if (!context?.authoredCourse) return;
+    const [enrollment] = await (await db()).select().from(enrollments).where(eq(enrollments.id, row.enrollmentId)).limit(1);
+    const course = enrollment ? await getCourse(enrollment.courseId) : undefined;
+    if (!course?.authoredRevisionId || course.version !== context.courseVersion) throw new ApiError(409, "release_changed", "The published course changed; regenerate this lesson.");
+    if (!matchesLearnerContext(row.input.context, await currentLearnerContextKey(enrollment!.userId, enrollment!.courseId))) throw new ApiError(409, "profile_changed", "The learner profile changed; regenerate this lesson.");
+  };
+  await checkRelease();
   if (row.input.piece) {
     const { mod } = await videosOf(String(row.input.courseId), row.moduleId);
     const def = piecesOf(mod).find((p) => p.piece === row.input.piece);
@@ -263,6 +290,7 @@ export async function finishJob(id: string, lease: string, generated: unknown, m
     if (keys.some((c) => !done.has(c.key))) throw new ApiError(503, "voice_unavailable", "Matching narration could not be prepared.");
     const audio = Object.fromEntries(keys.map((c) => [c.original, `/api/v1/adapted-audio/${row.enrollmentId}/${row.moduleId}/clips/${c.key}.wav`]));
     await leasedJob(id, lease);
+    await checkRelease();
     await (await db()).update(adaptationJobs).set({ status: "ready", content: { ...content, ...(clips.length ? { audio } : {}) }, model, metrics: { ...metrics, speechMs: Date.now() - started, totalMs: Date.now() - row.createdAt.getTime() }, updatedAt: new Date() }).where(and(eq(adaptationJobs.id, id), eq(adaptationJobs.lease, lease), eq(adaptationJobs.status, "running")));
     return;
   }
@@ -277,6 +305,7 @@ export async function finishJob(id: string, lease: string, generated: unknown, m
   const clips = fs.existsSync(path.join(dir, `${narrationHash}.wav`)) ? new Set([narrationHash]) : voice ? await voice(dir, [{ key: narrationHash, text: content.narration }]) : new Set<string>();
   if (!clips.has(narrationHash)) throw new ApiError(503, "voice_unavailable", "Matching narration could not be prepared.");
   await leasedJob(id, lease);
+  await checkRelease();
   await (await db()).update(adaptationJobs).set({ status: "ready", content: content as unknown as Record<string, unknown>, audio: `/api/v1/adapted-audio/${row.enrollmentId}/${row.moduleId}/clips/${narrationHash}.wav`, model, metrics: { ...metrics, speechMs: Date.now() - started, totalMs: Date.now() - row.createdAt.getTime() }, updatedAt: new Date() }).where(and(eq(adaptationJobs.id, id), eq(adaptationJobs.lease, lease), eq(adaptationJobs.status, "running")));
 }
 

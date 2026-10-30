@@ -215,6 +215,27 @@ Return JSON only. No Markdown, commentary, or hidden reasoning.
 """
 
 
+# Published courses keep their own subject and source boundaries; the AI Agent
+# scenario is specific to the reference course and must not bleed into them.
+AUTHORED_SYSTEM = SYSTEM.replace(
+    "Keep the agent name Scout and use Harbour Works as the fictional organisation.\nAdapt its activities to the learner's field. Do not merely rename the original\norganisation while retaining an unrelated industry.\n\nFor a biomedical engineering student requesting practical examples, suitable\ncontexts include lab-report routing, sensor-data summaries, and study-project\nautomation. Preserve the course's AI-agent subject matter. Do not introduce\nclinical advice, new technical claims, or procedures outside the supplied content.",
+    "Preserve the published course's actual topic and source facts. Use the learner's field only for a clearly fictional, illustrative example. Do not introduce Scout, Harbour Works, an AI-agent workflow, unverified workplace policies, invented claims, owners or dates. Preserve qualifications, proposed versus confirmed status, and all numerical facts. The released master and its assessments remain unchanged.")
+AUTHORED_SYSTEM = AUTHORED_SYSTEM.replace(
+    "For example, a Module 2 explanation of LLM token prediction may briefly recall\nthat an agent uses an LLM to decide its next steps, then continue the required",
+    "For example, a later lesson may briefly recall a source-supported earlier concept, then continue the required")
+
+
+def authored_numbers(value):
+    """Numbers in prose are source facts; a personalized example cannot alter them."""
+    if isinstance(value, dict):
+        return set().union(*(authored_numbers(v) for k, v in value.items() if k not in LOCKED and k != "narration"))
+    if isinstance(value, list):
+        return set().union(*(authored_numbers(v) for v in value))
+    if isinstance(value, str):
+        return set(re.findall(r"(?<![\w])\d+(?:[.,]\d+)*(?![\w])", value))
+    return set()
+
+
 def validate(authored, generated, key=""):
     if key in LOCKED or not isinstance(authored, (dict, list, str)):
         return copy.deepcopy(authored)
@@ -375,6 +396,18 @@ def generate(job, client=None):
     field_words = [w for w in re.findall(r"[a-z]+", (field or "").lower()) if len(w) > 3 and w not in generic]
     placement = None
     authored = source["authored"]
+    # Name concrete existing paths for the model. Merely saying "visible prose"
+    # is ambiguous for title slides and previously caused valid-looking replies
+    # to fail the field-specific quality gate twice.
+    example_placement = None
+    if source["trigger"] == "example" and field_words and isinstance(authored, dict):
+        limits = output_constraints(authored)["maximumCharacters"]
+        visible = next((path for path in ("$.title", "$.sub", "$.kicker") if path in limits), None)
+        spoken = next((path for path in limits if re.fullmatch(r"\$\.sentences\[\d+\]", path)), None)
+        if visible and spoken:
+            example_placement = {"visiblePath": visible, "narrationPath": spoken,
+                "fieldWords": field_words,
+                "instruction": "Use a field word naturally in an authentic example at both paths. Preserve the original lesson, sentence count, and character limits; rewrite the surrounding example consistently, not just the label."}
     text_map = source.get("piece") == "hook" and source.get("textMapVersion") in {1, 2, 3, 4, 5, 6, 7}
     sparse_map = text_map and source.get("textMapVersion") in {2, 3, 4, 5, 6, 7}
     if context.get("prerequisiteTeaching") and isinstance(authored.get("note"), dict) and isinstance(authored["note"].get("text"), str) and authored.get("sentences"):
@@ -389,9 +422,11 @@ def generate(job, client=None):
         protocol += " For this example request, create a fresh authentic example throughout the relevant visible fields AND spoken sentences; adding the field name to an unchanged example is insufficient. SOURCE is a previous draft and may contain poor phrasing or an unrelated retail story. Correct its grammar and replace such examples while preserving REQUIRED_TEACHING, protected code, numeric facts, cues and exact sentence/list lengths. Do not splice raw profile vocabulary into a sentence. Replace all editable Orbit/ORB identifiers consistently."
         if answers.get("domain") == "student" and "mechanical" in field_words:
             protocol += " Use mechanical project/lab scenarios: design checks, prototype tests, lab records or equipment requests. Replace gift-card and consumer-refund examples with lab guidance and an equally irreversible project-budget decision, retaining any authored amounts and the teaching about recoverability. Conversation memory should retain a specific test/design identifier across follow-ups rather than repeat a shop return policy."
-    messages = [{"role": "system", "content": SYSTEM + protocol}, {"role": "user", "content": json.dumps({
+    if context.get("authoredCourse"):
+        protocol = "\nPersonalise only the supplied approved slide. Keep its source facts and meaning, including uncertainty and privacy qualifications. Do not add or remove numerical facts."
+    messages = [{"role": "system", "content": (AUTHORED_SYSTEM if context.get("authoredCourse") else SYSTEM) + protocol}, {"role": "user", "content": json.dumps({
         "LEARNER_FOCUS": focus, "LEARNER": teaching_context, "TRIGGER": source["trigger"],
-        "OUTPUT_CONSTRAINTS": output_constraints(authored), "PREREQUISITE_BRIDGE_PLACEMENT": placement,
+        "OUTPUT_CONSTRAINTS": output_constraints(authored), "PREREQUISITE_BRIDGE_PLACEMENT": placement, "EXAMPLE_PLACEMENT": example_placement,
         "EXAMPLE_REQUIREMENT": f"For an example request, explicitly use at least one of these field words in a concrete example in visible prose and narration: {', '.join(field_words)}" if field_words else "Use the learner's stated context.",
         "CONTENT_FORMAT": "Flat JSON changed-path/text pairs only; omit unchanged paths. The server owns the structure. Use the learner's field and goal throughout visible story and narration." if sparse_map else "A flat JSON text map with exactly the SOURCE keys" if text_map else "The authored JSON structure",
         "SOURCE": hook_text_map(authored) if text_map else source["source"], "REQUIRED_TEACHING": authored})}]
@@ -421,6 +456,8 @@ def generate(job, client=None):
                         raise ValueError("; ".join(errors))
                     candidate = pending_edits
                 content = apply_hook_text_map(authored, candidate, sparse=sparse_map) if text_map else validate(authored, candidate)
+                if context.get("authoredCourse") and authored_numbers(content) != authored_numbers(authored):
+                    raise ValueError("Keep the same numerical facts as the approved slide; do not add, remove or change numbers.")
                 if text_map and source.get("courseId") == "ai-agent":
                     # Fictional team members may stay for continuity; it is the
                     # organisation and industry scenario that must be personalised.
@@ -475,6 +512,10 @@ def generate(job, client=None):
                 if isinstance(exc, ValueError) and 'text' in locals():
                     messages.append({"role": "assistant", "content": text})
                 repair = ". Return only a flat JSON object of changed SOURCE path/text pairs. Your earlier valid path edits are retained; correct the reported paths and keep each text short. Do not return a nested film, arrays, or unchanged entries." if sparse_map else ". Return the complete JSON preserving every key, cue and list length. Use shorter prose where needed."
+                if example_placement and isinstance(exc, ValueError) and "example must explicitly refer" in reason:
+                    repair += (f" Put a natural field-specific example using one of {field_words} in "
+                               f"{example_placement['visiblePath']} and {example_placement['narrationPath']}. "
+                               "Rewrite both fields and keep all original structure and character limits.")
                 if sparse_map:
                     remaining = {path: pending_edits.get(path, value) for path, value in hook_text_map(authored).items() if re.search(r"\b(?:Orbit|ORB-\d+)\b", pending_edits.get(path, value), re.I)}
                     repair += " These exact paths still contain the original organisation; rewrite all of them in the learner's field: " + json.dumps(remaining)
