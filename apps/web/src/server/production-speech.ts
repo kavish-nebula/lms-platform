@@ -8,6 +8,8 @@ import type { ProductionVoice } from '@/lib/production-audio';
 export type SpeechClip = { key: string; text: string };
 export type ProductionSpeaker = (dir: string, clips: SpeechClip[], voice: ProductionVoice, completed: (key: string) => Promise<void>) => Promise<void>;
 
+export const productionSpeechPayload = (dir: string, clips: SpeechClip[], voice: ProductionVoice) => ({ voice: voice.voice, chunkLong: voice.version >= 2, clips: clips.map(c => ({ text: c.text, out: path.join(dir, `${c.key}.wav`) })) });
+
 /** Reuse the installed Kokoro worker, with a frozen voice and a bounded lifetime. */
 export const speakProduction: ProductionSpeaker = async (dir, clips, voice, completed) => {
   if (!clips.length) return;
@@ -31,6 +33,6 @@ export const speakProduction: ProductionSpeaker = async (dir, clips, voice, comp
     });
     child.on('error', e => { clearTimeout(timer); reject(e); });
     child.on('close', code => { clearTimeout(timer); void pending.then(() => callbackError ? reject(callbackError) : code ? reject(new Error('Speech worker failed.')) : resolve()); });
-    child.stdin.end(JSON.stringify({ voice: voice.voice, chunkLong: voice.version === 2, clips: clips.map(c => ({ text: c.text, out: path.join(dir, `${c.key}.wav`) })) }));
+    child.stdin.end(JSON.stringify(productionSpeechPayload(dir, clips, voice)));
   });
 };

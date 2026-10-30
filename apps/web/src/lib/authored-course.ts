@@ -48,6 +48,7 @@ export const AuthoredCoursePackage = z.object({
     guidedPractice: z.object({ title: text.max(300), instructions: text, steps: z.array(z.object({ id, instruction: text, hint: text, evidence: text, ...linked }).strict()).min(1).max(30) }).strict(),
     scenarioLab: z.object({ title: text.max(300), scenarios: z.array(z.object({ id, title: text.max(300), situation: text, challenge: text, expectedEvidence: text, ...linked }).strict()).min(1).max(20) }).strict(),
     moduleQuiz: ModuleQuiz.optional(),
+    narratedStages: z.object({ hook: z.array(Slide).min(1), worked: z.array(Slide).min(1), guided: z.array(Slide).min(1), lab: z.array(Slide).min(1) }).strict().optional(),
   }).strict()).min(1).max(20),
   courseEnd: z.object({
     miniProject: z.object({ title: text.max(300), brief: text, deliverable: text, rubric: z.array(text).min(1).max(30), sandbox: ProjectSandbox.optional(), ...linked }).strict(),
@@ -102,6 +103,7 @@ export function validateAuthoredCourse(raw: unknown, context: { objectives: stri
       if (video.midpointQuiz.afterSlideId !== video.slides[midpointIndex]?.id) errors.push(`${video.id}: place its two-question knowledge check after the midpoint slide.`);
       for (const question of video.midpointQuiz.questions) { contentIds.push(question.id); checkLinks(question, courseModule.objectiveIds); }
     }
+    if (courseModule.narratedStages) for (const stageSlides of Object.values(courseModule.narratedStages)) for (const slide of stageSlides) { contentIds.push(slide.id); checkLinks(slide, courseModule.objectiveIds); }
     for (const example of courseModule.workedExamples) { contentIds.push(example.id); checkLinks(example, courseModule.objectiveIds); }
     for (const step of courseModule.guidedPractice.steps) { contentIds.push(step.id); checkLinks(step, courseModule.objectiveIds); }
     for (const scenario of courseModule.scenarioLab.scenarios) { contentIds.push(scenario.id); checkLinks(scenario, courseModule.objectiveIds); }

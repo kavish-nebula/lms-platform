@@ -14,7 +14,7 @@ import { sameCourseBrief } from '@/lib/content-creator';
 import { LONGFORM_MAX_SECONDS, narrationDurationValid } from '@/lib/longform-production';
 
 const digest = (value: unknown) => createHash('sha256').update(JSON.stringify(value)).digest('hex');
-const settings = (longform = false): ProductionVoice => ({ provider: 'kokoro', model: process.env.KOKORO_MODEL ?? 'onnx-community/Kokoro-82M-v1.0-ONNX', voice: process.env.KOKORO_VOICE ?? 'am_michael', dtype: process.env.KOKORO_DTYPE ?? 'fp32', device: process.env.KOKORO_DEVICE ?? 'cpu', version: longform ? 2 : 1 });
+const settings = (longform = false, lesson = false): ProductionVoice => ({ provider: 'kokoro', model: process.env.KOKORO_MODEL ?? 'onnx-community/Kokoro-82M-v1.0-ONNX', voice: process.env.KOKORO_VOICE ?? 'am_michael', dtype: process.env.KOKORO_DTYPE ?? 'fp32', device: process.env.KOKORO_DEVICE ?? 'cpu', version: lesson ? 3 : longform ? 2 : 1 });
 const configured = () => process.env.AUDIO !== 'off' && process.env.KOKORO !== 'off';
 const root = () => path.join(appRoot(), '.data', 'creator-audio');
 const file = (jobId: string, key: string) => path.join(root(), jobId, `${key}.wav`);
@@ -48,7 +48,7 @@ export async function productionAudioState(userId: string, courseId: string, run
   }
   const minimumSeconds = c.job.input.unit?.kind === 'video' ? c.job.input.unit.minSeconds : 0;
   const maximumSeconds = minimumSeconds ? LONGFORM_MAX_SECONDS : undefined;
-  return { eligible: c.eligible, reason: c.reason, configured: configured(), minimumSeconds, maximumSeconds, jobs: rows.map(row => ({ id: row.id, revisionId: row.revisionId, reviewId: row.reviewId, status: row.status, clips: row.clips, voice: row.voice, error: row.error, attempts: row.attempts, createdAt: row.createdAt.toISOString(), shortSlides: row.clips.filter(clip => clip.seconds < minimumSeconds).map(clip => clip.slideId), longSlides: row.clips.filter(clip => maximumSeconds !== undefined && clip.seconds > maximumSeconds).map(clip => clip.slideId), current: c.eligible && row.revisionId === c.revision.id && row.reviewId === c.review!.id && row.voiceKey === digest(settings(minimumSeconds > 0)) })) };
+  return { eligible: c.eligible, reason: c.reason, configured: configured(), minimumSeconds, maximumSeconds, jobs: rows.map(row => ({ id: row.id, revisionId: row.revisionId, reviewId: row.reviewId, status: row.status, clips: row.clips, voice: row.voice, error: row.error, attempts: row.attempts, createdAt: row.createdAt.toISOString(), shortSlides: row.clips.filter(clip => clip.seconds < minimumSeconds).map(clip => clip.slideId), longSlides: row.clips.filter(clip => maximumSeconds !== undefined && clip.seconds > maximumSeconds).map(clip => clip.slideId), current: c.eligible && row.revisionId === c.revision.id && row.reviewId === c.review!.id && row.voiceKey === digest(settings(minimumSeconds > 0, !!c.revision.content.lessonVideos)) })) };
 }
 
 export async function startProductionAudio(userId: string, courseId: string, runId: string, moduleId: string, input: { jobId: string; revisionId: string; reviewId: string }) {
@@ -66,7 +66,7 @@ export async function startProductionAudio(userId: string, courseId: string, run
     if (!course || !sameCourseBrief(course.brief, c.job.input.run.input.brief) || head.currentRevision !== c.revision.version || sme?.id !== c.job.input.approval.id || review?.id !== input.reviewId || review.verdict !== 'approved') throw new ApiError(409, 'script_approval_required', 'Source or script approval changed. Reload before generating audio.');
     await assertCurrentProduction(tx, head, userId, courseId, moduleId);
     if (!configured()) throw new ApiError(503, 'speech_unavailable', 'Enable the local Kokoro speech service to generate narration.');
-    const voice = settings(c.job.input.unit?.kind === 'video'); const voiceKey = digest(voice); const token = randomUUID();
+    const voice = settings(c.job.input.unit?.kind === 'video', !!c.revision.content.lessonVideos); const voiceKey = digest(voice); const token = randomUUID();
     const [created] = await tx.insert(audio).values({ jobId: input.jobId, revisionId: input.revisionId, reviewId: input.reviewId, voiceKey, voice, token, leaseUntil: lease() }).onConflictDoNothing().returning();
     if (created) return { id: created.id, token };
     const [existing] = await tx.select().from(audio).where(and(eq(audio.revisionId, input.revisionId), eq(audio.reviewId, input.reviewId), eq(audio.voiceKey, voiceKey)));
@@ -113,6 +113,11 @@ export async function processProductionAudio(id: string, token: string, userId: 
       await update();
     });
     if (clips.length !== c.revision.content.slides.length) throw new Error('Some narration clips are missing.');
+    const tooLong = c.revision.content.lessonVideos?.filter(video => clips.filter(clip => video.slideIds.includes(clip.slideId)).reduce((n,clip) => n + clip.seconds, video.visualSeconds) > 420) ?? [];
+    if (tooLong.length) {
+      await database.update(audio).set({ status: 'failed', error: `Topic videos exceed seven minutes: ${tooLong.map(v => v.title).join(', ')}. Shorten and reapprove scripts; completed clips are retained.`, updatedAt: new Date() }).where(and(eq(audio.id,id),eq(audio.token,token),eq(audio.status,'running')));
+      return;
+    }
     const minimum = c.job.input.unit?.kind === 'video' ? c.job.input.unit.minSeconds : 0;
     const invalid = clips.filter(clip => minimum ? !narrationDurationValid(clip.seconds) : false);
     await database.update(audio).set({ status: invalid.length ? 'failed' : 'ready', error: invalid.length ? `${invalid.length} slide(s) fall outside 300–420 seconds. Revise and reapprove their scripts. Completed clips are retained for preview.` : null, updatedAt: new Date() }).where(and(eq(audio.id, id), eq(audio.token, token), eq(audio.status, 'running')));

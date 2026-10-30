@@ -89,7 +89,8 @@ export function validateBlueprint(raw: unknown, input: BlueprintInput): Blueprin
     for (const id of objectives) if (!result.assessments.some(a => a.layer === 'L4' && a.objectiveIds.includes(id))) errors.push(`Course-end mastery must cover ${id}.`);
     if (isCodex) {
       if (result.finalDeliverable.minutes <= 0 || !result.courseEnd?.some(s => s.kind === 'mini_project')) errors.push('Add one course-wide Mini Project after the final module.');
-      if (result.assessments.some(a => a.layer === 'L1' && a.moduleId !== last)) errors.push('Video formative checks must use a valid module objective and be associated with that module.');
+      // L1 checks belong to their teaching module, including modules before the last.
+      // The shared activity checks above already validate module and objective links.
     } else if (result.finalDeliverable.minutes !== 0 || result.tools.some(t => t.template === 'T8')) errors.push('No mini-project or project template is allowed.');
     if (result.assessments.some(a => a.layer === 'L4' && a.moduleId !== last)) errors.push('Course-wide mastery belongs after the final module.');
     if (result.tools.some(t => (isCodex ? ['T5', 'T6', 'T8'] : ['T5', 'T6', 'T7']).includes(t.template) && t.moduleId !== last)) errors.push('Course-end templates belong after the final module.');

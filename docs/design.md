@@ -153,3 +153,11 @@ Use existing panel, text, line and accent tokens and shared buttons/surfaces. No
 # Guided project workflow canvas
 
 The Clean Data guided mini project follows the agent project's canvas layout: exploration steps on the left, the complete ready-made workflow in the center, and the current instruction, explanation and example results in an inspector on the right. React Flow arrows indicate execution order. Selecting a node opens its existing guided stage; nodes and connections cannot be edited. Run results appear on nodes and in the inspector. Desktop panels scroll independently; smaller screens stack the canvas and offer the existing explanation/results switch.
+
+For Codex ILD module production, the audio section includes a concept-topic selector and continuous narrated slide preview with a two-question midpoint pause. The module-end quiz is shown separately for creator review. Applied-stage clips remain individually accessible. Speech, planned visual pauses and learner activity time are reported separately; a successful file playback check is not a teaching-quality review.
+
+The teaching-sequence selector also includes Hook, Worked Example, Guided Practice and Scenario Lab. Each applied stage is a multi-scene sequence. The editor groups scenes under stage headings; narrated playback advances the visible scene, then waits at a learner activity before showing subsequent feedback. Topic video checkpoints remain separate and unchanged.
+
+### Narrated lesson scenes
+
+Courses that supply narrated creator scenes present one scene at a time with standard audio controls, a readable transcript, and explicit previous/next actions. Practice instructions stay with their scene; completing the last scene advances the existing module sequence.

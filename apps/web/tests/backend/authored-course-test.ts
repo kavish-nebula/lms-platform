@@ -3,6 +3,7 @@ import { eq } from 'drizzle-orm';
 import { writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { validateAuthoredCourse, COURSE_REVIEW_CHECKS, type AuthoredCoursePackageData } from '@/lib/authored-course';
+import { authoredDelivery } from '@/lib/authored-delivery';
 import { buildCoursePptx } from '@/lib/pptx-export';
 import { EMPTY_BRIEF } from '@/lib/content-creator';
 import { createCreatorDraft, updateCreatorDraft } from '@/server/content-creator';
@@ -83,6 +84,22 @@ await processAuthoredCourseAudio(audio2.id, audio2.token!, owner.id, draft.id, s
 audioState = await authoredCourseAudioState(owner.id, draft.id, saved2.id);
 assert.equal(audioState.jobs[0].status, 'ready'); assert.equal(audioState.jobs[0].clips.length, 2);
 assert.equal(audioState.jobs[0].clips.filter(clip => clip.reused).length, 1, 'Unchanged narration reuses its saved WAV clip.');
+
+const withScenes = structuredClone(changedPackage);
+const scene = (id: string) => ({ id, title: `Scene ${id}`, body: [`Content ${id}`], narration: `Narration for ${id}.`, ...linked });
+withScenes.modules[0].narratedStages = { hook: [scene('H1')], worked: [scene('W1')], guided: [scene('G1')], lab: [scene('L1')] };
+validateAuthoredCourse(withScenes, { objectives: ['O1'], smeSourceIds: ['S1'], briefRevision: draft.revision });
+const duplicatedScene = structuredClone(withScenes); duplicatedScene.modules[0].narratedStages!.lab[0].id = 'SL1';
+assert.throws(() => validateAuthoredCourse(duplicatedScene, { objectives: ['O1'], smeSourceIds: ['S1'], briefRevision: draft.revision }), /IDs must be unique/);
+const saved3 = await saveAuthoredCourse(owner.id, draft.id, { expectedBriefRevision: draft.revision, expectedVersion: 2, content: withScenes });
+const player = authoredDelivery({ courseId: draft.id, revisionId: saved3.id, content: withScenes });
+assert.equal(player.modules[0].narratedStages?.hook?.[0].narration, 'Narration for H1.');
+assert(player.modules[0].narratedStages?.lab?.[0].audio.includes(`/released-audio/${saved3.id}/L1`));
+const audio3 = await startAuthoredCourseAudio(owner.id, draft.id, saved3.id);
+await processAuthoredCourseAudio(audio3.id, audio3.token!, owner.id, draft.id, speaker);
+const allAudio = await authoredCourseAudioState(owner.id, draft.id, saved3.id);
+assert.equal(allAudio.jobs[0].clips.length, 6);
+assert.equal((await authoredCourseAudioClip(owner.id, draft.id, saved3.id, 'G1')).clip.slideId, 'G1');
 
 const edited = { ...brief, title: `${brief.title} revised` };
 const changedDraft = await updateCreatorDraft(owner.id, draft.id, { brief: edited, revision: draft.revision });

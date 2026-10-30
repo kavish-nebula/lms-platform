@@ -1,0 +1,864 @@
+{
+  "title": "Module 1: Understand AI and write better prompts",
+  "slides": [
+    {
+      "id": "s1",
+      "step": "hook",
+      "title": "The notes you need to summarize",
+      "layout": "bullets",
+      "content": [
+        "Launch proposed for 18 November; not approved.",
+        "Maya drafts the customer email by 12 November.",
+        "Support checklist: owner missing.",
+        "Next review: 14 November."
+      ],
+      "subtitle": "Fictional launch-readiness meeting",
+      "takeaway": "Preserve decisions, responsibilities and gaps when transforming notes.",
+      "leftLabel": "",
+      "narration": "Start with these fictional meeting notes. The launch date is proposed, not approved. Maya owns the customer email, while the support checklist has no owner. You need to turn this record into a short update.",
+      "sourceIds": [
+        "S1",
+        "S2",
+        "S5"
+      ],
+      "rightLabel": "",
+      "objectiveIds": [
+        "O1",
+        "O2"
+      ],
+      "otherContent": [],
+      "activityNotes": "",
+      "uncertainties": [],
+      "activityMinutes": 0,
+      "pronunciationNotes": "AI: say the letters A I."
+    },
+    {
+      "id": "s1-b",
+      "step": "hook",
+      "title": "The draft changes the meaning",
+      "layout": "comparison",
+      "content": [
+        "Launch date: proposed, not approved.",
+        "Checklist owner: not recorded."
+      ],
+      "subtitle": "Fictional launch-readiness meeting",
+      "takeaway": "Fluent wording can conceal unsupported claims.",
+      "leftLabel": "Original notes",
+      "narration": "Now compare the notes on the left with the AI draft on the right. The draft confirms the launch and gives Maya the checklist. Both additions sound plausible, but neither is supported. Matching names and dates is not enough; the meaning must match too.",
+      "sourceIds": [
+        "S1",
+        "S2",
+        "S5"
+      ],
+      "rightLabel": "Faulty AI draft",
+      "objectiveIds": [
+        "O1",
+        "O2"
+      ],
+      "otherContent": [
+        "Launch date: confirmed for 18 November.",
+        "Checklist owner: Maya."
+      ],
+      "activityNotes": "",
+      "uncertainties": [],
+      "activityMinutes": 0,
+      "pronunciationNotes": "AI: say the letters A I."
+    },
+    {
+      "id": "s1-c",
+      "step": "hook",
+      "title": "What would you challenge before sharing?",
+      "layout": "bullets",
+      "content": [
+        "Which two claims changed?",
+        "What could a colleague misunderstand?",
+        "Learn to request a bounded, reviewable draft."
+      ],
+      "subtitle": "Fictional launch-readiness meeting",
+      "takeaway": "Request a useful draft without changing what the notes say.",
+      "leftLabel": "",
+      "narration": "Which statements would you challenge before sharing this update? A colleague could mistake a proposal for an agreement or an invented assignment for a real task. This module connects useful AI assistance with its limitations, then shows you how to write clearer instructions.",
+      "sourceIds": [
+        "S1",
+        "S2",
+        "S5"
+      ],
+      "rightLabel": "",
+      "objectiveIds": [
+        "O1",
+        "O2"
+      ],
+      "otherContent": [],
+      "activityNotes": "",
+      "uncertainties": [],
+      "activityMinutes": 0,
+      "pronunciationNotes": "AI: say the letters A I."
+    },
+    {
+      "id": "s2",
+      "step": "concept",
+      "title": "Start with a task AI can assist with",
+      "layout": "bullets",
+      "content": [
+        "Draft from supplied talking points.",
+        "Summarize a bounded set of notes.",
+        "Organize information into a useful format."
+      ],
+      "subtitle": "Module 1 · AI Essentials for Everyday Work",
+      "takeaway": "Organize information into a useful format.",
+      "leftLabel": "",
+      "narration": "Generative AI can help create a first draft, condense a set of notes, or reorganize information. Those are three related activities, but they ask for different results. A draft creates wording for you to review. A summary selects and shortens information from a source. An organized task list changes the structure so that actions are easier to see. Start by naming the result you need. For example, a fictional coordinator has approved talking points for a project update. Asking for a draft email gives the assistant a concrete writing task. Asking it to make the project successful does not identify a clear output. The useful contribution here is help with language and organization. You remain responsible for deciding whether the result accurately represents the supplied information. Notice that we have chosen a bounded task with material to work from, rather than asking the assistant to make an unsupported decision.",
+      "sourceIds": [
+        "S1"
+      ],
+      "rightLabel": "",
+      "objectiveIds": [
+        "O1"
+      ],
+      "otherContent": [],
+      "activityNotes": "",
+      "uncertainties": [],
+      "activityMinutes": 0,
+      "pronunciationNotes": "AI: say the letters A I."
+    },
+    {
+      "id": "s2-b",
+      "step": "concept",
+      "title": "Give the assistant material to work from",
+      "layout": "bullets",
+      "content": [
+        "Source notes provide the content.",
+        "The requested output provides the structure.",
+        "A draft is a starting point for review."
+      ],
+      "subtitle": "Module 1 · AI Essentials for Everyday Work",
+      "takeaway": "A draft is a starting point for review.",
+      "leftLabel": "",
+      "narration": "Now compare two everyday requests. In the first, someone asks for an email about a meeting without providing the decisions. In the second, the person supplies the actual talking points and asks for a concise update. The second request gives the assistant relevant material to transform. That does not guarantee a correct answer, but it makes the intended task clearer. The same distinction applies to summaries. If your source says that a launch date is proposed, that status belongs in the summary. A shorter version should preserve the meaning, not simply produce a more decisive sentence. When organizing a task list, the assistant can present recorded tasks in a table. An absent owner is still absent information; a table cell is not permission to fill the gap with a plausible name. These examples show both the benefit and the boundary of assistance: useful formatting and wording must remain connected to the material you supplied.",
+      "sourceIds": [
+        "S1",
+        "S5"
+      ],
+      "rightLabel": "",
+      "objectiveIds": [
+        "O1"
+      ],
+      "otherContent": [],
+      "activityNotes": "Pause for the two midpoint questions.",
+      "uncertainties": [],
+      "activityMinutes": 0.5,
+      "pronunciationNotes": "AI: say the letters A I."
+    },
+    {
+      "id": "s2-c",
+      "step": "concept",
+      "title": "Choose a useful first task",
+      "layout": "bullets",
+      "content": [
+        "Choose a familiar, bounded task.",
+        "Use fictional or authorized information.",
+        "Decide how you will check the draft."
+      ],
+      "subtitle": "Module 1 · AI Essentials for Everyday Work",
+      "takeaway": "Decide how you will check the draft.",
+      "leftLabel": "",
+      "narration": "A sensible first task is one you understand well enough to review. You might ask for a clearer version of an internal announcement, a summary of fictional meeting notes, or an outline based on supplied project information. Before sending the prompt, decide what a useful result would contain. For the announcement, that could mean keeping the original meaning while simplifying the language. For the summary, it could mean separating decisions from open questions. For a task list, it could mean showing only recorded tasks and identifying missing details. This gives you a basis for review instead of judging only whether the response sounds professional. Use fictional examples in this course, and follow your organization's policy when working with real information. The main idea is straightforward: identify a specific writing or organizing task, supply the relevant material, and retain a clear way to check the result.",
+      "sourceIds": [
+        "S1",
+        "S4"
+      ],
+      "rightLabel": "",
+      "objectiveIds": [
+        "O1"
+      ],
+      "otherContent": [],
+      "activityNotes": "",
+      "uncertainties": [],
+      "activityMinutes": 0,
+      "pronunciationNotes": "AI: say the letters A I."
+    },
+    {
+      "id": "s3",
+      "step": "concept",
+      "title": "How a fluent answer can be wrong",
+      "layout": "bullets",
+      "content": [
+        "Responses follow learned patterns and supplied context.",
+        "Confident wording does not establish accuracy.",
+        "An answer can be incomplete or invented."
+      ],
+      "subtitle": "Module 1 · AI Essentials for Everyday Work",
+      "takeaway": "An answer can be incomplete or invented.",
+      "leftLabel": "",
+      "narration": "Generative AI produces responses using patterns learned during training and the context available to it. It does not follow that every sentence it produces is a verified statement about your situation. A response may be incomplete, incorrect, biased, or invented. The difficulty for a reader is that a mistake can arrive in the same fluent language as a correct explanation. For example, a summary might say that a team confirmed a launch date when the notes describe it only as proposed. The sentence is easy to read, yet its meaning has changed. Do not use confidence of tone as your accuracy check. Instead, ask what evidence supports each important statement. In a summary task, your immediate reference is the source notes. A familiar-sounding detail should still be checked if it affects a decision, a task, or the status of an agreement.",
+      "sourceIds": [
+        "S1",
+        "S5"
+      ],
+      "rightLabel": "",
+      "objectiveIds": [
+        "O1"
+      ],
+      "otherContent": [],
+      "activityNotes": "",
+      "uncertainties": [],
+      "activityMinutes": 0,
+      "pronunciationNotes": "AI: say the letters A I."
+    },
+    {
+      "id": "s3-b",
+      "step": "concept",
+      "title": "Spot the change in meaning",
+      "layout": "bullets",
+      "content": [
+        "Source: launch date is proposed, not approved.",
+        "Faulty summary: launch date is confirmed.",
+        "The extra certainty is unsupported."
+      ],
+      "subtitle": "Module 1 · AI Essentials for Everyday Work",
+      "takeaway": "The extra certainty is unsupported.",
+      "leftLabel": "",
+      "narration": "Look closely at the fictional launch-readiness example. The notes say that the launch date is proposed for eighteen November and is not approved. A faulty summary says, the launch is confirmed for eighteen November. The date matches, but the status does not. Checking only names and numbers would miss the error. You must also check words that express certainty, responsibility, and agreement. The notes also say that Maya will draft the customer email by twelve November, while the support checklist needs an owner. Assigning the checklist to Maya would introduce another unsupported detail. A person's appearance elsewhere in the notes is not evidence that they own every task. The correct response preserves the proposed status and labels the missing owner for clarification. We are not asking the assistant to make the record sound complete; we are asking it to represent the record faithfully.",
+      "sourceIds": [
+        "S1",
+        "S5"
+      ],
+      "rightLabel": "",
+      "objectiveIds": [
+        "O1"
+      ],
+      "otherContent": [],
+      "activityNotes": "Pause for the two midpoint questions.",
+      "uncertainties": [],
+      "activityMinutes": 0.5,
+      "pronunciationNotes": "AI: say the letters A I."
+    },
+    {
+      "id": "s3-c",
+      "step": "concept",
+      "title": "Set a boundary and keep the review",
+      "layout": "bullets",
+      "content": [
+        "Restrict the answer to supplied information.",
+        "Mark missing information explicitly.",
+        "Check the response even after a clearer prompt."
+      ],
+      "subtitle": "Module 1 · AI Essentials for Everyday Work",
+      "takeaway": "Check the response even after a clearer prompt.",
+      "leftLabel": "",
+      "narration": "You can reduce ambiguity by telling the assistant to use only the supplied notes and mark missing details as needs clarification. These instructions describe the boundary of the task. They do not turn generation into a guarantee of correctness. After receiving a response, compare its important claims with the source. Did a suggestion become a decision? Did an unassigned action gain an owner? Did a proposed date become a commitment? If you find a problem, give a focused correction such as, keep the launch date described as proposed because approval is not recorded. A follow-up can improve the response, but the revised version still needs checking. Later modules will develop that review process in more detail. For now, remember two limitations: a response can introduce unsupported information, and it can omit information you needed. Clear instructions and careful review address different parts of the problem; both matter.",
+      "sourceIds": [
+        "S1",
+        "S2",
+        "S3",
+        "S5"
+      ],
+      "rightLabel": "",
+      "objectiveIds": [
+        "O1",
+        "O2"
+      ],
+      "otherContent": [],
+      "activityNotes": "",
+      "uncertainties": [],
+      "activityMinutes": 0,
+      "pronunciationNotes": "AI: say the letters A I."
+    },
+    {
+      "id": "s4",
+      "step": "concept",
+      "title": "Build a four-part prompt",
+      "layout": "bullets",
+      "content": [
+        "Task: state the action.",
+        "Context: supply relevant material.",
+        "Constraints: set boundaries.",
+        "Format: describe the output."
+      ],
+      "subtitle": "Module 1 · AI Essentials for Everyday Work",
+      "takeaway": "Format: describe the output.",
+      "leftLabel": "",
+      "narration": "A practical prompt has four parts: task, context, constraints, and output format. The task states the action, such as summarize the meeting notes. Context provides the material or background needed for that action. Constraints explain what must be preserved, included, or avoided. Output format describes how the response should be organized. Consider the request, summarize this. It names a broad action but leaves several choices open. It does not say whether you need a paragraph, an action table, or a list of decisions. It does not explain how to handle missing information. A structured prompt makes those choices visible. You do not need special technical language. Write ordinary instructions that someone could inspect and understand. The purpose of the four-part structure is to make your intended result clear enough to request and clear enough to review afterward.",
+      "sourceIds": [
+        "S2"
+      ],
+      "rightLabel": "",
+      "objectiveIds": [
+        "O2"
+      ],
+      "otherContent": [],
+      "activityNotes": "",
+      "uncertainties": [],
+      "activityMinutes": 0,
+      "pronunciationNotes": "AI: say the letters A I."
+    },
+    {
+      "id": "s4-b",
+      "step": "concept",
+      "title": "Turn a vague request into clear instructions",
+      "layout": "bullets",
+      "content": [
+        "Task: summarize these meeting notes.",
+        "Constraint: use only the supplied information.",
+        "Format: decisions, questions, actions.",
+        "Missing owners or dates: Needs clarification."
+      ],
+      "subtitle": "Module 1 · AI Essentials for Everyday Work",
+      "takeaway": "Missing owners or dates: Needs clarification.",
+      "leftLabel": "",
+      "narration": "Let us improve the vague request one part at a time. First, name the task: summarize the meeting notes below. Next, supply the notes as the context, rather than expecting the assistant to know what happened. Add a constraint: use only the supplied information and preserve whether a date is proposed or confirmed. Then specify the format: separate confirmed decisions, open questions, and action items. Finally, explain how to represent a gap: label a missing owner or deadline as needs clarification. That last instruction is a constraint, while the three headings describe the format. The distinction helps you diagnose an incomplete prompt. A prompt can have clear headings but still lack rules about unsupported information. It can also have good boundaries but request no useful structure. Together, the four parts describe both the work to perform and the form of the result you intend to check.",
+      "sourceIds": [
+        "S2",
+        "S5"
+      ],
+      "rightLabel": "",
+      "objectiveIds": [
+        "O2"
+      ],
+      "otherContent": [],
+      "activityNotes": "Pause for the two midpoint questions.",
+      "uncertainties": [],
+      "activityMinutes": 0.5,
+      "pronunciationNotes": "AI: say the letters A I."
+    },
+    {
+      "id": "s4-c",
+      "step": "concept",
+      "title": "Check your prompt before using it",
+      "layout": "bullets",
+      "content": [
+        "Can someone identify the requested task?",
+        "Is the necessary context included?",
+        "Are important boundaries explicit?",
+        "Does the format fit the task?"
+      ],
+      "subtitle": "Module 1 · AI Essentials for Everyday Work",
+      "takeaway": "Does the format fit the task?",
+      "leftLabel": "",
+      "narration": "Before using a prompt, read it as if you were receiving the request for the first time. Can you identify the action to take? Is the necessary source material present? Are there important boundaries that the reader would otherwise have to guess? Is the requested format useful for the person who will receive the result? For example, a short update might need a paragraph, while an action list might need columns for task, owner, and deadline. Avoid adding requirements simply to make the prompt longer. Each instruction should help define the task or prevent a relevant misunderstanding. If the first response misses the requested structure, you can give a focused follow-up that names the specific change. Keep the underlying facts and constraints intact. You now have a repeatable method: state the task, supply context, set meaningful constraints, request a usable format, and review what comes back.",
+      "sourceIds": [
+        "S2",
+        "S3"
+      ],
+      "rightLabel": "",
+      "objectiveIds": [
+        "O2"
+      ],
+      "otherContent": [],
+      "activityNotes": "",
+      "uncertainties": [],
+      "activityMinutes": 0,
+      "pronunciationNotes": "AI: say the letters A I."
+    },
+    {
+      "id": "s5",
+      "step": "worked_example",
+      "title": "Worked example: choose the evidence",
+      "layout": "worked_example",
+      "content": [
+        "Task: summarize the meeting notes.",
+        "Context: the original launch-readiness record.",
+        "Preserve proposed status and missing ownership."
+      ],
+      "subtitle": "Fictional launch-readiness meeting",
+      "takeaway": "Start from source evidence rather than a polished guess.",
+      "leftLabel": "",
+      "narration": "We will now build the request and check its result. Begin with the task: summarize the meeting notes. Supply the original notes as context. The evidence says proposed, not approved, and does not name a checklist owner. These are facts to preserve, not gaps to smooth over.",
+      "sourceIds": [
+        "S1",
+        "S2",
+        "S5"
+      ],
+      "rightLabel": "",
+      "objectiveIds": [
+        "O1",
+        "O2"
+      ],
+      "otherContent": [],
+      "activityNotes": "",
+      "uncertainties": [],
+      "activityMinutes": 0,
+      "pronunciationNotes": "AI: say the letters A I."
+    },
+    {
+      "id": "s5-b",
+      "step": "worked_example",
+      "title": "Worked example: build the instruction",
+      "layout": "worked_example",
+      "content": [
+        "Summarize the meeting notes below.",
+        "Use only these notes; preserve proposed versus confirmed status.",
+        "Mark missing owners or deadlines Needs clarification.",
+        "Return decisions, open questions and an action table."
+      ],
+      "subtitle": "Fictional launch-readiness meeting",
+      "takeaway": "Task, context, constraints and format each serve a different purpose.",
+      "leftLabel": "",
+      "narration": "Read the complete instruction on this scene. The first line names the task. The supplied notes provide context. The next two lines constrain unsupported additions and explain how to mark missing details. The final line specifies the output format.",
+      "sourceIds": [
+        "S1",
+        "S2",
+        "S5"
+      ],
+      "rightLabel": "",
+      "objectiveIds": [
+        "O1",
+        "O2"
+      ],
+      "otherContent": [],
+      "activityNotes": "",
+      "uncertainties": [],
+      "activityMinutes": 0,
+      "pronunciationNotes": "AI: say the letters A I."
+    },
+    {
+      "id": "s5-c",
+      "step": "worked_example",
+      "title": "Worked example: check the result",
+      "layout": "comparison",
+      "content": [
+        "Launch: proposed for 18 November.",
+        "Email: Maya, due 12 November.",
+        "Checklist owner: Needs clarification."
+      ],
+      "subtitle": "Fictional launch-readiness meeting",
+      "takeaway": "Check status and responsibility as well as names and dates.",
+      "leftLabel": "Expected output",
+      "narration": "Compare the expected result with the source notes. The launch remains proposed. Maya's email deadline remains attached to the email, not to every task. The missing checklist owner is visible. The right-hand column names the checks we used. Take a moment to match each output to its evidence. Good formatting helps review; it does not replace that comparison.",
+      "sourceIds": [
+        "S1",
+        "S2",
+        "S5"
+      ],
+      "rightLabel": "Why it is supported",
+      "objectiveIds": [
+        "O1",
+        "O2"
+      ],
+      "otherContent": [
+        "The notes do not approve the launch.",
+        "Only the email is assigned to Maya.",
+        "The checklist owner is not recorded."
+      ],
+      "activityNotes": "Match each output to the original notes. Confirm that no proposal became an approval and no missing owner was invented.",
+      "uncertainties": [],
+      "activityMinutes": 0.5,
+      "pronunciationNotes": "AI: say the letters A I."
+    },
+    {
+      "id": "s6",
+      "step": "guided_practice",
+      "title": "Guided practice: complete this prompt",
+      "layout": "bullets",
+      "content": [
+        "Task: Summarize the meeting notes below.",
+        "Context: the fictional launch-readiness notes.",
+        "You add: constraints and output format."
+      ],
+      "subtitle": "Fictional launch-readiness meeting",
+      "takeaway": "Make an attempt before looking at support or model feedback.",
+      "leftLabel": "",
+      "narration": "Your starting prompt already includes the task and source notes. Write the two missing parts: constraints and output format. Decide what the assistant must not invent and how the result should be organized. Pause here and try your own wording before viewing the scaffold or model answer.",
+      "sourceIds": [
+        "S2",
+        "S5"
+      ],
+      "rightLabel": "",
+      "objectiveIds": [
+        "O2"
+      ],
+      "otherContent": [],
+      "activityNotes": "Write your constraints and format instructions. Use the original notes as evidence. Continue only after you have made an attempt.",
+      "uncertainties": [],
+      "activityMinutes": 0.7,
+      "pronunciationNotes": "AI: say the letters A I."
+    },
+    {
+      "id": "s6-b",
+      "step": "guided_practice",
+      "title": "Guided practice: use the scaffold",
+      "layout": "bullets",
+      "content": [
+        "What must stay proposed rather than confirmed?",
+        "How should an absent owner appear?",
+        "Which headings make gaps easy to find?"
+      ],
+      "subtitle": "Fictional launch-readiness meeting",
+      "takeaway": "Use scaffold questions to refine your own instructions.",
+      "leftLabel": "",
+      "narration": "Use these questions only if you need support. Consider the proposed date, the absent owner, and the headings that would help someone review the output. Compare those needs with your first attempt. Refine your wording now, then move to the model comparison.",
+      "sourceIds": [
+        "S2",
+        "S5"
+      ],
+      "rightLabel": "",
+      "objectiveIds": [
+        "O2"
+      ],
+      "otherContent": [],
+      "activityNotes": "Refine your attempt using the three scaffold questions. Check task, context, constraints and format separately.",
+      "uncertainties": [],
+      "activityMinutes": 0.3,
+      "pronunciationNotes": "AI: say the letters A I."
+    },
+    {
+      "id": "s6-c",
+      "step": "guided_practice",
+      "title": "Guided practice: compare with a model",
+      "layout": "bullets",
+      "content": [
+        "Use only the notes; preserve proposed status.",
+        "Mark missing owners and deadlines Needs clarification.",
+        "Separate decisions, open questions and actions."
+      ],
+      "subtitle": "Fictional launch-readiness meeting",
+      "takeaway": "Separate decisions, open questions and actions.",
+      "leftLabel": "",
+      "narration": "Here is one acceptable completion. Your wording can differ if it preserves the same boundaries and requests a usable structure. Compare your attempt with the model: did you stop unsupported additions, explain missing details, and specify the output?",
+      "sourceIds": [
+        "S2",
+        "S5"
+      ],
+      "rightLabel": "",
+      "objectiveIds": [
+        "O2"
+      ],
+      "otherContent": [],
+      "activityNotes": "",
+      "uncertainties": [],
+      "activityMinutes": 0,
+      "pronunciationNotes": "AI: say the letters A I."
+    },
+    {
+      "id": "s7",
+      "step": "scenario",
+      "title": "Scenario: inspect a new faulty update",
+      "layout": "bullets",
+      "content": [
+        "AI draft: The launch is approved for 18 November.",
+        "Maya will draft the email and finish the checklist by 12 November.",
+        "Identify unsupported claims and propose a better prompt."
+      ],
+      "subtitle": "Fictional launch-readiness meeting",
+      "takeaway": "Identify unsupported claims and propose a better prompt.",
+      "leftLabel": "",
+      "narration": "A fictional colleague receives this new draft. It approves the launch and gives Maya both tasks with the same deadline. Identify the unsupported claims, then propose a clearer prompt. Do not fix the record by guessing. Pause to write your decision and the evidence you would use.",
+      "sourceIds": [
+        "S1",
+        "S2",
+        "S5"
+      ],
+      "rightLabel": "",
+      "objectiveIds": [
+        "O1",
+        "O2"
+      ],
+      "otherContent": [],
+      "activityNotes": "Write the suspect claims, explain the AI limitation, and draft a four-part prompt. Keep the notes as the source of truth.",
+      "uncertainties": [],
+      "activityMinutes": 0.75,
+      "pronunciationNotes": "AI: say the letters A I."
+    },
+    {
+      "id": "s7-b",
+      "step": "scenario",
+      "title": "Scenario: test each claim against evidence",
+      "layout": "comparison",
+      "content": [
+        "Source: launch proposed, not approved.",
+        "Source: Maya owns only the email task.",
+        "Source: checklist owner and deadline not recorded."
+      ],
+      "subtitle": "Fictional launch-readiness meeting",
+      "takeaway": "Use evidence to identify changes in meaning.",
+      "leftLabel": "Source evidence",
+      "narration": "Use the original notes to test each claim. Check whether the launch is approved, which task belongs to Maya, and where the twelve November deadline applies. If a statement has no supporting note, flag it for clarification rather than supplying a plausible replacement.",
+      "sourceIds": [
+        "S1",
+        "S2",
+        "S5"
+      ],
+      "rightLabel": "Questions to resolve",
+      "objectiveIds": [
+        "O1",
+        "O2"
+      ],
+      "otherContent": [
+        "Did a proposal become an agreement?",
+        "Did one owner become owner of two tasks?",
+        "Did one deadline spread to another task?"
+      ],
+      "activityNotes": "Check your proposed answer against these source facts. Revise any statement that assumes an owner, deadline or approval.",
+      "uncertainties": [],
+      "activityMinutes": 0.5,
+      "pronunciationNotes": "AI: say the letters A I."
+    },
+    {
+      "id": "s7-c",
+      "step": "scenario",
+      "title": "Scenario debrief: explain and improve",
+      "layout": "bullets",
+      "content": [
+        "Keep the launch proposed.",
+        "Keep Maya and 12 November attached to the email.",
+        "Flag checklist ownership and deadline for clarification.",
+        "Use a bounded prompt, then review the response."
+      ],
+      "subtitle": "Fictional launch-readiness meeting",
+      "takeaway": "Use a bounded prompt, then review the response.",
+      "leftLabel": "",
+      "narration": "The debrief preserves the proposed launch and keeps Maya's assignment and deadline attached to the email. The checklist details remain unresolved. Explain why fluent wording was insufficient evidence, and compare your prompt with the four-part method. Complete the module quiz next to check capabilities, limitations, and prompt structure.",
+      "sourceIds": [
+        "S1",
+        "S2",
+        "S5"
+      ],
+      "rightLabel": "",
+      "objectiveIds": [
+        "O1",
+        "O2"
+      ],
+      "otherContent": [],
+      "activityNotes": "Complete the module-end quiz after this debrief. Review the explanations for any missed concepts.",
+      "uncertainties": [],
+      "activityMinutes": 1,
+      "pronunciationNotes": "AI: say the letters A I."
+    }
+  ],
+  "moduleQuiz": {
+    "title": "Module 1: check your understanding",
+    "questions": [
+      {
+        "id": "M1-end-q1",
+        "hint": "The taught capability is help with wording or organization, while people retain review and approval decisions.",
+        "prompt": "Select one answer. Which use matches the capability taught here?",
+        "choices": [
+          "Confirm facts from fluent wording.",
+          "Draft a message from talking points.",
+          "Approve a proposed launch date."
+        ],
+        "correct": 1,
+        "sourceIds": [
+          "S1"
+        ],
+        "explanation": "AI can assist with drafting from supplied material; fluency does not verify facts or grant approval.",
+        "objectiveIds": [
+          "O1"
+        ]
+      },
+      {
+        "id": "M1-end-q2",
+        "hint": "Check the source rather than judging only whether the response sounds professional.",
+        "prompt": "Select one answer. Why can a polished summary still be unreliable?",
+        "choices": [
+          "It may add unsupported information.",
+          "It must use incomplete sentences.",
+          "It cannot organize supplied notes."
+        ],
+        "correct": 0,
+        "sourceIds": [
+          "S1"
+        ],
+        "explanation": "The important limitation is that plausible wording can contain invented or altered information.",
+        "objectiveIds": [
+          "O1"
+        ]
+      },
+      {
+        "id": "M1-end-q3",
+        "hint": "Find the task, supplied notes, a source boundary, and a specific output structure in the same request.",
+        "prompt": "Select one answer. Which prompt includes all four useful parts?",
+        "choices": [
+          "Summarize these notes; add likely dates; arrange them as usual.",
+          "Summarize these notes; guess missing owners; list decisions and actions.",
+          "Summarize these notes; use only them; list decisions and actions."
+        ],
+        "correct": 2,
+        "sourceIds": [
+          "S2"
+        ],
+        "explanation": "The complete request identifies a task, supplies context, constrains sources and specifies a format.",
+        "objectiveIds": [
+          "O2"
+        ]
+      },
+      {
+        "id": "M1-end-q4",
+        "hint": "Choose a boundary that makes the missing owner visible without guessing or deleting the action.",
+        "prompt": "Select one answer. The notes omit an owner. Which prompt boundary is most useful?",
+        "choices": [
+          "Assign the task to a familiar name.",
+          "Label missing owners Needs clarification.",
+          "Omit actions that lack an owner."
+        ],
+        "correct": 1,
+        "sourceIds": [
+          "S2",
+          "S5"
+        ],
+        "explanation": "Explicitly marking the gap preserves the source rather than inventing or hiding information.",
+        "objectiveIds": [
+          "O2"
+        ]
+      }
+    ]
+  },
+  "reviewNotes": [],
+  "lessonVideos": [
+    {
+      "id": "M1-v1",
+      "title": "Choose useful everyday AI tasks",
+      "slideIds": [
+        "s2",
+        "s2-b",
+        "s2-c"
+      ],
+      "checkpoint": {
+        "questions": [
+          {
+            "id": "M1-v1-q1",
+            "hint": "Look for a named writing task and supplied material, rather than a broad goal.",
+            "prompt": "Select one answer. Which request defines a bounded AI task?",
+            "choices": [
+              "Make our project successful.",
+              "Draft an email from these notes.",
+              "Decide every team priority."
+            ],
+            "correct": 1,
+            "sourceIds": [
+              "S1"
+            ],
+            "explanation": "Drafting from supplied notes names both an action and material. The alternatives leave the outcome broad or delegate unsupported decisions.",
+            "objectiveIds": [
+              "O1"
+            ]
+          },
+          {
+            "id": "M1-v1-q2",
+            "hint": "Smooth language tells you about readability. The original notes provide the evidence for accuracy.",
+            "prompt": "Select one answer. A summary reads smoothly. What should you do next?",
+            "choices": [
+              "Share it without further checks.",
+              "Treat fluency as proof of accuracy.",
+              "Compare its claims with the notes."
+            ],
+            "correct": 2,
+            "sourceIds": [
+              "S1"
+            ],
+            "explanation": "Readable language does not establish accuracy. Compare the summary with the source before using it.",
+            "objectiveIds": [
+              "O1"
+            ]
+          }
+        ],
+        "afterSlideId": "s2-b"
+      },
+      "visualSeconds": 10
+    },
+    {
+      "id": "M1-v2",
+      "title": "Recognize limitations and unsupported claims",
+      "slideIds": [
+        "s3",
+        "s3-b",
+        "s3-c"
+      ],
+      "checkpoint": {
+        "questions": [
+          {
+            "id": "M1-v2-q1",
+            "hint": "Compare proposed with confirmed. The date can stay the same while the level of certainty changes.",
+            "prompt": "Select one answer. The source calls a date proposed; the summary calls it confirmed. What changed?",
+            "choices": [
+              "The level of certainty changed.",
+              "The calendar date was removed.",
+              "The original meaning was retained."
+            ],
+            "correct": 0,
+            "sourceIds": [
+              "S1",
+              "S5"
+            ],
+            "explanation": "The same date can carry a different meaning when proposed becomes confirmed. The certainty was not supported by the notes.",
+            "objectiveIds": [
+              "O1"
+            ]
+          },
+          {
+            "id": "M1-v2-q2",
+            "hint": "A missing owner is a gap in the record, not an invitation to assign the task to someone nearby.",
+            "prompt": "Select one answer. The checklist has no recorded owner. Which output preserves the source?",
+            "choices": [
+              "Assign it to the email owner.",
+              "Mark its owner Needs clarification.",
+              "Remove the task from the summary."
+            ],
+            "correct": 1,
+            "sourceIds": [
+              "S1",
+              "S5"
+            ],
+            "explanation": "Missing ownership should remain explicit. Assigning an owner invents a fact; removing the task hides an unresolved action.",
+            "objectiveIds": [
+              "O1"
+            ]
+          }
+        ],
+        "afterSlideId": "s3-b"
+      },
+      "visualSeconds": 10
+    },
+    {
+      "id": "M1-v3",
+      "title": "Write a task, context, constraints and format",
+      "slideIds": [
+        "s4",
+        "s4-b",
+        "s4-c"
+      ],
+      "checkpoint": {
+        "questions": [
+          {
+            "id": "M1-v3-q1",
+            "hint": "Format describes how information is organized; constraints describe what the response must preserve or avoid.",
+            "prompt": "Select one answer. Which instruction specifies an output format?",
+            "choices": [
+              "Use only the supplied notes.",
+              "Mark missing owners explicitly.",
+              "Separate decisions and actions."
+            ],
+            "correct": 2,
+            "sourceIds": [
+              "S2"
+            ],
+            "explanation": "Separate decisions and actions describes organization. The other instructions set boundaries for the content.",
+            "objectiveIds": [
+              "O2"
+            ]
+          },
+          {
+            "id": "M1-v3-q2",
+            "hint": "Check whether the prompt says what to do with information not present in the notes.",
+            "prompt": "Select one answer. A prompt includes a task, notes and headings. What should you check for next?",
+            "choices": [
+              "Boundaries for unsupported details.",
+              "Extra words to lengthen the prompt.",
+              "A promise of a flawless response."
+            ],
+            "correct": 0,
+            "sourceIds": [
+              "S2"
+            ],
+            "explanation": "The prompt still needs relevant constraints. Extra length is not a goal, and wording cannot guarantee a flawless response.",
+            "objectiveIds": [
+              "O2"
+            ]
+          }
+        ],
+        "afterSlideId": "s4-b"
+      },
+      "visualSeconds": 10
+    }
+  ]
+}

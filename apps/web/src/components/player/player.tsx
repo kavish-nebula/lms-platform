@@ -19,6 +19,7 @@ import { recommendedSupport } from "@/lib/learning-rules";
 import { recordActivity, recordLearning, ensureReviews, useLearning } from "@/lib/learning-state";
 import { rewardFor } from "@/lib/gamification";
 import { supportFor } from "@/lib/setup";
+import { NarratedStage } from "@/components/player/narrated-stage";
 import { HookCinema } from "@/components/player/hook/hook-cinema";
 import { ModuleMap } from "@/components/player/module-map";
 import { useWatchedVideos } from "@/components/player/video/watched";
@@ -171,6 +172,9 @@ export function Player({ module, moduleIndex, stage, video, courseHref, initialD
     required: !enrollmentReady || (enrolled && (!latestAdapted || latestAdapted.live === true)),
     failed: pieceStatus === "failed",
   };
+
+  const sceneSlides = stage === "hook" || stage === "worked" || stage === "guided" || stage === "lab" ? module.narratedStages?.[stage] : undefined;
+  if (sceneSlides?.length) return <NarratedStage key={`${module.module_id}:${stage}`} title={title} courseHref={courseHref} slides={sceneSlides} onComplete={onComplete} onPrev={nav.onPrev} />;
 
   // The problem hook plays full screen, with no map, tutor or banners around it.
   const hook = stage === "hook" ? getBlock(content, "hook") : undefined;

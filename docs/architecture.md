@@ -237,3 +237,18 @@ Migration 0020 adds `guided_project_work` and immutable `guided_project_submissi
 # Guided workflow visualization
 
 `GuidedWorkflowCanvas` renders the released guided artifact using the existing React Flow dependency. Its nodes, positions and execution-order connections are derived for display only. Node selection navigates the existing persisted guided stages; runs, answers, grading and revision checks continue through the unchanged guided-project API. No editable graph or new persisted state is introduced.
+# Blueprint formative-check validation
+
+When a Codex ILD production response contains short concept narration, generation requests expansions for up to three affected slides at a time. IDs must match, scripts must meet the existing word floor, and the entire assembled package is validated again, including module duration and source links. Failed expansions do not save partial packages.
+
+Codex ILD blueprints may associate L1 video checks with any teaching module. Shared activity validation requires that the module exists and teaches the linked objectives; only course-end L4 mastery specifications are restricted to the final module. Multi-module regression coverage protects this distinction.
+
+Codex ILD single-module production now uses the five-stage lesson contract rather than the legacy twelve-slide/nine-stage pilot. Optional `lessonVideos` groups 3–4 topic videos with two first-half-supported checkpoint questions each; `moduleQuiz` follows the scenario. Old saved revisions remain readable. New saves/generation validate source links, stage and slide order, substantive concept narration (100-word planning floor), checkpoint placement, topic coverage, seven-minute per-video budgets and separate module activity time. Measured audio independently rejects topic videos above 420 seconds. Existing legacy and long-form formats keep their contracts.
+
+Lesson narration uses voice-policy version 3 and the existing sentence-chunked Kokoro worker, bounding text before tokenization and concatenating all segments. This prevents the old pilot speech path from truncating substantive scripts. The policy is included in the audio cache key so previously truncated clips cannot be reused as current narration. Voice versions 1/2 remain readable as history. Chunk regression checks reconstruct every source script without missing words.
+
+Codex lesson saves require multiple scenes in each applied stage, preventing a title-only hook or single static practice card from satisfying the stage contract. Applied-stage playback groups existing slide IDs by teaching stage without introducing persisted learner state. Scenes with activity time stop narration and expose an explicit continue action before model feedback.
+
+### Narrated creator-stage delivery
+
+Authored course packages may carry optional `narratedStages` for the hook, worked example, guided practice and scenario lab. The learner player displays each saved scene and its transcript with release-scoped audio; concept videos and assessment navigation retain their existing paths. Course-audio generation covers both concept slides and these optional scenes. Existing packages without narrated stages retain their previous delivery. Scene IDs must be unique across the full course package.

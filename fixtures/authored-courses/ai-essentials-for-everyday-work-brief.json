@@ -1,0 +1,42 @@
+{
+  "title": "AI Essentials for Everyday Work",
+  "subject": "Using generative AI for common workplace tasks.",
+  "audience": "Learn how to use AI to draft messages, summarize information, organize ideas, and support everyday work. Practice writing clear prompts, checking responses, and protecting sensitive information",
+  "contexts": "Authentic workplace contexts\n- Drafting a clear email from approved talking points.\n- Summarizing meeting notes into decisions, open questions, and actions.\n- Turning a project brief into a draft task list.\n- Simplifying an internal announcement while preserving its meaning.\n- Reviewing an AI-generated summary before sharing it with colleagues.",
+  "delivery": "Self-paced",
+  "duration": "75 minutes",
+  "outcomes": "Employees want help with emails, meeting notes, and planning tasks. They need to provide clear instructions, recognize unreliable responses, and decide what requires human review.",
+  "objectives": [
+    {
+      "text": "Understand: Explain two useful applications and two limitations of generative AI in everyday workplace tasks.",
+      "bloom": "Understand"
+    },
+    {
+      "text": "Apply: Write a prompt that includes a task, relevant context, constraints, and a desired output format.",
+      "bloom": "Apply"
+    },
+    {
+      "text": ": Revise an AI-generated workplace message using focused follow-up instructions to meet specified tone and length requirements.",
+      "bloom": "Apply"
+    },
+    {
+      "text": "Compare two AI-generated summaries with the original meeting notes and identify unsupported claims, missing details, and altered meanings.",
+      "bloom": "Analyze"
+    },
+    {
+      "text": "Identify personal or confidential information in a sample prompt and determine what requires removal or authorization before use.",
+      "bloom": "Analyze"
+    },
+    {
+      "text": "Assess an AI-generated response against accuracy, relevance, completeness, and privacy criteria, then justify whether to use, revise, or reject it.",
+      "bloom": "Evaluate"
+    }
+  ],
+  "references": "Course author notes: AI Essentials for Everyday Work — instructional notes supplied in the Raw source content field.\nFictional case study: Launch-readiness meeting — supplied in the Raw source content field.\nFictional workplace guidance: AI output review and information handling — supplied in the Raw source content field.\n\n",
+  "sourceText": "Generative AI creates responses based on patterns learned during training and the context provided to it. It can help draft emails, summarize notes, brainstorm ideas, and organize information. It can also produce incorrect, incomplete, biased, or invented information. A confident tone does not prove accuracy.\n\nA useful prompt includes:\n- Task: What should the AI do?\n- Context: What background information does it need?\n- Constraints: What must it include, avoid, or preserve?\n- Output format: How should the response be presented?\nFor example, “Summarize this” is vague. A clearer instruction is: “Summarize the meeting notes below in five bullet points. Separate confirmed decisions, open questions, and action items. Use only the supplied notes. Mark missing owners or deadlines as ‘Needs clarification.’”\n\nImprove responses through focused follow-up instructions. Examples include “Make the language simpler,” “Remove claims not supported by the notes,” and “Separate decisions from suggestions.” Follow-up instructions can improve a response but do not guarantee correctness.\n\nBefore using an AI-generated response:\n1. Compare it with the original information.\n2. Check important facts, names, dates, and calculations.\n3. Identify unsupported claims and missing details.\n4. Check whether it follows the requested format and tone.\n5. Review it for sensitive information.\n6. Decide whether to use, revise, or reject it.\nFollow organizational policies when using AI tools. Do not enter personal, confidential, or sensitive information unless the tool and intended use are authorized. Use fictional or appropriately anonymized examples during this course.\n\nCase study: A team needs a launch-readiness summary. Its meeting notes say: “The launch date is proposed for 18 November but is not approved. Maya will draft the customer email by 12 November. The support checklist needs an owner. The next review is on 14 November.”\n\nAn acceptable summary must preserve the proposed status of the launch date, assign only the customer-email task to Maya, and flag the missing support-checklist owner. A response that describes the launch date as confirmed or assigns the checklist to Maya introduces unsupported information.\n\nFor the guided mini project, provide a ready-made, read-only meeting-assistant workflow. Learners run a vague-prompt example and a structured-prompt example, inspect the responses, and explain their differences. Learners must not build or edit the workflow. Clearly label prerecorded or simulated responses; do not present them as live model output.",
+  "dependencies": "Topic sequence and dependencies\n\nModule 1: Understand AI and write better prompts\n1. Common uses of generative AI.\n2. Limitations and unreliable responses — depends on Topic 1.\n3. Prompt structure: task, context, constraints, and output format — depends on Topics 1–2.\nModule 2: Use AI for everyday tasks — depends on Module 1.\n1. Drafting and improving workplace messages.\n2. Summarizing notes while preserving meaning.\n3. Organizing information into action plans.\nModule 3: Review and use responses responsibly — depends on Modules 1–2.\n1. Checking facts, assumptions, and missing information.\n2. Protecting sensitive information.\n3. Refining responses and deciding whether to use, revise, or reject them.\nAfter Module 3: Guided mini project → Final assessment → Reflection.",
+  "difficulties": "Known difficulty areas\n- Providing enough context without including unnecessary sensitive information.\n- Writing specific instructions instead of broad requests.\n- Distinguishing a plausible response from a verified answer.\n- Spotting invented owners, deadlines, facts, and decisions.\n- Preserving uncertainty when summarizing source material.\n- Giving focused follow-up instructions.\n- Knowing when human review or additional evidence is needed",
+  "physicalNotes": "",
+  "prerequisites": "Basic computer skills. No coding or previous AI experience required.",
+  "physicalSkills": false
+}

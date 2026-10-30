@@ -1,0 +1,3091 @@
+{
+  "schemaVersion": 1,
+  "title": "AI Essentials for Everyday Work",
+  "subject": "Using generative AI for common workplace tasks.",
+  "durationMinutes": 95,
+  "briefRevision": 2,
+  "blueprintRunId": "a5fd0363-46d0-4746-ab29-624737b5dcc7",
+  "objectiveEvidence": [
+    {
+      "objectiveId": "O1",
+      "objective": "Understand: Explain two useful applications and two limitations of generative AI in everyday workplace tasks.",
+      "sourceIds": [
+        "S1"
+      ]
+    },
+    {
+      "objectiveId": "O2",
+      "objective": "Apply: Write a prompt that includes a task, relevant context, constraints, and a desired output format.",
+      "sourceIds": [
+        "S2"
+      ]
+    },
+    {
+      "objectiveId": "O3",
+      "objective": ": Revise an AI-generated workplace message using focused follow-up instructions to meet specified tone and length requirements.",
+      "sourceIds": [
+        "S3"
+      ]
+    },
+    {
+      "objectiveId": "O4",
+      "objective": "Compare two AI-generated summaries with the original meeting notes and identify unsupported claims, missing details, and altered meanings.",
+      "sourceIds": [
+        "S4",
+        "S5",
+        "S6"
+      ]
+    },
+    {
+      "objectiveId": "O5",
+      "objective": "Identify personal or confidential information in a sample prompt and determine what requires removal or authorization before use.",
+      "sourceIds": [
+        "S4"
+      ]
+    },
+    {
+      "objectiveId": "O6",
+      "objective": "Assess an AI-generated response against accuracy, relevance, completeness, and privacy criteria, then justify whether to use, revise, or reject it.",
+      "sourceIds": [
+        "S4",
+        "S5",
+        "S6"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "id": "S1",
+      "kind": "sme",
+      "title": "SME source S1",
+      "reference": "Generative AI creates responses based on patterns learned during training and the context provided to it. It can help draft emails, summarize notes, brainstorm ideas, and organize information. It can also produce incorrect, incomplete, biased, or invented information. A confident tone does not prove accuracy."
+    },
+    {
+      "id": "S2",
+      "kind": "sme",
+      "title": "SME source S2",
+      "reference": "A useful prompt includes:\n- Task: What should the AI do?\n- Context: What background information does it need?\n- Constraints: What must it include, avoid, or preserve?\n- Output format: How should the response be presented?\nFor example, “Summarize this” is vague. A clearer instruction is: “Summarize the meeting notes below in five bullet points. Separate confirmed decisions, open questions, and action items. Use only the supplied notes. Mark missing owners or deadlines as ‘Needs clarification.’”"
+    },
+    {
+      "id": "S3",
+      "kind": "sme",
+      "title": "SME source S3",
+      "reference": "Improve responses through focused follow-up instructions. Examples include “Make the language simpler,” “Remove claims not supported by the notes,” and “Separate decisions from suggestions.” Follow-up instructions can improve a response but do not guarantee correctness."
+    },
+    {
+      "id": "S4",
+      "kind": "sme",
+      "title": "SME source S4",
+      "reference": "Before using an AI-generated response:\n1. Compare it with the original information.\n2. Check important facts, names, dates, and calculations.\n3. Identify unsupported claims and missing details.\n4. Check whether it follows the requested format and tone.\n5. Review it for sensitive information.\n6. Decide whether to use, revise, or reject it.\nFollow organizational policies when using AI tools. Do not enter personal, confidential, or sensitive information unless the tool and intended use are authorized. Use fictional or appropriately anonymized examples during this course."
+    },
+    {
+      "id": "S5",
+      "kind": "sme",
+      "title": "SME source S5",
+      "reference": "Case study: A team needs a launch-readiness summary. Its meeting notes say: “The launch date is proposed for 18 November but is not approved. Maya will draft the customer email by 12 November. The support checklist needs an owner. The next review is on 14 November.”"
+    },
+    {
+      "id": "S6",
+      "kind": "sme",
+      "title": "SME source S6",
+      "reference": "An acceptable summary must preserve the proposed status of the launch date, assign only the customer-email task to Maya, and flag the missing support-checklist owner. A response that describes the launch date as confirmed or assigns the checklist to Maya introduces unsupported information."
+    },
+    {
+      "id": "S7",
+      "kind": "sme",
+      "title": "SME source S7",
+      "reference": "For the guided mini project, provide a ready-made, read-only meeting-assistant workflow. Learners run a vague-prompt example and a structured-prompt example, inspect the responses, and explain their differences. Learners must not build or edit the workflow. Clearly label prerecorded or simulated responses; do not present them as live model output."
+    }
+  ],
+  "modules": [
+    {
+      "id": "M1",
+      "title": "Module 1: Understand AI and write better prompts",
+      "durationMinutes": 20,
+      "objectiveIds": [
+        "O1",
+        "O2"
+      ],
+      "sourceIds": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5"
+      ],
+      "problemHook": {
+        "title": "The notes you need to summarize",
+        "situation": "The notes you need to summarize: Launch proposed for 18 November; not approved. Maya drafts the customer email by 12 November. Support checklist: owner missing. Next review: 14 November.\nThe draft changes the meaning: Launch date: proposed, not approved. Checklist owner: not recorded.\nWhat would you challenge before sharing?: Which two claims changed? What could a colleague misunderstand? Learn to request a bounded, reviewable draft.",
+        "question": "What should you check before trusting an AI response?",
+        "objectiveIds": [
+          "O1",
+          "O2"
+        ],
+        "sourceIds": [
+          "S1",
+          "S2",
+          "S3",
+          "S4",
+          "S5"
+        ]
+      },
+      "conceptExplainer": {
+        "videos": [
+          {
+            "id": "M1-M1-v1",
+            "title": "Choose useful everyday AI tasks",
+            "plannedMinutes": 3.48,
+            "slides": [
+              {
+                "id": "M1-s2",
+                "title": "Start with a task AI can assist with",
+                "body": [
+                  "Draft from supplied talking points.",
+                  "Summarize a bounded set of notes.",
+                  "Organize information into a useful format.",
+                  "Takeaway: Organize information into a useful format."
+                ],
+                "narration": "Generative AI can help create a first draft, condense a set of notes, or reorganize information. Those are three related activities, but they ask for different results. A draft creates wording for you to review. A summary selects and shortens information from a source. An organized task list changes the structure so that actions are easier to see. Start by naming the result you need. For example, a fictional coordinator has approved talking points for a project update. Asking for a draft email gives the assistant a concrete writing task. Asking it to make the project successful does not identify a clear output. The useful contribution here is help with language and organization. You remain responsible for deciding whether the result accurately represents the supplied information. Notice that we have chosen a bounded task with material to work from, rather than asking the assistant to make an unsupported decision.",
+                "objectiveIds": [
+                  "O1"
+                ],
+                "sourceIds": [
+                  "S1"
+                ]
+              },
+              {
+                "id": "M1-s2-b",
+                "title": "Give the assistant material to work from",
+                "body": [
+                  "Source notes provide the content.",
+                  "The requested output provides the structure.",
+                  "A draft is a starting point for review.",
+                  "Takeaway: A draft is a starting point for review.",
+                  "Practice: Pause for the two midpoint questions."
+                ],
+                "narration": "Now compare two everyday requests. In the first, someone asks for an email about a meeting without providing the decisions. In the second, the person supplies the actual talking points and asks for a concise update. The second request gives the assistant relevant material to transform. That does not guarantee a correct answer, but it makes the intended task clearer. The same distinction applies to summaries. If your source says that a launch date is proposed, that status belongs in the summary. A shorter version should preserve the meaning, not simply produce a more decisive sentence. When organizing a task list, the assistant can present recorded tasks in a table. An absent owner is still absent information; a table cell is not permission to fill the gap with a plausible name. These examples show both the benefit and the boundary of assistance: useful formatting and wording must remain connected to the material you supplied.",
+                "objectiveIds": [
+                  "O1"
+                ],
+                "sourceIds": [
+                  "S1",
+                  "S5"
+                ]
+              },
+              {
+                "id": "M1-s2-c",
+                "title": "Choose a useful first task",
+                "body": [
+                  "Choose a familiar, bounded task.",
+                  "Use fictional or authorized information.",
+                  "Decide how you will check the draft.",
+                  "Takeaway: Decide how you will check the draft."
+                ],
+                "narration": "A sensible first task is one you understand well enough to review. You might ask for a clearer version of an internal announcement, a summary of fictional meeting notes, or an outline based on supplied project information. Before sending the prompt, decide what a useful result would contain. For the announcement, that could mean keeping the original meaning while simplifying the language. For the summary, it could mean separating decisions from open questions. For a task list, it could mean showing only recorded tasks and identifying missing details. This gives you a basis for review instead of judging only whether the response sounds professional. Use fictional examples in this course, and follow your organization's policy when working with real information. The main idea is straightforward: identify a specific writing or organizing task, supply the relevant material, and retain a clear way to check the result.",
+                "objectiveIds": [
+                  "O1"
+                ],
+                "sourceIds": [
+                  "S1",
+                  "S4"
+                ]
+              }
+            ],
+            "midpointQuiz": {
+              "afterSlideId": "M1-s2-b",
+              "questions": [
+                {
+                  "id": "M1-M1-v1-q1",
+                  "hint": "Look for a named writing task and supplied material, rather than a broad goal.",
+                  "prompt": "Select one answer. Which request defines a bounded AI task?",
+                  "choices": [
+                    "Make our project successful.",
+                    "Draft an email from these notes.",
+                    "Decide every team priority."
+                  ],
+                  "correct": 1,
+                  "sourceIds": [
+                    "S1"
+                  ],
+                  "explanation": "Drafting from supplied notes names both an action and material. The alternatives leave the outcome broad or delegate unsupported decisions.",
+                  "objectiveIds": [
+                    "O1"
+                  ]
+                },
+                {
+                  "id": "M1-M1-v1-q2",
+                  "hint": "Smooth language tells you about readability. The original notes provide the evidence for accuracy.",
+                  "prompt": "Select one answer. A summary reads smoothly. What should you do next?",
+                  "choices": [
+                    "Share it without further checks.",
+                    "Treat fluency as proof of accuracy.",
+                    "Compare its claims with the notes."
+                  ],
+                  "correct": 2,
+                  "sourceIds": [
+                    "S1"
+                  ],
+                  "explanation": "Readable language does not establish accuracy. Compare the summary with the source before using it.",
+                  "objectiveIds": [
+                    "O1"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "M1-M1-v2",
+            "title": "Recognize limitations and unsupported claims",
+            "plannedMinutes": 3.33,
+            "slides": [
+              {
+                "id": "M1-s3",
+                "title": "How a fluent answer can be wrong",
+                "body": [
+                  "Responses follow learned patterns and supplied context.",
+                  "Confident wording does not establish accuracy.",
+                  "An answer can be incomplete or invented.",
+                  "Takeaway: An answer can be incomplete or invented."
+                ],
+                "narration": "Generative AI produces responses using patterns learned during training and the context available to it. It does not follow that every sentence it produces is a verified statement about your situation. A response may be incomplete, incorrect, biased, or invented. The difficulty for a reader is that a mistake can arrive in the same fluent language as a correct explanation. For example, a summary might say that a team confirmed a launch date when the notes describe it only as proposed. The sentence is easy to read, yet its meaning has changed. Do not use confidence of tone as your accuracy check. Instead, ask what evidence supports each important statement. In a summary task, your immediate reference is the source notes. A familiar-sounding detail should still be checked if it affects a decision, a task, or the status of an agreement.",
+                "objectiveIds": [
+                  "O1"
+                ],
+                "sourceIds": [
+                  "S1",
+                  "S5"
+                ]
+              },
+              {
+                "id": "M1-s3-b",
+                "title": "Spot the change in meaning",
+                "body": [
+                  "Source: launch date is proposed, not approved.",
+                  "Faulty summary: launch date is confirmed.",
+                  "The extra certainty is unsupported.",
+                  "Takeaway: The extra certainty is unsupported.",
+                  "Practice: Pause for the two midpoint questions."
+                ],
+                "narration": "Look closely at the fictional launch-readiness example. The notes say that the launch date is proposed for eighteen November and is not approved. A faulty summary says, the launch is confirmed for eighteen November. The date matches, but the status does not. Checking only names and numbers would miss the error. You must also check words that express certainty, responsibility, and agreement. The notes also say that Maya will draft the customer email by twelve November, while the support checklist needs an owner. Assigning the checklist to Maya would introduce another unsupported detail. A person's appearance elsewhere in the notes is not evidence that they own every task. The correct response preserves the proposed status and labels the missing owner for clarification. We are not asking the assistant to make the record sound complete; we are asking it to represent the record faithfully.",
+                "objectiveIds": [
+                  "O1"
+                ],
+                "sourceIds": [
+                  "S1",
+                  "S5"
+                ]
+              },
+              {
+                "id": "M1-s3-c",
+                "title": "Set a boundary and keep the review",
+                "body": [
+                  "Restrict the answer to supplied information.",
+                  "Mark missing information explicitly.",
+                  "Check the response even after a clearer prompt.",
+                  "Takeaway: Check the response even after a clearer prompt."
+                ],
+                "narration": "You can reduce ambiguity by telling the assistant to use only the supplied notes and mark missing details as needs clarification. These instructions describe the boundary of the task. They do not turn generation into a guarantee of correctness. After receiving a response, compare its important claims with the source. Did a suggestion become a decision? Did an unassigned action gain an owner? Did a proposed date become a commitment? If you find a problem, give a focused correction such as, keep the launch date described as proposed because approval is not recorded. A follow-up can improve the response, but the revised version still needs checking. Later modules will develop that review process in more detail. For now, remember two limitations: a response can introduce unsupported information, and it can omit information you needed. Clear instructions and careful review address different parts of the problem; both matter.",
+                "objectiveIds": [
+                  "O1",
+                  "O2"
+                ],
+                "sourceIds": [
+                  "S1",
+                  "S2",
+                  "S3",
+                  "S5"
+                ]
+              }
+            ],
+            "midpointQuiz": {
+              "afterSlideId": "M1-s3-b",
+              "questions": [
+                {
+                  "id": "M1-M1-v2-q1",
+                  "hint": "Compare proposed with confirmed. The date can stay the same while the level of certainty changes.",
+                  "prompt": "Select one answer. The source calls a date proposed; the summary calls it confirmed. What changed?",
+                  "choices": [
+                    "The level of certainty changed.",
+                    "The calendar date was removed.",
+                    "The original meaning was retained."
+                  ],
+                  "correct": 0,
+                  "sourceIds": [
+                    "S1",
+                    "S5"
+                  ],
+                  "explanation": "The same date can carry a different meaning when proposed becomes confirmed. The certainty was not supported by the notes.",
+                  "objectiveIds": [
+                    "O1"
+                  ]
+                },
+                {
+                  "id": "M1-M1-v2-q2",
+                  "hint": "A missing owner is a gap in the record, not an invitation to assign the task to someone nearby.",
+                  "prompt": "Select one answer. The checklist has no recorded owner. Which output preserves the source?",
+                  "choices": [
+                    "Assign it to the email owner.",
+                    "Mark its owner Needs clarification.",
+                    "Remove the task from the summary."
+                  ],
+                  "correct": 1,
+                  "sourceIds": [
+                    "S1",
+                    "S5"
+                  ],
+                  "explanation": "Missing ownership should remain explicit. Assigning an owner invents a fact; removing the task hides an unresolved action.",
+                  "objectiveIds": [
+                    "O1"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "M1-M1-v3",
+            "title": "Write a task, context, constraints and format",
+            "plannedMinutes": 3.35,
+            "slides": [
+              {
+                "id": "M1-s4",
+                "title": "Build a four-part prompt",
+                "body": [
+                  "Task: state the action.",
+                  "Context: supply relevant material.",
+                  "Constraints: set boundaries.",
+                  "Format: describe the output.",
+                  "Takeaway: Format: describe the output."
+                ],
+                "narration": "A practical prompt has four parts: task, context, constraints, and output format. The task states the action, such as summarize the meeting notes. Context provides the material or background needed for that action. Constraints explain what must be preserved, included, or avoided. Output format describes how the response should be organized. Consider the request, summarize this. It names a broad action but leaves several choices open. It does not say whether you need a paragraph, an action table, or a list of decisions. It does not explain how to handle missing information. A structured prompt makes those choices visible. You do not need special technical language. Write ordinary instructions that someone could inspect and understand. The purpose of the four-part structure is to make your intended result clear enough to request and clear enough to review afterward.",
+                "objectiveIds": [
+                  "O2"
+                ],
+                "sourceIds": [
+                  "S2"
+                ]
+              },
+              {
+                "id": "M1-s4-b",
+                "title": "Turn a vague request into clear instructions",
+                "body": [
+                  "Task: summarize these meeting notes.",
+                  "Constraint: use only the supplied information.",
+                  "Format: decisions, questions, actions.",
+                  "Missing owners or dates: Needs clarification.",
+                  "Takeaway: Missing owners or dates: Needs clarification.",
+                  "Practice: Pause for the two midpoint questions."
+                ],
+                "narration": "Let us improve the vague request one part at a time. First, name the task: summarize the meeting notes below. Next, supply the notes as the context, rather than expecting the assistant to know what happened. Add a constraint: use only the supplied information and preserve whether a date is proposed or confirmed. Then specify the format: separate confirmed decisions, open questions, and action items. Finally, explain how to represent a gap: label a missing owner or deadline as needs clarification. That last instruction is a constraint, while the three headings describe the format. The distinction helps you diagnose an incomplete prompt. A prompt can have clear headings but still lack rules about unsupported information. It can also have good boundaries but request no useful structure. Together, the four parts describe both the work to perform and the form of the result you intend to check.",
+                "objectiveIds": [
+                  "O2"
+                ],
+                "sourceIds": [
+                  "S2",
+                  "S5"
+                ]
+              },
+              {
+                "id": "M1-s4-c",
+                "title": "Check your prompt before using it",
+                "body": [
+                  "Can someone identify the requested task?",
+                  "Is the necessary context included?",
+                  "Are important boundaries explicit?",
+                  "Does the format fit the task?",
+                  "Takeaway: Does the format fit the task?"
+                ],
+                "narration": "Before using a prompt, read it as if you were receiving the request for the first time. Can you identify the action to take? Is the necessary source material present? Are there important boundaries that the reader would otherwise have to guess? Is the requested format useful for the person who will receive the result? For example, a short update might need a paragraph, while an action list might need columns for task, owner, and deadline. Avoid adding requirements simply to make the prompt longer. Each instruction should help define the task or prevent a relevant misunderstanding. If the first response misses the requested structure, you can give a focused follow-up that names the specific change. Keep the underlying facts and constraints intact. You now have a repeatable method: state the task, supply context, set meaningful constraints, request a usable format, and review what comes back.",
+                "objectiveIds": [
+                  "O2"
+                ],
+                "sourceIds": [
+                  "S2",
+                  "S3"
+                ]
+              }
+            ],
+            "midpointQuiz": {
+              "afterSlideId": "M1-s4-b",
+              "questions": [
+                {
+                  "id": "M1-M1-v3-q1",
+                  "hint": "Format describes how information is organized; constraints describe what the response must preserve or avoid.",
+                  "prompt": "Select one answer. Which instruction specifies an output format?",
+                  "choices": [
+                    "Use only the supplied notes.",
+                    "Mark missing owners explicitly.",
+                    "Separate decisions and actions."
+                  ],
+                  "correct": 2,
+                  "sourceIds": [
+                    "S2"
+                  ],
+                  "explanation": "Separate decisions and actions describes organization. The other instructions set boundaries for the content.",
+                  "objectiveIds": [
+                    "O2"
+                  ]
+                },
+                {
+                  "id": "M1-M1-v3-q2",
+                  "hint": "Check whether the prompt says what to do with information not present in the notes.",
+                  "prompt": "Select one answer. A prompt includes a task, notes and headings. What should you check for next?",
+                  "choices": [
+                    "Boundaries for unsupported details.",
+                    "Extra words to lengthen the prompt.",
+                    "A promise of a flawless response."
+                  ],
+                  "correct": 0,
+                  "sourceIds": [
+                    "S2"
+                  ],
+                  "explanation": "The prompt still needs relevant constraints. Extra length is not a goal, and wording cannot guarantee a flawless response.",
+                  "objectiveIds": [
+                    "O2"
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "workedExamples": [
+        {
+          "id": "M1-example",
+          "title": "Worked example: choose the evidence",
+          "problem": "Worked example: choose the evidence: Task: summarize the meeting notes. Context: the original launch-readiness record. Preserve proposed status and missing ownership.\nWorked example: build the instruction: Summarize the meeting notes below. Use only these notes; preserve proposed versus confirmed status. Mark missing owners or deadlines Needs clarification. Return decisions, open questions and an action table.\nWorked example: check the result: Launch: proposed for 18 November. Email: Maya, due 12 November. Checklist owner: Needs clarification.",
+          "reasoning": [
+            "Worked example: choose the evidence",
+            "Worked example: build the instruction",
+            "Worked example: check the result"
+          ],
+          "result": "Compare the result with the supplied notes.",
+          "objectiveIds": [
+            "O1",
+            "O2"
+          ],
+          "sourceIds": [
+            "S1",
+            "S2",
+            "S3",
+            "S4",
+            "S5"
+          ]
+        }
+      ],
+      "guidedPractice": {
+        "title": "Guided practice: complete this prompt",
+        "instructions": "Guided practice: complete this prompt: Task: Summarize the meeting notes below. Context: the fictional launch-readiness notes. You add: constraints and output format.\nGuided practice: use the scaffold: What must stay proposed rather than confirmed? How should an absent owner appear? Which headings make gaps easy to find?\nGuided practice: compare with a model: Use only the notes; preserve proposed status. Mark missing owners and deadlines Needs clarification. Separate decisions, open questions and actions.",
+        "steps": [
+          {
+            "id": "M1-practice",
+            "instruction": "Guided practice: complete this prompt: Task: Summarize the meeting notes below. Context: the fictional launch-readiness notes. You add: constraints and output format.\nGuided practice: use the scaffold: What must stay proposed rather than confirmed? How should an absent owner appear? Which headings make gaps easy to find?\nGuided practice: compare with a model: Use only the notes; preserve proposed status. Mark missing owners and deadlines Needs clarification. Separate decisions, open questions and actions.",
+            "hint": "Use the supplied facts.",
+            "evidence": "Explain the choice using the supplied information.",
+            "objectiveIds": [
+              "O1",
+              "O2"
+            ],
+            "sourceIds": [
+              "S1",
+              "S2",
+              "S3",
+              "S4",
+              "S5"
+            ]
+          }
+        ]
+      },
+      "scenarioLab": {
+        "title": "Scenario: inspect a new faulty update",
+        "scenarios": [
+          {
+            "id": "M1-scenario",
+            "title": "Scenario: inspect a new faulty update",
+            "situation": "Scenario: inspect a new faulty update: AI draft: The launch is approved for 18 November. Maya will draft the email and finish the checklist by 12 November. Identify unsupported claims and propose a better prompt.\nScenario: test each claim against evidence: Source: launch proposed, not approved. Source: Maya owns only the email task. Source: checklist owner and deadline not recorded.\nScenario debrief: explain and improve: Keep the launch proposed. Keep Maya and 12 November attached to the email. Flag checklist ownership and deadline for clarification. Use a bounded prompt, then review the response.",
+            "challenge": "Explain your decision using the supplied evidence.",
+            "expectedEvidence": "Compare the draft with the supplied information and explain your decision.",
+            "objectiveIds": [
+              "O1",
+              "O2"
+            ],
+            "sourceIds": [
+              "S1",
+              "S2",
+              "S3",
+              "S4",
+              "S5"
+            ]
+          }
+        ]
+      },
+      "moduleQuiz": {
+        "title": "Module 1: check your understanding",
+        "instructions": "Select one answer for each question.",
+        "questions": [
+          {
+            "id": "M1-M1-end-q1",
+            "hint": "The taught capability is help with wording or organization, while people retain review and approval decisions.",
+            "prompt": "Select one answer. Which use matches the capability taught here?",
+            "choices": [
+              "Confirm facts from fluent wording.",
+              "Draft a message from talking points.",
+              "Approve a proposed launch date."
+            ],
+            "correct": 1,
+            "sourceIds": [
+              "S1"
+            ],
+            "explanation": "AI can assist with drafting from supplied material; fluency does not verify facts or grant approval.",
+            "objectiveIds": [
+              "O1"
+            ]
+          },
+          {
+            "id": "M1-M1-end-q2",
+            "hint": "Check the source rather than judging only whether the response sounds professional.",
+            "prompt": "Select one answer. Why can a polished summary still be unreliable?",
+            "choices": [
+              "It may add unsupported information.",
+              "It must use incomplete sentences.",
+              "It cannot organize supplied notes."
+            ],
+            "correct": 0,
+            "sourceIds": [
+              "S1"
+            ],
+            "explanation": "The important limitation is that plausible wording can contain invented or altered information.",
+            "objectiveIds": [
+              "O1"
+            ]
+          },
+          {
+            "id": "M1-M1-end-q3",
+            "hint": "Find the task, supplied notes, a source boundary, and a specific output structure in the same request.",
+            "prompt": "Select one answer. Which prompt includes all four useful parts?",
+            "choices": [
+              "Summarize these notes; add likely dates; arrange them as usual.",
+              "Summarize these notes; guess missing owners; list decisions and actions.",
+              "Summarize these notes; use only them; list decisions and actions."
+            ],
+            "correct": 2,
+            "sourceIds": [
+              "S2"
+            ],
+            "explanation": "The complete request identifies a task, supplies context, constrains sources and specifies a format.",
+            "objectiveIds": [
+              "O2"
+            ]
+          },
+          {
+            "id": "M1-M1-end-q4",
+            "hint": "Choose a boundary that makes the missing owner visible without guessing or deleting the action.",
+            "prompt": "Select one answer. The notes omit an owner. Which prompt boundary is most useful?",
+            "choices": [
+              "Assign the task to a familiar name.",
+              "Label missing owners Needs clarification.",
+              "Omit actions that lack an owner."
+            ],
+            "correct": 1,
+            "sourceIds": [
+              "S2",
+              "S5"
+            ],
+            "explanation": "Explicitly marking the gap preserves the source rather than inventing or hiding information.",
+            "objectiveIds": [
+              "O2"
+            ]
+          }
+        ]
+      },
+      "narratedStages": {
+        "hook": [
+          {
+            "id": "M1-s1",
+            "title": "The notes you need to summarize",
+            "body": [
+              "Launch proposed for 18 November; not approved.",
+              "Maya drafts the customer email by 12 November.",
+              "Support checklist: owner missing.",
+              "Next review: 14 November.",
+              "Takeaway: Preserve decisions, responsibilities and gaps when transforming notes."
+            ],
+            "narration": "Start with these fictional meeting notes. The launch date is proposed, not approved. Maya owns the customer email, while the support checklist has no owner. You need to turn this record into a short update.",
+            "objectiveIds": [
+              "O1",
+              "O2"
+            ],
+            "sourceIds": [
+              "S1",
+              "S2",
+              "S5"
+            ]
+          },
+          {
+            "id": "M1-s1-b",
+            "title": "The draft changes the meaning",
+            "body": [
+              "Original notes: Launch date: proposed, not approved. | Checklist owner: not recorded.",
+              "Faulty AI draft: Launch date: confirmed for 18 November. | Checklist owner: Maya.",
+              "Takeaway: Fluent wording can conceal unsupported claims."
+            ],
+            "narration": "Now compare the notes on the left with the AI draft on the right. The draft confirms the launch and gives Maya the checklist. Both additions sound plausible, but neither is supported. Matching names and dates is not enough; the meaning must match too.",
+            "objectiveIds": [
+              "O1",
+              "O2"
+            ],
+            "sourceIds": [
+              "S1",
+              "S2",
+              "S5"
+            ]
+          },
+          {
+            "id": "M1-s1-c",
+            "title": "What would you challenge before sharing?",
+            "body": [
+              "Which two claims changed?",
+              "What could a colleague misunderstand?",
+              "Learn to request a bounded, reviewable draft.",
+              "Takeaway: Request a useful draft without changing what the notes say."
+            ],
+            "narration": "Which statements would you challenge before sharing this update? A colleague could mistake a proposal for an agreement or an invented assignment for a real task. This module connects useful AI assistance with its limitations, then shows you how to write clearer instructions.",
+            "objectiveIds": [
+              "O1",
+              "O2"
+            ],
+            "sourceIds": [
+              "S1",
+              "S2",
+              "S5"
+            ]
+          }
+        ],
+        "worked": [
+          {
+            "id": "M1-s5",
+            "title": "Worked example: choose the evidence",
+            "body": [
+              "Task: summarize the meeting notes.",
+              "Context: the original launch-readiness record.",
+              "Preserve proposed status and missing ownership.",
+              "Takeaway: Start from source evidence rather than a polished guess."
+            ],
+            "narration": "We will now build the request and check its result. Begin with the task: summarize the meeting notes. Supply the original notes as context. The evidence says proposed, not approved, and does not name a checklist owner. These are facts to preserve, not gaps to smooth over.",
+            "objectiveIds": [
+              "O1",
+              "O2"
+            ],
+            "sourceIds": [
+              "S1",
+              "S2",
+              "S5"
+            ]
+          },
+          {
+            "id": "M1-s5-b",
+            "title": "Worked example: build the instruction",
+            "body": [
+              "Summarize the meeting notes below.",
+              "Use only these notes; preserve proposed versus confirmed status.",
+              "Mark missing owners or deadlines Needs clarification.",
+              "Return decisions, open questions and an action table.",
+              "Takeaway: Task, context, constraints and format each serve a different purpose."
+            ],
+            "narration": "Read the complete instruction on this scene. The first line names the task. The supplied notes provide context. The next two lines constrain unsupported additions and explain how to mark missing details. The final line specifies the output format.",
+            "objectiveIds": [
+              "O1",
+              "O2"
+            ],
+            "sourceIds": [
+              "S1",
+              "S2",
+              "S5"
+            ]
+          },
+          {
+            "id": "M1-s5-c",
+            "title": "Worked example: check the result",
+            "body": [
+              "Expected output: Launch: proposed for 18 November. | Email: Maya, due 12 November. | Checklist owner: Needs clarification.",
+              "Why it is supported: The notes do not approve the launch. | Only the email is assigned to Maya. | The checklist owner is not recorded.",
+              "Takeaway: Check status and responsibility as well as names and dates.",
+              "Practice: Match each output to the original notes. Confirm that no proposal became an approval and no missing owner was invented."
+            ],
+            "narration": "Compare the expected result with the source notes. The launch remains proposed. Maya's email deadline remains attached to the email, not to every task. The missing checklist owner is visible. The right-hand column names the checks we used. Take a moment to match each output to its evidence. Good formatting helps review; it does not replace that comparison.",
+            "objectiveIds": [
+              "O1",
+              "O2"
+            ],
+            "sourceIds": [
+              "S1",
+              "S2",
+              "S5"
+            ]
+          }
+        ],
+        "guided": [
+          {
+            "id": "M1-s6",
+            "title": "Guided practice: complete this prompt",
+            "body": [
+              "Task: Summarize the meeting notes below.",
+              "Context: the fictional launch-readiness notes.",
+              "You add: constraints and output format.",
+              "Takeaway: Make an attempt before looking at support or model feedback.",
+              "Practice: Write your constraints and format instructions. Use the original notes as evidence. Continue only after you have made an attempt."
+            ],
+            "narration": "Your starting prompt already includes the task and source notes. Write the two missing parts: constraints and output format. Decide what the assistant must not invent and how the result should be organized. Pause here and try your own wording before viewing the scaffold or model answer.",
+            "objectiveIds": [
+              "O2"
+            ],
+            "sourceIds": [
+              "S2",
+              "S5"
+            ]
+          },
+          {
+            "id": "M1-s6-b",
+            "title": "Guided practice: use the scaffold",
+            "body": [
+              "What must stay proposed rather than confirmed?",
+              "How should an absent owner appear?",
+              "Which headings make gaps easy to find?",
+              "Takeaway: Use scaffold questions to refine your own instructions.",
+              "Practice: Refine your attempt using the three scaffold questions. Check task, context, constraints and format separately."
+            ],
+            "narration": "Use these questions only if you need support. Consider the proposed date, the absent owner, and the headings that would help someone review the output. Compare those needs with your first attempt. Refine your wording now, then move to the model comparison.",
+            "objectiveIds": [
+              "O2"
+            ],
+            "sourceIds": [
+              "S2",
+              "S5"
+            ]
+          },
+          {
+            "id": "M1-s6-c",
+            "title": "Guided practice: compare with a model",
+            "body": [
+              "Use only the notes; preserve proposed status.",
+              "Mark missing owners and deadlines Needs clarification.",
+              "Separate decisions, open questions and actions.",
+              "Takeaway: Separate decisions, open questions and actions."
+            ],
+            "narration": "Here is one acceptable completion. Your wording can differ if it preserves the same boundaries and requests a usable structure. Compare your attempt with the model: did you stop unsupported additions, explain missing details, and specify the output?",
+            "objectiveIds": [
+              "O2"
+            ],
+            "sourceIds": [
+              "S2",
+              "S5"
+            ]
+          }
+        ],
+        "lab": [
+          {
+            "id": "M1-s7",
+            "title": "Scenario: inspect a new faulty update",
+            "body": [
+              "AI draft: The launch is approved for 18 November.",
+              "Maya will draft the email and finish the checklist by 12 November.",
+              "Identify unsupported claims and propose a better prompt.",
+              "Takeaway: Identify unsupported claims and propose a better prompt.",
+              "Practice: Write the suspect claims, explain the AI limitation, and draft a four-part prompt. Keep the notes as the source of truth."
+            ],
+            "narration": "A fictional colleague receives this new draft. It approves the launch and gives Maya both tasks with the same deadline. Identify the unsupported claims, then propose a clearer prompt. Do not fix the record by guessing. Pause to write your decision and the evidence you would use.",
+            "objectiveIds": [
+              "O1",
+              "O2"
+            ],
+            "sourceIds": [
+              "S1",
+              "S2",
+              "S5"
+            ]
+          },
+          {
+            "id": "M1-s7-b",
+            "title": "Scenario: test each claim against evidence",
+            "body": [
+              "Source evidence: Source: launch proposed, not approved. | Source: Maya owns only the email task. | Source: checklist owner and deadline not recorded.",
+              "Questions to resolve: Did a proposal become an agreement? | Did one owner become owner of two tasks? | Did one deadline spread to another task?",
+              "Takeaway: Use evidence to identify changes in meaning.",
+              "Practice: Check your proposed answer against these source facts. Revise any statement that assumes an owner, deadline or approval."
+            ],
+            "narration": "Use the original notes to test each claim. Check whether the launch is approved, which task belongs to Maya, and where the twelve November deadline applies. If a statement has no supporting note, flag it for clarification rather than supplying a plausible replacement.",
+            "objectiveIds": [
+              "O1",
+              "O2"
+            ],
+            "sourceIds": [
+              "S1",
+              "S2",
+              "S5"
+            ]
+          },
+          {
+            "id": "M1-s7-c",
+            "title": "Scenario debrief: explain and improve",
+            "body": [
+              "Keep the launch proposed.",
+              "Keep Maya and 12 November attached to the email.",
+              "Flag checklist ownership and deadline for clarification.",
+              "Use a bounded prompt, then review the response.",
+              "Takeaway: Use a bounded prompt, then review the response.",
+              "Practice: Complete the module-end quiz after this debrief. Review the explanations for any missed concepts."
+            ],
+            "narration": "The debrief preserves the proposed launch and keeps Maya's assignment and deadline attached to the email. The checklist details remain unresolved. Explain why fluent wording was insufficient evidence, and compare your prompt with the four-part method. Complete the module quiz next to check capabilities, limitations, and prompt structure.",
+            "objectiveIds": [
+              "O1",
+              "O2"
+            ],
+            "sourceIds": [
+              "S1",
+              "S2",
+              "S5"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "M2",
+      "title": "Module 2: Use AI for everyday tasks",
+      "durationMinutes": 20,
+      "objectiveIds": [
+        "O3",
+        "O4"
+      ],
+      "sourceIds": [
+        "S3",
+        "S5",
+        "S6"
+      ],
+      "problemHook": {
+        "title": "The Unapproved Launch Date",
+        "situation": "The Unapproved Launch Date: A team needs a launch-readiness summary. Meeting notes state the launch date is proposed for 18 November but is not approved.\nSpotting the AI Hallucination: AI Draft: 'The launch is confirmed for November 18.' Source Notes: 'Proposed for 18 November but is not approved.'\nWhy Rigorous Review Matters: Drafting messages and summarizing notes require active oversight. Focused follow-up instructions correct AI errors.",
+        "question": "What should you check before trusting an AI response?",
+        "objectiveIds": [
+          "O3",
+          "O4"
+        ],
+        "sourceIds": [
+          "S3",
+          "S5",
+          "S6"
+        ]
+      },
+      "conceptExplainer": {
+        "videos": [
+          {
+            "id": "M2-v1",
+            "title": "Drafting Workplace Messages",
+            "plannedMinutes": 3.2,
+            "slides": [
+              {
+                "id": "M2-v1-s1",
+                "title": "Drafting Workplace Messages",
+                "body": [
+                  "Translate bullet points into professional emails.",
+                  "Establish clear tone and appropriate length from the start.",
+                  "Takeaway: AI accelerates drafting when given clear parameters.",
+                  "Practice: Review message drafting principles."
+                ],
+                "narration": "Let us explore our first core topic: drafting workplace messages. Generative AI excels at translating raw talking points into polished professional emails or announcements. However, relying on a single initial prompt rarely yields a perfect result. We must understand how to shape tone, adjust length, and ensure that our initial instructions match our professional communication standards before sharing drafts with colleagues or clients. A common misconception is that AI knows your company's preferred communication style automatically, but in reality, you must provide explicit constraints regarding tone and format to avoid overly informal or verbose outputs. Taking time to establish these parameters upfront saves valuable revision cycles later in your workflow.",
+                "objectiveIds": [
+                  "O3",
+                  "O4"
+                ],
+                "sourceIds": [
+                  "S3",
+                  "S5",
+                  "S6"
+                ]
+              },
+              {
+                "id": "M2-v1-s2",
+                "title": "Using Focused Follow-Up Instructions",
+                "body": [
+                  "Apply targeted commands like 'Make language simpler.'",
+                  "Instruct AI to remove unsupported claims explicitly.",
+                  "Takeaway: Targeted follow-ups refine draft quality efficiently.",
+                  "Practice: Examine follow-up command patterns."
+                ],
+                "narration": "When an AI draft misses the mark on tone or length, broad commands are rarely effective. Instead, we use focused follow-up instructions to guide the tool toward our exact communication goals. For example, if a fictional project team named Apex Logistics receives an overly complex draft summarizing their latest strategy session, the user can apply targeted commands such as 'Make the language simpler' or 'Remove claims not supported by the notes.' These precise interventions help align the text with specific workplace requirements. Imagine a draft that accidentally mixes up suggestions with finalized budget approvals; a follow-up instruction can request that decisions and suggestions be separated, though the revision still needs checking. Keep in mind that while follow-up instructions significantly improve a response, they do not guarantee absolute factual correctness, which is why your final human review remains indispensable.",
+                "objectiveIds": [
+                  "O3",
+                  "O4"
+                ],
+                "sourceIds": [
+                  "S3",
+                  "S5",
+                  "S6"
+                ]
+              },
+              {
+                "id": "M2-v1-s3",
+                "title": "Iterative Refinement",
+                "body": [
+                  "The process of progressively shaping an AI response through targeted follow-up prompts.",
+                  "Takeaway: Iteration is a normal part of working with AI.",
+                  "Practice: Note the definition of iterative refinement."
+                ],
+                "narration": "To wrap up our first topic, let us define iterative refinement. It is the deliberate process of progressively shaping an AI response through targeted follow-up prompts rather than accepting the initial output. Consider how the Apex Logistics team handles their weekly status updates: instead of rewriting a messy AI-generated report entirely from scratch, they apply a sequence of focused corrections to polish the draft. By treating AI output as a rough draft requiring editorial oversight, professionals retain responsibility for their communications and may save time on initial drafting. Understanding this iterative cycle prevents frustration and supports clearer messages when people check the final result against the source and intended audience.",
+                "objectiveIds": [
+                  "O3",
+                  "O4"
+                ],
+                "sourceIds": [
+                  "S3",
+                  "S5",
+                  "S6"
+                ]
+              }
+            ],
+            "midpointQuiz": {
+              "afterSlideId": "M2-v1-s2",
+              "questions": [
+                {
+                  "id": "M2-v1-q1",
+                  "hint": "Think about how targeted commands address specific flaws.",
+                  "prompt": "Select one answer. What is the primary benefit of using focused follow-up instructions instead of broad commands like 'fix this'?",
+                  "choices": [
+                    "They guarantee 100 percent factual accuracy in every output.",
+                    "They target specific tone, length, or content issues for precise improvement.",
+                    "They eliminate the need for any human review of AI drafts."
+                  ],
+                  "correct": 1,
+                  "sourceIds": [
+                    "S3",
+                    "S5",
+                    "S6"
+                  ],
+                  "explanation": "Focused follow-up instructions target specific parameters like tone and length, though they do not guarantee factual correctness.",
+                  "objectiveIds": [
+                    "O3",
+                    "O4"
+                  ]
+                },
+                {
+                  "id": "M2-v1-q2",
+                  "hint": "Recall the definition of iterative refinement from the lesson.",
+                  "prompt": "Select one answer. Which of the following best describes iterative refinement when drafting messages with AI?",
+                  "choices": [
+                    "Accepting the first generated response without changes.",
+                    "Progressively shaping the response through targeted follow-up prompts.",
+                    "Rewriting the entire email manually from scratch every time."
+                  ],
+                  "correct": 1,
+                  "sourceIds": [
+                    "S3",
+                    "S5",
+                    "S6"
+                  ],
+                  "explanation": "Iterative refinement is the progressive shaping of an AI response through targeted follow-up prompts.",
+                  "objectiveIds": [
+                    "O3",
+                    "O4"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "M2-v2",
+            "title": "Summarizing Meeting Notes",
+            "plannedMinutes": 3.49,
+            "slides": [
+              {
+                "id": "M2-v2-s1",
+                "title": "Summarizing Meeting Notes",
+                "body": [
+                  "Condense lengthy discussions into actionable takeaways.",
+                  "Separate confirmed decisions, open questions, and action items.",
+                  "Takeaway: Structured summarization prevents critical details from getting lost.",
+                  "Practice: Review meeting summarization best practices."
+                ],
+                "narration": "Our second topic focuses on summarizing meeting notes effectively. Lengthy transcripts or disorganized discussions can easily overwhelm busy teams. Generative AI can rapidly condense these materials, but only if you instruct it to organize information into logical categories such as confirmed decisions, open questions, and action items. For instance, suppose the Apex Logistics team meets to discuss an upcoming product rollout where a launch date is proposed for eighteen November but remains unapproved, and Maya is assigned to draft a customer email by twelve November. A structured prompt asks the AI to preserve these nuances, but the response still needs checking. A common pitfall is allowing the tool to blend speculation with documented outcomes, treating a proposed date as a confirmed fact. Our summaries must strictly reflect the actual recorded status without assuming unapproved consensus.",
+                "objectiveIds": [
+                  "O3",
+                  "O4"
+                ],
+                "sourceIds": [
+                  "S3",
+                  "S5",
+                  "S6"
+                ]
+              },
+              {
+                "id": "M2-v2-s2",
+                "title": "Preserving Uncertainty and Nuance",
+                "body": [
+                  "Maintain conditional language for unapproved items.",
+                  "Flag missing owners and unassigned deadlines clearly.",
+                  "Takeaway: Never upgrade tentative statements into confirmed facts.",
+                  "Practice: Analyze how to handle ambiguity in summaries."
+                ],
+                "narration": "When summarizing notes, preserving nuance is critical. If a deadline is proposed but not approved, the summary must explicitly state that provisional status. Consider a fictional product launch meeting where a release date of November eighteenth is discussed but left unapproved. A reliable summary must maintain this exact uncertainty rather than upgrading the tentative date into a confirmed milestone. Similarly, when action items lack assigned owners or specific due dates, the AI should be instructed to mark them clearly as needs clarification rather than inventing names or dates to fill gaps. Preserving this uncertainty protects the team from acting on false assumptions and maintains accountability across projects. Ignoring missing details or fabricating owners creates severe operational risks that undermine team trust, making strict source adherence an absolute necessity for every generated professional summary.",
+                "objectiveIds": [
+                  "O3",
+                  "O4"
+                ],
+                "sourceIds": [
+                  "S3",
+                  "S5",
+                  "S6"
+                ]
+              },
+              {
+                "id": "M2-v2-s3",
+                "title": "Source Fidelity",
+                "body": [
+                  "The degree to which an AI summary accurately reflects source material without adding invented facts.",
+                  "Takeaway: High source fidelity ensures trustworthy summaries.",
+                  "Practice: Note the definition of source fidelity."
+                ],
+                "narration": "We conclude our second topic with the vital concept of source fidelity. This refers to the degree to which an AI summary accurately reflects the underlying source material without introducing invented facts, altered statuses, or unauthorized assumptions. For instance, if meeting notes state that Maya will draft a customer email by November twelfth while the support checklist remains unowned, a high-fidelity summary must strictly reflect those exact boundaries. Maintaining high source fidelity is the primary responsibility of the human reviewer when working with generative AI tools. By checking every claim against original notes, you can identify discrepancies before considering the summary for leadership review or distribution, preventing the spread of subtle inaccuracies that often hide behind the confident tone typical of modern generative text models.",
+                "objectiveIds": [
+                  "O3",
+                  "O4"
+                ],
+                "sourceIds": [
+                  "S3",
+                  "S5",
+                  "S6"
+                ]
+              }
+            ],
+            "midpointQuiz": {
+              "afterSlideId": "M2-v2-s2",
+              "questions": [
+                {
+                  "id": "M2-v2-q1",
+                  "hint": "Recall the discussion on preserving uncertainty and nuance.",
+                  "prompt": "Select one answer. How should an AI summary handle an unapproved launch date mentioned in meeting notes?",
+                  "choices": [
+                    "Describe it as confirmed since it was discussed.",
+                    "Omit the launch date entirely to avoid confusion.",
+                    "Preserve its tentative status and explicitly note it is unapproved."
+                  ],
+                  "correct": 2,
+                  "sourceIds": [
+                    "S3",
+                    "S5",
+                    "S6"
+                  ],
+                  "explanation": "Source fidelity requires preserving conditional uncertainty rather than upgrading tentative plans into confirmed facts.",
+                  "objectiveIds": [
+                    "O3",
+                    "O4"
+                  ]
+                },
+                {
+                  "id": "M2-v2-q2",
+                  "hint": "Think about how to handle missing details without hallucinating.",
+                  "prompt": "Select one answer. What should be done when meeting notes mention an action item without an assigned owner?",
+                  "choices": [
+                    "Instruct the AI to assign a plausible team member.",
+                    "Mark the missing owner clearly as 'Needs clarification.'",
+                    "Assume the meeting facilitator owns the task."
+                  ],
+                  "correct": 1,
+                  "sourceIds": [
+                    "S3",
+                    "S5",
+                    "S6"
+                  ],
+                  "explanation": "Marking missing owners as 'Needs clarification' prevents the AI from inventing unauthorized task assignments.",
+                  "objectiveIds": [
+                    "O3",
+                    "O4"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "M2-v3",
+            "title": "Organizing Action Plans",
+            "plannedMinutes": 3.65,
+            "slides": [
+              {
+                "id": "M2-v3-s1",
+                "title": "Organizing Action Plans",
+                "body": [
+                  "Transform unstructured project briefs into structured task lists.",
+                  "Group tasks by milestone, priority, or assigned department.",
+                  "Takeaway: Structured organization turns vague briefs into executable plans.",
+                  "Practice: Review action plan organization strategies."
+                ],
+                "narration": "Our third topic explores organizing information into clear action plans. Project briefs often contain narrative descriptions rather than concrete tasks, making it difficult for teams to track deliverables. Generative AI can parse these documents to extract action items, sequence them logically, and format them into tables or bulleted lists. For example, a chaotic project brief for a new mobile application can be transformed into a categorized task list separating design milestones from engineering requirements. However, a common mistake is trusting the AI automated categorization without verifying whether all necessary constraints from the brief were captured. You must actively check that no vital steps were omitted during the restructuring process and that every category aligns perfectly with project objectives, ensuring your team executes only verified and accurately organized operational plans.",
+                "objectiveIds": [
+                  "O3",
+                  "O4"
+                ],
+                "sourceIds": [
+                  "S3",
+                  "S5",
+                  "S6"
+                ]
+              },
+              {
+                "id": "M2-v3-s2",
+                "title": "Verifying Completeness and Owners",
+                "body": [
+                  "Check that every task has a verified owner and timeline.",
+                  "Identify missing responsibilities before sharing plans.",
+                  "Takeaway: Verification prevents orphan tasks and missed deadlines.",
+                  "Practice: Examine completeness verification techniques."
+                ],
+                "narration": "When generative AI organizes an action plan, it can produce incorrect, incomplete, biased, or invented information, and a confident tone does not prove accuracy. Imagine a team reviewing a launch-readiness summary where meeting notes state the support checklist needs an owner. If the AI confidently assigns Maya to the support checklist, it introduces an unsupported claim that alters the facts. Before using an AI-generated response, you must compare it with the original information and check important facts, names, dates, and calculations. Always identify unsupported claims and missing details. For instance, if the notes state the launch date is proposed for 18 November but not approved, the summary must preserve that proposed status. Verification prevents orphan tasks, ensures every responsibility is traceable to the source, and maintains accuracy across all workplace communications.",
+                "objectiveIds": [
+                  "O3",
+                  "O4"
+                ],
+                "sourceIds": [
+                  "S3",
+                  "S5",
+                  "S6"
+                ]
+              },
+              {
+                "id": "M2-v3-s3",
+                "title": "Actionable Output",
+                "body": [
+                  "An AI response structured clearly enough to guide immediate, verified workplace execution.",
+                  "Takeaway: Actionable outputs require rigorous verification.",
+                  "Practice: Note the definition of actionable output."
+                ],
+                "narration": "We conclude our third topic by defining an actionable output. This refers to an AI response structured clearly enough to guide immediate workplace execution, provided it undergoes rigorous quality control. Generative AI helps draft emails, summarize notes, brainstorm ideas, and organize information based on patterns learned during training and provided context. However, because it can produce incorrect, incomplete, biased, or invented information, a confident tone does not prove accuracy. Consider a fictional team finalizing a customer email where meeting notes specify a proposed launch date of 18 November. An actionable output must preserve this exact status without presenting it as confirmed. Achieving this requires comparing the AI response with original information, checking important facts, and applying focused follow-up instructions. By mastering these verification steps, you can decide which claims need correction or further review before the plan is used.",
+                "objectiveIds": [
+                  "O3",
+                  "O4"
+                ],
+                "sourceIds": [
+                  "S3",
+                  "S5",
+                  "S6"
+                ]
+              }
+            ],
+            "midpointQuiz": {
+              "afterSlideId": "M2-v3-s2",
+              "questions": [
+                {
+                  "id": "M2-v3-q1",
+                  "hint": "Recall the discussion on hallucinated task owners and deadlines.",
+                  "prompt": "Select one answer. Why is cross-referencing AI-generated action plans against original source briefs essential?",
+                  "choices": [
+                    "To ensure the AI used proper formatting tags.",
+                    "To catch invented tasks, deadlines, or owners created by the model.",
+                    "To check whether the AI tool requires a software update."
+                  ],
+                  "correct": 1,
+                  "sourceIds": [
+                    "S3",
+                    "S5",
+                    "S6"
+                  ],
+                  "explanation": "Cross-referencing catches hallucinations where AI models invent plausible-sounding details not present in source notes.",
+                  "objectiveIds": [
+                    "O3",
+                    "O4"
+                  ]
+                },
+                {
+                  "id": "M2-v3-q2",
+                  "hint": "Think about the combination of clear structure and human verification.",
+                  "prompt": "Select one answer. What defines an actionable output in the context of workplace AI use?",
+                  "choices": [
+                    "A response that is extremely long and detailed.",
+                    "An AI response structured clearly enough to guide execution after human verification.",
+                    "Any response generated in under ten seconds."
+                  ],
+                  "correct": 1,
+                  "sourceIds": [
+                    "S3",
+                    "S5",
+                    "S6"
+                  ],
+                  "explanation": "An actionable output is structured to guide execution, provided all facts and owners have been verified by a human.",
+                  "objectiveIds": [
+                    "O3",
+                    "O4"
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "workedExamples": [
+        {
+          "id": "M2-example",
+          "title": "Analyzing Summary A",
+          "problem": "Analyzing Summary A: Summary A Statement: 'The launch date is confirmed for 18 November.' Source Reality: Date is proposed and unapproved.\nAnalyzing Summary B: Summary B Statement: 'Maya will draft the customer email by 12 November. The support checklist is assigned to Alex.' Source Reality: Support checklist owner is missing.\nCorrecting the AI Summaries: Step 1: Identify specific discrepancies in date status and task ownership. Step 2: Issue follow-up: 'Revise launch date to proposed and mark unassigned tasks as needs clarification.'",
+          "reasoning": [
+            "Analyzing Summary A",
+            "Analyzing Summary B",
+            "Correcting the AI Summaries"
+          ],
+          "result": "Compare the result with the supplied notes.",
+          "objectiveIds": [
+            "O3",
+            "O4"
+          ],
+          "sourceIds": [
+            "S3",
+            "S5",
+            "S6"
+          ]
+        }
+      ],
+      "guidedPractice": {
+        "title": "Preparing Your Revision",
+        "instructions": "Preparing Your Revision: Fictional draft: “Hey! Launch is totally happening on 18 November!” Source: launch is proposed and not approved. Task: identify tone, length and accuracy issues.\nDrafting Your Follow-Up Instruction: Write a targeted follow-up instruction. Request a professional tone and concise format. Preserve the proposed, unapproved status.\nEvaluating Your Revision: Example: “Use a professional tone in one sentence.” “Describe 18 November as proposed and not approved.” Compare the revision against the source again.",
+        "steps": [
+          {
+            "id": "M2-practice",
+            "instruction": "Preparing Your Revision: Fictional draft: “Hey! Launch is totally happening on 18 November!” Source: launch is proposed and not approved. Task: identify tone, length and accuracy issues.\nDrafting Your Follow-Up Instruction: Write a targeted follow-up instruction. Request a professional tone and concise format. Preserve the proposed, unapproved status.\nEvaluating Your Revision: Example: “Use a professional tone in one sentence.” “Describe 18 November as proposed and not approved.” Compare the revision against the source again.",
+            "hint": "Use the supplied facts.",
+            "evidence": "Explain the choice using the supplied information.",
+            "objectiveIds": [
+              "O3",
+              "O4"
+            ],
+            "sourceIds": [
+              "S3",
+              "S5",
+              "S6"
+            ]
+          }
+        ]
+      },
+      "scenarioLab": {
+        "title": "Scenario: review a fictional update",
+        "scenarios": [
+          {
+            "id": "M2-scenario",
+            "title": "Scenario: review a fictional update",
+            "situation": "Scenario: review a fictional update: Source: launch proposed, not approved. Maya drafts the email by 12 November. Checklist owner is not recorded.\nScenario: identify unsupported claims: Draft: “The launch is approved for 18 November.” Draft: “Maya owns the support checklist.” Identify changes and missing information.\nScenario debrief: check the correction: Keep the launch proposed and unapproved. Keep Maya assigned to the email only. Mark the checklist owner Needs clarification.",
+            "challenge": "Explain your decision using the supplied evidence.",
+            "expectedEvidence": "Compare the draft with the supplied information and explain your decision.",
+            "objectiveIds": [
+              "O3",
+              "O4"
+            ],
+            "sourceIds": [
+              "S3",
+              "S5",
+              "S6"
+            ]
+          }
+        ]
+      },
+      "moduleQuiz": {
+        "title": "Module 2 Quiz",
+        "instructions": "Select one answer for each question.",
+        "questions": [
+          {
+            "id": "M2-end-q1",
+            "hint": "A useful follow-up is specific and retains the source status.",
+            "prompt": "Select one answer. Which follow-up best improves a workplace draft while preserving the source?",
+            "choices": [
+              "Make the wording clearer and keep the proposed date.",
+              "Confirm the launch date and make the text shorter.",
+              "Add a checklist owner and use a formal tone."
+            ],
+            "correct": 0,
+            "sourceIds": [
+              "S3",
+              "S5"
+            ],
+            "explanation": "The first instruction specifies a change and preserves the proposal. The others introduce unsupported facts.",
+            "objectiveIds": [
+              "O3"
+            ]
+          },
+          {
+            "id": "M2-end-q2",
+            "hint": "Compare what the status words mean.",
+            "prompt": "Select one answer. The source calls the launch proposed, but a summary calls it confirmed. What is the problem?",
+            "choices": [
+              "The summary repeats the date from the notes.",
+              "The summary changes the status of the launch.",
+              "The summary uses a shorter sentence than the notes."
+            ],
+            "correct": 1,
+            "sourceIds": [
+              "S5",
+              "S6"
+            ],
+            "explanation": "Confirmed changes the meaning of an unapproved proposal; shortening or repeating the date is not the error.",
+            "objectiveIds": [
+              "O4"
+            ]
+          },
+          {
+            "id": "M2-end-q3",
+            "hint": "The notes mention the task but do not name its owner.",
+            "prompt": "Select one answer. How should an action plan treat the support checklist owner?",
+            "choices": [
+              "Remove the checklist from the action plan.",
+              "Assign the checklist to the email owner.",
+              "Mark the owner as needing clarification."
+            ],
+            "correct": 2,
+            "sourceIds": [
+              "S5",
+              "S6"
+            ],
+            "explanation": "Flagging the gap preserves the task and the uncertainty; assigning or removing it changes the source.",
+            "objectiveIds": [
+              "O4"
+            ]
+          },
+          {
+            "id": "M2-end-q4",
+            "hint": "Follow-up instructions do not guarantee correctness.",
+            "prompt": "Select one answer. What should you do after asking AI to revise a summary?",
+            "choices": [
+              "Compare the revision with the original notes.",
+              "Assume the correction made every fact accurate.",
+              "Share the revision without another review."
+            ],
+            "correct": 0,
+            "sourceIds": [
+              "S3",
+              "S4"
+            ],
+            "explanation": "Compare the revised output with the source; a successful-looking rewrite is not proof that every claim is accurate.",
+            "objectiveIds": [
+              "O3",
+              "O4"
+            ]
+          }
+        ]
+      },
+      "narratedStages": {
+        "hook": [
+          {
+            "id": "M2-hook-s1",
+            "title": "The Unapproved Launch Date",
+            "body": [
+              "A team needs a launch-readiness summary.",
+              "Meeting notes state the launch date is proposed for 18 November but is not approved.",
+              "Takeaway: Always verify dates against original notes.",
+              "Practice: Examine the unapproved launch date scenario."
+            ],
+            "narration": "Welcome to module two. Let us examine a common workplace challenge using generative AI. Imagine your team holds a critical planning meeting for an upcoming product launch. The raw meeting notes state clearly that the launch date is proposed for eighteenth November, but crucially, it has not yet received formal approval. This distinction is vital for accurate communication.",
+            "objectiveIds": [
+              "O3",
+              "O4"
+            ],
+            "sourceIds": [
+              "S3",
+              "S5",
+              "S6"
+            ]
+          },
+          {
+            "id": "M2-hook-s2",
+            "title": "Spotting the AI Hallucination",
+            "body": [
+              "AI Generated Output: AI Draft: 'The launch is confirmed for November 18.' | Source Notes: 'Proposed for 18 November but is not approved.'",
+              "Actual Source Notes: Risk: AI can turn tentative plans into hard facts. | Impact: Sharing this draft prematurely misleads stakeholders.",
+              "Takeaway: Plausible tone does not guarantee factual accuracy.",
+              "Practice: Compare the AI draft with source notes."
+            ],
+            "narration": "When an artificial intelligence tool summarizes these notes, it might generate a polished sentence claiming that the launch is confirmed for November eighteenth. Notice how the AI strips away the conditional uncertainty present in the original source text. A confident tone can easily disguise an invented fact, leading stakeholders to act on misinformation if we fail to catch it.",
+            "objectiveIds": [
+              "O3",
+              "O4"
+            ],
+            "sourceIds": [
+              "S3",
+              "S5",
+              "S6"
+            ]
+          },
+          {
+            "id": "M2-hook-s3",
+            "title": "Why Rigorous Review Matters",
+            "body": [
+              "Drafting messages and summarizing notes require active oversight.",
+              "Focused follow-up instructions correct AI errors.",
+              "Takeaway: Human oversight prevents costly communication errors.",
+              "Practice: Reflect on the importance of human oversight."
+            ],
+            "narration": "Throughout this module, we will learn how to use AI effectively for everyday tasks like drafting workplace messages and summarizing meeting notes. More importantly, we will master the techniques needed to refine AI outputs using focused follow-up instructions and rigorous comparison against source documents.",
+            "objectiveIds": [
+              "O3",
+              "O4"
+            ],
+            "sourceIds": [
+              "S3",
+              "S5",
+              "S6"
+            ]
+          }
+        ],
+        "worked": [
+          {
+            "id": "M2-worked-example-s1",
+            "title": "Analyzing Summary A",
+            "body": [
+              "AI Summary A: Summary A Statement: 'The launch date is confirmed for 18 November.' | Source Reality: Date is proposed and unapproved.",
+              "Source Notes Reality: Error Type: Altered status from tentative to confirmed. | Correction Needed: Revert status to proposed.",
+              "Takeaway: Summary A introduces an unsupported confirmation status.",
+              "Practice: Examine Summary A discrepancies."
+            ],
+            "narration": "Let us examine a worked example comparing two AI-generated summaries against our launch-readiness meeting notes. In Summary A, the AI states that the launch date is confirmed for eighteenth November. When we compare this against our source notes, which explicitly state the date is proposed but not approved, we immediately spot an altered meaning. Summary A falsely upgrades a tentative timeline into a confirmed fact.",
+            "objectiveIds": [
+              "O3",
+              "O4"
+            ],
+            "sourceIds": [
+              "S3",
+              "S5",
+              "S6"
+            ]
+          },
+          {
+            "id": "M2-worked-example-s2",
+            "title": "Analyzing Summary B",
+            "body": [
+              "AI Summary B: Summary B Statement: 'Maya will draft the customer email by 12 November. The support checklist is assigned to Alex.' | Source Reality: Support checklist owner is missing.",
+              "Source Notes Reality: Error Type: Invented task owner (Alex). | Correction Needed: Flag support checklist as needs clarification.",
+              "Takeaway: Summary B invents an owner for an unassigned task.",
+              "Practice: Examine Summary B discrepancies."
+            ],
+            "narration": "Now let us look at Summary B. While it correctly assigns the customer email task to Maya by twelfth November, it also claims that the support checklist has been assigned to Alex. Reviewing our source notes reveals that the support checklist actually has no owner. Summary B has hallucinated an owner, demonstrating why we must scrutinize every assigned task rather than trusting the output at face value.",
+            "objectiveIds": [
+              "O3",
+              "O4"
+            ],
+            "sourceIds": [
+              "S3",
+              "S5",
+              "S6"
+            ]
+          },
+          {
+            "id": "M2-worked-example-s3",
+            "title": "Correcting the AI Summaries",
+            "body": [
+              "Step 1: Identify specific discrepancies in date status and task ownership.",
+              "Step 2: Issue follow-up: 'Revise launch date to proposed and mark unassigned tasks as needs clarification.'",
+              "Takeaway: Focused follow-up instructions resolve specific AI errors.",
+              "Practice: Compare both corrections with the source. Check the launch status and checklist owner."
+            ],
+            "narration": "To fix these errors, we apply a focused follow-up instruction. We instruct the AI to revise the launch date status back to proposed and to explicitly mark any unassigned tasks as needing clarification. This worked example illustrates how precise identification of discrepancies enables us to write effective corrective prompts.",
+            "objectiveIds": [
+              "O3",
+              "O4"
+            ],
+            "sourceIds": [
+              "S3",
+              "S5",
+              "S6"
+            ]
+          }
+        ],
+        "guided": [
+          {
+            "id": "M2-guided-practice-s1",
+            "title": "Preparing Your Revision",
+            "body": [
+              "Fictional draft: “Hey! Launch is totally happening on 18 November!”",
+              "Source: launch is proposed and not approved.",
+              "Task: identify tone, length and accuracy issues.",
+              "Takeaway: Spot tone issues before writing your follow-up instruction.",
+              "Practice: Write the accuracy and tone issues you identify before continuing."
+            ],
+            "narration": "Consider this fictional announcement: “Hey! Launch is totally happening on 18 November!” The original notes say that the date is proposed and not approved. Identify the accuracy problem and consider whether the casual wording suits a professional update. The aim is not merely to shorten the text; it is to preserve the correct status.",
+            "objectiveIds": [
+              "O3",
+              "O4"
+            ],
+            "sourceIds": [
+              "S3",
+              "S5",
+              "S6"
+            ]
+          },
+          {
+            "id": "M2-guided-practice-s2",
+            "title": "Drafting Your Follow-Up Instruction",
+            "body": [
+              "Write a targeted follow-up instruction.",
+              "Request a professional tone and concise format.",
+              "Preserve the proposed, unapproved status.",
+              "Takeaway: Specific follow-up commands produce targeted improvements.",
+              "Practice: Write a follow-up specifying tone, length, and the unapproved status. Continue when you are ready to compare it."
+            ],
+            "narration": "Now write a focused follow-up instruction. Ask for a concise, professional update, and explicitly require the proposed launch status to remain unchanged. Keep the instruction grounded in the supplied notes. Pause and write your request before comparing it with the model.",
+            "objectiveIds": [
+              "O3",
+              "O4"
+            ],
+            "sourceIds": [
+              "S3",
+              "S5",
+              "S6"
+            ]
+          },
+          {
+            "id": "M2-guided-practice-s3",
+            "title": "Evaluating Your Revision",
+            "body": [
+              "Example: “Use a professional tone in one sentence.”",
+              "“Describe 18 November as proposed and not approved.”",
+              "Compare the revision against the source again.",
+              "Takeaway: Focused follow-ups can improve a draft; check the result against the source.",
+              "Practice: Compare your instruction with the model and identify any missing constraint."
+            ],
+            "narration": "One possible follow-up is: “Use a professional tone in one sentence. Describe 18 November as proposed and not approved.” Your wording may differ. The important checks are the requested tone and length, plus the accurate status. A focused request improves clarity, but the resulting draft still requires comparison with the source.",
+            "objectiveIds": [
+              "O3",
+              "O4"
+            ],
+            "sourceIds": [
+              "S3",
+              "S5",
+              "S6"
+            ]
+          }
+        ],
+        "lab": [
+          {
+            "id": "M2-scenario-s1",
+            "title": "Scenario: review a fictional update",
+            "body": [
+              "Source: launch proposed, not approved.",
+              "Maya drafts the email by 12 November.",
+              "Checklist owner is not recorded.",
+              "Takeaway: High-stakes summaries require rigorous discrepancy checks.",
+              "Practice: Read the supplied facts before assessing the fictional draft."
+            ],
+            "narration": "In this fictional scenario, a colleague prepares a launch update from the meeting notes. The notes say the launch is proposed, Maya will draft the customer email by twelve November, and the support checklist needs an owner. Use these source facts to evaluate the draft on the next scene.",
+            "objectiveIds": [
+              "O3",
+              "O4"
+            ],
+            "sourceIds": [
+              "S3",
+              "S5",
+              "S6"
+            ]
+          },
+          {
+            "id": "M2-scenario-s2",
+            "title": "Scenario: identify unsupported claims",
+            "body": [
+              "Draft: “The launch is approved for 18 November.”",
+              "Draft: “Maya owns the support checklist.”",
+              "Identify changes and missing information.",
+              "Takeaway: Systematic comparison uncovers hidden AI hallucinations.",
+              "Practice: Record both discrepancies and draft a targeted correction. Do not guess the missing owner."
+            ],
+            "narration": "The fictional draft says the launch is approved and Maya owns the support checklist. Compare each statement with the source notes. Identify the altered status and unsupported assignment. Write a focused follow-up that corrects these problems without inventing the missing owner.",
+            "objectiveIds": [
+              "O3",
+              "O4"
+            ],
+            "sourceIds": [
+              "S3",
+              "S5",
+              "S6"
+            ]
+          },
+          {
+            "id": "M2-scenario-s3",
+            "title": "Scenario debrief: check the correction",
+            "body": [
+              "Keep the launch proposed and unapproved.",
+              "Keep Maya assigned to the email only.",
+              "Mark the checklist owner Needs clarification.",
+              "Takeaway: Human review helps catch errors before sharing.",
+              "Practice: Compare your correction with the evidence, then complete the module quiz."
+            ],
+            "narration": "A sound correction keeps the launch proposed, assigns Maya only to the email, and flags the checklist owner for clarification. A follow-up can request those changes, but you still need to verify the resulting summary against the source. Complete the module quiz to check drafting, summarizing, and action planning.",
+            "objectiveIds": [
+              "O3",
+              "O4"
+            ],
+            "sourceIds": [
+              "S3",
+              "S5",
+              "S6"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "M3",
+      "title": "Module 3: Review and use responses responsibly",
+      "durationMinutes": 20,
+      "objectiveIds": [
+        "O5",
+        "O6"
+      ],
+      "sourceIds": [
+        "S4",
+        "S5",
+        "S6"
+      ],
+      "problemHook": {
+        "title": "The Hidden Risk in AI Outputs",
+        "situation": "The Hidden Risk in AI Outputs: A team relied on an AI summary without checking source notes.\nWhen Plausible Meets Incorrect: Generative models can invent details while maintaining fluent language.\nBalancing Speed and Responsibility: AI accelerates drafting, but humans carry the responsibility for final decisions.",
+        "question": "What should you check before trusting an AI response?",
+        "objectiveIds": [
+          "O5",
+          "O6"
+        ],
+        "sourceIds": [
+          "S4",
+          "S5",
+          "S6"
+        ]
+      },
+      "conceptExplainer": {
+        "videos": [
+          {
+            "id": "M3-v1",
+            "title": "The Six-Step Review Process",
+            "plannedMinutes": 3.32,
+            "slides": [
+              {
+                "id": "M3-v1-s1",
+                "title": "The Six-Step Review Process",
+                "body": [
+                  "Step 1: Compare the response with original source information.",
+                  "Step 2: Check important facts, names, dates, and calculations.",
+                  "Takeaway: Systematic comparison prevents costly oversight."
+                ],
+                "narration": "Before using any AI-generated response, you must apply a structured review process. The first two steps require direct comparison against your original source material. Do not just skim the output; actively check specific names, dates, numbers, and key facts to ensure they match your source documents precisely. A common misconception is that if a paragraph looks cohesive, its individual data points must be correct. In reality, models frequently mix up dates or misattribute actions between people. Consider a fictional product team reviewing launch notes. If the notes state that the launch date is proposed for eighteen November but is not approved, a reliable AI output must reflect this exact nuance. When checking facts, names, dates, and calculations, you must ensure the model did not prematurely upgrade a proposed timeline into a confirmed commitment, thereby preventing costly project oversights.",
+                "objectiveIds": [
+                  "O5",
+                  "O6"
+                ],
+                "sourceIds": [
+                  "S4",
+                  "S5",
+                  "S6"
+                ]
+              },
+              {
+                "id": "M3-v1-s2",
+                "title": "Identifying Gaps and Format Errors",
+                "body": [
+                  "Step 3: Identify unsupported claims and missing details.",
+                  "Step 4: Check whether it follows requested format and tone.",
+                  "Takeaway: Detecting omissions is just as crucial as spotting errors."
+                ],
+                "narration": "Moving to steps three and four, you need to look closely at what the AI left out or added on its own. Watch out for unsupported claims—information that sounds plausible but appears nowhere in your source notes. Additionally, verify that the response adheres strictly to any formatting or tone constraints you specified in your prompt. Learners often assume that if an output is well-written, it must include all necessary caveats. Always check for missing details and unauthorized embellishments. For instance, if your team meeting notes state that the support checklist needs an owner, a faulty AI summary might invent a name or omit the gap entirely. Detecting these omissions and catching unsupported claims is just as crucial as spotting direct factual errors to ensure complete accuracy.",
+                "objectiveIds": [
+                  "O5",
+                  "O6"
+                ],
+                "sourceIds": [
+                  "S4",
+                  "S5",
+                  "S6"
+                ]
+              },
+              {
+                "id": "M3-v1-s3",
+                "title": "Privacy and Final Decision",
+                "body": [
+                  "Step 5: Review the text for sensitive information.",
+                  "Step 6: Decide whether to use, revise, or reject.",
+                  "Takeaway: Privacy checks and clear decisions conclude the audit."
+                ],
+                "narration": "The final steps of our review framework address privacy and decision-making. Step five requires checking for accidental inclusion of confidential data or personal identifiers. Step six is your ultimate determination: will you use the response as-is, apply focused follow-up instructions to revise it, or reject it entirely? Remember, deciding to reject an unreliable response is a successful application of this framework, protecting your team from misinformation. Always follow organizational policies when using AI tools, and ensure you use fictional or appropriately anonymized examples during your workflow. By systematically comparing the text against original information, checking sensitive details, and evaluating formatting requirements, you maintain rigorous quality control before finalizing your choice to use, revise, or reject the generated output.",
+                "objectiveIds": [
+                  "O5",
+                  "O6"
+                ],
+                "sourceIds": [
+                  "S4",
+                  "S5",
+                  "S6"
+                ]
+              }
+            ],
+            "midpointQuiz": {
+              "afterSlideId": "M3-v1-s2",
+              "questions": [
+                {
+                  "id": "M3-v1-q1",
+                  "hint": "Look at the first two steps of the review framework.",
+                  "prompt": "Select one answer. Which step in the review process specifically addresses checking names, dates, and calculations?",
+                  "choices": [
+                    "Step 1: Compare with source information",
+                    "Step 2: Check important facts, names, dates, and calculations",
+                    "Step 5: Review for sensitive information"
+                  ],
+                  "correct": 1,
+                  "sourceIds": [
+                    "S4",
+                    "S5",
+                    "S6"
+                  ],
+                  "explanation": "Step 2 specifically focuses on checking important facts, names, dates, and calculations against your source notes.",
+                  "objectiveIds": [
+                    "O5",
+                    "O6"
+                  ]
+                },
+                {
+                  "id": "M3-v1-q2",
+                  "hint": "Unsupported claims represent invented information.",
+                  "prompt": "Select one answer. What should you do when you identify an unsupported claim in an AI output?",
+                  "choices": [
+                    "Assume it is correct if the tone is professional",
+                    "Identify it as unsupported and remove or correct it",
+                    "Publish it immediately to save time"
+                  ],
+                  "correct": 1,
+                  "sourceIds": [
+                    "S4",
+                    "S5",
+                    "S6"
+                  ],
+                  "explanation": "Unsupported claims must be identified and corrected or removed before sharing any workplace message.",
+                  "objectiveIds": [
+                    "O5",
+                    "O6"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "M3-v2",
+            "title": "Recognizing and Protecting Sensitive Information",
+            "plannedMinutes": 3.46,
+            "slides": [
+              {
+                "id": "M3-v2-s1",
+                "title": "Recognizing Sensitive Information",
+                "body": [
+                  "Identify personal identifiable information and proprietary data.",
+                  "Recognize risks of entering unverified data into AI tools.",
+                  "Takeaway: Protect confidential data before prompt submission."
+                ],
+                "narration": "Before you enter information into an AI tool, consider whether it is personal, confidential, or sensitive. The supplied policy says not to enter it unless both the tool and the intended use are authorized. That means an employee home address, client identifier, or internal financial detail needs careful treatment; do not assume an internal-looking tool is automatically approved for every use. Imagine a fictional manager who wants help summarizing a team update. A draft prompt includes a person’s home address, but the task only needs their role. The manager can remove the address and use a fictional example for this course. If real information is necessary, check the applicable organization policy and authorization before entering it. A confident AI response tells you nothing about whether the tool is authorized to handle the input.",
+                "objectiveIds": [
+                  "O5",
+                  "O6"
+                ],
+                "sourceIds": [
+                  "S4",
+                  "S5",
+                  "S6"
+                ]
+              },
+              {
+                "id": "M3-v2-s2",
+                "title": "Anonymization and Authorization",
+                "body": [
+                  "For course practice, use fictional or appropriately anonymized examples.",
+                  "Before entering real sensitive data, verify the tool and intended use are authorized.",
+                  "Takeaway: Anonymize examples to maintain compliance."
+                ],
+                "narration": "For course exercises, use fictional or appropriately anonymized examples. This reduces the chance of exposing a real person’s details while allowing you to practice the review process. Consider a fictional team preparing a launch summary: the task can refer to a team member by role instead of a real name, and it does not need a home address at all. Removing one name does not automatically make a record anonymous; a combination of other details may still identify someone. Check your organization’s policy and seek guidance when you are unsure whether anonymization is appropriate. For actual workplace use, the supplied policy permits sensitive information only when both the tool and intended use are authorized. Do not assume that changing a label alone grants authorization, and check the output for sensitive information before sharing it.",
+                "objectiveIds": [
+                  "O5",
+                  "O6"
+                ],
+                "sourceIds": [
+                  "S4",
+                  "S5",
+                  "S6"
+                ]
+              },
+              {
+                "id": "M3-v2-s3",
+                "title": "Handling Borderline Privacy Cases",
+                "body": [
+                  "Assess whether aggregated data triggers privacy rules.",
+                  "Consult organizational policy when authorization is unclear.",
+                  "Takeaway: When in doubt, consult policy or redact data."
+                ],
+                "narration": "Borderline privacy cases often arise when dealing with aggregated metrics, generalized team schedules, or partially de-identified operational notes. If you are unsure whether a specific dataset qualifies as confidential or restricted, treat it as sensitive until proven otherwise through formal organizational channels. Imagine an analyst reviewing a project timeline that mentions general milestone windows without listing specific client names. Even though direct identifiers are missing, the combination of internal metrics might still reveal proprietary strategies. When authorization is unclear, you must consult your organization's established AI policies or completely redact the questionable details before proceeding. Establishing this cautious, methodical habit prevents accidental policy breaches, protects proprietary assets, and ensures your daily generative AI usage remains fully aligned with corporate governance standards and regulatory requirements.",
+                "objectiveIds": [
+                  "O5",
+                  "O6"
+                ],
+                "sourceIds": [
+                  "S4",
+                  "S5",
+                  "S6"
+                ]
+              }
+            ],
+            "midpointQuiz": {
+              "afterSlideId": "M3-v2-s2",
+              "questions": [
+                {
+                  "id": "M3-v2-q1",
+                  "hint": "Review organizational policy requirements.",
+                  "prompt": "Select one answer. When is it permissible to enter personal or confidential client data into an AI tool?",
+                  "choices": [
+                    "When the task needs a faster summary",
+                    "When the tool and intended use are authorized",
+                    "When the data belongs to your own team"
+                  ],
+                  "correct": 1,
+                  "sourceIds": [
+                    "S4",
+                    "S5",
+                    "S6"
+                  ],
+                  "explanation": "Organizational policy forbids entering confidential data unless the tool and use case are formally authorized.",
+                  "objectiveIds": [
+                    "O5",
+                    "O6"
+                  ]
+                },
+                {
+                  "id": "M3-v2-q2",
+                  "hint": "Think about data protection and anonymization.",
+                  "prompt": "Select one answer. What is the recommended practice when an operational prompt requires real client details?",
+                  "choices": [
+                    "Use fictional or appropriately anonymized examples",
+                    "Include full contact details for clarity",
+                    "Ask the AI to invent realistic names"
+                  ],
+                  "correct": 0,
+                  "sourceIds": [
+                    "S4",
+                    "S5",
+                    "S6"
+                  ],
+                  "explanation": "Use fictional or appropriately anonymized examples for course practice. For real sensitive information, confirm that the tool and intended use are authorized.",
+                  "objectiveIds": [
+                    "O5",
+                    "O6"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "M3-v3",
+            "title": "Evaluating Criteria and Decision-Making",
+            "plannedMinutes": 3.71,
+            "slides": [
+              {
+                "id": "M3-v3-s1",
+                "title": "Evaluating Response Criteria",
+                "body": [
+                  "Check accuracy against the source, and assess relevance and completeness.",
+                  "Review the response for sensitive information before use.",
+                  "Takeaway: Use four core criteria to evaluate every output."
+                ],
+                "narration": "When working with generative artificial intelligence, evaluating outputs systematically is essential to maintaining high professional standards. Imagine an imaginary project team reviewing a launch readiness summary generated by an AI tool. To evaluate this output effectively, you must assess its accuracy by comparing every claim directly against the original meeting notes, ensuring no details were fabricated. Next, check completeness to guarantee that all required items, such as pending action items and unassigned owners, are fully accounted for. A confident tone can easily mask inaccuracies, which is why a rigorous review is necessary. For example, if the notes state that a launch date is merely proposed rather than approved, the AI response must accurately reflect that tentative status. By verifying relevance and completeness against your source material, you ensure that the final output is trustworthy and reliable before you decide to use, revise, or reject it in your daily workflow. Finally, review the response for sensitive information and check that its use follows the applicable policy.",
+                "objectiveIds": [
+                  "O5",
+                  "O6"
+                ],
+                "sourceIds": [
+                  "S4",
+                  "S5",
+                  "S6"
+                ]
+              },
+              {
+                "id": "M3-v3-s2",
+                "title": "Applying Focused Follow-Ups",
+                "body": [
+                  "Issue precise instructions to correct specific flaws.",
+                  "Understand that follow-ups improve drafts but do not guarantee perfection.",
+                  "Takeaway: Targeted instructions fix specific output errors."
+                ],
+                "narration": "Even with a well-crafted prompt, an initial AI response often requires refinement. Consider our fictional project team reviewing a draft email where the AI incorrectly assigned a support checklist owner who was never mentioned in the original meeting notes. Instead of discarding the entire response, you can apply focused follow-up instructions to correct the error. You might issue precise commands such as, remove claims not supported by the notes or separate confirmed decisions from open suggestions. These targeted follow-up instructions help steer the model toward a more accurate draft. However, it is vital to remember that follow-up instructions improve drafts but do not guarantee absolute correctness. After applying corrections, you must re-examine the updated output against your original source material, ensuring all unsupported claims are completely eliminated before any professional communication is finalized or shared across the organization.",
+                "objectiveIds": [
+                  "O5",
+                  "O6"
+                ],
+                "sourceIds": [
+                  "S4",
+                  "S5",
+                  "S6"
+                ]
+              },
+              {
+                "id": "M3-v3-s3",
+                "title": "Justifying Use, Revise, or Reject",
+                "body": [
+                  "Use a verified, appropriate response; revise a correctable draft and recheck it.",
+                  "Reject when a reliable or authorized response cannot be obtained.",
+                  "Takeaway: Your justification ties evidence directly to your decision."
+                ],
+                "narration": "The final step is to decide whether to use, revise, or reject the response, and explain why using evidence. Imagine a fictional team reviewing a launch summary against the supplied meeting notes. A response that preserves the proposed date, the customer-email assignment, the missing checklist owner, and the next review date could be used if it also meets the requested format and privacy requirements. A draft that gets the key facts wrong might be revised with a focused instruction, then checked again against the original notes. If errors are pervasive, the response cannot be checked reliably, or using it would breach policy, reject it and use a safer approach. An invented confirmed date is a serious error, but the evidence and context determine whether revision is safe; a follow-up never replaces human verification.",
+                "objectiveIds": [
+                  "O5",
+                  "O6"
+                ],
+                "sourceIds": [
+                  "S4",
+                  "S5",
+                  "S6"
+                ]
+              }
+            ],
+            "midpointQuiz": {
+              "afterSlideId": "M3-v3-s2",
+              "questions": [
+                {
+                  "id": "M3-v3-q1",
+                  "hint": "Recall the evaluation framework topics.",
+                  "prompt": "Select one answer. What are the four core criteria used to evaluate an AI-generated response?",
+                  "choices": [
+                    "Speed, length, vocabulary, and style",
+                    "Accuracy, relevance, completeness, and privacy",
+                    "Cost, popularity, complexity, and format"
+                  ],
+                  "correct": 1,
+                  "sourceIds": [
+                    "S4",
+                    "S5",
+                    "S6"
+                  ],
+                  "explanation": "Responses are evaluated against accuracy, relevance, completeness, and privacy criteria before use.",
+                  "objectiveIds": [
+                    "O5",
+                    "O6"
+                  ]
+                },
+                {
+                  "id": "M3-v3-q2",
+                  "hint": "Think about refining imperfect outputs.",
+                  "prompt": "Select one answer. What is the primary purpose of issuing focused follow-up instructions?",
+                  "choices": [
+                    "To make the AI model run faster",
+                    "To correct specific flaws like tone or unsupported claims",
+                    "To replace source meeting notes entirely"
+                  ],
+                  "correct": 1,
+                  "sourceIds": [
+                    "S4",
+                    "S5",
+                    "S6"
+                  ],
+                  "explanation": "Focused follow-ups help correct specific flaws such as tone issues or unsupported claims in an AI draft.",
+                  "objectiveIds": [
+                    "O5",
+                    "O6"
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "workedExamples": [
+        {
+          "id": "M3-example",
+          "title": "Auditing a Launch-Readiness Summary",
+          "problem": "Auditing a Launch-Readiness Summary: Source Notes: Launch date is proposed for 18 Nov (unapproved). Maya drafts customer email by 12 Nov. Support checklist needs an owner. Next review 14 Nov. AI Output: Launch is confirmed for 18 Nov. Maya owns the support checklist. Review is on 14 Nov.\nApplying Focused Correction: Identify errors: Launch date status altered; support checklist owner invented. Issue follow-up: 'Revise the summary. State that the launch date is proposed, not approved, and mark the support checklist owner as needs clarification.'\nFinal Decision and Justification: Revised Output: Launch date 18 Nov (proposed). Maya drafts customer email by 12 Nov. Support checklist owner: Needs clarification. Review on 14 Nov. Decision: Use the revised response because all facts now align with source notes.",
+          "reasoning": [
+            "Auditing a Launch-Readiness Summary",
+            "Applying Focused Correction",
+            "Final Decision and Justification"
+          ],
+          "result": "Compare the result with the supplied notes.",
+          "objectiveIds": [
+            "O5",
+            "O6"
+          ],
+          "sourceIds": [
+            "S4",
+            "S5",
+            "S6"
+          ]
+        }
+      ],
+      "guidedPractice": {
+        "title": "Privacy Identification Audit",
+        "instructions": "Privacy Identification Audit: Fictional sample prompt: Summarize the update from a team lead who lives at 12 Example Street and can be reached at 555-0100. Identify the personal details. What should be removed, or checked for authorization, before use?\nModel Feedback on Privacy Audit: The fictional home address and phone number are personal information. Remove them when they are not needed. For real sensitive data, check that both the AI tool and intended use are authorized under organizational policy.",
+        "steps": [
+          {
+            "id": "M3-practice",
+            "instruction": "Privacy Identification Audit: Fictional sample prompt: Summarize the update from a team lead who lives at 12 Example Street and can be reached at 555-0100. Identify the personal details. What should be removed, or checked for authorization, before use?\nModel Feedback on Privacy Audit: The fictional home address and phone number are personal information. Remove them when they are not needed. For real sensitive data, check that both the AI tool and intended use are authorized under organizational policy.",
+            "hint": "Use the supplied facts.",
+            "evidence": "Explain the choice using the supplied information.",
+            "objectiveIds": [
+              "O5",
+              "O6"
+            ],
+            "sourceIds": [
+              "S4",
+              "S5",
+              "S6"
+            ]
+          }
+        ]
+      },
+      "scenarioLab": {
+        "title": "Evaluating a Flawed Summary",
+        "scenarios": [
+          {
+            "id": "M3-scenario",
+            "title": "Evaluating a Flawed Summary",
+            "situation": "Evaluating a Flawed Summary: Source notes: Launch proposed for 18 November, not approved. Maya drafts the customer email by 12 November. The support checklist needs an owner. Next review: 14 November. AI draft: Launch confirmed for 18 November. Maya owns the support checklist. Next review: 14 November.\nReasoned Action and Decision: Choose use, revise, or reject. Explain your choice using evidence from the source notes. If you choose revision, state a focused correction and explain how you would check the result.\nScenario Feedback and Module Wrap-Up: A defensible choice is revise: restore the proposed date, flag the missing checklist owner, and include Maya’s email task. Check the revision against all source notes and privacy requirements before use. Reject if a reliable, authorized response cannot be obtained.",
+            "challenge": "Explain your decision using the supplied evidence.",
+            "expectedEvidence": "Compare the draft with the supplied information and explain your decision.",
+            "objectiveIds": [
+              "O5",
+              "O6"
+            ],
+            "sourceIds": [
+              "S4",
+              "S5",
+              "S6"
+            ]
+          }
+        ]
+      },
+      "moduleQuiz": {
+        "title": "Module quiz",
+        "instructions": "Select one answer for each question.",
+        "questions": [
+          {
+            "id": "M3-end-q1",
+            "hint": "Recall model behavior regarding tone and truth.",
+            "prompt": "Select one answer. Which of the following best describes the risk of a confident tone in an AI-generated response?",
+            "choices": [
+              "It guarantees that all facts and figures are verified.",
+              "It does not prove accuracy and can mask invented details.",
+              "It indicates that the tool has accessed secure internal databases."
+            ],
+            "correct": 1,
+            "sourceIds": [
+              "S4",
+              "S5",
+              "S6"
+            ],
+            "explanation": "A confident tone is a stylistic feature of language models and does not guarantee factual accuracy.",
+            "objectiveIds": [
+              "O5",
+              "O6"
+            ]
+          },
+          {
+            "id": "M3-end-q2",
+            "hint": "Compare output claims against source notes.",
+            "prompt": "Select one answer. When reviewing an AI-generated summary of meeting notes, what indicates an unsupported claim?",
+            "choices": [
+              "The claim uses workplace vocabulary.",
+              "The claim uses a confident tone.",
+              "The claim adds an owner absent from the notes."
+            ],
+            "correct": 2,
+            "sourceIds": [
+              "S4",
+              "S5",
+              "S6"
+            ],
+            "explanation": "An unsupported claim introduces information not present in the original source notes.",
+            "objectiveIds": [
+              "O5",
+              "O6"
+            ]
+          },
+          {
+            "id": "M3-end-q3",
+            "hint": "Consider whether the personal information is necessary.",
+            "prompt": "Select one answer. A prompt includes a real employee home address that the task does not need. What should you do?",
+            "choices": [
+              "Remove the address before entering the prompt.",
+              "Keep the address because the task is internal.",
+              "Share the address if the response sounds fluent."
+            ],
+            "correct": 0,
+            "sourceIds": [
+              "S4"
+            ],
+            "explanation": "Remove unnecessary personal information. Sensitive information requires an authorized tool and intended use under organizational policy.",
+            "objectiveIds": [
+              "O5"
+            ]
+          },
+          {
+            "id": "M3-end-q4",
+            "hint": "Focused corrections still require a source check.",
+            "prompt": "Select one answer. A draft wrongly confirms a proposed launch date but can be corrected against the source. What is a defensible next step?",
+            "choices": [
+              "Revise the draft and compare it with the notes.",
+              "Use the draft because its language is confident.",
+              "Confirm the date without consulting the notes."
+            ],
+            "correct": 0,
+            "sourceIds": [
+              "S4",
+              "S5",
+              "S6"
+            ],
+            "explanation": "Request a focused correction and verify the revised draft against the original notes before use.",
+            "objectiveIds": [
+              "O6"
+            ]
+          }
+        ]
+      },
+      "narratedStages": {
+        "hook": [
+          {
+            "id": "M3-hook-s1",
+            "title": "The Hidden Risk in AI Outputs",
+            "body": [
+              "A team relied on an AI summary without checking source notes.",
+              "Takeaway: Confident tone does not equal accuracy."
+            ],
+            "narration": "Imagine a fictional team relying on an AI-generated launch summary without checking it against the original meeting notes. The summary sounds professional, but it changes a proposed date into a confirmed one and invents an owner. The team could make the wrong decision if it shares that draft without checking.",
+            "objectiveIds": [
+              "O5",
+              "O6"
+            ],
+            "sourceIds": [
+              "S4",
+              "S5",
+              "S6"
+            ]
+          },
+          {
+            "id": "M3-hook-s2",
+            "title": "When Plausible Meets Incorrect",
+            "body": [
+              "Generative models can invent details while maintaining fluent language.",
+              "Takeaway: Always verify AI claims against primary sources."
+            ],
+            "narration": "Generative models produce text based on statistical patterns, not factual truth. They can effortlessly invent owners, deadlines, or facts while sounding completely authoritative. Recognizing this limitation is the first step toward responsible AI use in our workplace.",
+            "objectiveIds": [
+              "O5",
+              "O6"
+            ],
+            "sourceIds": [
+              "S4",
+              "S5",
+              "S6"
+            ]
+          },
+          {
+            "id": "M3-hook-s3",
+            "title": "Balancing Speed and Responsibility",
+            "body": [
+              "AI accelerates drafting, but humans carry the responsibility for final decisions.",
+              "Takeaway: Human review is non-negotiable for official outputs."
+            ],
+            "narration": "Throughout this module, you will learn how to systematically check facts, protect sensitive information, and decide whether to use, revise, or reject AI responses. Let us dive into the core concepts of responsible review.",
+            "objectiveIds": [
+              "O5",
+              "O6"
+            ],
+            "sourceIds": [
+              "S4",
+              "S5",
+              "S6"
+            ]
+          }
+        ],
+        "worked": [
+          {
+            "id": "M3-worked-example-s1",
+            "title": "Auditing a Launch-Readiness Summary",
+            "body": [
+              "Source Notes: Launch date is proposed for 18 Nov (unapproved). Maya drafts customer email by 12 Nov. Support checklist needs an owner. Next review 14 Nov.",
+              "AI Output: Launch is confirmed for 18 Nov. Maya owns the support checklist. Review is on 14 Nov.",
+              "Takeaway: Initial audit reveals fabricated status and wrong task ownership."
+            ],
+            "narration": "Let us walk through a worked example. Here we have meeting notes stating the launch date is proposed but unapproved, Maya drafts the email, and the support checklist lacks an owner. The AI output incorrectly claims the launch is confirmed and assigns the checklist to Maya. Watch how we audit these discrepancies.",
+            "objectiveIds": [
+              "O5",
+              "O6"
+            ],
+            "sourceIds": [
+              "S4",
+              "S5",
+              "S6"
+            ]
+          },
+          {
+            "id": "M3-worked-example-s2",
+            "title": "Applying Focused Correction",
+            "body": [
+              "Identify errors: Launch date status altered; support checklist owner invented.",
+              "Issue follow-up: 'Revise the summary. State that the launch date is proposed, not approved, and mark the support checklist owner as needs clarification.'",
+              "Takeaway: Targeted follow-up instructions address specific factual errors."
+            ],
+            "narration": "To fix this, we do not rewrite the whole prompt from scratch. We issue a focused follow-up instruction pointing out the exact errors: restoring the proposed status of the launch date and correctly marking the support checklist as needing clarification.",
+            "objectiveIds": [
+              "O5",
+              "O6"
+            ],
+            "sourceIds": [
+              "S4",
+              "S5",
+              "S6"
+            ]
+          },
+          {
+            "id": "M3-worked-example-s3",
+            "title": "Final Decision and Justification",
+            "body": [
+              "Revised Output: Launch date 18 Nov (proposed). Maya drafts customer email by 12 Nov. Support checklist owner: Needs clarification. Review on 14 Nov.",
+              "Decision: Use the revised response because all facts now align with source notes.",
+              "Takeaway: Verified alignment justifies moving from revise to use."
+            ],
+            "narration": "After receiving the revised output, we check it against our four criteria. Because the launch status is accurate, the email task is correctly assigned, and the missing owner is flagged, we successfully reach a decision to use the response.",
+            "objectiveIds": [
+              "O5",
+              "O6"
+            ],
+            "sourceIds": [
+              "S4",
+              "S5",
+              "S6"
+            ]
+          }
+        ],
+        "guided": [
+          {
+            "id": "M3-guided-practice-s1",
+            "title": "Privacy Identification Audit",
+            "body": [
+              "Fictional sample prompt: Summarize the update from a team lead who lives at 12 Example Street and can be reached at 555-0100.",
+              "Identify the personal details. What should be removed, or checked for authorization, before use?",
+              "Takeaway: Identify and remove PII before AI submission.",
+              "Practice: Pause and identify the fictional address and phone number; consider whether the task needs either detail."
+            ],
+            "narration": "Now practice with a fictional prompt. It includes a team lead’s sample home address and phone number, neither of which is needed to summarize the update. Pause and identify the personal information. Decide what you would remove and what you would check if real sensitive information were necessary for the task.",
+            "objectiveIds": [
+              "O5",
+              "O6"
+            ],
+            "sourceIds": [
+              "S4",
+              "S5",
+              "S6"
+            ]
+          },
+          {
+            "id": "M3-guided-practice-s2",
+            "title": "Model Feedback on Privacy Audit",
+            "body": [
+              "The fictional home address and phone number are personal information. Remove them when they are not needed.",
+              "For real sensitive data, check that both the AI tool and intended use are authorized under organizational policy.",
+              "Takeaway: Remove unnecessary personal details and check authorization when sensitive data is needed."
+            ],
+            "narration": "The sample address and phone number are personal information. They are unnecessary for this summary, so remove them. If a real task genuinely needs sensitive information, first check whether the tool and intended use are authorized under your organization’s policy. The fictional details here are for practice only.",
+            "objectiveIds": [
+              "O5",
+              "O6"
+            ],
+            "sourceIds": [
+              "S4",
+              "S5",
+              "S6"
+            ]
+          }
+        ],
+        "lab": [
+          {
+            "id": "M3-scenario-s1",
+            "title": "Evaluating a Flawed Summary",
+            "body": [
+              "Source notes: Launch proposed for 18 November, not approved. Maya drafts the customer email by 12 November. The support checklist needs an owner. Next review: 14 November.",
+              "AI draft: Launch confirmed for 18 November. Maya owns the support checklist. Next review: 14 November.",
+              "Takeaway: Systematic evaluation exposes hidden inaccuracies.",
+              "Practice: Pause to compare the draft with the supplied notes using accuracy, relevance, completeness, and privacy."
+            ],
+            "narration": "Examine this fictional scenario. Compare the supplied source notes with the AI draft on screen. Check accuracy and completeness first, then consider whether the draft is relevant and whether any sensitive information appears. Pause and identify the specific changes in meaning and the missing task.",
+            "objectiveIds": [
+              "O5",
+              "O6"
+            ],
+            "sourceIds": [
+              "S4",
+              "S5",
+              "S6"
+            ]
+          },
+          {
+            "id": "M3-scenario-s2",
+            "title": "Reasoned Action and Decision",
+            "body": [
+              "Choose use, revise, or reject. Explain your choice using evidence from the source notes.",
+              "If you choose revision, state a focused correction and explain how you would check the result.",
+              "Takeaway: Justify your operational decision with concrete evidence.",
+              "Practice: Select Use, Revise, or Reject and write a brief justification statement matching your scorecard."
+            ],
+            "narration": "Choose whether to use, revise, or reject this draft. Give a reason grounded in the notes. If you would revise it, describe a focused correction and explain why you must compare the revised output with the notes again before using it.",
+            "objectiveIds": [
+              "O5",
+              "O6"
+            ],
+            "sourceIds": [
+              "S4",
+              "S5",
+              "S6"
+            ]
+          },
+          {
+            "id": "M3-scenario-s3",
+            "title": "Scenario Feedback and Module Wrap-Up",
+            "body": [
+              "A defensible choice is revise: restore the proposed date, flag the missing checklist owner, and include Maya’s email task.",
+              "Check the revision against all source notes and privacy requirements before use. Reject if a reliable, authorized response cannot be obtained.",
+              "Takeaway: Revise and recheck a correctable draft; reject it if a reliable response cannot be obtained."
+            ],
+            "narration": "One defensible choice is to revise. The draft wrongly confirms the proposed launch date, invents the checklist owner, and omits Maya’s email task. Ask for those details to be corrected, then compare the revised response against the source notes. Rejecting may also be appropriate if you cannot obtain a reliable or authorized response.",
+            "objectiveIds": [
+              "O5",
+              "O6"
+            ],
+            "sourceIds": [
+              "S4",
+              "S5",
+              "S6"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "courseEnd": {
+    "miniProject": {
+      "title": "Explore a meeting assistant",
+      "brief": "Explore a ready-made, read-only meeting-assistant simulation. Compare prerecorded examples with fictional meeting notes; no live AI call or external action occurs.",
+      "deliverable": "Run both cases and submit your explanations of prompt design, source accuracy, privacy and review decisions.",
+      "rubric": [
+        "Explain a useful AI task, its limitation, and how the structured prompt specifies task, context, constraints and format.",
+        "Compare both simulated responses with the meeting notes and identify a changed date status and missing or invented owner.",
+        "Explain a focused follow-up and how to check a revised summary or action list against the original notes.",
+        "Identify sensitive information handling and justify whether to use, revise or reject a response against review criteria."
+      ],
+      "objectiveIds": [
+        "O1",
+        "O2",
+        "O3",
+        "O4",
+        "O5",
+        "O6"
+      ],
+      "sourceIds": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5",
+        "S6",
+        "S7"
+      ],
+      "sandbox": {
+        "version": 1,
+        "runtime": "data-workflow",
+        "instructions": [
+          "Inspect the read-only simulated meeting-assistant workflow.",
+          "Run the vague and structured examples and compare both outputs with the original notes.",
+          "Answer each explanation question and submit inside the course."
+        ],
+        "fields": [
+          {
+            "id": "mode",
+            "label": "Simulation mode",
+            "help": "The ready-made workflow is read-only.",
+            "starter": "simulated"
+          }
+        ],
+        "inputs": [
+          {
+            "id": "prompt",
+            "label": "Prompt shown to the fictional assistant",
+            "sample": "Summarize these notes."
+          },
+          {
+            "id": "response",
+            "label": "Simulated response",
+            "sample": "The launch is confirmed for 18 November. Maya owns the support checklist."
+          },
+          {
+            "id": "notes",
+            "label": "Source meeting notes",
+            "sample": "Launch proposed for 18 November, not approved. Maya drafts the customer email by 12 November. Support checklist needs an owner. Next review on 14 November."
+          }
+        ],
+        "starterSteps": [
+          {
+            "id": "showPrompt",
+            "output": "prompt",
+            "operation": "copy",
+            "expression": "input.prompt"
+          },
+          {
+            "id": "showResponse",
+            "output": "response",
+            "operation": "copy",
+            "expression": "input.response"
+          },
+          {
+            "id": "showNotes",
+            "output": "notes",
+            "operation": "copy",
+            "expression": "input.notes"
+          }
+        ],
+        "tests": [
+          {
+            "id": "vague",
+            "label": "Vague prompt example",
+            "inputs": {
+              "prompt": "Summarize these notes.",
+              "response": "The launch is confirmed for 18 November. Maya owns the support checklist.",
+              "notes": "Launch proposed for 18 November, not approved. Maya drafts the customer email by 12 November. Support checklist needs an owner. Next review on 14 November."
+            }
+          },
+          {
+            "id": "structured",
+            "label": "Structured prompt example",
+            "inputs": {
+              "prompt": "Summarize the supplied meeting notes in bullets. Separate decisions, questions and actions; preserve proposed status; mark missing owners Needs clarification.",
+              "response": "Proposed launch: 18 November, not approved. Maya drafts the customer email by 12 November. Support checklist owner: Needs clarification. Next review: 14 November.",
+              "notes": "Launch proposed for 18 November, not approved. Maya drafts the customer email by 12 November. Support checklist needs an owner. Next review on 14 November."
+            }
+          }
+        ],
+        "criteria": [
+          {
+            "id": "C1",
+            "rubricIndex": 0,
+            "weight": 25,
+            "objectiveIds": [
+              "O1",
+              "O2"
+            ],
+            "sourceIds": [
+              "S1",
+              "S2"
+            ],
+            "videoIds": [
+              "M1-M1-v1",
+              "M1-M1-v2",
+              "M1-M1-v3"
+            ],
+            "checks": [
+              {
+                "testId": "vague",
+                "path": "output.response",
+                "operator": "notEmpty"
+              },
+              {
+                "testId": "structured",
+                "path": "output.response",
+                "operator": "notEmpty"
+              }
+            ]
+          },
+          {
+            "id": "C2",
+            "rubricIndex": 1,
+            "weight": 25,
+            "objectiveIds": [
+              "O4"
+            ],
+            "sourceIds": [
+              "S4",
+              "S5",
+              "S6"
+            ],
+            "videoIds": [
+              "M2-v2",
+              "M2-v3"
+            ],
+            "checks": [
+              {
+                "testId": "vague",
+                "path": "output.response",
+                "operator": "notEmpty"
+              },
+              {
+                "testId": "structured",
+                "path": "output.response",
+                "operator": "notEmpty"
+              }
+            ]
+          },
+          {
+            "id": "C3",
+            "rubricIndex": 2,
+            "weight": 25,
+            "objectiveIds": [
+              "O3",
+              "O4"
+            ],
+            "sourceIds": [
+              "S3",
+              "S5",
+              "S6"
+            ],
+            "videoIds": [
+              "M2-v1",
+              "M2-v2",
+              "M2-v3"
+            ],
+            "checks": [
+              {
+                "testId": "vague",
+                "path": "output.response",
+                "operator": "notEmpty"
+              },
+              {
+                "testId": "structured",
+                "path": "output.response",
+                "operator": "notEmpty"
+              }
+            ]
+          },
+          {
+            "id": "C4",
+            "rubricIndex": 3,
+            "weight": 25,
+            "objectiveIds": [
+              "O5",
+              "O6"
+            ],
+            "sourceIds": [
+              "S4",
+              "S5",
+              "S6"
+            ],
+            "videoIds": [
+              "M3-v1",
+              "M3-v2",
+              "M3-v3"
+            ],
+            "checks": [
+              {
+                "testId": "vague",
+                "path": "output.response",
+                "operator": "notEmpty"
+              },
+              {
+                "testId": "structured",
+                "path": "output.response",
+                "operator": "notEmpty"
+              }
+            ]
+          }
+        ],
+        "guided": {
+          "estimatedMinutes": 12,
+          "artifact": {
+            "version": 1,
+            "values": {
+              "mode": "simulated"
+            },
+            "steps": [
+              {
+                "id": "showPrompt",
+                "output": "prompt",
+                "operation": "copy",
+                "expression": "input.prompt"
+              },
+              {
+                "id": "showResponse",
+                "output": "response",
+                "operation": "copy",
+                "expression": "input.response"
+              },
+              {
+                "id": "showNotes",
+                "output": "notes",
+                "operation": "copy",
+                "expression": "input.notes"
+              }
+            ]
+          },
+          "stages": [
+            {
+              "id": "inspect",
+              "title": "Inspect the ready-made workflow",
+              "instruction": "This is a simulation: the responses are prerecorded examples, not live AI. Review the workflow and the source notes.",
+              "stepIds": [
+                "showNotes"
+              ],
+              "promptIds": []
+            },
+            {
+              "id": "compare",
+              "title": "Run and compare examples",
+              "instruction": "Run both examples. Compare their prompts and responses against the same source notes, then explain your findings.",
+              "stepIds": [
+                "showPrompt",
+                "showResponse"
+              ],
+              "promptIds": [
+                "P1",
+                "P2"
+              ]
+            },
+            {
+              "id": "decide",
+              "title": "Explain your review",
+              "instruction": "Explain a focused correction, privacy handling and your final decision; submit your explanations.",
+              "stepIds": [],
+              "promptIds": [
+                "P3",
+                "P4"
+              ]
+            }
+          ],
+          "prompts": [
+            {
+              "id": "P1",
+              "label": "Explain one useful task for AI, a limitation, and how the structured prompt gives task, context, constraints and format.",
+              "hint": "Mention the four prompt parts and why a fluent answer still needs checking.",
+              "criterionId": "C1",
+              "minWords": 15,
+              "conceptGroups": [
+                [
+                  "task"
+                ],
+                [
+                  "context"
+                ],
+                [
+                  "constraint",
+                  "constraints"
+                ],
+                [
+                  "format"
+                ],
+                [
+                  "check",
+                  "review",
+                  "verify"
+                ]
+              ]
+            },
+            {
+              "id": "P2",
+              "label": "Compare the simulated responses with the notes. Identify the date status and the checklist owner.",
+              "hint": "The launch is proposed, and the checklist needs an owner.",
+              "criterionId": "C2",
+              "minWords": 15,
+              "conceptGroups": [
+                [
+                  "proposed",
+                  "unapproved"
+                ],
+                [
+                  "owner"
+                ],
+                [
+                  "checklist"
+                ]
+              ]
+            },
+            {
+              "id": "P3",
+              "label": "Give a focused follow-up and explain how you would check the revised summary or action list.",
+              "hint": "Correct a specific issue and compare the revision with the original notes.",
+              "criterionId": "C3",
+              "minWords": 15,
+              "conceptGroups": [
+                [
+                  "revision",
+                  "revise",
+                  "follow up",
+                  "follow-up"
+                ],
+                [
+                  "notes",
+                  "source"
+                ],
+                [
+                  "check",
+                  "compare",
+                  "verify"
+                ]
+              ]
+            },
+            {
+              "id": "P4",
+              "label": "Explain how you would handle sensitive data and justify using, revising or rejecting one response.",
+              "hint": "Sensitive information needs authorization; link your decision to accuracy or completeness.",
+              "criterionId": "C4",
+              "minWords": 15,
+              "conceptGroups": [
+                [
+                  "sensitive",
+                  "personal",
+                  "confidential"
+                ],
+                [
+                  "authorization",
+                  "authorized",
+                  "remove"
+                ],
+                [
+                  "revise",
+                  "reject",
+                  "use"
+                ],
+                [
+                  "accuracy",
+                  "accurate",
+                  "complete",
+                  "completeness"
+                ]
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "masteryGate": {
+      "title": "AI Essentials final assessment",
+      "instructions": "Select one answer unless a question says Select all correct answers. Multiple-answer questions require every correct option and no incorrect options.",
+      "passPercent": 80,
+      "questions": [
+        {
+          "id": "final-m1-1",
+          "hint": "The taught capability is help with wording or organization, while people retain review and approval decisions.",
+          "prompt": "Select one answer. Which use matches the capability taught here?",
+          "choices": [
+            "Confirm facts from fluent wording.",
+            "Draft a message from talking points.",
+            "Approve a proposed launch date."
+          ],
+          "correct": 1,
+          "sourceIds": [
+            "S1"
+          ],
+          "explanation": "AI can assist with drafting from supplied material; fluency does not verify facts or grant approval.",
+          "objectiveIds": [
+            "O1"
+          ]
+        },
+        {
+          "id": "final-m1-2",
+          "hint": "Check the source rather than judging only whether the response sounds professional.",
+          "prompt": "Select one answer. Why can a polished summary still be unreliable?",
+          "choices": [
+            "It may add unsupported information.",
+            "It must use incomplete sentences.",
+            "It cannot organize supplied notes."
+          ],
+          "correct": 0,
+          "sourceIds": [
+            "S1"
+          ],
+          "explanation": "The important limitation is that plausible wording can contain invented or altered information.",
+          "objectiveIds": [
+            "O1"
+          ]
+        },
+        {
+          "id": "final-m1-3",
+          "hint": "Find the task, supplied notes, a source boundary, and a specific output structure in the same request.",
+          "prompt": "Select one answer. Which prompt includes all four useful parts?",
+          "choices": [
+            "Summarize these notes; add likely dates; arrange them as usual.",
+            "Summarize these notes; guess missing owners; list decisions and actions.",
+            "Summarize these notes; use only them; list decisions and actions."
+          ],
+          "correct": 2,
+          "sourceIds": [
+            "S2"
+          ],
+          "explanation": "The complete request identifies a task, supplies context, constrains sources and specifies a format.",
+          "objectiveIds": [
+            "O2"
+          ]
+        },
+        {
+          "id": "final-m1-4",
+          "hint": "Choose a boundary that makes the missing owner visible without guessing or deleting the action.",
+          "prompt": "Select one answer. The notes omit an owner. Which prompt boundary is most useful?",
+          "choices": [
+            "Assign the task to a familiar name.",
+            "Label missing owners Needs clarification.",
+            "Omit actions that lack an owner."
+          ],
+          "correct": 1,
+          "sourceIds": [
+            "S2",
+            "S5"
+          ],
+          "explanation": "Explicitly marking the gap preserves the source rather than inventing or hiding information.",
+          "objectiveIds": [
+            "O2"
+          ]
+        },
+        {
+          "id": "final-m2-1",
+          "hint": "A useful follow-up is specific and retains the source status.",
+          "prompt": "Select one answer. Which follow-up best improves a workplace draft while preserving the source?",
+          "choices": [
+            "Make the wording clearer and keep the proposed date.",
+            "Confirm the launch date and make the text shorter.",
+            "Add a checklist owner and use a formal tone."
+          ],
+          "correct": 0,
+          "sourceIds": [
+            "S3",
+            "S5"
+          ],
+          "explanation": "The first instruction specifies a change and preserves the proposal. The others introduce unsupported facts.",
+          "objectiveIds": [
+            "O3"
+          ]
+        },
+        {
+          "id": "final-m2-2",
+          "hint": "Compare what the status words mean.",
+          "prompt": "Select one answer. The source calls the launch proposed, but a summary calls it confirmed. What is the problem?",
+          "choices": [
+            "The summary repeats the date from the notes.",
+            "The summary changes the status of the launch.",
+            "The summary uses a shorter sentence than the notes."
+          ],
+          "correct": 1,
+          "sourceIds": [
+            "S5",
+            "S6"
+          ],
+          "explanation": "Confirmed changes the meaning of an unapproved proposal; shortening or repeating the date is not the error.",
+          "objectiveIds": [
+            "O4"
+          ]
+        },
+        {
+          "id": "final-m2-3",
+          "hint": "The notes mention the task but do not name its owner.",
+          "prompt": "Select one answer. How should an action plan treat the support checklist owner?",
+          "choices": [
+            "Remove the checklist from the action plan.",
+            "Assign the checklist to the email owner.",
+            "Mark the owner as needing clarification."
+          ],
+          "correct": 2,
+          "sourceIds": [
+            "S5",
+            "S6"
+          ],
+          "explanation": "Flagging the gap preserves the task and the uncertainty; assigning or removing it changes the source.",
+          "objectiveIds": [
+            "O4"
+          ]
+        },
+        {
+          "id": "final-m2-4",
+          "hint": "Follow-up instructions do not guarantee correctness.",
+          "prompt": "Select one answer. What should you do after asking AI to revise a summary?",
+          "choices": [
+            "Compare the revision with the original notes.",
+            "Assume the correction made every fact accurate.",
+            "Share the revision without another review."
+          ],
+          "correct": 0,
+          "sourceIds": [
+            "S3",
+            "S4"
+          ],
+          "explanation": "Compare the revised output with the source; a successful-looking rewrite is not proof that every claim is accurate.",
+          "objectiveIds": [
+            "O3",
+            "O4"
+          ]
+        },
+        {
+          "id": "final-m3-1",
+          "hint": "Recall model behavior regarding tone and truth.",
+          "prompt": "Select one answer. Which of the following best describes the risk of a confident tone in an AI-generated response?",
+          "choices": [
+            "It guarantees that all facts and figures are verified.",
+            "It does not prove accuracy and can mask invented details.",
+            "It indicates that the tool has accessed secure internal databases."
+          ],
+          "correct": 1,
+          "sourceIds": [
+            "S4",
+            "S5",
+            "S6"
+          ],
+          "explanation": "A confident tone is a stylistic feature of language models and does not guarantee factual accuracy.",
+          "objectiveIds": [
+            "O5",
+            "O6"
+          ]
+        },
+        {
+          "id": "final-m3-2",
+          "hint": "Compare output claims against source notes.",
+          "prompt": "Select one answer. When reviewing an AI-generated summary of meeting notes, what indicates an unsupported claim?",
+          "choices": [
+            "The claim uses workplace vocabulary.",
+            "The claim uses a confident tone.",
+            "The claim adds an owner absent from the notes."
+          ],
+          "correct": 2,
+          "sourceIds": [
+            "S4",
+            "S5",
+            "S6"
+          ],
+          "explanation": "An unsupported claim introduces information not present in the original source notes.",
+          "objectiveIds": [
+            "O5",
+            "O6"
+          ]
+        },
+        {
+          "id": "final-m3-3",
+          "hint": "Consider whether the personal information is necessary.",
+          "prompt": "Select one answer. A prompt includes a real employee home address that the task does not need. What should you do?",
+          "choices": [
+            "Remove the address before entering the prompt.",
+            "Keep the address because the task is internal.",
+            "Share the address if the response sounds fluent."
+          ],
+          "correct": 0,
+          "sourceIds": [
+            "S4"
+          ],
+          "explanation": "Remove unnecessary personal information. Sensitive information requires an authorized tool and intended use under organizational policy.",
+          "objectiveIds": [
+            "O5"
+          ]
+        },
+        {
+          "id": "final-m3-4",
+          "hint": "Focused corrections still require a source check.",
+          "prompt": "Select one answer. A draft wrongly confirms a proposed launch date but can be corrected against the source. What is a defensible next step?",
+          "choices": [
+            "Revise the draft and compare it with the notes.",
+            "Use the draft because its language is confident.",
+            "Confirm the date without consulting the notes."
+          ],
+          "correct": 0,
+          "sourceIds": [
+            "S4",
+            "S5",
+            "S6"
+          ],
+          "explanation": "Request a focused correction and verify the revised draft against the original notes before use.",
+          "objectiveIds": [
+            "O6"
+          ]
+        },
+        {
+          "id": "final-multi-prompt",
+          "prompt": "Select all correct answers. Which details help make a workplace prompt clear?",
+          "choices": [
+            "The task and relevant context.",
+            "Constraints and desired output format.",
+            "A requirement to invent missing facts.",
+            "A claim that no review is needed."
+          ],
+          "selectionType": "multiple",
+          "correctIndices": [
+            0,
+            1
+          ],
+          "hint": "Recall the four-part prompt structure.",
+          "explanation": "A clear prompt specifies the task, context, constraints and format. Inventing facts and skipping review undermine accuracy.",
+          "objectiveIds": [
+            "O2"
+          ],
+          "sourceIds": [
+            "S2"
+          ]
+        },
+        {
+          "id": "final-multi-review",
+          "prompt": "Select all correct answers. Which review actions help before using an AI-generated summary?",
+          "choices": [
+            "Compare important facts with source notes.",
+            "Check for missing or unsupported details.",
+            "Treat a confident tone as proof of accuracy.",
+            "Ignore sensitive data in the output."
+          ],
+          "selectionType": "multiple",
+          "correctIndices": [
+            0,
+            1
+          ],
+          "hint": "Consider source accuracy and completeness.",
+          "explanation": "Compare the response with the notes and identify omissions or unsupported claims. A confident tone is not evidence, and sensitive information requires review.",
+          "objectiveIds": [
+            "O4",
+            "O6"
+          ],
+          "sourceIds": [
+            "S1",
+            "S4",
+            "S5",
+            "S6"
+          ]
+        },
+        {
+          "id": "final-ai-capabilities-limits",
+          "prompt": "Select all correct answers. Which are two useful AI tasks and two limitations taught in this course?",
+          "choices": [
+            "Draft a message from supplied notes.",
+            "Organize notes into a short summary.",
+            "Invent details absent from the source.",
+            "Omit important information from a draft.",
+            "Prove every claim is automatically true."
+          ],
+          "selectionType": "multiple",
+          "correctIndices": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "hint": "Choose two useful tasks and two possible errors.",
+          "explanation": "AI can draft and organize supplied information, but may invent or omit details. It does not automatically prove its claims.",
+          "objectiveIds": [
+            "O1"
+          ],
+          "sourceIds": [
+            "S1"
+          ]
+        },
+        {
+          "id": "final-focused-tone-length",
+          "prompt": "Select one answer. Which follow-up asks for a professional tone and a shorter draft without changing the facts?",
+          "choices": [
+            "Use a professional tone and three bullets; preserve the source facts.",
+            "Use a professional tone and add an owner; preserve the source facts.",
+            "Use a casual tone and three bullets; invent the missing facts."
+          ],
+          "correct": 0,
+          "hint": "The instruction must address tone, length, and source fidelity.",
+          "explanation": "The first choice specifies the desired tone and length while preserving facts. The others either add unsupported information or change the requested tone.",
+          "objectiveIds": [
+            "O3"
+          ],
+          "sourceIds": [
+            "S2",
+            "S3",
+            "S4"
+          ]
+        }
+      ]
+    },
+    "reflection": {
+      "prompts": [
+        "Which review step will you use before sharing an AI draft?",
+        "What would you do differently when a prompt contains sensitive information?"
+      ]
+    }
+  }
+}

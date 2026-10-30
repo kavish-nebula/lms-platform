@@ -107,3 +107,25 @@ project instructions correctly budget about seven minutes. The existing final
 and midpoint wording remains unchanged, including historical option-length
 differences. Sandbox grading checks the stated facts, terms and generated outputs;
 it does not assess every semantic nuance of free writing.
+
+## AI Essentials for Everyday Work
+
+`ai-essentials-for-everyday-work.json` is the complete editable course snapshot,
+including the three approved module scripts, scene narration, midpoint and module
+quizzes, guided meeting-assistant simulation, 80% final assessment, and reflection.
+The companion brief preserves the original SME input. The estimated duration is
+95 minutes, including activities and assessments. The project uses prerecorded,
+fictional responses and deterministic explanation checks; it does not call an AI
+model or grade the full meaning of an answer.
+
+The snapshot was validated and published locally as revision 3. All 62 narration
+clips were copied from matching approved module scripts and checked as non-silent
+WAV files; learner playback was sampled. The guided-project run and submission
+logic was tested in isolation, rather than by submitting as a real learner.
+
+This snapshot does not seed or publish a database. It records the source
+`blueprintRunId` from the original local installation, which must be reconciled
+with a current matching blueprint (or removed when importing without one). Apply
+it using the revision-safe authoring workflow, then review and publish it. Local
+approval records, learner data, and generated audio are not included; audio must
+be regenerated or safely reused on the target installation.

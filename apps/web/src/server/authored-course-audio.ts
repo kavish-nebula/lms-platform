@@ -1,6 +1,6 @@
 import 'server-only';
 import { createHash, randomUUID } from 'node:crypto';
-import { readFile, mkdir } from 'node:fs/promises';
+import { readFile, mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { and, desc, eq, lt, sql } from 'drizzle-orm';
 import { db, appRoot } from './db/client';
@@ -8,6 +8,8 @@ import { creatorAuthoredCourseAudio, creatorAuthoredCourseRevisions, creatorCour
 import { getCreatorDraft } from './content-creator';
 import { ApiError } from './http';
 import { speakProduction, type ProductionSpeaker } from './production-speech';
+import { productionState } from './module-production';
+import { productionAudioFile, productionAudioState } from './production-audio';
 import { wavSeconds } from './production-audio';
 import type { ProductionAudioClip, ProductionVoice } from '@/lib/production-audio';
 
@@ -52,7 +54,7 @@ export async function processAuthoredCourseAudio(id: string, token: string, owne
   try {
     const [revision] = await database.select().from(creatorAuthoredCourseRevisions).where(and(eq(creatorAuthoredCourseRevisions.id, job.revisionId), eq(creatorAuthoredCourseRevisions.courseId, courseId), eq(creatorAuthoredCourseRevisions.ownerId, ownerId)));
     if (!revision) throw new Error('Saved narration revision no longer exists.');
-    const slides = revision.content.modules.flatMap(module => module.conceptExplainer.videos.flatMap(video => video.slides));
+    const slides = revision.content.modules.flatMap(module => [...module.conceptExplainer.videos.flatMap(video => video.slides), ...Object.values(module.narratedStages ?? {}).flat()]);
     if (!slides.length) throw new Error('This course package has no narrated content slides.');
     const priorRows = await database.select().from(creatorAuthoredCourseAudio).where(and(eq(creatorAuthoredCourseAudio.courseId, courseId), eq(creatorAuthoredCourseAudio.voiceKey, job.voiceKey)));
     const clips: ProductionAudioClip[] = []; const todo: { key: string; text: string; slideId: string; narrationHash: string }[] = [];
@@ -66,6 +68,32 @@ export async function processAuthoredCourseAudio(id: string, token: string, owne
     const writeProgress = () => database.update(creatorAuthoredCourseAudio).set({ clips: slides.flatMap(slide => clips.filter(clip => clip.slideId === slide.id)), updatedAt: new Date() }).where(and(eq(creatorAuthoredCourseAudio.id, id), eq(creatorAuthoredCourseAudio.token, token), eq(creatorAuthoredCourseAudio.status, 'running')));
     await writeProgress();
     const dirRel = path.join(id, token); const dir = storagePath(dirRel); await mkdir(dir, { recursive: true });
+    // Reuse current approved Stage 4 audio only when both the source text and
+    // voice settings match. Copy into this revision's own immutable cache.
+    if (revision.blueprintRunId) for (const courseModule of revision.content.modules) {
+      try {
+        const state = await productionState(ownerId, courseId, revision.blueprintRunId, courseModule.id);
+        const source = state.jobs.find(j => j.status === 'ready' && !j.outdated && !j.input.unit);
+        const sourceRevision = source?.revisions[0];
+        if (!source || !sourceRevision) continue;
+        const audioState = await productionAudioState(ownerId, courseId, revision.blueprintRunId, courseModule.id, source.id);
+        const approvedAudio = audioState.jobs.find(a => a.current && a.status === 'ready' && a.voice.provider === job.voice.provider && a.voice.model === job.voice.model && a.voice.voice === job.voice.voice && a.voice.dtype === job.voice.dtype && a.voice.device === job.voice.device && a.voice.version >= 2);
+        if (!approvedAudio) continue;
+        const moduleSlides = [...courseModule.conceptExplainer.videos.flatMap(v => v.slides), ...Object.values(courseModule.narratedStages ?? {}).flat()];
+        for (const slide of moduleSlides) {
+          const originalId = slide.id.startsWith(`${courseModule.id}-`) ? slide.id.slice(courseModule.id.length + 1) : '';
+          const original = sourceRevision.content.slides.find(s => s.id === originalId && s.narration === slide.narration);
+          const item = todo.find(t => t.slideId === slide.id);
+          if (!original || !item || !approvedAudio.clips.some(c => c.slideId === original.id)) continue;
+          const bytes = await productionAudioFile(ownerId, courseId, revision.blueprintRunId, courseModule.id, source.id, approvedAudio.id, original.id);
+          const seconds = wavSeconds(bytes); const relative = path.join(dirRel, `${item.key}.wav`);
+          await writeFile(storagePath(relative), bytes);
+          clips.push({ slideId: item.slideId, key: relative, narrationHash: item.narrationHash, seconds, reused: true });
+          todo.splice(todo.indexOf(item), 1);
+        }
+      } catch { /* A missing or changed source is synthesized normally. */ }
+    }
+    await writeProgress();
     await speaker(dir, todo, job.voice, async key => {
       const items = todo.filter(clip => clip.key === key); if (!items.length) return;
       const relative = path.join(dirRel, `${key}.wav`); const seconds = wavSeconds(await readFile(storagePath(relative)));

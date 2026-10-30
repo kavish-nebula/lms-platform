@@ -22,7 +22,7 @@ export function authoredDelivery({ courseId, revisionId, content: pkg }: Release
   const gateFor = (quiz: NonNullable<AuthoredCoursePackageData['modules'][number]['moduleQuiz']>, module?: AuthoredCoursePackageData['modules'][number]): GateBlock => {
     const objectives = module?.objectiveIds ?? pkg.objectiveEvidence.map(o => o.objectiveId);
     return {
-      step_id: module ? `${courseId}.${module.id}.gate` : `${courseId}.finale.final`, stage: 'gate', duration_min: Math.max(2, quiz.questions.length), bloom: 'evaluate', load: 'medium',
+      step_id: module ? `${courseId}.${module.id}.gate` : `${courseId}.finale.final`, stage: 'gate', duration_min: Math.max(2, module ? quiz.questions.length : Math.ceil(quiz.questions.length / 2)), bloom: 'evaluate', load: 'medium',
       title: quiz.title, instructions: quiz.instructions,
       objective_ids: objectives, objectives_tested: objectives,
       pass_threshold: (quiz.passPercent ?? pkg.courseEnd.masteryGate.passPercent) / 100, min_correct_per_objective: 0,
@@ -35,10 +35,10 @@ export function authoredDelivery({ courseId, revisionId, content: pkg }: Release
   const lessonFor = (id: string) => String(Math.max(0, pkg.modules.findIndex(m => m.objectiveIds.includes(id))) + 1);
   const topicsFor = (m: AuthoredCoursePackageData['modules'][number]): Topic[] => [
     { stage: 'hook', title: m.problemHook.title, summary: m.problemHook.question },
-    { stage: 'explainer', title: 'Learn the handoff routine', summary: m.conceptExplainer.videos.map(v => v.title).join('; ') },
+    { stage: 'explainer', title: m.narratedStages ? 'Explore the concepts' : 'Learn the handoff routine', summary: m.conceptExplainer.videos.map(v => v.title).join('; ') },
     { stage: 'worked', title: 'Watch complete examples', summary: m.workedExamples.map(e => e.title).join('; ') },
     { stage: 'guided', title: m.guidedPractice.title, summary: m.guidedPractice.instructions },
-    { stage: 'lab', title: m.scenarioLab.title, summary: 'Apply the routine to new situations.' },
+    { stage: 'lab', title: m.scenarioLab.title, summary: m.narratedStages ? 'Apply the concepts to a new situation.' : 'Apply the routine to new situations.' },
     ...(m.moduleQuiz ? [{ stage: 'gate' as const, title: m.moduleQuiz.title, summary: m.moduleQuiz.instructions }] : []),
   ];
   const modules: ModuleContent[] = pkg.modules.map((m, index) => {
@@ -54,6 +54,7 @@ export function authoredDelivery({ courseId, revisionId, content: pkg }: Release
       course_id: courseId, course_title: pkg.title, module_id: m.id, version, locale: 'en', title: m.title,
       summary: m.problemHook.situation, estimated_minutes: m.durationMinutes, stages_included: moduleStages(m),
       metadata: { objectives: m.objectiveIds.map(id => ({ id, text: objective(id), lesson })) },
+      ...(m.narratedStages ? { narratedStages: Object.fromEntries(Object.entries(m.narratedStages).map(([stage, slides]) => [stage, slides.map(s => ({ id: s.id, title: s.title, body: s.body, narration: s.narration, audio: `/api/v1/courses/${courseId}/released-audio/${revisionId}/${s.id}` }))])) } : {}),
       blocks: [
         { ...base, step_id: `${scope}.hook`, stage: 'hook', kicker: 'A fictional workplace case', title: m.problemHook.title,
           brand: { name: 'Cedar', short: 'Cedar' }, roleNotes: {},
@@ -124,17 +125,18 @@ export function authoredDelivery({ courseId, revisionId, content: pkg }: Release
     },
     wrap_up: { step_id: `${courseId}.finale.wrap-up`, duration_min: 1, min_sentences: 1, prompts: end.reflection.prompts.map((text, i) => ({ id: `${courseId}-reflection-${i}`, kind: i === 0 ? 'worked' : i === 1 ? 'failed' : 'transfers', text })) },
   };
+  const hasNarratedStages = pkg.modules.some(m => !!m.narratedStages);
   const course: Course = {
     course_id: courseId, slug: courseId, title: pkg.title, tagline: pkg.subject, goal: end.miniProject.deliverable, domain: 'Workplace collaboration', provider: 'Nebula KnowLab', level: 'Beginner',
-    estimated_hours: Number((pkg.durationMinutes / 60).toFixed(2)), locales: ['en'], languages: [{ code: 'en', name: 'English', native: 'English' }], version, subjectLabel: 'clear task handoffs',
-    skills: ['Task handoffs', 'Source checking', 'Clarification'], learn: pkg.objectiveEvidence.map(o => o.objective), tools: ['A browser', 'The supplied fictional case pack'], authoredRevisionId: revisionId,
+    estimated_hours: Number((pkg.durationMinutes / 60).toFixed(2)), locales: ['en'], languages: [{ code: 'en', name: 'English', native: 'English' }], version, subjectLabel: hasNarratedStages ? pkg.subject : 'clear task handoffs',
+    skills: hasNarratedStages ? ['Source checking', 'Practical review'] : ['Task handoffs', 'Source checking', 'Clarification'], learn: pkg.objectiveEvidence.map(o => o.objective), tools: ['A browser', 'The supplied fictional case pack'], authoredRevisionId: revisionId,
     modules: pkg.modules.map((m, i) => ({ module_id: m.id, title: m.title, minutes: m.durationMinutes, stages: moduleStages(m), authored: moduleStages(m), state: i === 0 ? 'available' : 'locked', lite: false, pain: m.problemHook.situation, lead_in: null,
-      lessons: m.conceptExplainer.videos.map(v => ({ id: String(i + 1), title: v.title, notes: v.slides.flatMap(s => s.body) })), topics: topicsFor(m), outcomes: m.objectiveIds.map(objective), skills: ['Clear handoffs', 'Source-grounded decisions'],
+      lessons: m.conceptExplainer.videos.map(v => ({ id: String(i + 1), title: v.title, notes: v.slides.flatMap(s => s.body) })), topics: topicsFor(m), outcomes: m.objectiveIds.map(objective), skills: hasNarratedStages ? ['Source-grounded decisions'] : ['Clear handoffs', 'Source-grounded decisions'],
     })),
     finale: { title: end.miniProject.sandbox?.guided ? 'Explore your course project' : 'Put your handoff into practice', summary: end.miniProject.brief, steps: [
       { id: 'capstone', stage: 'project', kicker: 'Mini project', title: end.miniProject.title, summary: end.miniProject.deliverable, minutes: projectMinutes, outcomes: end.miniProject.rubric },
-      { id: 'final-check', stage: 'gate', kicker: 'Final check', title: end.masteryGate.title, summary: end.masteryGate.instructions, minutes: 2, outcomes: pkg.objectiveEvidence.map(o => o.objective) },
-      { id: 'wrap-up', stage: 'reflection', kicker: 'Reflection', title: 'Your handoff routine', summary: 'Reflect on the course and finish your learning journey.', minutes: 1, outcomes: end.reflection.prompts },
+      { id: 'final-check', stage: 'gate', kicker: 'Final check', title: end.masteryGate.title, summary: end.masteryGate.instructions, minutes: Math.max(2, Math.ceil(end.masteryGate.questions.length / 2)), outcomes: pkg.objectiveEvidence.map(o => o.objective) },
+      { id: 'wrap-up', stage: 'reflection', kicker: 'Reflection', title: hasNarratedStages ? 'Reflect on your learning' : 'Your handoff routine', summary: 'Reflect on the course and finish your learning journey.', minutes: 1, outcomes: end.reflection.prompts },
     ] },
   };
   return { course, modules, finale };

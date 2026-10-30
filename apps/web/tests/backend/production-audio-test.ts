@@ -14,11 +14,15 @@ import { saveSmeReview } from '@/server/creator-sme-review';
 import { startProduction, processProduction, productionState, reviewScripts, saveProduction } from '@/server/module-production';
 import { productionAudioState, startProductionAudio, processProductionAudio, productionAudioFile, wavSeconds } from '@/server/production-audio';
 import type { ProductionSpeaker } from '@/server/production-speech';
+import { productionSpeechPayload } from '@/server/production-speech';
 import { db } from '@/server/db/client';
 import { creatorProductionAudio, users, profiles, stepProgress } from '@/server/db/schema';
 import { GET, POST } from '@/app/api/v1/content/courses/[id]/blueprints/[runId]/modules/[moduleId]/production/audio/route';
 
 process.env.AUDIO = 'on'; process.env.KOKORO = 'on';
+const lessonSpeech = productionSpeechPayload('preview', [{key:'s1',text:'Complete narration including the final sentence.'}], {provider:'kokoro',model:'test',voice:'am_michael',dtype:'fp32',device:'cpu',version:3});
+assert.equal(lessonSpeech.chunkLong,true,'Substantive lesson narration must use the bounded sentence-chunked worker.');
+assert.equal(lessonSpeech.clips[0].text,'Complete narration including the final sentence.');
 const user = await getSessionUser(); const database = await db();
 const before = { profile: await database.select().from(profiles), progress: await database.select().from(stepProgress) };
 const other = { id: 'audio-other', name: 'Other', email: 'other@example.test' }; await database.insert(users).values(other);

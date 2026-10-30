@@ -407,6 +407,7 @@ export type ModuleContent = {
   estimated_minutes: number;
   stages_included: StageId[];
   metadata: { objectives: Objective[] };
+  narratedStages?: Partial<Record<"hook" | "worked" | "guided" | "lab", { id: string; title: string; body: string[]; narration: string; audio: string }[]>>;
   blocks: StageBlock[];
 };
 
