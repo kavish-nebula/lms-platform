@@ -18,7 +18,11 @@ const aiPort = process.env.ADAPTIVE_API_PORT || "8001";
 for (const requested of [port, aiPort]) {
   await new Promise((resolve, reject) => {
     const probe = net.createServer();
-    probe.once("error", () => reject(new Error(`Port ${requested} is already in use. Stop the existing app/adaptive stack before starting another one.`)));
+    probe.once("error", (error) => {
+      if (error.code !== "EADDRINUSE") { reject(error); return; }
+      console.error(`Port ${requested} is already in use.\nIf this app is running in another terminal, press Ctrl+C there before restarting.\nIf the existing app is the one you want, open http://127.0.0.1:${port}/learn instead.\nNo additional services were started.`);
+      process.exit(1);
+    });
     probe.listen(Number(requested), "127.0.0.1", () => probe.close(resolve));
   });
 }
