@@ -1,4 +1,9 @@
-@import "tailwindcss";
+/* Only source files provide utility classes. Runtime database/audio and build
+   output must not become inputs to the development CSS watcher. */
+@import "tailwindcss" source(none);
+@source "..";
+@source "../../../../packages";
+@source "../../../../fixtures";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 

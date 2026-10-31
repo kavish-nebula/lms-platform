@@ -164,3 +164,7 @@ The teaching-sequence selector also includes Hook, Worked Example, Guided Practi
 ### Narrated lesson scenes
 
 Courses that supply narrated creator scenes present one scene at a time with standard audio controls, a readable transcript, and explicit previous/next actions. Practice instructions stay with their scene; completing the last scene advances the existing module sequence.
+# Tailwind source scanning
+
+`apps/web/src/app/globals.css` disables automatic source discovery with `source(none)` and explicitly scans `apps/web/src`, `packages` and `fixtures`. Keep runtime `.data` (database, generated narration), build output, logs and backup folders outside these source roots. Broad automatic discovery caused repeated development refreshes; editing actual UI sources should still trigger normal Fast Refresh.
+
