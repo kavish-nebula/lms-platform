@@ -54,18 +54,18 @@ export function WelcomeFlow({ name, returnTo }: { name: string; returnTo: string
   }
 
   return (
-    <div className="flex min-h-dvh flex-col">
-      <header className="glass glass-sm sticky top-0 z-30 border-x-0 border-t-0 shadow-none">
-        <div className="flex h-(--nav-h) items-center gap-4 page-pad">
-          <Logo wordmark={false} />
+    <div className="profile-welcome-page">
+      <header className="profile-welcome-header">
+        <div className="profile-welcome-brand">
+          <Logo />
           <div className="min-w-0 flex-1">
             <div className="truncate text-xs text-ink-muted">{t("welcomeKicker")}</div>
             <div className="truncate font-semibold">{t("welcomeTitle")}</div>
           </div>
         </div>
       </header>
-      <main className="mx-auto w-full max-w-6xl flex-1 page-pad py-8 lg:py-12">
-        {!initial ? <CardSkeleton lines={6} /> : <InterviewChat name={name} initial={initial} continueLabel={continueLabel} onDone={(s) => void done(s)} />}
+      <main className="profile-welcome-main">
+        {!initial ? <CardSkeleton lines={6} /> : <InterviewChat name={name} initial={initial} continueLabel={continueLabel} onDone={done} />}
       </main>
     </div>
   );

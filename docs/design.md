@@ -168,3 +168,7 @@ Courses that supply narrated creator scenes present one scene at a time with sta
 
 `apps/web/src/app/globals.css` disables automatic source discovery with `source(none)` and explicitly scans `apps/web/src`, `packages` and `fixtures`. Keep runtime `.data` (database, generated narration), build output, logs and backup folders outside these source roots. Broad automatic discovery caused repeated development refreshes; editing actual UI sources should still trigger normal Fast Refresh.
 
+## Guided learner profiling
+
+The welcome and course-fit interviews display one question at a time in a centered panel. Large answer cards, a compact progress bar and a collapsible answer review replace the scrolling chat transcript and desktop-only summary rail. Free text expands on request; multi-select, number shortcuts, skip, retry, draft resume and final profile review use the existing interview services. Completed profiles save through the existing flow. Theme, field accent, text size and reduced-motion preferences remain respected. Styles live in `apps/web/src/app/profile-setup.css`; the reference direction uses Gamma's publicly documented onboarding captures and Emergent's public entry experience, not authenticated access to their private profiling flows.
+

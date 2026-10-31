@@ -9,6 +9,7 @@
 
 /* Design tokens: Frosted Aura (light) + Aurora (dark). Single source of truth. */
 @import "@lms/ui/tokens.css";
+@import "./profile-setup.css";
 
 /* Public footer uses the same surfaces and accent palette as the rest of the app. */
 .site-contact-footer {
