@@ -83,21 +83,21 @@ assert.equal((await clipRequest(head.id, 'bytes=-4')).headers.get('content-range
 assert.equal((await clipRequest(head.id, 'bytes=999-')).status, 416);
 assert.equal((await clipRequest(draft.id)).status, 404, 'Unpublished revision audio is never exposed to learners.');
 process.env.AUDIO = 'off'; process.env.KOKORO = 'off';
+process.env.ADAPTIVE_PYTHON_ENABLED = 'true';
+process.env.ADAPTIVE_AUTHORED_COURSE_IDS = 'obsolete-id-that-is-not-this-course';
 const enrollment = await saveSetup(user, draft.id, { answers: {}, supportOverride: 'auto', pace: null }, () => {});
 assert.equal(enrollment.courseId, draft.id);
 assert(enrollment.plan, 'The shared enrollment flow builds a study plan for the released course.');
 await recordProgress(user, draft.id, 'M1', 'hook', () => {});
 const enrolled = await repo.findEnrollment(user.id, draft.id);
 assert(enrolled);
+assert((await jobsFor(enrolled.id, 'M1')).some(j => j.status === 'queued'), 'Enrollment automatically queues personalization without a course allowlist.');
 assert((await repo.progressFor(enrolled.id)).some(row => row.moduleId === 'M1' && row.stage === 'hook'), 'Shared player completion persists to the learner database.');
-process.env.ADAPTIVE_PYTHON_ENABLED = 'true';
-process.env.ADAPTIVE_AUTHORED_COURSE_IDS = 'not-this-course';
 const personalVideo = getBlock((await getModule(draft.id, 'M1'))!, 'explainer')!.videos![0];
-await assert.rejects(queueSlide(user, draft.id, 'M1', personalVideo.id, 0, 'example', crypto.randomUUID()), { code: 'disabled' });
-process.env.ADAPTIVE_AUTHORED_COURSE_IDS = draft.id;
+await assert.rejects(queueSlide({ ...user, id: 'not-enrolled' }, draft.id, 'M1', personalVideo.id, 0, 'example', crypto.randomUUID()), { code: 'not_enrolled' });
 await repo.saveProfile(user.id, { domain: 'student', studyField: 'other', studyFieldOther: 'Biomedical engineering' }, []);
 await queueModule(user, draft.id, 'M1');
-const initialJobs = await jobsFor(enrolled.id, 'M1');
+const initialJobs = (await jobsFor(enrolled.id, 'M1')).filter(j => j.status !== 'superseded');
 assert.equal(initialJobs.length, 1, 'Only approved concept slides are queued, not the generic hook or worked example.');
 assert.equal((initialJobs[0].input.context as {courseVersion:string}).courseVersion, head.id);
 const context = initialJobs[0].input.context as { answers: Record<string, unknown> };
@@ -135,4 +135,19 @@ await publishAuthoredCourse(user.id, draft.id, { revisionId: newer.id, reviewId:
 await assert.rejects(finishJob(staleClaim!.id, staleClaim!.lease!, personalVideo.slides[0], 'test-model', {}, async (_dir, clips) => new Set(clips.map(c => c.key))), { code: 'release_changed' });
 await assert.rejects(queueSlide(user, draft.id, 'M1', personalVideo.id, 0, 'example', crypto.randomUUID(), finished.id), { code: 'invalid_revision' });
 assert.equal(await getPublishedAuthoredCourse('invalid-id'), undefined);
+// A newly published, unrelated course must immediately use the same enrollment
+// flow without adding its ID to settings or changing another course's records.
+delete process.env.ADAPTIVE_AUTHORED_COURSE_IDS;
+const second = await createCreatorDraft(user.id, { brief: { ...draft.brief, title: 'Second adaptive course' } });
+const secondHead = await saveAuthoredCourse(user.id, second.id, { expectedBriefRevision: second.revision, expectedVersion: 0, content: { ...content, title: second.brief.title, briefRevision: second.revision } });
+const secondReview = await reviewAuthoredCourse(user.id, user, second.id, { revisionId: secondHead.id, expectedReviewVersion: 0, verdict: 'approved', checklist, feedback: '' });
+await publishAuthoredCourse(user.id, second.id, { revisionId: secondHead.id, reviewId: secondReview.id });
+const firstProgress = await repo.progressFor(enrolled.id);
+await saveSetup(user, second.id, { answers: { expect: 'Apply facts in my own field' }, supportOverride: 'auto', pace: null }, () => {});
+const secondEnrollment = (await repo.findEnrollment(user.id, second.id))!;
+const secondJobs = await jobsFor(secondEnrollment.id, 'M1');
+assert(secondJobs.some(j => j.status === 'queued'), 'A future published course automatically queues its opening concepts.');
+assert(secondJobs.every(j => j.enrollmentId !== enrolled.id && j.input.courseId === second.id), 'Course caches and jobs stay enrollment scoped.');
+assert.deepEqual(await repo.progressFor(enrolled.id), firstProgress);
+assert.equal((await getPublishedAuthoredCourse(second.id))?.revisionId, secondHead.id);
 console.log('PASS authored learner delivery: approval and revision gates, native catalog/player/enrollment, isolated preview keys, persistent module progress, server final grading, seekable released narration, and reference course preservation.');

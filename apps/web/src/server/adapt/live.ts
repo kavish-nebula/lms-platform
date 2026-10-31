@@ -19,7 +19,9 @@ import { mergeShape } from "./shape";
 import { audioRoot, defaultVoicer, type Voicer } from "./tts";
 import { piecesOf } from "./pieces";
 
-export const liveEnabled = (courseId: string) => process.env.ADAPTIVE_PYTHON_ENABLED === "true" && (courseId === "ai-agent" || (process.env.ADAPTIVE_AUTHORED_COURSE_IDS ?? "").split(",").map(id => id.trim()).includes(courseId));
+// Every enrolled course uses the adaptive lane. Enrollment and module access
+// are checked before jobs are queued; no per-course configuration is needed.
+export const liveEnabled = (courseId: string) => process.env.ADAPTIVE_PYTHON_ENABLED === "true" && courseId.trim().length > 0;
 export const ADAPTIVE_PROMPT_VERSION = 4;
 const hash = (x: unknown) => createHash("sha256").update(JSON.stringify(x)).digest("hex");
 // Keep the full evidence snapshot for audit, but do not rewrite a module every
@@ -149,7 +151,8 @@ async function contextOf(user: SessionUser, courseId: string, moduleId: string) 
   const evidence = [];
   for (const m of course?.modules.slice(0, Math.max(0, index)) ?? []) evidence.push(await summarize(e.id, m.module_id));
   const plan = (await repo.plansFor(e.id)).find((p) => p.status === "ready");
-  const weak = evidence.flatMap((r) => (r.summary.weakLessons ?? []) as string[]).filter((l) => (PREREQUISITES[moduleId] ?? []).includes(l));
+  const prerequisites = courseId === 'ai-agent' ? PREREQUISITES[moduleId] ?? [] : [];
+  const weak = evidence.flatMap((r) => (r.summary.weakLessons ?? []) as string[]).filter((l) => prerequisites.includes(l));
   // Lesson IDs alone cannot tell an editor what to reteach. Supply authored
   // definitions, without assessment keys, so reminders stay grounded.
   const prerequisiteTeaching = [];

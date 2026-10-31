@@ -145,11 +145,17 @@ validation, existing layout limits, sentence counts and source constraints
 remain in force. If the model cannot satisfy them, the original lesson remains
 available and the request fails rather than publishing an invalid adaptation.
 
-## Opt-in adaptation for released courses
+## Automatic adaptation for enrolled courses
 
-`ADAPTIVE_AUTHORED_COURSE_IDS` is a comma-separated list of published course IDs
-allowed to use live concept-slide adaptation when the Python service is enabled.
-For these courses, hooks, worked examples, guided practice, scenarios, project and
+With `ADAPTIVE_PYTHON_ENABLED=true`, every available course uses live adaptation
+after enrollment. Enrollment queues the first module automatically; lesson opening
+prepares any missing revisions, and verified learning evidence informs later modules.
+New published courses need no configuration changes. The former
+`ADAPTIVE_AUTHORED_COURSE_IDS` allowlist is no longer used. Set the global flag to
+false for a web-only/offline preview. Run the root `npm run dev` with the Python
+dependencies and model credentials configured to start the app, service and worker.
+
+For released courses, hooks, worked examples, guided practice, scenarios, project and
 assessments remain the approved release; only learner-specific concept slides and
 matching audio are adapted. The master package remains unchanged. The prompt uses
 the released slide and its course topic rather than the AI Agent workplace, and
