@@ -172,3 +172,18 @@ Courses that supply narrated creator scenes present one scene at a time with sta
 
 The welcome and course-fit interviews display one question at a time in a centered panel. Large answer cards, a compact progress bar and a collapsible answer review replace the scrolling chat transcript and desktop-only summary rail. Free text expands on request; multi-select, number shortcuts, skip, retry, draft resume and final profile review use the existing interview services. Completed profiles save through the existing flow. Theme, field accent, text size and reduced-motion preferences remain respected. Styles live in `apps/web/src/app/profile-setup.css`; the reference direction uses Gamma's publicly documented onboarding captures and Emergent's public entry experience, not authenticated access to their private profiling flows.
 
+
+
+### Appearance across the app
+
+Every route supports Frosted Aura (light) and Aurora (dark): public and sign-in pages, learner onboarding and settings, creator workspace, full-screen lesson openings, practice editors, scenario labs, projects and the global 404. The sun/moon switch is available even without the app header. It is a keyboard-accessible switch labelled "Light theme"; checked means light is active.
+
+The choice is stored in the existing `lms-prefs` object without replacing field accents, text size or motion preferences. `PrefsScript` applies it before first paint in both root layouts and the 404; Providers reapply it after hydration and on cross-tab storage events. Learner Settings and the component-kit control use the same preference. Dark remains the default when no choice is saved. Dialogs and notifications inherit the root theme.
+
+Lesson films, practice terminals, code blocks, credentials and scenario controls use semantic surfaces and inks rather than a fixed dark interface. Illustration pigments and branded action fills retain their own colours; text over those fills uses the appropriate contrasting ink. No CSS colour inversion filter is used. The floating switch sits beside the assistant on desktop and above bottom navigation on mobile; it is hidden in print.
+
+
+The learner Profile page uses one full-width profile editor. The former "Your courses" sidebar, per-course customization/apply buttons and its explanatory note have been removed. Course setup remains available through each course.
+
+
+Course detail pages no longer show the "Your climb / Climb to Launch" staircase or its summit mission card. The shared CourseJourney retains the course introduction, progress, continue action and daily mission; modules and the course finale remain accessible through the course outline.

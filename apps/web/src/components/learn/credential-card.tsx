@@ -29,12 +29,12 @@ export function CredentialCard({ credential }: { credential: Credential }) {
 
   return (
     <Surface pad="none" className="overflow-hidden">
-      <div className="relative flex items-center gap-4 bg-plum p-5 text-white">
-        <span className="flex size-12 items-center justify-center rounded-full bg-white/10 ring-1 ring-white/20">
-          <Award className="size-6 text-teal" aria-hidden />
+      <div className="relative flex items-center gap-4 bg-brand-soft p-5 text-ink">
+        <span className="flex size-12 items-center justify-center rounded-full bg-panel ring-1 ring-brand-line">
+          <Award className="size-6 text-brand-ink" aria-hidden />
         </span>
         <div className="min-w-0">
-          <div className="text-xs tracking-wide text-white/70 uppercase">{t(`kind_${credential.kind}`)}</div>
+          <div className="text-xs tracking-wide text-ink-muted uppercase">{t(`kind_${credential.kind}`)}</div>
           <div className="truncate text-lg font-semibold">{credential.title}</div>
         </div>
       </div>

@@ -7,7 +7,7 @@
    Rules
    - Components use tokens, never raw hex.
    - Status and stage colours always ship as a triple: ink + -soft + -line.
-   - [data-theme="aurora"] is applied on <html> for marketing and auth only.
+   - [data-theme="aurora"] on <html> selects dark mode across all routes.
    ============================================================ */
 
 :root {

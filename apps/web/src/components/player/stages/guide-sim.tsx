@@ -379,7 +379,7 @@ function CodeSim({ sim, solved, onSolved, onSlip }: { sim: Sim<"code">; solved: 
               className={wrong.includes(o) ? "gs-chip gs-shake" : "gs-chip"}
               data-wrong={wrong.includes(o)}
               disabled={wrong.includes(o)}
-              style={hinted && o === blank.token ? { borderColor: "#7ee2b8", boxShadow: "0 0 0 3px rgba(126,226,184,0.2)" } : undefined}
+              style={hinted && o === blank.token ? { borderColor: "var(--ok)", boxShadow: "0 0 0 3px var(--ok-soft)" } : undefined}
               onClick={() => pick(o)}
             >
               {o}

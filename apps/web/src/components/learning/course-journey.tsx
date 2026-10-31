@@ -1,19 +1,17 @@
 "use client";
-import * as React from "react";
 import Link from "next/link";
-import { ArrowRight, BookOpen, Check, Flag, LockKeyhole, Route, Zap } from "lucide-react";
+import { ArrowRight, BookOpen, Route } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProgressBar } from "@/components/kit/progress-ring";
-import { moduleFlowStages, useCourseProgress } from "@/lib/course-progress";
+import { useCourseProgress } from "@/lib/course-progress";
 import { useEnrollment } from "@/lib/enrollment";
 import { useLearning } from "@/lib/learning-state";
 import { useHydrated } from "@/lib/local-store";
 import { useWatchedVideos } from "@/components/player/video/watched";
 import { deriveGameProgress } from "@/lib/gamification";
 import type { Course } from "@/data/types";
-import { AssistantAvatar } from "./assistant-avatar";
 import { PipTour } from "@/components/onboarding/pip-tour";
-import { DailyMission, MasteryStars } from "./game-ui";
+import { DailyMission } from "./game-ui";
 
 export function CourseJourney({ course }: { course: Course }) {
   const progress = useCourseProgress(course);
@@ -26,7 +24,6 @@ export function CourseJourney({ course }: { course: Course }) {
   const due = hydrated ? state.reviews.filter((r) => !r.completedAt && new Date(r.due) <= new Date()) : [];
   const game = deriveGameProgress(course, progress, state, watched, due.length, new Date(), enrolled);
   const mission = enrolled ? game.quest : { eyebrow: "FIRST MISSION", title: "Make this course yours", detail: "Answer a few questions about the course, then choose how it fits you.", href: `${base}/enroll`, xp: 25, dailyDone: false };
-  const stairSteps = progress.modules.map((module, index) => ({ module, index })).reverse();
   return <>
     <section id="course-hero" className="journey-hero">
       <div>
@@ -42,30 +39,6 @@ export function CourseJourney({ course }: { course: Course }) {
       </div>
     </section>
     <DailyMission quest={mission} />
-    <section id="learning-steps" data-tour="roadmap" className="journey-section learning-steps-section">
-      <div className="steps-heading"><div><p className="journey-kicker"><Route className="size-4" />Your climb</p><h2>Climb to Launch</h2></div><span>{progress.modules.filter((module) => module.liveState === "done").length}/{progress.modules.length} steps cleared</span></div>
-      <div className="learning-staircase">
-        <div className="launch-beacon" aria-hidden><span /><span /><span /></div>
-        <div className="launch-summit"><Flag className="size-5" /><span><small>FINAL MISSION</small><strong>{course.course_id === 'ai-agent' ? 'Launch Scout' : course.finale.steps[0]?.title}</strong></span><span className="daily-reward"><Zap />+150 XP</span><Link href={`${base}/finale/capstone`}>Open <ArrowRight className="size-3" /></Link></div>
-        <div className="stair-stack">{stairSteps.map(({ module: m, index: i }) => {
-        const flow = moduleFlowStages(m.stages);
-        const isCurrent = progress.resume?.moduleIndex === i + 1;
-        const stepProgress = m.liveState === "done" ? 1 : m.done.filter((stage) => flow.includes(stage)).length / Math.max(1, flow.length);
-        const stateLabel = m.liveState === "done" ? "Cleared" : m.liveState === "in_progress" ? "Continue" : m.liveState === "locked" ? "Locked" : "Start";
-        const stepStyle = { "--step-width": `${54 + (5 - i) * 8}%`, "--step-power": `${stepProgress * 100}%` } as React.CSSProperties;
-        const step = <>
-          {isCurrent && <div className="step-pip"><AssistantAvatar className="size-8" /><span className="step-pip-label">You are here</span></div>}
-          <span className="step-number">{m.liveState === "done" ? <Check /> : m.liveState === "locked" ? <LockKeyhole /> : i + 1}</span>
-          <span className="step-copy"><small>STEP {String(i + 1).padStart(2, "0")}</small><strong>{m.title}</strong><span><i aria-hidden>{game.mastery[i]?.icon}</i>{game.mastery[i]?.upgrade}</span></span>
-          <MasteryStars mastery={game.mastery[i]!} label={m.title} />
-          <span className="step-status"><small>{stateLabel}</small>{m.liveState === "locked" ? <LockKeyhole /> : <ArrowRight />}</span>
-          <span className="step-power" />
-        </>;
-        return m.liveState === "locked" ? <div key={m.module_id} className="stair-step" style={stepStyle} data-state="locked" aria-disabled="true">{step}</div> : <Link key={m.module_id} href={`${base}/${m.module_id}/${m.next ?? "hook"}`} className="stair-step" style={stepStyle} data-current={isCurrent} data-state={m.liveState}>{step}</Link>;
-      })}</div>
-        <div className="stair-ground"><span>START</span><strong>One step at a time.</strong></div>
-      </div>
-    </section>
     <PipTour enabled={hydrated && enrolled} />
   </>;
 }

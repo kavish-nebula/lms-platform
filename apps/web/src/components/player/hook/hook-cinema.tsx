@@ -509,7 +509,7 @@ export function HookCinema({
   }
 
   return (
-    <div className="hc-root" data-theme="aurora" data-mood={mood} role="dialog" aria-modal="true" aria-labelledby="hc-title">
+    <div className="hc-root" data-mood={mood} role="dialog" aria-modal="true" aria-labelledby="hc-title">
       <div className="hc-ambient" aria-hidden />
       <div className="hc-vignette" aria-hidden />
       <header className="hc-top">

@@ -19,7 +19,7 @@ const PAD = { none: "", sm: "p-3", md: "p-5", lg: "p-6 md:p-8" } as const;
 const TONE = {
   default: "bg-panel border-line",
   accent: "bg-brand-soft border-brand-line",
-  plum: "bg-plum text-white border-transparent",
+  plum: "bg-panel-2 text-ink border-line",
 } as const;
 
 /**

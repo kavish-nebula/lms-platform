@@ -370,7 +370,7 @@ export function CodeQuestion({
         onChange={(e) => setCode(e.target.value)}
         spellCheck={false}
         rows={4}
-        className="bg-plum font-mono text-sm text-[#efeefe] caret-teal"
+        className="bg-panel-2 font-mono text-sm text-ink caret-brand-ink"
       />
       {!revealed ? (
         <Button variant="outline" className="w-fit" onClick={() => setRevealed(true)}>

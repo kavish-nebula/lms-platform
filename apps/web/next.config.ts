@@ -37,7 +37,7 @@ const nextConfig: NextConfig = {
     },
   },
   experimental: {
-    // Two root layouts ((app) light, (marketing) Aurora) means no single layout
+    // Two root layouts ((app) and (marketing)) means no single layout
     // can compose a 404, so unmatched URLs use app/global-not-found.tsx.
     globalNotFound: true,
   },

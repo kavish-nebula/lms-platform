@@ -31,14 +31,14 @@ export function CodeBlock({
   }
 
   return (
-    <div className={cn("overflow-hidden rounded-lg border border-line bg-plum text-[#efeefe]", className)}>
-      <div className="flex items-center justify-between border-b border-white/10 px-3 py-1.5">
-        <span className="font-mono text-xs text-white/60">{language}</span>
+    <div className={cn("overflow-hidden rounded-lg border border-line bg-panel-2 text-ink", className)}>
+      <div className="flex items-center justify-between border-b border-line px-3 py-1.5">
+        <span className="font-mono text-xs text-ink-muted">{language}</span>
         <Button
           variant="ghost"
           size="icon-xs"
           onClick={copy}
-          className="text-white/70 hover:bg-white/10 hover:text-white"
+          className="text-ink-muted hover:bg-panel hover:text-ink"
           aria-label={copied ? "Copied" : "Copy code"}
         >
           {copied ? <Check /> : <Copy />}
@@ -48,8 +48,8 @@ export function CodeBlock({
         <code>{code}</code>
       </pre>
       {output != null ? (
-        <div className="border-t border-white/10 bg-black/20 px-4 py-2 font-mono text-sm">
-          <span className="text-teal select-none">{"› "}</span>
+        <div className="border-t border-line bg-panel px-4 py-2 font-mono text-sm">
+          <span className="text-ok select-none">{"› "}</span>
           {output}
         </div>
       ) : null}

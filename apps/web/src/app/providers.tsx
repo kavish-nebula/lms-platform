@@ -1,16 +1,18 @@
 "use client";
 
 import * as React from "react";
+import "./appearance.css";
 import { MotionConfig } from "motion/react";
 import { NextIntlClientProvider, type AbstractIntlMessages } from "next-intl";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
-import { applyPrefs } from "@/lib/prefs";
+import { applyPrefs, PREFS_KEY } from "@/lib/prefs";
+import { ThemeToggle } from "@/components/kit/theme-toggle";
 
 type ProvidersProps = {
   locale: string;
   messages: AbstractIntlMessages;
-  /** the app honours the learner's light-theme choice; marketing stays dark */
+  /** All surfaces honour the same saved appearance preference. */
   themeable?: boolean;
   children: React.ReactNode;
 };
@@ -67,9 +69,16 @@ function useSpotlight() {
  * Client-side providers shared by both root layouts. MotionConfig follows the
  * OS reduced-motion setting unless the learner turned motion off in Settings.
  */
-export function Providers({ locale, messages, themeable = false, children }: ProvidersProps) {
+export function Providers({ locale, messages, themeable = true, children }: ProvidersProps) {
   // Re-apply saved preferences after hydration; React's dev remount resets <html>.
   React.useLayoutEffect(() => applyPrefs(themeable), [themeable]);
+  React.useEffect(() => {
+    const sync = (event: StorageEvent) => {
+      if (event.key === PREFS_KEY || event.key === null) applyPrefs(themeable);
+    };
+    window.addEventListener("storage", sync);
+    return () => window.removeEventListener("storage", sync);
+  }, [themeable]);
   const { reduce, dark } = useRootState();
   useSpotlight();
 
@@ -77,6 +86,7 @@ export function Providers({ locale, messages, themeable = false, children }: Pro
     <NextIntlClientProvider locale={locale} messages={messages} timeZone="Asia/Kolkata">
       <MotionConfig reducedMotion={reduce ? "always" : "user"}>
         <TooltipProvider delayDuration={300}>{children}</TooltipProvider>
+        <ThemeToggle floating />
         <Toaster position="bottom-right" theme={dark ? "dark" : "light"} />
       </MotionConfig>
     </NextIntlClientProvider>

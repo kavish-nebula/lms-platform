@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 
 /**
  * Root layout for the public site and auth screens. The dark "Aurora" theme
- * is set on <html> so portals (dialogs, toasts) inherit it too.
+ * is the default; saved light mode also applies to portals, dialogs and toasts.
  */
 export default async function MarketingRootLayout({ children }: { children: React.ReactNode }) {
   const locale = await getLocale();

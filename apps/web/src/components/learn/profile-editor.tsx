@@ -4,31 +4,27 @@ import * as React from "react";
 import Link from "next/link";
 import { cn } from "cn";
 import { useFormatter, useTranslations } from "next-intl";
-import { Check, Settings2, UserRound } from "lucide-react";
+import { Check, UserRound } from "lucide-react";
 import { toast } from "sonner";
 import { Surface } from "@/components/kit/surface";
 import { CardSkeleton } from "@/components/kit/states";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { saveEnrollment, useEnrollments } from "@/lib/enrollment";
 import { useLearnerReady } from "@/lib/api";
 import { useProfile } from "@/lib/profile";
 import { COMFORT_QUESTION, changeFor, comfortChange, normalizeAnswers, questionsFor, valueOf, withAnswer, type SetupAnswers, type SetupQuestion } from "@/lib/setup";
-import type { Course } from "@/data/types";
 
 /**
  * "How your courses adapt to you": the profile answers as chips that save
- * straight away, each with what it changes; and, per course, a way to bring
- * the profile into that course's setup. The questions shown
+ * straight away, each with what it changes. The questions shown
  * follow the learner's field, so changing it swaps the questions below it.
  */
-export function ProfileEditor({ name, courses }: { name: string; courses: Course[] }) {
+export function ProfileEditor({ name }: { name: string }) {
   const t = useTranslations("profile");
   const format = useFormatter();
   const learnerReady = useLearnerReady();
   const { profile, ready: profileReady, save } = useProfile();
   const hydrated = learnerReady && profileReady;
-  const enrollments = useEnrollments();
   const answers: SetupAnswers = profile?.answers ?? {};
   const needs = profile?.needs ?? [];
 
@@ -40,10 +36,9 @@ export function ProfileEditor({ name, courses }: { name: string; courses: Course
   const setAnswer = (q: SetupQuestion, v: string | string[] | null) =>
     persist(normalizeAnswers(Array.isArray(v) ? { ...answers, tools: v } : withAnswer(q, answers, v), derived), needs);
   const setNeeds = (next: string[]) => persist(answers, next);
-  const enrolled = courses.filter((c) => enrollments[c.course_id]);
 
   return (
-    <div className="grid grid-cols-[minmax(0,1fr)] gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
+    <div className="flex min-w-0 flex-col gap-6">
       <Surface pad="lg" className="flex flex-col gap-6">
         <div className="flex items-center gap-3">
           <span className="flex size-11 items-center justify-center rounded-full bg-brand-soft text-brand-ink">
@@ -140,54 +135,7 @@ export function ProfileEditor({ name, courses }: { name: string; courses: Course
         </div>
       </Surface>
 
-      <aside className="flex flex-col gap-4">
-        <Surface pad="md" className="flex flex-col gap-3">
-          <h2 className="font-semibold">{t("yourCourses")}</h2>
-          {enrolled.length ? (
-            <ul className="flex flex-col gap-4">
-              {enrolled.map((c) => {
-                const e = enrollments[c.course_id]!;
-                return (
-                  <li key={c.course_id} className="flex flex-col gap-2">
-                    <div className="font-medium">{c.title}</div>
-                    <div className="flex flex-wrap gap-2">
-                      <Button asChild size="sm" variant="outline" className="bg-transparent">
-                        <Link href={`/learn/courses/${c.course_id}/enroll`}>
-                          <Settings2 data-icon="inline-start" />
-                          {t("customise")}
-                        </Link>
-                      </Button>
-                    </div>
-                    {profile ? (
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="w-fit text-brand-ink"
-                        onClick={() =>
-                          saveEnrollment(c.course_id, e, normalizeAnswers({ ...e.answers, ...profile.answers }, derived)).then(
-                            () => toast.success(t("applied", { course: c.title })),
-                            () => toast.error(t("applyFailed")),
-                          )
-                        }
-                      >
-                        {t("applyToCourse")}
-                      </Button>
-                    ) : null}
-                  </li>
-                );
-              })}
-            </ul>
-          ) : (
-            <p className="text-sm text-ink-muted">
-              {t("noCourses")}{" "}
-              <Link href="/learn/courses" className="font-medium text-brand-ink hover:underline">
-                {t("browse")}
-              </Link>
-            </p>
-          )}
-        </Surface>
-        <p className="px-1 text-sm text-ink-faint">{t("note")}</p>
-      </aside>
+
     </div>
   );
 }
