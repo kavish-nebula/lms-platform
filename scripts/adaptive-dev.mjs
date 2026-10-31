@@ -30,19 +30,33 @@ const production = process.argv.includes("--production");
 const env = { ...process.env, ADAPTIVE_PYTHON_ENABLED: "true", ADAPTIVE_INTERNAL_TOKEN: process.env.ADAPTIVE_INTERNAL_TOKEN || randomBytes(32).toString("hex"), ADAPTIVE_LMS_URL: `http://127.0.0.1:${port}`, ADAPTIVE_API_URL: `http://127.0.0.1:${aiPort}` };
 const children = [];
 let stopping = false;
-function stop(code = 0) {
+function terminate(child) {
+  if (!child?.pid || child.exitCode !== null) return;
+  if (process.platform === "win32") {
+    try { execFileSync("taskkill", ["/pid", String(child.pid), "/t", "/f"], { stdio: "ignore", windowsHide: true }); } catch {}
+  } else child.kill("SIGTERM");
+}
+async function stop(code = 0) {
   if (stopping) return;
   stopping = true;
-  for (const child of children) {
-    if (!child.pid || child.exitCode !== null) continue;
-    if (process.platform === "win32") {
-      try { execFileSync("taskkill", ["/pid", String(child.pid), "/t", "/f"], { stdio: "ignore", windowsHide: true }); } catch {}
-    } else child.kill("SIGTERM");
+  // Stop writers first, then flush/close PGlite before terminating Next.
+  for (const child of children.slice(1)) terminate(child);
+  try {
+    const response = await fetch(`${env.ADAPTIVE_LMS_URL}/api/internal/adaptation/shutdown`, {
+      method: 'POST', headers: { authorization: `Bearer ${env.ADAPTIVE_INTERNAL_TOKEN}` },
+      signal: AbortSignal.timeout(15_000),
+    });
+    if (!response.ok) console.warn('Database shutdown did not complete; retain the data directory for recovery if needed.');
+  } catch {
+    console.warn('Web server unavailable for database shutdown.');
   }
+  terminate(children[0]);
   process.exitCode = code;
 }
 function start(command, args, cwd) {
-  const child = spawn(command, args, { cwd, env, stdio: "inherit", windowsHide: true });
+  // On Windows isolate children from the terminal's Ctrl+C so the launcher
+  // can close the database before shutting down the web process.
+  const child = spawn(command, args, { cwd, env, stdio: "inherit", windowsHide: true, detached: process.platform === 'win32' });
   children.push(child);
   child.on("error", (error) => { console.error(error.message); stop(1); });
   child.on("exit", (code) => { if (!stopping) stop(code || 0); });

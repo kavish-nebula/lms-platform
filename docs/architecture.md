@@ -1,5 +1,7 @@
 # Current learning experience extension
 
+Local PGlite startup acquires a process ownership lock beside the data directory to prevent competing web processes. Failed startup stays failed until restart rather than repeatedly creating aborted WASM clients. The adaptive launcher handles Ctrl+C by stopping Python writers, calling its authenticated internal shutdown action to close PGlite, then terminating Next. Force-killing the launcher bypasses this graceful close; preserve database files before any recovery.
+
 The root `npm run dev` loads the web environment and starts the web app, Python adaptive service and worker together when `ADAPTIVE_PYTHON_ENABLED=true`. Its default web port remains 3000 (overridable through `ADAPTIVE_WEB_PORT`). This prevents a web-only server from leaving personalization jobs queued without a worker. Use one app process per local PGlite data directory.
 
 Displayed timestamps use Indian Standard Time (`Asia/Kolkata`), including creator histories and learner-facing exports. Stored instants remain unchanged; activity scheduling retains its configured timezone.
