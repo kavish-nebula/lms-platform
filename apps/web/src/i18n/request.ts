@@ -15,5 +15,5 @@ export const SUPPORTED_LOCALES = Object.keys(CATALOGS) as Locale[];
 
 export default getRequestConfig(async () => {
   const locale: Locale = BASE_LOCALE;
-  return { locale, messages: CATALOGS[locale], timeZone: "UTC" };
+  return { locale, messages: CATALOGS[locale], timeZone: "Asia/Kolkata" };
 });

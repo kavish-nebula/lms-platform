@@ -1,3 +1,4 @@
+import { formatIst } from "@/lib/display-time";
 /** Workplace practice is optional evidence, never a course grade or completion signal. */
 export const DOMAINS = {mechanical:'Mechanical engineering', chemical:'Chemical engineering', operations:'General operations'} as const;
 export type WorkDomain = keyof typeof DOMAINS;
@@ -31,4 +32,4 @@ export function draftKey(caseId:CaseId,domain:WorkDomain){return `${caseId}:${do
 export function latestReview(w:Workspace,id:string){return w.reviews.filter(r=>r.submissionId===id).at(-1);}
 export function evidenceStatus(w:Workspace,s:Submission){return latestReview(w,s.id)?.decision==='reviewed'?'Reviewed':'Practised';}
 export function teamSubmissions(w:Workspace){return w.submissions.filter(s=>s.shared);}
-export function outputText(s:Pick<Submission,'caseId'|'domain'|'fields'|'at'>){const c=practiceCase(s.caseId)!;return `${c.output}\n${c.title}\n${DOMAINS[s.domain]}\nFictional workplace practice · Not a professional credential\nSubmitted ${new Date(s.at).toLocaleString()}\n\n${c.fields.map(([id,label])=>`${label}\n${s.fields[id]||''}`).join('\n\n')}\n\nConcepts practised: ${c.concepts.join(', ')}`;}
+export function outputText(s:Pick<Submission,'caseId'|'domain'|'fields'|'at'>){const c=practiceCase(s.caseId)!;return `${c.output}\n${c.title}\n${DOMAINS[s.domain]}\nFictional workplace practice · Not a professional credential\nSubmitted ${formatIst(s.at)}\n\n${c.fields.map(([id,label])=>`${label}\n${s.fields[id]||''}`).join('\n\n')}\n\nConcepts practised: ${c.concepts.join(', ')}`;}

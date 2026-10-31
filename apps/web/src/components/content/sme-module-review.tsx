@@ -1,4 +1,5 @@
 "use client";
+import { formatIst } from "@/lib/display-time";
 import { moduleDeliverySteps, STAGE_LABELS } from '@/lib/course-delivery';
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -49,6 +50,6 @@ export function SmeModuleReview({ run, moduleId, entry, history, writable, onDir
       {values.verdict !== 'approved' && <div className="space-y-2"><label htmlFor={`priority-${moduleId}`} className="block text-sm font-medium">Feedback priority</label><select id={`priority-${moduleId}`} className="min-h-11 rounded-lg border border-input bg-panel px-3 text-sm focus-visible:outline-2 focus-visible:outline-ring" value={values.priority} onChange={e => setValues(v => ({ ...v, priority: e.target.value as typeof v.priority }))}>{['Critical', 'Recommended', 'Optional'].map(p => <option key={p}>{p}</option>)}</select></div>}
       <Button type="submit" disabled={!dirty}>{busy ? 'Saving…' : entry ? 'Save updated review' : 'Save module review'}</Button>
     </fieldset>{error && <p role="alert" className="text-sm text-destructive">{error}</p>}<p role="status" className="text-sm text-brand-ink">{message}</p></form>
-    {history.length > 0 && <details className="space-y-3 border-t border-line pt-4"><summary className="cursor-pointer text-sm font-medium">Decision history ({history.length})</summary>{history.map(h => <div key={h.id} className="space-y-1 rounded-lg border border-line p-3 text-sm"><p className="font-medium">Review {h.version} · {h.verdict.replaceAll('_', ' ')}</p><p className="text-xs text-ink-muted">{h.reviewerName} · {h.createdAt.replace('T', ' ').slice(0, 19)} UTC · {Object.values(h.checklist).filter(Boolean).length}/7 checks passed{h.verdict !== 'approved' ? ` · ${h.priority}` : ''}</p><p className="whitespace-pre-wrap break-words">{h.feedback || 'No additional notes.'}</p></div>)}</details>}
+    {history.length > 0 && <details className="space-y-3 border-t border-line pt-4"><summary className="cursor-pointer text-sm font-medium">Decision history ({history.length})</summary>{history.map(h => <div key={h.id} className="space-y-1 rounded-lg border border-line p-3 text-sm"><p className="font-medium">Review {h.version} · {h.verdict.replaceAll('_', ' ')}</p><p className="text-xs text-ink-muted">{h.reviewerName} · {formatIst(h.createdAt)} · {Object.values(h.checklist).filter(Boolean).length}/7 checks passed{h.verdict !== 'approved' ? ` · ${h.priority}` : ''}</p><p className="whitespace-pre-wrap break-words">{h.feedback || 'No additional notes.'}</p></div>)}</details>}
   </article>;
 }

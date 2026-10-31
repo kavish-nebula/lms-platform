@@ -1,4 +1,5 @@
 "use client";
+import { formatIst } from "@/lib/display-time";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -27,6 +28,6 @@ export function ProductionScriptReview({ job, revision, endpoint, disabled, onDi
       <div><label htmlFor="script-verdict" className="mb-2 block text-sm font-medium">Script decision</label><select id="script-verdict" value={value.verdict} required className="min-h-11 rounded-lg border border-input bg-panel px-3 text-sm focus-visible:outline-2 focus-visible:outline-ring" onChange={e => setValue(v => ({ ...v, verdict: e.target.value as typeof v.verdict }))}><option value="">Choose a decision</option><option value="approved">{isPlan ? 'Approve plan and activities' : 'Approve scripts'}</option><option value="revision_requested">Request script revisions</option></select></div>
       <div><label htmlFor="script-feedback" className="mb-2 block text-sm font-medium">Script review feedback</label><Textarea id="script-feedback" maxLength={6000} rows={3} required={value.verdict === 'revision_requested'} value={value.feedback} onChange={e => setValue(v => ({ ...v, feedback: e.target.value }))} /></div><Button type="submit" disabled={!dirty}>{busy ? 'Saving review…' : 'Save script review'}</Button>
     </fieldset>{disabled && <p className="text-sm text-ink-muted">Review is disabled for unsaved edits, historical revisions or outdated source approval.</p>}{error && <p role="alert" className="text-sm text-destructive">{error}</p>}</form>
-    <details className="space-y-3 border-t border-line pt-3"><summary className="cursor-pointer text-sm font-medium">Script decision history ({job.reviews.length})</summary>{job.reviews.map(r => <article className="space-y-1 rounded-lg border border-line p-3 text-sm" key={r.id}><h3 className="font-medium">Content revision {r.expectedRevision} · {r.verdict.replaceAll('_', ' ')}</h3><p className="text-xs text-ink-muted">{r.reviewerName} · {r.createdAt.replace('T', ' ').slice(0, 19)} UTC</p><p className="whitespace-pre-wrap">{r.feedback || 'No additional notes.'}</p></article>)}</details>
+    <details className="space-y-3 border-t border-line pt-3"><summary className="cursor-pointer text-sm font-medium">Script decision history ({job.reviews.length})</summary>{job.reviews.map(r => <article className="space-y-1 rounded-lg border border-line p-3 text-sm" key={r.id}><h3 className="font-medium">Content revision {r.expectedRevision} · {r.verdict.replaceAll('_', ' ')}</h3><p className="text-xs text-ink-muted">{r.reviewerName} · {formatIst(r.createdAt)}</p><p className="whitespace-pre-wrap">{r.feedback || 'No additional notes.'}</p></article>)}</details>
   </section>;
 }

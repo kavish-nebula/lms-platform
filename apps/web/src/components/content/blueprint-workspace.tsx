@@ -1,4 +1,5 @@
 "use client";
+import { formatIst } from "@/lib/display-time";
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { Download, Sparkles } from "lucide-react";
@@ -48,6 +49,6 @@ export function BlueprintWorkspace({ draft, initialRuns, configured }: { draft: 
     </section>
     {active && !active.outdated && active.inputRevision !== draft.revision && <p className="text-sm text-ink-muted">The saved brief matches frozen input revision {active.inputRevision} exactly. Its blueprint and existing reviews are reused.</p>}
     {runs.length > 0 && <div className="space-y-2"><label className="block text-sm font-medium" htmlFor="blueprint-run">Generation history</label><select id="blueprint-run" className="min-h-11 max-w-full rounded-lg border border-input bg-panel px-3 text-sm focus-visible:outline-2 focus-visible:outline-ring" value={shown?.id ?? ''} onChange={e => setSelected(e.target.value)}>{runs.map(r => <option key={r.id} value={r.id}>Input revision {r.inputRevision} · {r.status} · Prompt v{r.promptVersion}{r.outdated ? ' · Outdated' : ''}</option>)}</select></div>}
-    {shown && <section className="space-y-3" aria-label="Selected run"><p className="text-xs text-ink-muted">Input revision {shown.inputRevision} · Prompt v{shown.promptVersion} · Attempt {shown.attempts} · {shown.model ?? 'Model pending'} · {new Date(shown.updatedAt).toISOString().replace('T', ' ').slice(0, 19)} UTC</p>{shown.outdated && <p role="status" className="rounded-lg border border-brand-line bg-brand-soft p-4 text-sm text-brand-ink">This blueprint uses an older input revision or prompt. It is retained for comparison. Generate a new blueprint from the latest saved SME input.</p>}{shown.status === 'failed' && <p role="alert" className="text-sm text-destructive">{shown.error}</p>}<BlueprintDocument run={shown} /></section>}
+    {shown && <section className="space-y-3" aria-label="Selected run"><p className="text-xs text-ink-muted">Input revision {shown.inputRevision} · Prompt v{shown.promptVersion} · Attempt {shown.attempts} · {shown.model ?? 'Model pending'} · {formatIst(shown.updatedAt)}</p>{shown.outdated && <p role="status" className="rounded-lg border border-brand-line bg-brand-soft p-4 text-sm text-brand-ink">This blueprint uses an older input revision or prompt. It is retained for comparison. Generate a new blueprint from the latest saved SME input.</p>}{shown.status === 'failed' && <p role="alert" className="text-sm text-destructive">{shown.error}</p>}<BlueprintDocument run={shown} /></section>}
   </div>;
 }

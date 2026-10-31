@@ -221,7 +221,7 @@ function Companion({ data, moduleId, phase, step }: { data: CompanionCourse; mod
                 setExporting(true);
                 setExportError("");
                 try {
-                  await exportNotesPdf({ courseTitle: data.course.title, notes: state.notes, date: new Date().toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" }) });
+                  await exportNotesPdf({ courseTitle: data.course.title, notes: state.notes, date: new Date().toLocaleDateString(undefined, { timeZone: "Asia/Kolkata", year: "numeric", month: "long", day: "numeric" }) });
                 } catch {
                   setExportError("Could not open the print preview. Please try again.");
                 } finally {

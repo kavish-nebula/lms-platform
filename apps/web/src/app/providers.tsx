@@ -74,7 +74,7 @@ export function Providers({ locale, messages, themeable = false, children }: Pro
   useSpotlight();
 
   return (
-    <NextIntlClientProvider locale={locale} messages={messages} timeZone="UTC">
+    <NextIntlClientProvider locale={locale} messages={messages} timeZone="Asia/Kolkata">
       <MotionConfig reducedMotion={reduce ? "always" : "user"}>
         <TooltipProvider delayDuration={300}>{children}</TooltipProvider>
         <Toaster position="bottom-right" theme={dark ? "dark" : "light"} />

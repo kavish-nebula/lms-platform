@@ -1,4 +1,5 @@
 "use client";
+import { formatIst } from "@/lib/display-time";
 import { CourseDeliveryFlow } from './course-delivery-flow';
 import { useRef, useState } from "react";
 import { ProductionFormatSettings } from "./production-format-settings";
@@ -75,7 +76,7 @@ export function CourseBriefEditor({ draft, lastModule }: { draft: CreatorDraft |
           <Button type="button" variant="outline" disabled={brief.objectives.length >= 60} onClick={() => set("objectives", [...brief.objectives, { text: "", bloom: "Apply" }])}><Plus aria-hidden />Add objective</Button>
         </fieldset>
         <fieldset disabled={busy} className="space-y-4 rounded-xl border border-line bg-panel p-5 md:p-7"><legend className="px-2 text-lg font-semibold">Physical skills</legend><label className="flex items-start gap-3 text-sm"><input type="checkbox" className="mt-1 size-4 accent-brand" checked={brief.physicalSkills} onChange={e => set("physicalSkills", e.target.checked)} />This course includes physical or psychomotor skills.</label>{brief.physicalSkills && <div className="space-y-2"><label htmlFor="physical-notes" className="block text-sm font-medium">Physical practice requirements</label><p className="text-xs text-ink-muted">Describe supervised practice, equipment and any activities that cannot be assessed online.</p><Textarea id="physical-notes" maxLength={12000} value={brief.physicalNotes} onChange={e => set("physicalNotes", e.target.value)} /></div>}</fieldset>
-        <div className="sticky bottom-3 rounded-xl border border-line bg-panel p-4 shadow-sm"><div className="flex flex-wrap items-center gap-4"><Button type="submit" disabled={busy}><Save aria-hidden />{busy ? "Saving…" : "Save draft"}</Button><span className="text-xs text-ink-muted">{dirty ? "Unsaved changes" : record ? `Saved · Revision ${record.revision} · ${new Date(record.updatedAt).toISOString().replace("T", " ").slice(0, 19)} UTC` : "Not saved yet"}</span></div>
+        <div className="sticky bottom-3 rounded-xl border border-line bg-panel p-4 shadow-sm"><div className="flex flex-wrap items-center gap-4"><Button type="submit" disabled={busy}><Save aria-hidden />{busy ? "Saving…" : "Save draft"}</Button><span className="text-xs text-ink-muted">{dirty ? "Unsaved changes" : record ? `Saved · Revision ${record.revision} · ${formatIst(record.updatedAt)}` : "Not saved yet"}</span></div>
           <p role="status" className="mt-2 text-sm text-brand-ink">{message}</p>{error && <div role="alert" className="mt-2 text-sm text-destructive"><p>{error}</p>{conflict && record && <a className="mt-2 inline-block underline" href={`/content/courses/${record.id}`}>Open latest saved version (unsaved text will be lost)</a>}</div>}
         </div>
       </form>
