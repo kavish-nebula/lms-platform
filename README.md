@@ -41,6 +41,8 @@ npm run lint
 npm run typecheck
 ```
 
+When `ADAPTIVE_PYTHON_ENABLED=true` in `apps/web/.env.local`, the root `npm run dev` starts the web app, adaptive Python service and worker together on web port 3000 by default. Install the Python dependencies first (see `docs/adaptive-teaching.md`). Keep one running stack per local database; a separate web-only process can leave personalization waiting on a worker attached to another app. A busy requested port stops startup instead of silently moving the web app away from its worker.
+
 ## Backend: AI plans each learner's course
 
 When someone enrols, their profile answers, customise choices and quick-check answers go to the server. It stores a rule-based **standard setup** at once, then asks **GLM** (Z.ai; `glm-4.7-flash` by default) to write the learner's plan:

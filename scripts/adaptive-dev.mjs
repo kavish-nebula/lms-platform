@@ -4,6 +4,7 @@ import { existsSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
+import net from "node:net";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const localEnv = path.join(root, "apps/web/.env.local");
@@ -12,6 +13,15 @@ const python = process.env.ADAPTIVE_PYTHON_BIN || path.join(root, "apps/adaptive
 if (!existsSync(python)) throw new Error("Create apps/adaptive-api/.venv and install requirements.txt first; see docs/adaptive-teaching.md.");
 const port = process.env.ADAPTIVE_WEB_PORT || "3002";
 const aiPort = process.env.ADAPTIVE_API_PORT || "8001";
+// Next dev can silently choose another port. The worker must use exactly the
+// same address, so fail before spawning anything when a requested port is busy.
+for (const requested of [port, aiPort]) {
+  await new Promise((resolve, reject) => {
+    const probe = net.createServer();
+    probe.once("error", () => reject(new Error(`Port ${requested} is already in use. Stop the existing app/adaptive stack before starting another one.`)));
+    probe.listen(Number(requested), "127.0.0.1", () => probe.close(resolve));
+  });
+}
 const production = process.argv.includes("--production");
 const env = { ...process.env, ADAPTIVE_PYTHON_ENABLED: "true", ADAPTIVE_INTERNAL_TOKEN: process.env.ADAPTIVE_INTERNAL_TOKEN || randomBytes(32).toString("hex"), ADAPTIVE_LMS_URL: `http://127.0.0.1:${port}`, ADAPTIVE_API_URL: `http://127.0.0.1:${aiPort}` };
 const children = [];

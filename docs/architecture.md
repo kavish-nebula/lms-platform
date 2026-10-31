@@ -1,5 +1,7 @@
 # Current learning experience extension
 
+The root `npm run dev` loads the web environment and starts the web app, Python adaptive service and worker together when `ADAPTIVE_PYTHON_ENABLED=true`. Its default web port remains 3000 (overridable through `ADAPTIVE_WEB_PORT`). This prevents a web-only server from leaving personalization jobs queued without a worker. Use one app process per local PGlite data directory.
+
 Displayed timestamps use Indian Standard Time (`Asia/Kolkata`), including creator histories and learner-facing exports. Stored instants remain unchanged; activity scheduling retains its configured timezone.
 
 Authored practical projects can include miniProject.sandbox (runtime data-workflow) without changing historical packages. A pure bounded interpreter processes learner artifact fields and ordered copy/template/text/numeric/fallback steps against synthetic inputs; it has no eval, host or network access. Public delivery omits grading predicates. The server runs the published test cases and weighted rubric criteria afresh on Submit, storing immutable artifact/report evidence. Migration 0019 adds authored_project_work (enrollment + release revision, optimistic version) and authored_project_submissions; no legacy course or progress data is rewritten. The course capstone embeds the workspace and supports a full workspace route. Passing a submitted project enables Continue to final assessment; Test alone does not record completion.
