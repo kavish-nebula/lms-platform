@@ -41,6 +41,20 @@ multiCodex.tools = multiCodex.modules.map(m => ({ ...codex.tools[0], moduleId: m
 multiCodex.accessibility = multiCodex.modules.map(m => ({ ...codex.accessibility[0], moduleId: m.id }));
 multiCodex.courseEnd = codex.courseEnd!.map(s => ({ ...s, afterModuleId: 'M2' }));
 validateBlueprint(multiCodex, codexInput);
+const earlyCodexGate = structuredClone(multiCodex);
+earlyCodexGate.assessments.find(a => a.layer === 'L4')!.moduleId = 'M1';
+let gateRepairCalls = 0;
+const reconciledGate = await generateBlueprint(codexInput, async request => {
+  gateRepairCalls++;
+  if (gateRepairCalls === 2) assert(request.messages.at(-1)?.content.includes('Set moduleId to "M2" on EVERY assessments entry with layer L4'), 'Repair must identify the field, not merely change timing prose.');
+  return { choices: [{ message: { content: JSON.stringify(gateRepairCalls === 1 ? earlyCodexGate : multiCodex) } }] };
+});
+assert.equal(gateRepairCalls, 1, 'Known earlier module references are reconciled without another paid model call.');
+assert(reconciledGate.output.assessments.filter(a => a.layer === 'L4').every(a => a.moduleId === 'M2'));
+assert.equal(earlyCodexGate.assessments.find(a => a.layer === 'L4')!.moduleId, 'M1', 'The provider snapshot remains unchanged.');
+const unknownGate = structuredClone(multiCodex);
+unknownGate.assessments.find(a => a.layer === 'L4')!.moduleId = 'unknown-module';
+await assert.rejects(generateBlueprint(codexInput, async () => ({ choices: [{ message: { content: JSON.stringify(unknownGate) } }] })), /Activity module/);
 const badFormative = structuredClone(multiCodex);
 badFormative.assessments.find(a => a.layer === 'L1')!.moduleId = 'missing-module';
 assert.throws(() => validateBlueprint(badFormative, codexInput), /Activity module/);

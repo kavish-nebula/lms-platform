@@ -409,7 +409,7 @@ function SlideVideoLesson({
       {adaptation.active && phase === "play" ? <div className="flex flex-wrap items-center gap-2" aria-busy={adaptation.pending}>
         <Button size="sm" variant="outline" disabled={adaptation.pending} onClick={() => requestAdaptation("simplify")}>Simplify</Button>
         <Button size="sm" variant="outline" disabled={adaptation.pending} onClick={() => requestAdaptation("example")}>Give an example</Button>
-        <p role="status" className="text-sm text-ink-muted">{adaptation.message}</p>
+        <p role="status" className="text-sm text-ink-muted">{adaptation.message || (video.audio?.every(src => !src) ? adaptation.revision ? 'Personalized lesson and matching narration ready.' : adaptation.initialStatus === 'failed' ? 'Personalized narration could not be prepared. The source lesson remains available.' : 'Source lesson preview. Personalized teaching and matching narration are being prepared; audio is not ready yet.' : '')}</p>
       </div> : null}
       {storyMode ? <div className="story-mode-topbar">
         <div className="story-mode-heading">

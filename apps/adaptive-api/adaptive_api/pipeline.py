@@ -6,7 +6,7 @@ import time
 import httpx
 from .config import settings
 
-LOCKED = {"id", "kind", "type", "icon", "role", "tone", "state", "source", "target", "code", "term", "cue", "correct"}
+LOCKED = {"id", "kind", "type", "icon", "role", "tone", "state", "source", "target", "code", "term", "cue", "correct", "objectiveIds", "sourceIds"}
 PROMPT_VERSION = 4
 SYSTEM = """You are an adaptive course teaching editor for an LMS.
 
@@ -361,6 +361,10 @@ def apply_hook_text_map(authored, edits, sparse=False):
 
 
 def call_model(client, config, model, messages):
+    if config['provider'] == 'vertex':
+        from .config import vertex_access_token
+        config = {**config, 'key': vertex_access_token()}
+        model = model if model.startswith('google/') else 'google/' + model
     if config["provider"] == "anthropic":
         res = client.post(config["base"].removesuffix("/v1") + "/v1/messages", headers={
             "x-api-key": config["key"], "anthropic-version": "2023-06-01"}, json={
@@ -377,8 +381,8 @@ def call_model(client, config, model, messages):
 
 
 def generate(job, client=None):
-    c = settings()
-    if not c["key"]:
+    c = settings(job.get('input', {}).get('context', {}).get('llmProvider'))
+    if not c["key"] and c['provider'] != 'vertex':
         raise ValueError("Model credentials are not configured")
     started = time.monotonic()
     source = job["input"]
@@ -424,6 +428,8 @@ def generate(job, client=None):
             protocol += " Use mechanical project/lab scenarios: design checks, prototype tests, lab records or equipment requests. Replace gift-card and consumer-refund examples with lab guidance and an equally irreversible project-budget decision, retaining any authored amounts and the teaching about recoverability. Conversation memory should retain a specific test/design identifier across follow-ups rather than repeat a shop return policy."
     if context.get("authoredCourse"):
         protocol = "\nPersonalise only the supplied approved slide. Keep its source facts and meaning, including uncertainty and privacy qualifications. Do not add or remove numerical facts."
+    if str(source.get("piece", "")).startswith("activity:"):
+        protocol += "\nThis is an interactive practice activity around an unchanged uploaded video, not a slide or assessment. Adapt the framing, reasoning, hints and practice support consistently to LEARNER_FOCUS. Keep the supplied fictional case documents and quoted claims verbatim, including identifiers, times, percentages and leading zeros. Connect their lesson to the learner's field without replacing source evidence with a different case. Preserve every ID, objectiveIds, sourceIds, array length, technical claim and evidence standard. Do not invent personal circumstances or claim the recorded video was changed. Return the complete SOURCE JSON shape."
     messages = [{"role": "system", "content": (AUTHORED_SYSTEM if context.get("authoredCourse") else SYSTEM) + protocol}, {"role": "user", "content": json.dumps({
         "LEARNER_FOCUS": focus, "LEARNER": teaching_context, "TRIGGER": source["trigger"],
         "OUTPUT_CONSTRAINTS": output_constraints(authored), "PREREQUISITE_BRIDGE_PLACEMENT": placement, "EXAMPLE_PLACEMENT": example_placement,
@@ -457,7 +463,9 @@ def generate(job, client=None):
                     candidate = pending_edits
                 content = apply_hook_text_map(authored, candidate, sparse=sparse_map) if text_map else validate(authored, candidate)
                 if context.get("authoredCourse") and authored_numbers(content) != authored_numbers(authored):
-                    raise ValueError("Keep the same numerical facts as the approved slide; do not add, remove or change numbers.")
+                    missing = sorted(authored_numbers(authored) - authored_numbers(content))
+                    added = sorted(authored_numbers(content) - authored_numbers(authored))
+                    raise ValueError(f"Keep the same numerical facts as the approved slide; do not add, remove or change numbers. Restore these exact numeric strings: {missing}; remove these invented numeric strings: {added}. Keep quoted source evidence verbatim, including times and leading zeros.")
                 if text_map and source.get("courseId") == "ai-agent":
                     # Fictional team members may stay for continuity; it is the
                     # organisation and industry scenario that must be personalised.

@@ -22,6 +22,7 @@ import { supportFor } from "@/lib/setup";
 import { NarratedStage } from "@/components/player/narrated-stage";
 import { VideoFirstActivity } from './stages/video-first-activity';
 import { HookCinema } from "@/components/player/hook/hook-cinema";
+import { VideoFirstHook } from './hook/video-first-hook';
 import { ModuleMap } from "@/components/player/module-map";
 import { useWatchedVideos } from "@/components/player/video/watched";
 import { ExplainerStage } from "@/components/player/stages/explainer-stage";
@@ -77,8 +78,9 @@ export function Player({ module, moduleIndex, stage, video, courseHref, initialD
   const adaptation = React.useMemo(() => ({ ...startingAdaptation, support, override: support }), [startingAdaptation, support]);
   // the hook, concept videos and worked examples rewritten in the learner's own world (server/adapt), once ready
   const topicKey = `${module.module_id}:${stage}:${video ?? ""}`;
+  const [startedActivity, setStartedActivity] = React.useState<string | null>(null);
   const latestAdapted = useAdaptedModule(module.course_id, module.module_id, enrolled, stage);
-  const adapted = useSteadyAdapted(latestAdapted, topicKey, stage === "hook");
+  const adapted = useSteadyAdapted(latestAdapted, topicKey, module.videoFirstActivities ? startedActivity !== topicKey : stage === "hook");
   const content = React.useMemo(() => withAdapted(module, adapted), [module, adapted]);
   const [railOpen, setRailOpen] = React.useState(false);
   const outlineKey = `lms-outline:v1:${module.course_id}`;
@@ -200,21 +202,22 @@ export function Player({ module, moduleIndex, stage, video, courseHref, initialD
   }
 
   let body: React.ReactNode;
+  const activityNav = { ...nav, audio: adapted?.activityAudio?.[stage], personalized: !!adapted?.activityAudio?.[stage], preparing: !adapted?.activityAudio?.[stage] && ['writing', 'voicing'].includes(latestAdapted?.pieces[`activity:${stage}`]?.status ?? ''), onInteract: () => setStartedActivity(topicKey) };
   switch (stage) {
     case 'hook':
-      if (module.videoFirstActivities) body = <VideoFirstActivity key={`${module.version}:${stage}`} activities={module.videoFirstActivities} stage="hook" {...nav} />;
+      if (content.videoFirstActivities) body = <VideoFirstHook key={`${module.version}:${stage}`} hook={content.videoFirstActivities.problemHook} fallbackAudioUrl={`/api/v1/courses/${module.course_id}/hook-audio/${module.module_id}`} {...activityNav} />;
       break;
     case "explainer":
       body = <ExplainerStage block={getBlock(content, "explainer")!} adaptation={adaptation} videoId={part?.video?.id} nextTitle={nextTitle} {...nav} />;
       break;
     case "worked":
-      body = module.videoFirstActivities ? <VideoFirstActivity key={`${module.version}:${stage}`} activities={module.videoFirstActivities} stage="worked" {...nav} /> : <WorkedStage block={getBlock(content, "worked")!} {...nav} />;
+      body = content.videoFirstActivities ? <VideoFirstActivity key={`${module.version}:${stage}`} activities={content.videoFirstActivities} stage="worked" {...activityNav} /> : <WorkedStage block={getBlock(content, "worked")!} {...nav} />;
       break;
     case "guided":
-      body = module.videoFirstActivities ? <VideoFirstActivity key={`${module.version}:${stage}`} activities={module.videoFirstActivities} stage="guided" {...nav} /> : <GuidedStage block={getBlock(module, "guided")!} adaptation={adaptation} {...nav} />;
+      body = content.videoFirstActivities ? <VideoFirstActivity key={`${module.version}:${stage}`} activities={content.videoFirstActivities} stage="guided" {...activityNav} /> : <GuidedStage block={getBlock(module, "guided")!} adaptation={adaptation} {...nav} />;
       break;
     case "lab":
-      body = module.videoFirstActivities ? <VideoFirstActivity key={`${module.version}:${stage}`} activities={module.videoFirstActivities} stage="lab" {...nav} /> : <ScenarioStage block={getBlock(module, "lab") as ScenarioBlock} support={support} {...nav} />;
+      body = content.videoFirstActivities ? <VideoFirstActivity key={`${module.version}:${stage}`} activities={content.videoFirstActivities} stage="lab" {...activityNav} /> : <ScenarioStage block={getBlock(module, "lab") as ScenarioBlock} support={support} {...nav} />;
       break;
     case "gate": {
       const gateBlock = getBlock(module, "gate")!;

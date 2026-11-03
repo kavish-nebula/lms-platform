@@ -1,0 +1,26 @@
+/* These optional cloud services are not connected to this LMS import. */
+html body .chat-tutor-btn,
+html body .audio-controls-right .voice-bot-btn.skip-solve-btn,
+html body .voice-activation-screen-video,
+html body div:has(> .chat-tutor-btn),
+html body div.mb-8:has(> .group .chat-tutor-btn) { display: none !important; }
+
+/* The source's viewport-locked audio layout collapses the audio card when a
+   concept quiz shares the page. Allow natural scrolling so both remain usable. */
+html body #page-container.audio-fit-active { overflow-y: auto !important; }
+html body #page-container.audio-fit-active #current-page-content {
+  display: block !important;
+  height: auto !important;
+}
+html body .sub-concept-content.audio-fit { display: block !important; }
+html body .sub-concept-content.audio-fit [id^="media-container-"] { display: block !important; }
+html body .sub-concept-content.audio-fit [id^="listen-audio-content-"]:not(.hidden) {
+  overflow: visible !important;
+  min-height: 240px !important;
+}
+html body .sub-concept-content.audio-fit .sub-concept-image {
+  height: auto !important;
+  max-height: 440px !important;
+  width: auto !important;
+  max-width: 100% !important;
+}

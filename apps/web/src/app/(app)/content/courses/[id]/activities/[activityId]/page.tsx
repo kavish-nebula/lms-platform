@@ -1,0 +1,11 @@
+import Link from 'next/link';
+import { getSessionUser } from '@/server/auth';
+import { getCreatorDraft } from '@/server/content-creator';
+import { getLessonActivities } from '@/server/lesson-activities';
+import { LessonActivityPreview } from '@/components/content/lesson-activity-preview';
+
+export default async function ActivityPage({ params }: { params: Promise<{ id: string; activityId: string }> }) {
+  const { id, activityId } = await params; const user = await getSessionUser();
+  const [course, draft] = await Promise.all([getCreatorDraft(user.id, id), getLessonActivities(user.id, id, activityId)]);
+  return <section className="mx-auto max-w-5xl space-y-6 p-4 sm:p-8"><Link className="text-sm text-brand-ink underline" href={`/content/courses/${id}`}>← Back to course brief and videos</Link><header className="space-y-2"><p className="text-sm text-ink-muted">{course.brief.title} · Creator preview</p><h1 className="text-3xl font-semibold">{draft.title}</h1><p className="text-sm text-ink-muted">Problem hook → watch the concept videos → worked examples → guided practice</p></header><div role="status" className="rounded-xl border border-brand-line bg-brand-soft p-4 text-sm">{draft.outdated ? 'This activity uses an earlier course brief. Reconcile it with the current sources before assembly.' : 'Saved teaching draft. Source transcripts and content require human review before course assembly and publication.'}</div><LessonActivityPreview key={draft.id} draft={draft}/><details className="rounded-xl border border-line bg-panel p-4"><summary className="cursor-pointer font-medium">Source evidence and review notes</summary><p className="mt-3 text-sm text-ink-muted">Fictional production cases apply concepts from the source narration. Their sample records are teaching examples, not workplace procedures.</p>{draft.sourceSnapshots.map(s => <div key={s.sourceId} className="mt-4"><h2 className="font-medium">{course.brief.sourceLibrary?.sources.find(x => x.id === s.sourceId)?.title ?? s.sourceId}</h2><p className="text-xs text-ink-muted">Source revision {s.revision} · Activity brief revision {draft.briefRevision}</p><p className="mt-2 whitespace-pre-wrap text-sm">{s.evidenceText}</p></div>)}</details></section>;
+}

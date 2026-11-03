@@ -189,6 +189,10 @@ The learner Profile page uses one full-width profile editor. The former "Your co
 Course detail pages no longer show the "Your climb / Climb to Launch" staircase or its summit mission card. The shared CourseJourney retains the course introduction, progress, continue action and daily mission; modules and the course finale remain accessible through the course outline.
 
 
+Imported learning packages have a native catalog card and course overview, then a dedicated full-height player with Back to course, Save progress and Full screen actions. Teaching visuals inside the sandbox retain their supplied design. The host uses the shared appearance tokens. Supplied external tutoring controls are hidden when their backend is disconnected, and the course overview identifies unavailable external integrations.
+
+The SCORM import screen previews source version/status and topic objectives before import, then separately enables a labelled learner pilot. Learner course details show the full source hierarchy with unimported topics disabled, plus a link to the original package. Status distinguishes an unvoiced source preview from paired personalized narration; screens use existing theme tokens and labelled native form controls.
+
 The creator brief form omits Estimated duration, Authentic workplace contexts and Known difficulty areas. The preparation gate no longer requires the removed context/difficulty inputs. Existing values remain in saved briefs/history as optional legacy data; generated course and narration timing remain available.
 
 
@@ -198,3 +202,9 @@ The creator separates the course-wide brief, objectives, and source library. Lib
 
 
 Video-first authoring supports owner-scoped concept recordings and immutable timestamped transcript reviews in the source library. It generates interactive supporting activities and quizzes, then preserves original recordings in the learner player. Assets/fragments use local ignored storage with range-streamed enrolled-learner access; existing course package, assessment and progress contracts remain compatible. See [video-first-authoring.md](video-first-authoring.md) for workflow, storage, transcription and verification boundaries.
+
+The teaching activity preview uses three keyboard-accessible stage buttons and one activity card at a time. Worked examples reveal reasoning before the checked result. Guided practice preserves each local attempt, offers optional hints and requires an attempt before revealing model feedback. Native text fields, visible focus, existing light/dark tokens and explicit ungraded-preview labels preserve accessibility without motion or additional player state. The course brief links to saved previews beside video generation controls.
+
+## Video-first problem hooks
+
+Video-first hooks use the existing panel/brand tokens for a responsive animated scene player in both themes. A continuous audio clock advances the scene cards; captions and a complete transcript expose the same source text. Reduced motion removes scene transitions. Keyboard-accessible playback and scene controls remain available, and the last scene asks for an ungraded initial response. The hook's stable progress key is unchanged.

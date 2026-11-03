@@ -8,7 +8,13 @@ const nextConfig: NextConfig = {
   // Keep verification builds isolated when the developer server is using .next.
   distDir: process.env.LMS_NEXT_DIST_DIR ?? ".next",
   async headers() {
-    return [{ source: "/pyodide/:path*", headers: [{ key: "Access-Control-Allow-Origin", value: "*" }] }];
+    return [
+      { source: "/pyodide/:path*", headers: [{ key: "Access-Control-Allow-Origin", value: "*" }] },
+      { source: "/course-packages/:path*", headers: [
+        { key: "Access-Control-Allow-Origin", value: "*" },
+        { key: "Content-Security-Policy", value: "sandbox allow-scripts allow-downloads allow-popups allow-popups-to-escape-sandbox" },
+      ] },
+    ];
   },
   outputFileTracingRoot: monorepoRoot,
   // PGlite (the built-in local Postgres) ships WASM; load it from node_modules

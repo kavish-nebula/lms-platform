@@ -38,6 +38,13 @@ Codex-assisted ILD authoring is a separate new-draft route (`codex-ild-v2`). Cod
 The optional `miniProject.sandbox.guided` mode provides a fixed workflow and supplied examples; learners submit explanations rather than building artifacts. Release-scoped server runs and owned, versioned explanation drafts use the existing enrollment/session boundary, with new guided-work and submission tables in migration 0020. Immutable published configuration supplies every executable operation and input. API bodies cannot carry an implementation, grading flags or run evidence. Concept-check predicates remain private; final grades are recomputed on the server. Existing editable projects, media, assessments and historical learner records remain compatible. Transparent deterministic phrase/length checks are a prototype limitation and must not be represented as human semantic evaluation.
 
 
+### Registered SCORM package delivery
+
+Imported modules run as opaque-origin sandboxed frames, with a frame-checked postMessage SCORM bridge. Authenticated, bounded state persists in `imported_course_progress`, keyed by user/course/module/revision, and is cleared by learner reset. Package-reported scores remain separate from native server assessment grades. Media delivery supports byte ranges from local storage and a registered public-source fallback. This does not replace the native authoring or adaptive-generation services; see `docs/imported-courses.md`.
+
+SCORM imports add a read-only authenticated MCP source boundary and versioned normalized snapshots. Learner-specific native revisions reuse durable adaptation claims/leases and source/profile checks. Vertex uses ADC with refreshed OAuth in both Next.js and Python; cloud-provider failures do not silently switch imported pilot jobs to API-key Gemini. The current app retains demo session authentication; production identity and full-course migration are outside this pilot. See `scorm-personalization.md`.
+
+
 Course authoring now uses an additive source-library contract inside versioned brief JSON, with stable source IDs/revisions and module/topic/objective ancestry. Source coverage gates apply before blueprint processing and package assembly. The existing three-tool course MCP exports the same scoped evidence and current teaching context; endpoint, authentication and learner-delivery schemas are unchanged. The shared workflow and compatibility boundary are documented in [course-authoring-workflow.md](course-authoring-workflow.md).
 
 

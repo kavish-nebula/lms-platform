@@ -89,6 +89,19 @@ review before use.
 
 ## Verification
 
+Creator-only teaching drafts can be saved at
+`POST /api/v1/content/courses/{id}/lesson-activities`, then opened from the course
+brief's saved teaching activities panel. Each draft targets one module/topic,
+preserves its source IDs/revisions and recording identities, and carries the
+expected brief revision. It contains only a problem hook, worked examples and
+guided practice. The preview separates attempts, optional hints and model
+feedback; responses are local and ungraded. These fragments always need human
+review, are marked outdated after a brief change, and cannot be published or
+merged as complete video modules. Transcript review, complete module generation,
+course assembly and approval remain required. Run
+`node tests/backend/run.mjs lesson-activities` for ownership, stale-input,
+source-scope and learner-record isolation checks.
+
 Run `node tests/backend/run.mjs video-first` from `apps/web`. Tests use a real
 FFmpeg-generated MP4 and isolated database/media storage. They cover upload and
 codec checks, actual duration/audio extraction, captions, scope/access, HTTP ranges,
@@ -98,3 +111,7 @@ responses use provider doubles; this does not verify live cloud transcription or
 the factual quality of a generated course. Browser verification uses a separate
 seeded database and confirms playback, midpoint feedback/resumption, completion,
 interactive activities and creator upload/review/save.
+
+## Profile-based learner delivery
+
+Enrolled learners receive personalised framing and support for the hook, worked examples, guided practice and scenario lab through the existing adaptive service. Their recorded concept videos and all graded assessments remain fixed. Activity introduction audio matches the personalised text and does not disclose hidden expected evidence. Original activities remain usable while generation runs or fails; a started activity stays steady until reopened. Updating a profile or published revision invalidates its old activity jobs without changing course progress.

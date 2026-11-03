@@ -3,6 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
 import { spawn } from 'node:child_process';
+import { devBundlerArgs } from './dev-bundler.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const envFile = path.join(root, 'apps/web/.env.local');
@@ -15,7 +16,7 @@ if (process.env.ADAPTIVE_PYTHON_ENABLED === 'true') {
   await import('./adaptive-dev.mjs');
 } else {
   const require = createRequire(import.meta.url);
-  const child = spawn(process.execPath, [require.resolve('next/dist/bin/next'), 'dev'], {
+  const child = spawn(process.execPath, [require.resolve('next/dist/bin/next'), 'dev', ...devBundlerArgs()], {
     cwd: path.join(root, 'apps/web'), stdio: 'inherit', windowsHide: true,
   });
   child.on('error', (error) => { console.error(error.message); process.exitCode = 1; });

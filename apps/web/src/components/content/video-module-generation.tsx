@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { LessonActivityList } from './lesson-activity-list';
 import type { CourseBriefData } from '@/lib/content-creator';
 import { briefReadiness } from '@/lib/content-creator';
 import { correctChoiceIndices } from '@/lib/assessment-answers';
@@ -33,6 +34,7 @@ export function VideoModuleGeneration({ courseId, revision, brief, dirty, module
     finally { setBusy(''); }
   }
   return <section className="space-y-4 rounded-xl border border-line bg-panel p-5"><h2 className="text-lg font-semibold">Generate learning around your videos</h2><p className="text-sm text-ink-muted">Save the reviewed transcripts, then create the problem hook, worked examples, guided practice, scenarios, midpoint questions and module-end quiz. The videos stay unchanged. Review the result before course assembly and publication.</p>{dirty && <p className="text-sm">Save your current brief and transcript reviews first.</p>}
+    <LessonActivityList courseId={courseId} revision={revision} moduleId={moduleId}/>
     {!prepared && <p className="text-sm text-ink-muted">Complete the course preparation and source coverage checks before generating.</p>}
     {brief.sourceLibrary.modules.filter(unit => !moduleId || unit.id === moduleId).map(unit => <div key={unit.id} className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-line p-3"><span>{unit.title || unit.id}</span><Button type="button" disabled={!courseId || dirty || !!busy || !prepared} onClick={() => void generate(unit.id)}>{busy === unit.id ? 'Generating activities…' : 'Generate activities'}</Button></div>)}
     {error && <p role="alert" className="text-sm text-destructive">{error}</p>}

@@ -3,7 +3,7 @@ import { createHash } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { getCourse, getModule } from "@/data";
-import type { ConceptVideo, HookBlock, WorkedBlock } from "@/data/types";
+import type { ConceptVideo, HookBlock, WorkedBlock, ModuleContent } from "@/data/types";
 import { planModule } from "@/lib/learner-plan";
 import { interviewLines, learnerAnswers, profileLines } from "@/lib/setup";
 import type { SessionUser } from "@/server/auth";
@@ -184,6 +184,8 @@ async function runModule(
 /* ---------------------------------------------------------------- what the player gets */
 
 export type AdaptedModuleView = {
+  activities?: Partial<NonNullable<ModuleContent['videoFirstActivities']>>;
+  activityAudio?: Record<string, string>;
   live?: boolean;
   /** each piece's state, for "being written for you" notes */
   pieces: Record<string, { status: AdaptedStatus }>;
@@ -206,11 +208,15 @@ export async function adaptedModule(user: SessionUser, courseId: string, moduleI
     return {
       ...empty,
       live: true,
-      pieces: Object.fromEntries(Object.values(current).filter((r) => r !== null).map((r) => [r.videoId, {
+      pieces: Object.fromEntries([current.hook, current.worked, ...current.activities].filter((r) => r !== null).map((r) => [r.videoId, {
         status: r.status === "ready" ? "ready" : r.status === "failed" ? "failed" : "writing",
       }])),
       hook: hook?.content ? { ...(hook.content as unknown as NonNullable<AdaptedModuleView["hook"]>), brand: { name: "Harbour Works", short: "Harbour" } } : null,
       worked: (worked?.content as WorkedBlock) ?? null,
+      activities: Object.assign({}, ...current.activities.filter(r => r.status === 'ready').map(r => {
+        const content = { ...r.content }; delete content.audio; return content;
+      })),
+      activityAudio: Object.fromEntries(current.activities.filter(r => r.status === 'ready').map(r => [r.videoId.slice('activity:'.length), (r.content?.audio as Record<string, string>)?.intro]).filter((entry): entry is [string, string] => !!entry[1])),
       world: hook || worked ? { organisation: "Harbour Works" } : null,
     };
   }

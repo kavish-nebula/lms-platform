@@ -7,6 +7,8 @@ import type { ConceptVideo, ExplainerBlock, HookBlock, ModuleContent, WorkedBloc
 
 /** A module's pieces rewritten for this learner (GET /api/v1/enrollments/:course/modules/:module/adapted). */
 export type AdaptedModule = {
+  activities?: Partial<NonNullable<ModuleContent['videoFirstActivities']>>;
+  activityAudio?: Record<string, string>;
   live?: boolean;
   pieces: Record<string, { status: "writing" | "voicing" | "ready" | "failed" }>;
   hook: HookBlock | null;
@@ -35,9 +37,10 @@ export function useAdaptedModule(courseId: string, moduleId: string, enabled: bo
 
 /** The module with the learner's ready pieces in place of the authored ones. */
 export function withAdapted(mod: ModuleContent, a: AdaptedModule | undefined): ModuleContent {
-  if (!a || (!a.hook && !a.worked && !Object.keys(a.videos).length)) return mod;
+  if (!a || (!a.hook && !a.worked && !Object.keys(a.videos).length && !Object.keys(a.activities ?? {}).length)) return mod;
   return {
     ...mod,
+    ...(mod.videoFirstActivities && a.activities ? { videoFirstActivities: { ...mod.videoFirstActivities, ...a.activities } } : {}),
     blocks: mod.blocks.map((b) => {
       if (b.stage === "hook" && a.hook) return a.hook;
       if (b.stage === "worked" && a.worked) return a.worked;

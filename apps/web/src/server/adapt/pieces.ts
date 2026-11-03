@@ -3,6 +3,7 @@ import { getBlock } from "@/data/client";
 import type { ConceptVideo, HookBlock, ModuleContent, WorkedBlock } from "@/data/types";
 import type { AdaptedPiece } from "@/server/db/schema";
 import type { Clip } from "./tts";
+import { hookNarration } from '@/lib/video-first-hook';
 
 /**
  * The pieces of a module that are rewritten for each learner, in the order
@@ -41,6 +42,29 @@ const hookClips = (c: unknown): Clip[] => {
 const videoClips = (c: unknown): Clip[] => (c as ConceptVideo).slides.map((s, i) => ({ key: `s${i}`, text: s.narration }));
 
 export function piecesOf(mod: ModuleContent): PieceDef[] {
+  if (mod.videoFirstActivities) {
+    const a = mod.videoFirstActivities;
+    // Keep each activity small enough to prepare independently. Narration must
+    // not disclose model answers before the learner attempts the practice.
+    return ([
+      ['hook', { problemHook: a.problemHook }],
+      ['worked', { workedExamples: a.workedExamples }],
+      ['guided', { guidedPractice: a.guidedPractice }],
+      ['lab', { scenarioLab: a.scenarioLab }],
+    ] as const).map(([stage, authored]) => ({
+      piece: `activity:${stage}` as const,
+      label: `the ${stage} practice around a fixed uploaded concept video; personalise its fictional context and support, preserve source facts, objectives, evidence standards and IDs`,
+      authored,
+      clips: (content: unknown) => {
+        const c = content as Partial<NonNullable<ModuleContent['videoFirstActivities']>>;
+        const text = c.problemHook ? hookNarration(c.problemHook)
+          : c.workedExamples ? c.workedExamples.map(e => `${e.title}. ${e.problem}`).join(' ')
+          : c.guidedPractice ? c.guidedPractice.instructions
+          : c.scenarioLab!.scenarios.map(s => `${s.situation} ${s.challenge}`).join(' ');
+        return [{ key: 'intro', text }];
+      },
+    }));
+  }
   const out: PieceDef[] = [];
   const hook = getBlock(mod, "hook");
   if (hook && !hook.status) out.push({ piece: "hook", label: "the module's opening problem: a short illustrated film, then what really happened", authored: hook, clips: hookClips });

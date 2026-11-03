@@ -18,8 +18,14 @@ def health():
 @app.get("/ready")
 def ready():
     c = settings()
-    if not c["key"] or len(c["token"]) < 24:
+    if (not c["key"] and c['provider'] != 'vertex') or len(c["token"]) < 24:
         raise HTTPException(503, "Model or service credential is not configured")
+    if c['provider'] == 'vertex':
+        from .config import vertex_access_token
+        try:
+            vertex_access_token()
+        except ValueError:
+            raise HTTPException(503, 'Vertex authentication is not configured') from None
     return {"status": "ready", "promptVersion": PROMPT_VERSION}
 
 

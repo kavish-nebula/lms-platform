@@ -9,7 +9,7 @@ import { getCreatorDraft } from "./content-creator";
 import { db } from "./db/client";
 import { creatorBlueprints } from "./db/schema";
 import { ApiError } from "./http";
-import { generateBlueprint } from "./blueprint-ai";
+import { generateBlueprint, BlueprintValidationError } from "./blueprint-ai";
 import type { LlmTransport } from "./ai/llm";
 
 export const StartBlueprint = z.object({ revision: z.number().int().positive().max(2147483646) }).strict();
@@ -59,8 +59,8 @@ export async function processBlueprint(id: string, token: string, transport?: Ll
   try {
     const result = await generateBlueprint(row.input, transport);
     await database.update(creatorBlueprints).set({ ...result, status: "ready", error: null, updatedAt: new Date() }).where(ownedAttempt);
-  } catch {
+  } catch (error) {
     // Provider errors may contain URLs or request details; keep them out of the authoring UI.
-    await database.update(creatorBlueprints).set({ status: "failed", error: "AI processing did not complete. The provider may be unavailable or the output did not pass structural checks. Your SME input is unchanged. Retry when ready.", updatedAt: new Date() }).where(ownedAttempt);
+    await database.update(creatorBlueprints).set({ status: "failed", error: error instanceof BlueprintValidationError ? error.message : "AI processing did not complete. The provider may be unavailable or the output did not pass structural checks. Your SME input is unchanged. Retry when ready.", updatedAt: new Date() }).where(ownedAttempt);
   }
 }

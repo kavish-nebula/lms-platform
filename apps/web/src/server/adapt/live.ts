@@ -33,7 +33,7 @@ function teachingContext(context: Awaited<ReturnType<typeof contextOf>>["context
   } })) };
 }
 const voiceSettings = () => ({ speechPolicy: 2, provider: process.env.AUDIO_PROVIDER, model: process.env.AUDIO_MODEL, voice: process.env.AUDIO_VOICE, style: process.env.AUDIO_STYLE, kokoroVoice: process.env.KOKORO_VOICE });
-const clipKey = (text: string) => hash({ text, voice: voiceSettings() });
+const clipKey = (text: string, voice = voiceSettings()) => hash({ text, voice });
 type Job = typeof adaptationJobs.$inferSelect;
 export type Trigger = "initial" | "simplify" | "example" | "wrong_answer";
 
@@ -162,7 +162,7 @@ async function contextOf(user: SessionUser, courseId: string, moduleId: string) 
       if (weak.includes(v.lesson)) prerequisiteTeaching.push({ lessonId: v.lesson, title: v.title, keyIdeas: v.notes });
     }
   }
-  return { e, context: { profile: profile?.answers, derived: profile?.derived, answers: e.answers, precheck: e.precheck?.lessons, supportOverride: e.supportOverride, plan: plan?.plan, planVersion: plan?.version ?? 0, courseVersion: course?.version, voice: voiceSettings(), evidence: evidence.map((r) => ({ moduleId: r.moduleId, version: r.version, summary: r.summary })), prerequisiteReminders: weak, prerequisiteTeaching, promptVersion: ADAPTIVE_PROMPT_VERSION, authoredCourse: !!course?.authoredRevisionId, courseTitle: course?.title, world: course?.authoredRevisionId ? "Preserve the released course facts and teach using the learner's field without introducing unsupported claims." : "Harbour Works is the fictional organisation; adapt its activities to the learner's field. Retain the agent name Scout." } };
+  return { e, context: { profile: profile?.answers, derived: profile?.derived, answers: e.answers, precheck: e.precheck?.lessons, supportOverride: e.supportOverride, plan: plan?.plan, planVersion: plan?.version ?? 0, courseVersion: course?.version, llmProvider: course?.importedRevisionId ? 'vertex' : undefined, importedCourse: !!course?.importedRevisionId, voice: course?.importedRevisionId ? { ...voiceSettings(), provider: 'vertex' } : voiceSettings(), evidence: evidence.map((r) => ({ moduleId: r.moduleId, version: r.version, summary: r.summary })), prerequisiteReminders: weak, prerequisiteTeaching, promptVersion: ADAPTIVE_PROMPT_VERSION, authoredCourse: !!(course?.authoredRevisionId || course?.importedRevisionId), courseTitle: course?.title, world: course?.authoredRevisionId || course?.importedRevisionId ? "Preserve the source course facts and teach using the learner's field without introducing unsupported claims." : "Harbour Works is the fictional organisation; adapt its activities to the learner's field. Retain the agent name Scout." } };
 }
 
 type ProfileContext = { profile?: unknown; derived?: unknown; answers?: unknown; courseVersion?: string };
@@ -186,7 +186,7 @@ export async function queueSlide(user: SessionUser, courseId: string, moduleId: 
   if (!liveEnabled(courseId)) throw new ApiError(409, "disabled", "Live adaptation is disabled.");
   const { videos } = await videosOf(courseId, moduleId);
   const video = videos.find((v) => v.id === videoId);
-  if (video?.uploadedVideo) throw new ApiError(409, "fixed_video", "Uploaded concept videos remain unchanged. Request support around the lesson instead.");
+  if (video?.uploadedVideo) throw new ApiError(409, 'fixed_video', 'Uploaded concept videos remain unchanged. Request support around the lesson instead.');
   const authored = video?.slides[slide];
   if (!authored) throw new ApiError(400, "unknown_slide", "Slide not found.");
   const { e, context } = await contextOf(user, courseId, moduleId);
@@ -224,12 +224,20 @@ export async function queueModule(user: SessionUser, courseId: string, moduleId:
     if (openPiece === piece) await d.update(adaptationJobs).set({ priority: 3 }).where(and(eq(adaptationJobs.fingerprint, fingerprint), eq(adaptationJobs.status, "queued")));
     return (await d.select().from(adaptationJobs).where(eq(adaptationJobs.fingerprint, fingerprint)))[0] ?? null;
   };
-  const released = !!(await getCourse(courseId))?.authoredRevisionId;
+  const sourceCourse = await getCourse(courseId);
+  const released = !!(sourceCourse?.authoredRevisionId || sourceCourse?.importedRevisionId);
   const hook = released ? null : await queuePiece("hook");
   // The DB preserves playback order for equal priorities. No model runs in this request.
-  for (const v of videos.filter(v => !v.uploadedVideo)) for (let i = 0; i < v.slides.length; i++) await queueSlide(user, courseId, moduleId, v.id, i, "initial");
+  for (const v of sourceCourse?.importedRevisionId ? videos.slice(0, 2) : videos.filter(v => !v.uploadedVideo)) for (let i = 0; i < v.slides.length; i++) await queueSlide(user, courseId, moduleId, v.id, i, "initial");
   const worked = released ? null : await queuePiece("worked");
-  return { hook, worked };
+  const activities: Job[] = [];
+  for (const def of piecesOf(mod).filter(p => p.piece.startsWith('activity:'))) {
+    const fingerprint = hash({ enrollment: e.id, moduleId, piece: def.piece, narrationVersion: def.piece === 'activity:hook' ? 2 : undefined, authored: def.authored, context: teachingContext(context) });
+    await d.insert(adaptationJobs).values({ enrollmentId: e.id, moduleId, videoId: def.piece, slide: 0, fingerprint, trigger: 'initial', priority: def.piece === 'activity:hook' ? 2 : 0, input: { authored: def.authored, source: def.authored, context, trigger: 'initial', piece: def.piece, courseId } }).onConflictDoNothing();
+    await d.update(adaptationJobs).set({ status: 'superseded', updatedAt: new Date() }).where(and(eq(adaptationJobs.enrollmentId, e.id), eq(adaptationJobs.moduleId, moduleId), eq(adaptationJobs.videoId, def.piece), or(eq(adaptationJobs.status, 'queued'), eq(adaptationJobs.status, 'running')), ne(adaptationJobs.fingerprint, fingerprint)));
+    activities.push((await d.select().from(adaptationJobs).where(eq(adaptationJobs.fingerprint, fingerprint)))[0]!);
+  }
+  return { hook, worked, activities };
 }
 
 export async function jobsFor(enrollmentId: string, moduleId: string) {
@@ -267,14 +275,15 @@ export async function heartbeat(id: string, lease: string) {
   await (await db()).update(adaptationJobs).set({ leaseUntil: new Date(Date.now() + 60_000) }).where(and(eq(adaptationJobs.id, id), eq(adaptationJobs.lease, lease), eq(adaptationJobs.status, "running")));
 }
 
-export async function finishJob(id: string, lease: string, generated: unknown, model: string, metrics: Record<string, number>, voice: Voicer | null = defaultVoicer()) {
+export async function finishJob(id: string, lease: string, generated: unknown, model: string, metrics: Record<string, number>, voice: Voicer | null | undefined = undefined) {
   const row = await leasedJob(id, lease);
-  const context = row.input.context as { authoredCourse?: boolean; courseVersion?: string };
+  const context = row.input.context as { authoredCourse?: boolean; importedCourse?: boolean; courseVersion?: string };
+  if (voice === undefined) voice = defaultVoicer(context?.importedCourse ? 'vertex' : undefined);
   const checkRelease = async () => {
     if (!context?.authoredCourse) return;
     const [enrollment] = await (await db()).select().from(enrollments).where(eq(enrollments.id, row.enrollmentId)).limit(1);
     const course = enrollment ? await getCourse(enrollment.courseId) : undefined;
-    if (!course?.authoredRevisionId || course.version !== context.courseVersion) throw new ApiError(409, "release_changed", "The published course changed; regenerate this lesson.");
+    if (!(course?.authoredRevisionId || course?.importedRevisionId) || course.version !== context.courseVersion) throw new ApiError(409, "release_changed", "The source course changed; regenerate this lesson.");
     if (!matchesLearnerContext(row.input.context, await currentLearnerContextKey(enrollment!.userId, enrollment!.courseId))) throw new ApiError(409, "profile_changed", "The learner profile changed; regenerate this lesson.");
   };
   await checkRelease();
@@ -303,7 +312,7 @@ export async function finishJob(id: string, lease: string, generated: unknown, m
   if (merged.problems.length) throw new ApiError(422, "invalid_content", "Generated slide did not preserve its teaching structure.");
   const content = merged.value;
   if (content.sentences.some((s) => s.length > 1600)) throw new ApiError(422, "invalid_content", "Generated narration is too long.");
-  const narrationHash = clipKey(content.narration);
+  const narrationHash = clipKey(content.narration, (row.input.context as { voice?: ReturnType<typeof voiceSettings> }).voice);
   const dir = path.join(audioRoot(), row.enrollmentId, row.moduleId, "clips");
   const started = Date.now();
   const clips = fs.existsSync(path.join(dir, `${narrationHash}.wav`)) ? new Set([narrationHash]) : voice ? await voice(dir, [{ key: narrationHash, text: content.narration }]) : new Set<string>();

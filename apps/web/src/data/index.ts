@@ -116,11 +116,11 @@ export async function getCourses(includePublished = true): Promise<Course[]> {
   if (!includePublished) return courses;
   const { listPublishedAuthoredCourses } = await import('@/server/authored-publication');
   const { authoredDelivery } = await import('@/lib/authored-delivery');
-  return [...courses, ...(await listPublishedAuthoredCourses()).map(r => authoredDelivery(r).course)];
+  return [...courses, ...(await listPublishedAuthoredCourses()).map(r => authoredDelivery(r).course), ...await (await import('@/server/scorm-builder')).activeScormCourses()];
 }
 
 export async function getCourse(courseId: string): Promise<Course | undefined> {
-  return courses.find((c) => c.course_id === courseId) ?? (await releasedDelivery(courseId))?.course;
+  return courses.find((c) => c.course_id === courseId) ?? (await releasedDelivery(courseId))?.course ?? (await (await import('@/server/scorm-builder')).scormCourseDelivery(courseId))?.course;
 }
 
 async function releasedDelivery(courseId: string) {
@@ -133,13 +133,13 @@ async function releasedDelivery(courseId: string) {
 
 /** Module lesson content: full modules, or a module's concept videos and guided practice. */
 export async function getModule(courseId: string, moduleId: string): Promise<ModuleContent | undefined> {
-  return authored.find((m) => m.course_id === courseId && m.module_id === moduleId) ?? (await releasedDelivery(courseId))?.modules.find(m => m.module_id === moduleId);
+  return authored.find((m) => m.course_id === courseId && m.module_id === moduleId) ?? (await releasedDelivery(courseId))?.modules.find(m => m.module_id === moduleId) ?? (await (await import('@/server/scorm-builder')).scormCourseDelivery(courseId))?.modules.find(m => m.module_id === moduleId);
 }
 
 /** Ids of the modules that have lesson content. */
 export async function getAuthoredModuleIds(courseId: string): Promise<string[]> {
   const ids = authored.filter((m) => m.course_id === courseId).map((m) => m.module_id);
-  return ids.length ? ids : (await releasedDelivery(courseId))?.modules.map(m => m.module_id) ?? [];
+  return ids.length ? ids : (await releasedDelivery(courseId))?.modules.map(m => m.module_id) ?? (await (await import('@/server/scorm-builder')).scormCourseDelivery(courseId))?.modules.map(m => m.module_id) ?? [];
 }
 
 /** The course finale: capstone, final check and wrap-up, taken after all modules. */

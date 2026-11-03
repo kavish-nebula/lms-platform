@@ -9,6 +9,8 @@ import { EmptyState } from "@/components/kit/states";
 import { Suspense } from "react";
 import { engagementEnabled } from "@/server/engagement";
 import { CatalogExplorer } from "@/components/engagement/catalog";
+import { importedCourses } from '@/lib/imported-courses';
+import { ImportedCourseCard } from '@/components/course/imported-course';
 
 export const metadata: Metadata = { title: "Courses" };
 
@@ -30,6 +32,7 @@ export default async function CatalogPage() {
       ) : (
         <EmptyState icon={<GraduationCap />} title={t("emptyTitle")} description={t("emptyBody")} />
       )}
+      {importedCourses.filter(course => !courses.some(c => c.course_id === course.id)).map(course => <ImportedCourseCard key={course.id} course={course} />)}
     </div>
   );
 }

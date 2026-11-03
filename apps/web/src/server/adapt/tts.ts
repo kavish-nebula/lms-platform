@@ -3,6 +3,7 @@ import { spawn } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { appRoot } from "@/server/db/client";
+import { vertexAccessToken, vertexConfig } from '@/server/ai/vertex';
 
 /**
  * Narration for adapted pieces. Two voices:
@@ -78,11 +79,12 @@ function speak(dir: string, clips: Clip[]): Promise<Set<string>> {
 }
 
 /** The voice for this server: Gemini (with Kokoro behind it) when an audio key is set, else Kokoro; null when voicing is off. */
-export function defaultVoicer(): Voicer | null {
+export function defaultVoicer(providerOverride?: string): Voicer | null {
   if (!voiceOn()) return null;
   const key = process.env.AUDIO_API_KEY;
-  const provider = process.env.AUDIO_PROVIDER ?? (key ? "gemini" : "kokoro");
+  const provider = providerOverride ?? process.env.AUDIO_PROVIDER ?? (key ? "gemini" : "kokoro");
   const backup = kokoroOn() ? kokoro : null;
+  if (provider === 'vertex') return gemini({ key: '', vertex: true, model: process.env.AUDIO_MODEL?.trim() || 'gemini-3.8-flash-lite-tts', voice: process.env.AUDIO_VOICE?.trim() || 'Charon', style: process.env.AUDIO_STYLE });
   if (provider === "gemini" && key) {
     const primary = gemini({ key, model: process.env.AUDIO_MODEL ?? "gemini-3.8-flash-lite-tts", voice: process.env.AUDIO_VOICE ?? "Charon", style: process.env.AUDIO_STYLE });
     return backup ? withFallback(primary, backup) : primary;
@@ -101,7 +103,7 @@ export function withFallback(primary: Voicer, backup: Voicer): Voicer {
   };
 }
 
-export type GeminiVoice = { key: string; model: string; voice: string; style?: string; concurrency?: number; fetchImpl?: typeof fetch; backoffMs?: number };
+export type GeminiVoice = { key: string; vertex?: boolean; model: string; voice: string; style?: string; concurrency?: number; fetchImpl?: typeof fetch; backoffMs?: number; accessToken?: () => Promise<string> };
 
 const DEFAULT_STYLE = "A warm, clear course narrator explaining a lesson to an adult learner, at a steady, unhurried pace.";
 /** Until when a model's quota is used up (per process). */
@@ -116,6 +118,11 @@ export function gemini(o: GeminiVoice): Voicer {
     const todo = clips.filter((c) => c.text.trim());
     if ((spent.get(o.model) ?? 0) > Date.now()) return written;
     fs.mkdirSync(dir, { recursive: true });
+    let accessToken = '';
+    if (o.vertex) {
+      try { accessToken = await (o.accessToken ?? vertexAccessToken)(); }
+      catch { console.warn('[adapt] Vertex narration authentication is unavailable.'); return written; }
+    }
     let stop = false;
     let next = 0;
     const one = async (clip: Clip) => {
@@ -123,10 +130,14 @@ export function gemini(o: GeminiVoice): Voicer {
       for (let attempt = 0; attempt < 6 && !stop; attempt++) {
         let res: Response;
         try {
-          res = await f("https://generativelanguage.googleapis.com/v1beta/interactions", {
+          const vertex = o.vertex ? vertexConfig(process.env.AUDIO_LOCATION?.trim() || process.env.GOOGLE_CLOUD_LOCATION?.trim() || 'us-central1') : null;
+          res = await f(vertex ? `${vertex.root}/publishers/google/models/${encodeURIComponent(o.model.replace(/^google\//, ''))}:generateContent` : "https://generativelanguage.googleapis.com/v1beta/interactions", {
             method: "POST",
-            headers: { "content-type": "application/json", "x-goog-api-key": o.key },
-            body: JSON.stringify({
+            headers: { "content-type": "application/json", ...(vertex ? { authorization: `Bearer ${accessToken}` } : { "x-goog-api-key": o.key }) },
+            body: JSON.stringify(vertex ? {
+              contents: [{ role: 'user', parts: [{ text: spoken(clip.text), speechMetadata: { style: o.style ?? DEFAULT_STYLE } }] }],
+              generationConfig: { responseModalities: ['AUDIO'], speechConfig: { voiceConfig: { voice: o.voice } } },
+            } : {
               model: o.model,
               input: [{ type: "user_input", content: [{ type: "text", text: spoken(clip.text), annotations: [{ type: "speech_metadata", style: o.style ?? DEFAULT_STYLE }] }] }],
               response_format: { type: "audio" },
@@ -140,8 +151,8 @@ export function gemini(o: GeminiVoice): Voicer {
           continue;
         }
         if (res.ok) {
-          const json = (await res.json().catch(() => null)) as { steps?: { content?: { data?: string }[] }[] } | null;
-          const part = (json?.steps ?? []).flatMap((s) => s.content ?? []).find((c) => c.data);
+          const json = (await res.json().catch(() => null)) as { candidates?: { content?: { parts?: { inlineData?: { data?: string } }[] } }[]; steps?: { content?: { data?: string }[] }[] } | null;
+          const part = o.vertex ? (json?.candidates ?? []).flatMap(c => c.content?.parts ?? []).map(p => p.inlineData).find(p => p?.data) : (json?.steps ?? []).flatMap((s) => s.content ?? []).find((c) => c.data);
           if (!part?.data) {
             why = "no audio in the reply";
             continue;

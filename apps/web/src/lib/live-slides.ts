@@ -14,6 +14,7 @@ export function useLiveSlides(video: ConceptVideo, courseId: string, moduleId: s
   const base = `/api/v1/enrollments/${courseId}/modules/${moduleId}`;
   const [available, setAvailable] = React.useState<Record<number, Revision>>({});
   const [accepted, setAccepted] = React.useState<Record<number, Revision>>({});
+  const [initialStatus, setInitialStatus] = React.useState<Record<number, string>>({});
   const [pending, setPending] = React.useState<Pending | null>(null);
   const [message, setMessage] = React.useState("");
   const [applied, setApplied] = React.useState("");
@@ -29,6 +30,7 @@ export function useLiveSlides(video: ConceptVideo, courseId: string, moduleId: s
     const receive = (event: MessageEvent<string>) => {
       const r = JSON.parse(event.data) as Revision;
       if (r.videoId !== video.id) return;
+      if (r.trigger === 'initial') setInitialStatus(s => ({ ...s, [r.slide]: r.status }));
       const p = current.current.pending;
       if (p && (p.id === r.id || p.requestId === r.requestId) && current.current.idx === p.slide) {
         if (r.status === "ready" && r.content && r.audio) {
@@ -89,5 +91,5 @@ export function useLiveSlides(video: ConceptVideo, courseId: string, moduleId: s
 
   const slides = React.useMemo(() => video.slides.map((s, i) => accepted[i]?.content ?? s), [video.slides, accepted]);
   const srcs = React.useMemo(() => slides.map((_, i) => accepted[i]?.audio ?? (video.audio ? video.audio[i] ?? "" : `/audio/video-${video.id}-s${i}.mp3`)), [slides, accepted, video]);
-  return { active, slides, srcs, pending: !!pending, message, request, applied, revision: accepted[idx]?.id };
+  return { active, slides, srcs, pending: !!pending, message, request, applied, revision: accepted[idx]?.id, initialStatus: initialStatus[idx] };
 }

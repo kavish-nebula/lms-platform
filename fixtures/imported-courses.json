@@ -1,0 +1,66 @@
+[
+  {
+    "id": "ai-for-production",
+    "title": "AI for Production",
+    "description": "Explore how Large Language Models work and how they can be applied in manufacturing using Google's NotebookLM.",
+    "revision": "ff6ad660b57fd522",
+    "sourceFile": "AIforProduction-M1-T1.zip",
+    "modules": [
+      {
+        "id": "M1",
+        "title": "Introduction to LLMs",
+        "objectives": [
+          "Explain how LLMs process and generate text using transformer architecture",
+          "Use NotebookLM to analyze manufacturing documentation and extract actionable insights",
+          "Evaluate appropriate applications of LLMs in production environments"
+        ],
+        "concepts": [
+          {
+            "title": "Introduction to LLMs & Local AI (Ollama)",
+            "topics": [
+              "Automation vs AI",
+              "What are Large Language Models",
+              "How LLMs understand and generate text",
+              "Local AI vs Cloud AI (privacy, cost, control)"
+            ]
+          },
+          {
+            "title": "Retrieval-Augmented Generation (RAG)",
+            "topics": [
+              "How RAG prevents hallucinations",
+              "Document indexing and retrieval process",
+              "Citations and source-grounded answers"
+            ]
+          },
+          {
+            "title": "Prompt Engineering for Accurate Answers",
+            "topics": [
+              "Anatomy of a good prompt",
+              "Role-based and context-rich prompting",
+              "Iterative refinement of AI answers"
+            ]
+          }
+        ],
+        "tasks": [
+          "Introduction To Gemini Notebook",
+          "Generating Presentations"
+        ],
+        "media": {
+          "nebula_speech_247710cc.wav": "https://scorm-builder-gcs.b-cdn.net/topics/default/AIforProduction-M1-T1/audio/nebula_speech_247710cc.wav",
+          "nebula_speech_3de0bf40.wav": "https://scorm-builder-gcs.b-cdn.net/topics/default/AIforProduction-M1-T1/audio/nebula_speech_3de0bf40.wav",
+          "nebula_speech_51c6ed18.wav": "https://scorm-builder-gcs.b-cdn.net/topics/default/AIforProduction-M1-T1/audio/nebula_speech_51c6ed18.wav",
+          "nebula_speech_5dc412f2.wav": "https://scorm-builder-gcs.b-cdn.net/topics/default/AIforProduction-M1-T1/audio/nebula_speech_5dc412f2.wav",
+          "nebula_speech_60ca7241.wav": "https://scorm-builder-gcs.b-cdn.net/topics/default/AIforProduction-M1-T1/audio/nebula_speech_60ca7241.wav",
+          "nebula_speech_9417c624.wav": "https://scorm-builder-gcs.b-cdn.net/topics/default/AIforProduction-M1-T1/audio/nebula_speech_9417c624.wav",
+          "nebula_speech_98bf476d.wav": "https://scorm-builder-gcs.b-cdn.net/topics/default/AIforProduction-M1-T1/audio/nebula_speech_98bf476d.wav",
+          "nebula_speech_a0ee0345.wav": "https://scorm-builder-gcs.b-cdn.net/topics/default/AIforProduction-M1-T1/audio/nebula_speech_a0ee0345.wav",
+          "nebula_speech_aa66d292.wav": "https://scorm-builder-gcs.b-cdn.net/topics/default/AIforProduction-M1-T1/audio/nebula_speech_aa66d292.wav",
+          "nebula_speech_e8eb9b1d.wav": "https://scorm-builder-gcs.b-cdn.net/topics/default/AIforProduction-M1-T1/audio/nebula_speech_e8eb9b1d.wav",
+          "ibmm2_0c832157.mp4": "https://scorm-builder-gcs.b-cdn.net/topics/default/AIforProduction-M1-T1/videos/ibmm2_0c832157.mp4",
+          "ibmm_bf1fbdda.mp4": "https://scorm-builder-gcs.b-cdn.net/topics/default/AIforProduction-M1-T1/videos/ibmm_bf1fbdda.mp4"
+        },
+        "revision": "ff6ad660b57fd522"
+      }
+    ]
+  }
+]

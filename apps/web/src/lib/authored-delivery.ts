@@ -87,24 +87,17 @@ export function authoredDelivery({ courseId, revisionId, content: pkg }: Release
         { ...base, step_id: `${scope}.worked`, stage: 'worked', bloom: 'apply', examples: m.workedExamples.map(e => ({
           step_id: `${scope}.${e.id}`, lesson, title: e.title, intro: e.problem, narration: e.result, predict: null,
           frames: [...e.reasoning, e.result].map((caption, i) => ({ caption,
-            nodes: [{ id: 'reasoning', kind: 'logic', label: i < e.reasoning.length ? `Step ${i + 1}` : 'Complete handoff', sub: caption, x: 0, y: 0, state: 'ok' }], edges: [],
+            nodes: [{ id: 'reasoning', kind: 'logic', label: i < e.reasoning.length ? `Step ${i + 1}` : 'Checked result', sub: caption, x: 0, y: 0, state: 'ok' }], edges: [],
           })),
         })) },
         { ...base, step_id: `${scope}.guided`, stage: 'guided', bloom: 'apply', title: m.guidedPractice.title, situation: m.problemHook.situation, intro: m.guidedPractice.instructions,
-          presentation: { statusLabel: 'Handoff progress', statusTitle: 'Make each detail reviewable', statusBody: 'Build a clear handoff from the supplied facts, one checkpoint at a time.', briefTag: 'Fictional Cedar case', startLabel: 'Begin the practice',
-            phases: [
-              { label: 'Understand', title: 'Read the request', body: 'Identify the problem and the evidence supplied.', outcome: 'Case understood' },
-              { label: 'Identify', title: 'Name the owner and output', body: 'Use the source to identify who owns the next action and what they must produce.', outcome: 'Owner and output' },
-              { label: 'Specify', title: 'Make timing explicit', body: 'Preserve the supplied date, time and timezone.', outcome: 'Due time recorded' },
-              { label: 'Check', title: 'Define acceptance', body: 'State how a reviewer can check the deliverable.', outcome: 'Acceptance clear' },
-              { label: 'Clarify', title: 'Resolve missing details', body: 'Ask for information instead of inventing it.', outcome: 'Gaps identified' },
-              { label: 'Review', title: 'Review the complete handoff', body: 'Compare each field against the supplied case before sharing a draft.', outcome: 'Draft ready' },
-            ],
+          presentation: { statusLabel: 'Practice progress', statusTitle: m.guidedPractice.title, statusBody: 'Work through the supplied task one step at a time, using hints and model feedback when needed.', briefTag: 'Course practice', startLabel: 'Begin the practice',
+            phases: m.guidedPractice.steps.map((step, i) => ({ label: `Step ${i + 1}`, title: step.instruction.length > 100 ? `${step.instruction.slice(0, 97)}…` : step.instruction, body: step.instruction, outcome: 'Step reviewed' })),
           },
           before: { items: ['Use the supplied fictional case facts.', 'Keep a draft and mark missing information.'], downloads: [] },
-          mission: { codename: m.guidedPractice.title, badge: 'Clear handoff', mentor: { who: 'Practice coach', av: 'C' }, brief: [{ who: 'Practice coach', av: 'C', at: '', text: m.guidedPractice.instructions }], goal: 'Produce a complete, source-grounded handoff.', debrief: [] },
+          mission: { codename: m.guidedPractice.title, badge: 'Guided practice', mentor: { who: 'Practice coach', av: 'C' }, brief: [{ who: 'Practice coach', av: 'C', at: '', text: m.guidedPractice.instructions }], goal: 'Apply the course ideas using the supplied evidence.', debrief: [] },
           steps: m.guidedPractice.steps.map(s => ({ id: s.id, title: s.instruction, body: s.instruction, actions: [s.instruction], check: s.evidence, tip: s.hint })),
-          finish: { title: 'Handoff ready for review', body: 'Compare your draft with the supplied case.', checklist: m.guidedPractice.steps.map(s => s.evidence) },
+          finish: { title: 'Practice ready for review', body: 'Compare your response with the supplied case.', checklist: m.guidedPractice.steps.map(s => s.evidence) },
         },
         { ...base, step_id: `${scope}.lab`, stage: 'lab', bloom: 'analyze', title: m.scenarioLab.title, intro: 'Read each fictional situation and choose the next action.', scenarios: m.scenarioLab.scenarios.map(s => ({
           id: `${scope}.${s.id}`, lesson, title: s.title, situation: s.situation,
@@ -127,18 +120,17 @@ export function authoredDelivery({ courseId, revisionId, content: pkg }: Release
     },
     wrap_up: { step_id: `${courseId}.finale.wrap-up`, duration_min: 1, min_sentences: 1, prompts: end.reflection.prompts.map((text, i) => ({ id: `${courseId}-reflection-${i}`, kind: i === 0 ? 'worked' : i === 1 ? 'failed' : 'transfers', text })) },
   };
-  const hasNarratedStages = pkg.modules.some(m => !!m.narratedStages);
   const course: Course = {
-    course_id: courseId, slug: courseId, title: pkg.title, tagline: pkg.subject, goal: end.miniProject.deliverable, domain: 'Workplace collaboration', provider: 'Nebula KnowLab', level: 'Beginner',
-    estimated_hours: Number((pkg.durationMinutes / 60).toFixed(2)), locales: ['en'], languages: [{ code: 'en', name: 'English', native: 'English' }], version, subjectLabel: hasNarratedStages ? pkg.subject : 'clear task handoffs',
-    skills: hasNarratedStages ? ['Source checking', 'Practical review'] : ['Task handoffs', 'Source checking', 'Clarification'], learn: pkg.objectiveEvidence.map(o => o.objective), tools: ['A browser', 'The supplied fictional case pack'], authoredRevisionId: revisionId,
+    course_id: courseId, slug: courseId, title: pkg.title, tagline: pkg.subject, goal: end.miniProject.deliverable, domain: pkg.subject, provider: 'Nebula KnowLab', level: 'Beginner',
+    estimated_hours: Number((pkg.durationMinutes / 60).toFixed(2)), locales: ['en'], languages: [{ code: 'en', name: 'English', native: 'English' }], version, subjectLabel: pkg.subject,
+    skills: pkg.modules.map(m => m.title), learn: pkg.objectiveEvidence.map(o => o.objective), tools: ['A browser', 'The supplied course materials'], authoredRevisionId: revisionId,
     modules: pkg.modules.map((m, i) => ({ module_id: m.id, title: m.title, minutes: m.durationMinutes, stages: moduleStages(m), authored: moduleStages(m), state: i === 0 ? 'available' : 'locked', lite: false, pain: m.problemHook.situation, lead_in: null,
-      lessons: m.conceptExplainer.videos.map(v => ({ id: String(i + 1), title: v.title, notes: v.slides.flatMap(s => s.body) })), topics: topicsFor(m), outcomes: m.objectiveIds.map(objective), skills: hasNarratedStages ? ['Source-grounded decisions'] : ['Clear handoffs', 'Source-grounded decisions'],
+      lessons: m.conceptExplainer.videos.map(v => ({ id: String(i + 1), title: v.title, notes: v.slides.flatMap(s => s.body) })), topics: topicsFor(m), outcomes: m.objectiveIds.map(objective), skills: [m.title],
     })),
-    finale: { title: end.miniProject.sandbox?.guided ? 'Explore your course project' : 'Put your handoff into practice', summary: end.miniProject.brief, steps: [
+    finale: { title: end.miniProject.sandbox?.guided ? 'Explore your course project' : 'Apply what you learned', summary: end.miniProject.brief, steps: [
       { id: 'capstone', stage: 'project', kicker: 'Mini project', title: end.miniProject.title, summary: end.miniProject.deliverable, minutes: projectMinutes, outcomes: end.miniProject.rubric },
       { id: 'final-check', stage: 'gate', kicker: 'Final check', title: end.masteryGate.title, summary: end.masteryGate.instructions, minutes: Math.max(2, Math.ceil(end.masteryGate.questions.length / 2)), outcomes: pkg.objectiveEvidence.map(o => o.objective) },
-      { id: 'wrap-up', stage: 'reflection', kicker: 'Reflection', title: hasNarratedStages ? 'Reflect on your learning' : 'Your handoff routine', summary: 'Reflect on the course and finish your learning journey.', minutes: 1, outcomes: end.reflection.prompts },
+      { id: 'wrap-up', stage: 'reflection', kicker: 'Reflection', title: 'Reflect on your learning', summary: 'Reflect on the course and finish your learning journey.', minutes: 1, outcomes: end.reflection.prompts },
     ] },
   };
   return { course, modules, finale };

@@ -148,6 +148,20 @@
       "when": 1793360400000,
       "tag": "0020_guided_project_exploration",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1793615400000,
+      "tag": "0021_imported_course_progress",
+      "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1793660400000,
+      "tag": "0022_scorm_topic_imports",
+      "breakpoints": true
     }
   ]
 }

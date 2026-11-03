@@ -460,6 +460,7 @@ export type CourseModule = {
 };
 
 export type Course = {
+  importedRevisionId?: string;
   authoredRevisionId?: string;
   subjectLabel?: string;
   course_id: string;

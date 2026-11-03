@@ -1,4 +1,4 @@
-import { integer, jsonb, pgTable, primaryKey, text, timestamp, uniqueIndex, uuid } from "drizzle-orm/pg-core";
+import { boolean, integer, jsonb, pgTable, primaryKey, text, timestamp, uniqueIndex, uuid } from "drizzle-orm/pg-core";
 import type { LearnerPlan, PlanChangeT, PlanSource, PlanStatus, PlanVersion } from "@/lib/learner-plan";
 import type { PrecheckResult, SetupAnswers, SupportOverride } from "@/lib/setup";
 import type { ProfileDerived } from "@/lib/profiling/derived";
@@ -15,6 +15,29 @@ import type { ProductionAudioClip, ProductionVoice } from "@/lib/production-audi
 import type { AuthoredCoursePackageData, CourseReviewChecklist } from "@/lib/authored-course";
 import type { SandboxArtifactData, SandboxReport } from '@/lib/project-sandbox';
 import type { GuidedReport } from '@/lib/guided-project';
+import type { PackageState } from '@/lib/imported-courses';
+import type { ScormTopicData, ScormImport } from '@/lib/scorm-topic';
+
+/** Immutable source snapshots; activation selects a learner pilot without approving the source. */
+export const scormTopicImports = pgTable('scorm_topic_imports', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  ownerId: text('owner_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  courseId: text('course_id').notNull(), topicId: text('topic_id').notNull(), fingerprint: text('fingerprint').notNull(),
+  source: jsonb('source').$type<ScormTopicData>().notNull(),
+  hierarchy: jsonb('hierarchy').$type<ScormImport['hierarchy']>().notNull(),
+  active: boolean('active').notNull().default(false),
+  importedAt: timestamp('imported_at', { withTimezone: true }).notNull().defaultNow(),
+}, t => [uniqueIndex('scorm_import_source').on(t.ownerId, t.topicId, t.fingerprint)]);
+
+/** Imported packages report their own SCORM state; native assessment grades stay separate. */
+export const importedCourseProgress = pgTable('imported_course_progress', {
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  courseId: text('course_id').notNull(),
+  moduleId: text('module_id').notNull(),
+  revision: text('revision').notNull(),
+  state: jsonb('state').$type<PackageState>().notNull(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+}, t => [primaryKey({ columns: [t.userId, t.courseId, t.moduleId, t.revision] })]);
 
 /** A release pins immutable content and its approval; authoring edits never replace it. */
 export const publishedAuthoredCourses = pgTable('published_authored_courses', {
@@ -317,7 +340,7 @@ export const stepProgress = pgTable(
 );
 
 /** One piece of a module rewritten for one learner (content/adapt): the hook, a concept video, or the worked examples. */
-export type AdaptedPiece = "hook" | "worked" | "world" | `video:${string}`;
+export type AdaptedPiece = "hook" | "worked" | "world" | `video:${string}` | `activity:${"hook" | "worked" | "guided" | "lab"}`;
 export type AdaptedStatus = "writing" | "voicing" | "ready" | "failed";
 
 /**

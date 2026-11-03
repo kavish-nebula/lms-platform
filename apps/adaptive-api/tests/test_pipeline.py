@@ -14,6 +14,25 @@ JOB = {"id": "job", "lease": "lease", "input": {"authored": SLIDE, "source": SLI
 
 
 class PipelineTests(unittest.TestCase):
+    def test_video_activity_preserves_evidence_links_and_uses_course_prompt(self):
+        import copy
+        job = copy.deepcopy(JOB)
+        activity = {'problemHook': {'title': 'Review an AI draft', 'situation': 'A fictional draft needs checking.', 'question': 'What would you review?', 'objectiveIds': ['O1'], 'sourceIds': ['S1']}}
+        job['input'].update(authored=activity, source=activity, piece='activity:hook', trigger='initial')
+        job['input']['context'].update(authoredCourse=True)
+        calls = []
+        def model(req):
+            calls.append(json.loads(req.content))
+            edited = copy.deepcopy(activity)
+            edited['problemHook'].update(title='Review a healthcare draft', objectiveIds=['invented'], sourceIds=['invented'])
+            return httpx.Response(200, json={'choices': [{'message': {'content': json.dumps(edited)}}]})
+        with httpx.Client(transport=httpx.MockTransport(model)) as client:
+            content = generate(job, client)['content']
+        self.assertEqual(content['problemHook']['objectiveIds'], ['O1'])
+        self.assertEqual(content['problemHook']['sourceIds'], ['S1'])
+        self.assertIn('unchanged uploaded video', calls[0]['messages'][0]['content'])
+        self.assertNotIn('Keep the agent name Scout', calls[0]['messages'][0]['content'])
+
     def test_example_repairs_event_phrase_used_as_a_goal(self):
         import copy
         job = copy.deepcopy(JOB)

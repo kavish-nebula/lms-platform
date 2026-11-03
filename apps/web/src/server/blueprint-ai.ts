@@ -4,6 +4,8 @@ import { llmHttp, llmModels, llmReasoning, LlmError, type LlmTransport, type Llm
 import { BLOOM_LEVELS } from "@/lib/content-creator";
 import { MODULE_FLOW, COURSE_END_FLOW, CODEX_MODULE_FLOW, CODEX_COURSE_END_FLOW } from '@/lib/course-delivery';
 
+export class BlueprintValidationError extends Error {}
+
 export const BLUEPRINT_SYSTEM = `You are the instructional-design analyst for an LMS Course Creator Studio. Produce a Stage 2 ILD instructional blueprint from the supplied, frozen Stage 1 SME input. This is an AI DRAFT for Stage 3 SME review, never approval or a published lesson.
 
 Perform these seven analytical operations in order within ONE coherent processing pass:
@@ -58,11 +60,13 @@ export function blueprintShape(input: BlueprintInput): Blueprint {
 }
 
 export function blueprintSystem(input: BlueprintInput) {
+  const finalModuleId = input.brief.sourceLibrary?.modules.at(-1)?.id ?? input.existingModules?.at(-1)?.id;
+  const masteryPlacement = ` Every L4 assessment must set its moduleId to ${finalModuleId ? JSON.stringify(finalModuleId) : 'the final module ID'}. This field places the course-wide assessment; mentioning the final module only in timing is insufficient. L4 may assess objectives taught in earlier modules while remaining assigned to the final module.`;
   if (input.deliveryStructure === 'codex-ild-v2') return BLUEPRINT_SYSTEM
     .replace('all nine steps in order: hook, concept, worked_example, guided_practice, scenario, project_contribution, mastery_gate, reflection, spaced_review.', 'the five module steps in order: hook, concept, worked_example, guided_practice and scenario. Mid-video checks belong within Concept Explainer; also specify a module-end quiz in assessments, separate from the five teaching stages.')
     .replace('Project contributions can build ONE course-level deliverable rather than adding a mandatory new project per module.', 'Place exactly one Mini Project after the final module, followed by Mastery Gate and Reflection. Do not include Spaced Review.')
     .replace('T5 mastery gate, T6 reflection, T7 spaced review, T8 project, T9 simulation', 'T5 mastery gate, T6 reflection and T8 course-wide mini project; omit Spaced Review.')
-    + '\nCODEX ILD DELIVERY V2: Recommend module count, video count, slides per video, narration time and activity time from the SME objectives and course-duration budget. These lengths are recommendations and the creator may edit them. Every concept video contains exactly two formative questions after its midpoint; these do not award mastery. After the final module, deliver exactly one cross-course Mini Project, then an objective-aligned Mastery Gate with a creator-set pass rule, then Reflection. No Spaced Review. Include external research as cited sources with title, publisher and URL, but flag citations and claims for human verification; source URLs are not fetched by this service. L4 specifications collectively assess all objectives after the final module. L1 checks include embedded midpoint checks AND one module-end quiz per module covering its objectives. Return courseEnd kinds mini_project, mastery_gate, reflection in order, all after the final module. finalDeliverable is the single course-wide Mini Project. Preserve existing module IDs and order when supplied.';
+    + '\nCODEX ILD DELIVERY V2: Recommend module count, video count, slides per video, narration time and activity time from the SME objectives and course-duration budget. These lengths are recommendations and the creator may edit them. Every concept video contains exactly two formative questions after its midpoint; these do not award mastery. After the final module, deliver exactly one cross-course Mini Project, then an objective-aligned Mastery Gate with a creator-set pass rule, then Reflection. No Spaced Review. Include external research as cited sources with title, publisher and URL, but flag citations and claims for human verification; source URLs are not fetched by this service. L4 specifications collectively assess all objectives after the final module. L1 checks include embedded midpoint checks AND one module-end quiz per module covering its objectives. Return courseEnd kinds mini_project, mastery_gate, reflection in order, all after the final module. finalDeliverable is the single course-wide Mini Project. Preserve existing module IDs and order when supplied.' + masteryPlacement;
   if (input.deliveryStructure !== 'six-stage-v1') return BLUEPRINT_SYSTEM;
   return BLUEPRINT_SYSTEM.replace(/4\. SUBMODULE STRUCTURE:[\s\S]*?\n5\. TASK DESIGN:/, '4. SUBMODULE STRUCTURE: each module has EXACTLY six steps in order: hook, concept, worked_example, guided_practice, scenario, quiz. No mini-project, project_contribution, mastery_gate, reflection or spaced_review inside a module. Keep module timing sums accurate. Add courseEnd with exactly mastery_gate, reflection, spaced_review, all afterModuleId equal to the final module ID. The Mastery Gate covers ALL modules.\n5. TASK DESIGN:') + '\nDELIVERY STRUCTURE v1 OVERRIDES LEGACY PROJECT WORDING: Practice/Application/Extension are short learning exercises, not mandatory mini-projects. Do not use T8. Keep finalDeliverable only as a compatibility field with minutes:0 and a statement that no mini-project is required. L4 assessment specifications belong to the course end, associated with the last module, and collectively cover every course objective; earlier modules have local quizzes and practice feedback. T5/T6/T7 and all spaced-review schedules occur after the last module. Return courseEnd in the supplied output shape. Preserve existingModules IDs and order when supplied; retain their topics and objective coverage while restructuring their stages. No learner completion is claimed.';
 }
@@ -72,6 +76,7 @@ export async function generateBlueprint(input: BlueprintInput, transport: LlmTra
   const modelInput = input.brief.sourceLibrary ? { ...input, brief: { ...input.brief, sourceText: '', references: '', duration: '', contexts: '', difficulties: '' } } : input;
   const messages: LlmMessage[] = [{ role: "system", content: blueprintSystem(input) }, { role: "user", content: JSON.stringify({ instruction: "Analyse the SME input. The shape below is an example contract, not a fixed number of modules. Populate concise, concrete content for the supplied course. Check outputConstraints before returning JSON.", input: modelInput, outputShape: blueprintShape(input), outputConstraints: { bloom: BLOOM_LEVELS, solo: ["Unistructural", "Multistructural", "Relational", "Extended abstract"], knowledgeType: ["Factual", "Conceptual", "Procedural", "Metacognitive"], assessmentLayersRequired: ["L1", "L2", "L3", "L4"], objectivesRequiredInTeachingPracticeAssessment: input.objectives.map(o => o.id), topLevelKeys: ["recommendations", "modules", "tasks", "assessments", "motivation", "tools", "accessibility", "finalDeliverable", ...(['six-stage-v1', 'codex-ild-v2'].includes(input.deliveryStructure ?? '') ? ['courseEnd'] : [])] } }) }];
   const usage: Record<string, number> = { promptTokens: 0, completionTokens: 0, modelCalls: 0 };
+  let lastValidation: string | undefined;
   for (const model of llmModels().slice(0, 2)) {
     const turns = [...messages];
     for (let repair = 0; repair < 2; repair++) {
@@ -83,12 +88,39 @@ export async function generateBlueprint(input: BlueprintInput, transport: LlmTra
       const content = reply.choices?.[0]?.message?.content ?? "";
       try {
         if (reply.choices?.[0]?.finish_reason === "length") throw new Error("Output was truncated. Use shorter prose while retaining all required entries.");
-        const output = validateBlueprint(JSON.parse(content), input);
+        const candidate = JSON.parse(content);
+        // Course-wide mastery is a delivery location, not the module where an
+        // objective was taught. Models often retain that earlier module ID even
+        // after correcting their timing prose. Reconcile only known IDs; all
+        // source, objective, sequence and unknown-ID validation still runs.
+        if (input.deliveryStructure === 'codex-ild-v2' || input.deliveryStructure === 'six-stage-v1') {
+          const modules = candidate.modules;
+          if (Array.isArray(modules) && modules.length && Array.isArray(candidate.assessments)) {
+            const known = new Set(modules.map((m: { id?: unknown }) => m?.id));
+            const last = modules.at(-1)?.id;
+            if (typeof last === 'string') for (const assessment of candidate.assessments) {
+              if (assessment?.layer === 'L4' && known.has(assessment.moduleId)) assessment.moduleId = last;
+            }
+          }
+        }
+        const output = validateBlueprint(candidate, input);
         return { output, model: reply.model ?? model, usage };
       } catch (error) {
-        if (repair === 0) turns.push({ role: "assistant", content: content.slice(0, 100000) }, { role: "user", content: `Repair the JSON once. Keep the original SME facts and all seven sections. Validation errors: ${String(error instanceof Error ? error.message : error).slice(0, 6000)}` });
+        lastValidation = error instanceof SyntaxError ? 'Return valid JSON without prose or Markdown.' : String(error instanceof Error ? error.message : error).slice(0, 1500);
+        if (repair === 0) {
+          const message = String(error instanceof Error ? error.message : error).slice(0, 6000);
+          let placement = '';
+          if (message.includes('Course-wide mastery belongs after the final module')) {
+            try {
+              const finalId = JSON.parse(content).modules?.at(-1)?.id;
+              if (typeof finalId === 'string') placement = ` Set moduleId to ${JSON.stringify(finalId)} on EVERY assessments entry with layer L4. Keep their objectiveIds, including objectives from earlier modules. Changing timing text alone does not fix moduleId.`;
+            } catch { /* The ordinary parse repair below handles malformed JSON. */ }
+          }
+          turns.push({ role: "assistant", content: content.slice(0, 100000) }, { role: "user", content: `Repair the JSON once. Keep the original SME facts and all seven sections. Validation errors: ${message}${placement}` });
+        }
       }
     }
   }
-  throw new Error("The AI could not return a complete, structurally valid blueprint. Your SME input is unchanged; please retry or refine the brief.");
+  if (lastValidation) throw new BlueprintValidationError(`The generated blueprint did not pass structural checks: ${lastValidation}`);
+  throw new Error('No configured model completed the blueprint request.');
 }

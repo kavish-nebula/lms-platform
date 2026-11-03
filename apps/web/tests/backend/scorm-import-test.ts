@@ -1,0 +1,97 @@
+import assert from 'node:assert/strict';
+import { randomUUID } from 'node:crypto';
+import { eq } from 'drizzle-orm';
+import { normalizeScormTopic, scormDelivery } from '@/lib/scorm-topic';
+import { activateScormPilot, importScormTopic, scormCourseDelivery } from '@/server/scorm-builder';
+import { getSessionUser } from '@/server/auth';
+import { db } from '@/server/db/client';
+import { users, adaptationJobs } from '@/server/db/schema';
+import * as repo from '@/server/repo';
+import { queueSlide, claimJob, finishJob, jobsFor } from '@/server/adapt/live';
+import { getBlock } from '@/data/client';
+import { vertexConfig } from '@/server/ai/vertex';
+import { gemini } from '@/server/adapt/tts';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import os from 'node:os';
+
+const topicId = 'AIforProduction-M1-T1';
+const raw = { topicId, title: 'Introduction to LLMs', courseId: 'source-doc', description: 'An introduction to LLMs in production.', version: 173, status: 'draft', learning_objectives: ['Explain how LLMs process text.'], content: { task_completion_mode: 'upload' }, private_api_key: 'never-store', concepts: [{ id: 'concept-1', title: 'Automation and AI', sub_concepts: [{ id: 'sub-concept-1-1', title: 'Automation vs AI', learning_content: 'Automation follows fixed rules. AI learns patterns from data.', audio: [{ id: 'audio-1', language: 'en', file: 'source.wav', transcript: 'Automation follows fixed rules. AI learns patterns from data. A factory can combine automation and AI to improve a production process.' }] }], quiz: { title: 'Concept quiz', questions: [{ id: 'q1', question: 'Select all correct statements.', type: 'checkbox', options: ['Automation follows fixed rules.', 'AI learns from data.', 'AI always knows the truth.'], correct_answers: [0, 1], explanation: 'Fixed rules and learned patterns are different.' }] } }], tasks: [] };
+const normalized = normalizeScormTopic(raw, 'AIforProduction');
+const legacy = structuredClone(raw); legacy.concepts[0]!.quiz.questions[0]!.type = 'multiple';
+assert.equal(normalizeScormTopic(legacy, 'AIforProduction').concepts[0]!.quiz!.questions[0]!.type, 'checkbox');
+assert(!('private_api_key' in normalized));
+assert.deepEqual(normalized.objectives, raw.learning_objectives);
+assert.throws(() => normalizeScormTopic(raw, 'WrongCourse'));
+const reader = async (name: string) => name === 'get_topic' ? { success: true, topic: raw } : { modules: [{ num: 1, topics: [{ topicId, title: raw.title }, { topicId: 'AIforProduction-M1-T2', title: 'Next topic' }] }] };
+const owner = await getSessionUser();
+const imported = await importScormTopic(owner.id, 'AIforProduction', topicId, 173, reader);
+assert.equal((await importScormTopic(owner.id, 'AIforProduction', topicId, 173, reader)).id, imported.id);
+await assert.rejects(() => importScormTopic(owner.id, 'AIforProduction', topicId, 172, reader), /source changed/i);
+await assert.rejects(() => activateScormPilot('other-owner', imported.id, imported.fingerprint));
+await activateScormPilot(owner.id, imported.id, imported.fingerprint);
+const delivery = (await scormCourseDelivery('ai-for-production'))!;
+assert(delivery.course.importedRevisionId);
+assert.equal(delivery.modules[0]!.metadata.objectives[0]!.text, raw.learning_objectives[0]);
+const video = getBlock(delivery.modules[0]!, 'explainer')!.videos![0]!;
+assert.equal(video.endQuiz[0]!.selectionType, 'multiple');
+assert.equal(video.midQuiz.length, 0, 'Import does not invent assessment items');
+assert.equal(video.audio![0], '', 'Split narration is never paired with a full unsplit source recording');
+assert.deepEqual(scormDelivery([]), undefined);
+
+process.env.ADAPTIVE_PYTHON_ENABLED = 'true';
+const learnerIds = ['scorm-test-mechanical', 'scorm-test-healthcare'];
+const profiles = [{ domain: 'manufacturing', role: 'engineer', domainOther: 'mechanical engineering' }, { domain: 'healthcare', role: 'admin' }];
+const jobs = [];
+for (let i = 0; i < learnerIds.length; i++) {
+  const id = learnerIds[i]!;
+  await (await db()).insert(users).values({ id, name: id, email: `${id}@example.invalid` });
+  await repo.saveProfile(id, profiles[i]!, []);
+  const e = await repo.upsertEnrollment(id, 'ai-for-production', { answers: {}, supportOverride: 'auto', pace: null, precheck: null });
+  const job = await queueSlide({ id, name: id, email: `${id}@example.invalid` }, 'ai-for-production', 'M1', video.id, 0, 'initial');
+  assert.equal((job.input.context as { llmProvider: string }).llmProvider, 'vertex');
+  jobs.push({ job, enrollment: e });
+}
+assert.notEqual(jobs[0]!.job.fingerprint, jobs[1]!.job.fingerprint);
+assert.notDeepEqual((jobs[0]!.job.input.context as { profile: unknown }).profile, (jobs[1]!.job.input.context as { profile: unknown }).profile);
+for (let i = 0; i < 2; i++) {
+  const claimed = (await claimJob('background'))!;
+  const say = i === 0 ? 'In mechanical engineering, a fixed temperature threshold is automation; learned sensor patterns are AI.' : 'In healthcare, a fixed appointment reminder rule is automation; learned demand patterns are AI.';
+  const generated = { ...video.slides[0]!, title: video.title, sub: say, sentences: [say], narration: say };
+  await finishJob(claimed.id, claimed.lease!, generated, 'vertex-test-double', {}, async (_dir, clips) => new Set(clips.map(c => c.key)));
+}
+const ready = await Promise.all(jobs.map(j => jobsFor(j.enrollment.id, 'M1')));
+assert(ready.every(rows => rows[0]!.status === 'ready'));
+assert.notEqual(ready[0]![0]!.audio, ready[1]![0]!.audio);
+assert.notEqual(ready[0]![0]!.content!.narration, ready[1]![0]!.content!.narration);
+assert.equal(JSON.stringify((await scormCourseDelivery('ai-for-production'))!.modules), JSON.stringify(delivery.modules), 'Personalization does not rewrite the imported master');
+const changed = await queueSlide({ id: learnerIds[0]!, name: '', email: '' }, 'ai-for-production', 'M1', video.id, 0, 'example', randomUUID());
+const claimed = (await claimJob('interactive'))!;
+await repo.saveProfile(learnerIds[0]!, { domain: 'finance' }, []);
+await assert.rejects(() => finishJob(changed.id, claimed.lease!, video.slides[0], 'test', {}, async (_dir, clips) => new Set(clips.map(c => c.key))), /profile changed/i);
+const pendingSourceJob = await queueSlide({ id: learnerIds[1]!, name: '', email: '' }, 'ai-for-production', 'M1', video.id, 0, 'example', randomUUID());
+const sourceClaim = (await claimJob('interactive'))!;
+const updatedRaw = { ...raw, version: 174, description: 'A revised source description.' };
+const updatedReader = async (name: string) => name === 'get_topic' ? { topic: updatedRaw } : reader(name);
+const updated = await importScormTopic(owner.id, 'AIforProduction', topicId, 174, updatedReader);
+await activateScormPilot(owner.id, updated.id, updated.fingerprint);
+await assert.rejects(() => finishJob(pendingSourceJob.id, sourceClaim.lease!, video.slides[0], 'test', {}, async (_dir, clips) => new Set(clips.map(c => c.key))), /source course changed/i);
+
+process.env.GOOGLE_CLOUD_PROJECT = 'nebula-lms';
+process.env.GOOGLE_CLOUD_LOCATION = 'us-central1';
+assert.match(vertexConfig().root, /us-central1-aiplatform\.googleapis\.com/);
+assert.match(vertexConfig('global').root, /https:\/\/aiplatform\.googleapis\.com/);
+const audioDir = await fs.mkdtemp(path.join(os.tmpdir(), 'scorm-vertex-'));
+let called = false;
+const voice = gemini({ key: '', vertex: true, model: 'gemini-3.8-flash-lite-tts', voice: 'Charon', accessToken: async () => 'test-oauth', fetchImpl: (async (url, init) => {
+  called = true;
+  assert.match(String(url), /aiplatform\.googleapis\.com\/v1\/projects\/nebula-lms/);
+  const headers = init!.headers as Record<string, string>;
+  assert.equal(headers.authorization, 'Bearer test-oauth'); assert(!('x-goog-api-key' in headers));
+  const body = JSON.parse(String(init!.body)); assert.equal(body.contents[0].parts[0].text, 'A short narration check.');
+  return new Response(JSON.stringify({ candidates: [{ content: { parts: [{ inlineData: { data: Buffer.alloc(4800).toString('base64') } }] } }] }));
+}) as typeof fetch });
+assert((await voice(audioDir, [{ key: 'clip', text: 'A short narration check.' }])).has('clip'));
+assert(called); assert.equal((await fs.readFile(path.join(audioDir, 'clip.wav'))).subarray(0, 4).toString(), 'RIFF');
+assert.equal((await (await db()).select().from(adaptationJobs).where(eq(adaptationJobs.enrollmentId, jobs[1]!.enrollment.id))).length, 2);
+console.log('PASS: source import/version/ownership, native delivery, two isolated profiles, audio pairing, stale-profile rejection and Vertex OAuth/WAV contract (provider doubles).');

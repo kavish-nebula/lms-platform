@@ -75,7 +75,9 @@ export default async function PlayerPage({ params, searchParams }: { params: Pro
         href: `${courseHref}/${following.module_id}/${following.stages.find((s) => following.authored?.includes(s)) ?? following.stages[0]}`,
         title: following.title,
       }
-    : { href: `${courseHref}/finale/${course.finale.steps[0]!.id}`, title: course.finale.steps[0]!.title };
+    : course.finale.steps[0]
+      ? { href: `${courseHref}/finale/${course.finale.steps[0].id}`, title: course.finale.steps[0].title }
+      : { href: courseHref, title: 'Back to course' };
   return (
     <ModuleLock
       courseId={courseId}

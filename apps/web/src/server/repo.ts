@@ -3,7 +3,7 @@ import { and, asc, desc, eq, inArray, isNull } from "drizzle-orm";
 import type { SetupAnswers, SupportOverride } from "@/lib/setup";
 import type { ProfileDerived } from "@/lib/profiling/derived";
 import { db } from "./db/client";
-import { adaptedContent, enrollments, learnerPlans, profileDrafts, profiles, signals, stepProgress, type AdaptedPiece, type Pace, type StoredPrecheck } from "./db/schema";
+import { adaptedContent, enrollments, importedCourseProgress, learnerPlans, profileDrafts, profiles, signals, stepProgress, type AdaptedPiece, type Pace, type StoredPrecheck } from "./db/schema";
 
 /** Queries for learner data. Callers pass the session user's id; nothing here reads across users. */
 
@@ -91,6 +91,7 @@ export async function deleteEnrollment(userId: string, courseId: string) {
 /** Everything the learner has stored: enrollments (and with them plans, signals, progress) and the profile. */
 export async function deleteUserData(userId: string) {
   const d = await db();
+  await d.delete(importedCourseProgress).where(eq(importedCourseProgress.userId, userId));
   await d.delete(enrollments).where(eq(enrollments.userId, userId));
   await d.delete(profiles).where(eq(profiles.userId, userId));
   await d.delete(profileDrafts).where(eq(profileDrafts.userId, userId));

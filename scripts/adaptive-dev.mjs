@@ -5,6 +5,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 import net from "node:net";
+import { devBundlerArgs } from './dev-bundler.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const localEnv = path.join(root, "apps/web/.env.local");
@@ -62,7 +63,7 @@ function start(command, args, cwd) {
   child.on("exit", (code) => { if (!stopping) stop(code || 0); });
 }
 const require = createRequire(import.meta.url);
-start(process.execPath, [require.resolve("next/dist/bin/next"), production ? "start" : "dev", "--hostname", "127.0.0.1", "--port", port], path.join(root, "apps/web"));
+start(process.execPath, [require.resolve("next/dist/bin/next"), production ? "start" : "dev", ...(production ? [] : devBundlerArgs()), "--hostname", "127.0.0.1", "--port", port], path.join(root, "apps/web"));
 start(python, ["-m", "uvicorn", "adaptive_api.api:app", "--host", "127.0.0.1", "--port", aiPort], path.join(root, "apps/adaptive-api"));
 start(python, ["-m", "adaptive_api.worker"], path.join(root, "apps/adaptive-api"));
 process.on("SIGINT", () => stop());
