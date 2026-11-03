@@ -1,3 +1,4 @@
+import { courseSources, sourceCoverage, moduleSourceIssues } from './source-library';
 import { z } from "zod/v4";
 import { MODULE_FLOW, COURSE_END_FLOW, CODEX_MODULE_FLOW, CODEX_COURSE_END_FLOW, type DeliveryStructure } from './course-delivery';
 import { BLOOM_LEVELS, type CourseBriefData } from "./content-creator";
@@ -31,18 +32,40 @@ export const InstructionalBlueprint = z.object({
   finalDeliverable: z.object({ brief: text, criteria: lines.min(1), minutes: z.number().nonnegative().max(600) }).strict(),
 }).strict();
 export type Blueprint = z.infer<typeof InstructionalBlueprint>;
-export type BlueprintInput = { deliveryStructure?: DeliveryStructure; existingModules?: { id: string; title: string; objectiveIds: string[] }[]; brief: CourseBriefData; objectives: { id: string; text: string; bloom: string }[]; sources: { id: string; text: string }[] };
+export type BlueprintInput = { deliveryStructure?: DeliveryStructure; existingModules?: { id: string; title: string; objectiveIds: string[] }[]; brief: CourseBriefData; objectives: { id: string; text: string; bloom: string }[]; sources: { id: string; text: string; revision?: number; scope?: string; moduleId?: string; topicId?: string; objectiveIds?: string[] }[] };
 export type BlueprintRun = { id: string; courseId: string; inputRevision: number; promptVersion: number; status: "running" | "ready" | "failed"; attempts: number; model: string | null; error: string | null; output: Blueprint | null; input: BlueprintInput; createdAt: string; updatedAt: string; outdated: boolean; deliveryStructure?: DeliveryStructure };
 
 export function blueprintInput(brief: CourseBriefData, deliveryStructure?: DeliveryStructure): BlueprintInput {
   return { ...(deliveryStructure && deliveryStructure !== 'legacy' ? { deliveryStructure } : {}), brief, objectives: brief.objectives.map((o, i) => ({ id: `O${i + 1}`, ...o })).filter(o => o.text.trim()),
-    sources: brief.sourceText.split(/\n\s*\n/).filter(t => t.trim()).map((text, i) => ({ id: `S${i + 1}`, text })) };
+    sources: courseSources(brief) };
 }
 
 /** Structure and traceability checks are not a factual or instructional-quality approval. */
 export function validateBlueprint(raw: unknown, input: BlueprintInput): Blueprint {
   const result = InstructionalBlueprint.parse(raw);
-  const errors: string[] = [];
+  const errors: string[] = sourceCoverage(input.brief);
+  const outline = input.brief.sourceLibrary?.modules;
+  if (outline?.length && outline.map(m => m.id).join(',') !== result.modules.map(m => m.id).join(',')) errors.push('Preserve source outline module IDs and order.');
+  if (input.brief.sourceLibrary) {
+    for (const item of [...result.modules, ...result.tasks]) errors.push(...moduleSourceIssues(item, 'moduleId' in item ? item.moduleId : item.id, courseSources(input.brief)));
+    for (const item of result.recommendations.objectives) {
+      if (!item.sourceIds.some(id => input.sources.find(s => s.id === id)?.objectiveIds?.includes(item.objectiveId))) errors.push(`${item.objectiveId}: cite mapped objective evidence.`);
+    }
+    for (const unit of result.modules) {
+      for (const objective of unit.objectiveIds) {
+        if (!unit.sourceIds.some(id => input.sources.find(s => s.id === id)?.objectiveIds?.includes(objective))) errors.push(`${unit.id}: cite mapped evidence for ${objective}.`);
+        const videoSources = input.brief.sourceLibrary.sources.filter(s => s.video && s.moduleId === unit.id);
+        if (videoSources.length && !videoSources.some(s => s.objectiveIds.includes(objective))) errors.push(`${unit.id}: map a reviewed concept video to ${objective}.`);
+      }
+      for (const id of unit.sourceIds) {
+        const source = input.sources.find(s => s.id === id);
+        if (source && source.scope !== 'course' && source.moduleId !== unit.id) errors.push(`${unit.id}: source ${id} belongs to another module.`);
+      }
+      for (const topic of outline?.find(m => m.id === unit.id)?.topics ?? []) {
+        if (!unit.sourceIds.some(id => input.sources.find(s => s.id === id)?.topicId === topic.id)) errors.push(`${unit.id}: cite source evidence for topic ${topic.id}.`);
+      }
+    }
+  }
   const objectives = new Set(input.objectives.map(o => o.id));
   const sources = new Set(input.sources.map(s => s.id));
   const modules = new Set(result.modules.map(m => m.id));

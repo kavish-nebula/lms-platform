@@ -1,4 +1,5 @@
 "use client";
+import { CourseWorkflowNav } from './course-workflow-nav';
 import { formatIst } from "@/lib/display-time";
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
@@ -38,7 +39,7 @@ export function BlueprintWorkspace({ draft, initialRuns, configured }: { draft: 
     } catch (error) { setError(error instanceof Error ? error.message : 'Could not start. Your SME input remains saved.'); }
     finally { setStarting(false); }
   }
-  return <div className="space-y-8">
+  return <div className="space-y-8"><CourseWorkflowNav courseId={draft.id} step={2} runId={shown?.id} />
     <header className="space-y-3"><Link className="text-sm text-brand-ink underline" href={`/content/courses/${draft.id}`}>← Edit SME input</Link><p className="text-sm text-brand-ink">Stage 2 · AI Processing</p><h1 className="text-3xl font-semibold">Instructional blueprint</h1><p className="text-lg">{draft.brief.title || 'Untitled course'}</p><p className="max-w-3xl text-sm text-ink-muted">Generate the seven ILD design sections from saved SME input revision {draft.revision}. The saved course brief, source notes and references will be sent to the configured AI provider. Learner profiles and progress are not included. Source links are not fetched.</p></header>
     <section className="space-y-4 rounded-xl border border-line bg-panel p-5" aria-label="AI processing controls"><p className="text-sm">AI draft for SME review. Structural checks do not establish factual accuracy, instructional quality or approval. Review in Stage 3, then open the Stage 4 scripts-first pilot for an approved module. Approved scripts can then be narrated with local Kokoro. Publishing remains deferred.</p>
       {!complete && <p className="text-sm text-destructive">Complete the Stage 1 preparation checks and save the input before generating.</p>}{!configured && <p className="text-sm text-destructive">The server AI service is not configured. Your saved input remains available.</p>}

@@ -263,3 +263,14 @@ All enrolled courses automatically use profile-based concept-slide adaptation wh
 
 
 Appearance is shared across both Next.js root layouts and the standalone 404. The pre-paint preference script and client Providers apply `lms-prefs.theme`; the persistent global theme switch merges only the theme key and notifies the local preference store. Other tabs follow storage events. Lesson dialogs inherit the root theme, and notifications follow the root attribute through the existing observer. No learner/course schema or saved progress changes are required.
+
+
+CourseBrief defaults omitted legacy duration/context/difficulty fields to empty strings. New briefs do not require these inputs; existing revisions retain their values for historical comparisons and no-op saves. Blueprint generation estimates timing from scope when no legacy duration is supplied.
+
+
+## Course source library and unified authoring
+
+Optional sourceLibrary v1 is stored inside the existing versioned course brief JSON. Stable, server-revisioned evidence records carry course/module/topic scope and objective mappings. Both blueprint generation and assembled-package saving enforce coverage. Library-backed packages require the current blueprint and approved module reviews; scoped citations are checked recursively. MCP context includes source revisions, coverage gaps, outline, blueprintRunId and current module teaching. Existing legacy briefs and publications remain valid. See [course-authoring-workflow.md](course-authoring-workflow.md).
+
+
+Video-first authoring supports owner-scoped concept recordings and immutable timestamped transcript reviews in the source library. It generates interactive supporting activities and quizzes, then preserves original recordings in the learner player. Assets/fragments use local ignored storage with range-streamed enrolled-learner access; existing course package, assessment and progress contracts remain compatible. See [video-first-authoring.md](video-first-authoring.md) for workflow, storage, transcription and verification boundaries.

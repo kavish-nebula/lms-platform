@@ -63,6 +63,7 @@ export async function productionState(userId: string, courseId: string, runId: s
 
 export async function startProduction(user: SessionUser, courseId: string, runId: string, moduleId: string, approvalId: string, requestedUnit = 'module') {
   const scope = await scopeFor(user.id, courseId, runId, moduleId); const database = await db();
+  if (scope.run.input.brief.sourceLibrary?.sources.some(s => s.moduleId === moduleId && s.video)) throw new ApiError(409, 'video_first', 'Use Generate activities in the video-first workspace for this module. Uploaded recordings must not be replaced with slide teaching.');
   await productionState(user.id, courseId, runId, moduleId);
   const work = await database.transaction(async tx => {
     const context = await source(tx, scope, true);

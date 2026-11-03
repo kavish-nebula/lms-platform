@@ -23,6 +23,12 @@ Read [the shared workflow contract](references/workflow-contract.md) before star
 
 Only this skill saves complete packages. Preserve stable IDs, unrelated content, exact objectives and creator-configured pass percentage. Human approval, publication, narration generation and learner-record changes are separate workflows.
 
+For source-library courses (`sourceLibraryVersion: 1` in context), follow the same app workflow: saved course brief and scoped evidence → current blueprint → SME module review → teaching and narration → complete package assembly → final human review → publication. Resolve `sourceCoverage.gaps` before generation. Use `sourceOutline` module IDs and topic order, source IDs/revisions and declared objective mappings; source references alone are not evidence. The creator generates and reviews the blueprint in the app; the three course MCP tools do not create blueprint approvals. If it is absent or unapproved, report the required app step and retain independent planning work. Do not bypass it by saving a package without `blueprintRunId`.
+
+Use `moduleTeaching` in context to reuse current module production content during assembly, preserving IDs and unrelated approved teaching. A job marked ready is generated content, not proof of script or audio approval. Generate missing content through the specialist skills and keep human review explicit. Do not claim the final package automatically imports module audio: verify package-bound narration in the assembly workspace before publication.
+
+For uploaded concept videos, prefer the current `videoModuleDrafts` generated from reviewed timestamped transcripts. Preserve the uploadedVideo references and transcript parts exactly; the original recording supplies the voice and visuals. Do not generate TTS for those transcript parts or add narratedStages as a substitute for interactive hooks/practice. Reconcile only affected modules, preserve the guided mini project/final assessment/reflection when editing an existing course, and verify video streaming, captions and midpoint timing before publication. New courses still need a complete course-end package assembled through the existing MCP; a generated module fragment is not a published course.
+
 ## 5. Workflow
 
 1. Call `get_course_context` and `get_course_draft` on the connected `lms-ild-course-creator` MCP server. Use its actual course scope, brief revision, source/objective IDs and latest package version. Do not invent a course ID. A missing or expired connection is an input/access problem, not permission to use another course.

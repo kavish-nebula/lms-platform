@@ -186,6 +186,7 @@ export async function queueSlide(user: SessionUser, courseId: string, moduleId: 
   if (!liveEnabled(courseId)) throw new ApiError(409, "disabled", "Live adaptation is disabled.");
   const { videos } = await videosOf(courseId, moduleId);
   const video = videos.find((v) => v.id === videoId);
+  if (video?.uploadedVideo) throw new ApiError(409, "fixed_video", "Uploaded concept videos remain unchanged. Request support around the lesson instead.");
   const authored = video?.slides[slide];
   if (!authored) throw new ApiError(400, "unknown_slide", "Slide not found.");
   const { e, context } = await contextOf(user, courseId, moduleId);
@@ -226,7 +227,7 @@ export async function queueModule(user: SessionUser, courseId: string, moduleId:
   const released = !!(await getCourse(courseId))?.authoredRevisionId;
   const hook = released ? null : await queuePiece("hook");
   // The DB preserves playback order for equal priorities. No model runs in this request.
-  for (const v of videos) for (let i = 0; i < v.slides.length; i++) await queueSlide(user, courseId, moduleId, v.id, i, "initial");
+  for (const v of videos.filter(v => !v.uploadedVideo)) for (let i = 0; i < v.slides.length; i++) await queueSlide(user, courseId, moduleId, v.id, i, "initial");
   const worked = released ? null : await queuePiece("worked");
   return { hook, worked };
 }

@@ -1,4 +1,5 @@
 import "server-only";
+import { vertexAccessToken, vertexConfig } from './vertex';
 
 /**
  * The language-model client shared by the planner, Pip's help chat and the
@@ -19,7 +20,7 @@ import "server-only";
  * turn an LlmError into words for the learner, so this file writes none.
  */
 
-export type LlmProvider = "openai" | "anthropic";
+export type LlmProvider = "openai" | "anthropic" | "vertex";
 
 export type LlmConfig = {
   provider: LlmProvider;
@@ -35,6 +36,9 @@ export type LlmConfig = {
 const env = (k: string) => process.env[k]?.trim() || undefined;
 
 export function llmConfig(): LlmConfig {
+  if (env('LLM_PROVIDER')?.toLowerCase() === 'vertex') {
+    return { provider: 'vertex', key: null, baseUrl: `${vertexConfig().root}/endpoints/openapi`, model: env('LLM_MODEL') ?? 'gemini-3.5-flash-lite', fallback: env('LLM_FALLBACK_MODEL')?.toLowerCase() === 'none' ? null : env('LLM_FALLBACK_MODEL') ?? null, reasoning: env('LLM_REASONING') === 'enabled', glm: false };
+  }
   const own = env("LLM_API_KEY");
   // no LLM_API_KEY: the GLM setup this project started with
   if (!own) {
@@ -64,7 +68,7 @@ export function llmConfig(): LlmConfig {
   };
 }
 
-export const aiConfigured = () => !!llmConfig().key;
+export const aiConfigured = () => llmConfig().provider === 'vertex' || !!llmConfig().key;
 export const llmModel = () => llmConfig().model;
 export const llmProvider = () => llmConfig().provider;
 /**
@@ -192,17 +196,18 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 export function llmHttp({ timeoutMs, retries, backoffMs }: LlmPatience): LlmTransport {
   return async (req) => {
     const c = llmConfig();
-    if (!c.key) throw new LlmError("unconfigured", "No LLM_API_KEY (or GLM_API_KEY) is set.");
+    if (!c.key && c.provider !== 'vertex') throw new LlmError("unconfigured", "No LLM_API_KEY (or GLM_API_KEY) is set.");
     const anthropic = c.provider === "anthropic";
-    const name = c.glm ? "GLM" : anthropic ? "Anthropic" : "OpenAI-compatible";
+    const name = c.provider === 'vertex' ? 'Vertex AI' : c.glm ? "GLM" : anthropic ? "Anthropic" : "OpenAI-compatible";
     const url = anthropic ? `${c.baseUrl}/v1/messages` : `${c.baseUrl}/chat/completions`;
     const headers: Record<string, string> = anthropic
-      ? { "content-type": "application/json", "x-api-key": c.key, "anthropic-version": "2023-06-01" }
+      ? { "content-type": "application/json", "x-api-key": c.key!, "anthropic-version": "2023-06-01" }
       : { "content-type": "application/json", authorization: `Bearer ${c.key}` };
-    const body = JSON.stringify(anthropic ? anthropicBody(req) : openAiBody(req, c));
+    const body = JSON.stringify(anthropic ? anthropicBody(req) : openAiBody(c.provider === 'vertex' ? { ...req, model: req.model.startsWith('google/') ? req.model : `google/${req.model}` } : req, c));
     for (let attempt = 0; ; attempt++) {
       let res: Response;
       try {
+        if (c.provider === 'vertex') headers.authorization = `Bearer ${await vertexAccessToken()}`;
         res = await fetch(url, { method: "POST", headers, body, signal: AbortSignal.timeout(timeoutMs) });
       } catch (e) {
         if (attempt < retries) {

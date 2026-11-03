@@ -1,6 +1,7 @@
 "use client";
 
 import "./video.css";
+import { UploadedVideoLesson } from './uploaded-video-lesson';
 import * as React from "react";
 import { reactPip, useCompanionStep, useLearningContext } from "@/components/learning/course-companion";
 import { cn } from "cn";
@@ -54,7 +55,11 @@ type Phase = "play" | "mid" | "end" | "done";
  * built in; keyboard: Space play/pause, arrows slides, M mute, C captions,
  * F fullscreen.
  */
-export function VideoLesson({
+export function VideoLesson(props: { video: ConceptVideo; onComplete?: () => void; onNext?: () => void; nextLabel?: string }) {
+  return props.video.uploadedVideo ? <UploadedVideoLesson key={`${props.video.id}:${props.video.uploadedVideo.transcriptId}`} {...props} /> : <SlideVideoLesson {...props} />;
+}
+
+function SlideVideoLesson({
   video,
   onComplete,
   onNext,
@@ -675,7 +680,7 @@ function CtrlButton({
  * A short check inside the video, as a popup over the slide. A right answer
  * can move on; a wrong one gets feedback and a hint on the same question.
  */
-function QuizOverlay({ questions, onDone, doneLabel, onAnswer }: { questions: VideoQuiz[]; onDone: () => void; doneLabel: string; onAnswer?: (question: number, response: number | number[]) => void }) {
+export function QuizOverlay({ questions, onDone, doneLabel, onAnswer }: { questions: VideoQuiz[]; onDone: () => void; doneLabel: string; onAnswer?: (question: number, response: number | number[]) => void }) {
   const t = useTranslations("video");
   const [qi, setQi] = React.useState(0);
   const [selections, setSelections] = React.useState<number[]>([]);

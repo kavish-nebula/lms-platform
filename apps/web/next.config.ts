@@ -13,7 +13,7 @@ const nextConfig: NextConfig = {
   outputFileTracingRoot: monorepoRoot,
   // PGlite (the built-in local Postgres) ships WASM; load it from node_modules
   // at runtime rather than through the bundler.
-  serverExternalPackages: ["@electric-sql/pglite"],
+  serverExternalPackages: ["@electric-sql/pglite", "ffmpeg-static"],
   // Keep the documented Webpack fallback equivalent to the Turbopack setup.
   webpack(config) {
     config.resolve.alias["next-intl/config"] = path.join(__dirname, "src/i18n/request.ts");

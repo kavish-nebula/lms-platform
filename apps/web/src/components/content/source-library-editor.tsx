@@ -1,0 +1,41 @@
+'use client';
+import { VideoSourceEditor } from './video-source-editor';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { migrateSourceLibrary, sourceCoverage, type SourceLibraryData } from '@/lib/source-library';
+import type { CourseBriefData } from '@/lib/content-creator';
+
+const newId = (prefix: string) => `${prefix}${crypto.randomUUID().replaceAll('-', '').slice(0, 20)}`;
+const selectClass = 'min-h-11 w-full rounded-lg border border-input bg-panel px-3 text-sm focus-visible:outline-2 focus-visible:outline-ring';
+export function SourceLibraryEditor({ brief, onChange, courseId }: { courseId?: string; brief: CourseBriefData; onChange: (library: SourceLibraryData) => void }) {
+  const library = brief.sourceLibrary;
+  if (!library) return <section className="space-y-3 rounded-xl border border-line bg-panel p-5"><h2 className="text-lg font-semibold">Source library</h2><p className="text-sm text-ink-muted">This course uses legacy SME notes. Convert them to editable source records with the same source IDs. Existing published lessons remain unchanged. Map objectives before generating new content.</p><Button type="button" variant="outline" onClick={() => onChange(migrateSourceLibrary(brief))}>Convert notes to source library</Button></section>;
+  const updateSource = (id: string, patch: Partial<SourceLibraryData['sources'][number]>) => onChange({ ...library, sources: library.sources.map(s => s.id === id ? { ...s, ...patch } : s) });
+  const gaps = sourceCoverage(brief);
+  return <fieldset className="min-w-0 space-y-5 rounded-xl border border-line bg-panel p-5 md:p-7"><legend className="px-2 text-lg font-semibold">Source library</legend>
+    <p className="text-sm text-ink-muted">The brief describes the entire course. Add shared course evidence, then separate module and topic sources. Paste approved explanations, procedures, examples and limitations. URLs are references only and are not fetched.</p>
+    <h3 className="font-semibold">Module and topic outline</h3>
+    <p className="text-sm text-ink-muted">Optional before planning. Every declared module and topic needs its own mapped evidence. IDs remain stable when titles change.</p>
+    {library.modules.map((m, i) => <section key={m.id} className="space-y-3 rounded-lg border border-line p-3">
+      <label className="block text-sm" htmlFor={`module-${m.id}`}>Module {i + 1} title · {m.id}</label><Input id={`module-${m.id}`} maxLength={200} value={m.title} onChange={e => onChange({ ...library, modules: library.modules.map(item => item.id === m.id ? { ...item, title: e.target.value } : item) })} />
+      {m.topics.map((t, n) => <div key={t.id} className="space-y-2 pl-3"><label className="text-sm" htmlFor={`topic-${t.id}`}>Topic {n + 1} · {t.id}</label><Input id={`topic-${t.id}`} maxLength={200} value={t.title} onChange={e => onChange({ ...library, modules: library.modules.map(item => item.id === m.id ? { ...item, topics: item.topics.map(topic => topic.id === t.id ? { ...topic, title: e.target.value } : topic) } : item) })} /><Button type="button" variant="outline" onClick={() => onChange({ ...library, modules: library.modules.map(item => item.id === m.id ? { ...item, topics: item.topics.filter(topic => topic.id !== t.id) } : item) })}>Remove topic {n + 1}</Button></div>)}
+      <div className="flex flex-wrap gap-2"><Button type="button" variant="outline" disabled={m.topics.length >= 40} onClick={() => onChange({ ...library, modules: library.modules.map(item => item.id === m.id ? { ...item, topics: [...item.topics, { id: newId('T'), title: '' }] } : item) })}>Add topic to module {i + 1}</Button><Button type="button" variant="outline" onClick={() => onChange({ ...library, modules: library.modules.filter(item => item.id !== m.id) })}>Remove module {i + 1}</Button></div>
+    </section>)}
+    <Button type="button" variant="outline" disabled={library.modules.length >= 12} onClick={() => onChange({ ...library, modules: [...library.modules, { id: newId('M'), title: '', topics: [] }] })}>Add module</Button>
+    <h3 className="font-semibold">Evidence records</h3>
+    {library.sources.map((s, i) => <details key={s.id} open className="space-y-3 rounded-lg border border-line p-3"><summary className="cursor-pointer font-medium">Source {i + 1}: {s.title || 'Untitled'} · {s.id} · revision {s.revision}</summary>
+      <label className="block text-sm" htmlFor={`source-title-${s.id}`}>Source title</label><Input id={`source-title-${s.id}`} maxLength={200} value={s.title} onChange={e => updateSource(s.id, { title: e.target.value })} />
+      <label className="block text-sm" htmlFor={`source-scope-${s.id}`}>Scope</label><select id={`source-scope-${s.id}`} className={selectClass} value={s.scope} onChange={e => updateSource(s.id, { scope: e.target.value as typeof s.scope, moduleId: '', topicId: '' })}><option value="course">Entire course</option><option value="module">One module</option><option value="topic">One topic</option></select>
+      {s.scope !== 'course' && <><label className="block text-sm" htmlFor={`source-module-${s.id}`}>Module</label><select id={`source-module-${s.id}`} className={selectClass} value={s.moduleId} onChange={e => updateSource(s.id, { moduleId: e.target.value, topicId: '' })}><option value="">Select module</option>{library.modules.map(m => <option key={m.id} value={m.id}>{m.title || m.id}</option>)}</select></>}
+      {s.scope === 'topic' && <><label className="block text-sm" htmlFor={`source-topic-${s.id}`}>Topic</label><select id={`source-topic-${s.id}`} className={selectClass} value={s.topicId} onChange={e => updateSource(s.id, { topicId: e.target.value })}><option value="">Select topic</option>{library.modules.find(m => m.id === s.moduleId)?.topics.map(t => <option key={t.id} value={t.id}>{t.title || t.id}</option>)}</select></>}
+      <fieldset className="space-y-2"><legend className="text-sm font-medium">Supported objectives</legend>{brief.objectives.map((o, n) => <label key={n} className="flex items-start gap-2 text-sm"><input type="checkbox" className="mt-1 size-4 accent-brand" checked={s.objectiveIds.includes(`O${n + 1}`)} onChange={e => updateSource(s.id, { objectiveIds: e.target.checked ? [...s.objectiveIds, `O${n + 1}`] : s.objectiveIds.filter(id => id !== `O${n + 1}`) })} />O{n + 1}: {o.text || 'Untitled objective'}</label>)}</fieldset>
+      <VideoSourceEditor source={s} courseId={courseId} onChange={patch => updateSource(s.id, patch)} />
+      <label className="block text-sm" htmlFor={`source-text-${s.id}`}>{s.video ? "Reviewed transcript evidence (read-only)" : "Evidence text"}</label><Textarea readOnly={!!s.video} id={`source-text-${s.id}`} rows={6} maxLength={100000} value={s.text} onChange={e => updateSource(s.id, { text: e.target.value })} />
+      <label className="block text-sm" htmlFor={`source-ref-${s.id}`}>Reference or URL (optional, not fetched)</label><Input id={`source-ref-${s.id}`} maxLength={2000} value={s.reference} onChange={e => updateSource(s.id, { reference: e.target.value })} />
+      <Button type="button" variant="outline" onClick={() => onChange({ ...library, sources: library.sources.filter(item => item.id !== s.id) })}>Remove source {i + 1}</Button>
+    </details>)}
+    <Button type="button" variant="outline" disabled={library.sources.length >= 100} onClick={() => onChange({ ...library, sources: [...library.sources, { id: newId('S'), revision: 1, title: '', scope: 'course', moduleId: '', topicId: '', objectiveIds: [], text: '', reference: '' }] })}>Add source</Button>
+    <section aria-label="Source coverage" className="space-y-2 border-t border-line pt-4"><h3 className="font-semibold">Source coverage</h3><p className="text-sm text-ink-muted">Checks declared evidence and mappings. Human review must verify accuracy, relevance and sufficient teaching detail. Save incomplete drafts at any time; resolve gaps before generation.</p>{gaps.length ? <ul className="list-disc space-y-1 pl-5 text-sm">{gaps.map(g => <li key={g}>{g}</li>)}</ul> : <p className="text-sm text-brand-ink">All declared objectives, modules and topics have mapped source evidence.</p>}</section>
+  </fieldset>;
+}

@@ -1,6 +1,6 @@
 ---
 name: lesson-generation
-description: Generate or revise source-linked LMS lesson and module teaching, including hooks, editable slides and narration, worked examples, guided practice and scenarios. Use for teaching-content requests, not quiz generation, course-end projects, individual profiling or complete-course saving.
+description: Generate or revise source-linked LMS teaching around reviewed concept videos or editable slide narration, including hooks, worked examples, guided practice and scenarios. Use for teaching-content requests, not quiz generation, course-end projects, individual profiling or complete-course saving.
 ---
 
 # Lesson Generation Skill
@@ -22,6 +22,8 @@ Use the supplied course context, audience brief, course plan, exact objectives, 
 Read [the shared workflow contract](../course-creation/references/workflow-contract.md). Preserve stable IDs, exact objectives, source traceability and unaffected fields. Keep slide text concise and narration complementary/editable; distinguish estimated narration seconds from activity time and measured audio. Do not fabricate media or unsupported domain facts.
 
 ### Course and module structure
+
+For video-first sources, use the human-reviewed timestamped transcripts and uploaded recordings supplied in context. Preserve each video's assetId, transcriptId, durationSeconds and checkpointSeconds and its two transcript parts from `videoModuleDrafts`; do not replace it with generated slides, narration or TTS. Generate interactive problem hooks, worked reasoning, guided practice and scenarios around the taught concepts, omitting `narratedStages`. Supply first-half transcript evidence to quiz-generation for two questions at the timestamp boundary. Video/source replacement or transcript edits require renewed review and regenerated affected activities. This mode takes precedence over the generated-slide/word-count requirements below; those continue to apply to existing slide-based courses. Preserve the SME's module/topic scope and report video coverage gaps instead of adding synthetic recordings.
 
 - For every newly authored course, design **3-4 modules**, choosing three or four according to the subject, objective coverage and complexity. Explain the choice in the handoff; do not add filler to reach a count.
 - Each module contains **3-4 distinct concept topics**, each taught by its own video in `conceptExplainer.videos`. Choose three or four based on meaningful topic boundaries and prerequisites.

@@ -1,4 +1,5 @@
 import "server-only";
+import { reviseSourceLibrary } from '@/lib/source-library';
 import { and, desc, eq, sql } from "drizzle-orm";
 import { z } from "zod/v4";
 import { CourseBrief, sameCourseBrief, type CreatorDraft } from "@/lib/content-creator";
@@ -39,6 +40,7 @@ export async function getCreatorDraft(ownerId: string, id: string) {
 }
 export async function createCreatorDraft(ownerId: string, input: z.infer<typeof CreateDraft>) {
   const { brief } = CreateDraft.parse(input);
+  if (brief.sourceLibrary) brief.sourceLibrary = reviseSourceLibrary(brief.sourceLibrary);
   const [row] = await (await db()).insert(creatorCourses).values({ ownerId, brief, deliveryStructure: 'codex-ild-v2' }).returning();
   return view(row);
 }
@@ -49,6 +51,7 @@ export async function updateCreatorDraft(ownerId: string, id: string, input: z.i
     const [current] = await tx.select().from(creatorCourses).where(and(eq(creatorCourses.id, id), eq(creatorCourses.ownerId, ownerId))).for('update');
     if (!current) throw new ApiError(404, 'not_found', 'Course draft not found.');
     if (current.revision !== revision) throw new ApiError(409, 'draft_conflict', 'A newer version was saved in another tab. Your text is still here. Copy it before opening the latest saved version.');
+    if (brief.sourceLibrary) brief.sourceLibrary = reviseSourceLibrary(brief.sourceLibrary, current.brief.sourceLibrary);
     // Saving identical input must not invalidate a paid, reviewed production run.
     if (sameCourseBrief(current.brief, brief)) return view(current);
     const [row] = await tx.update(creatorCourses).set({ brief, revision: sql`${creatorCourses.revision} + 1`, updatedAt: new Date() }).where(eq(creatorCourses.id, id)).returning();

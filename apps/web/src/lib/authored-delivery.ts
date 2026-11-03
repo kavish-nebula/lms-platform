@@ -35,7 +35,7 @@ export function authoredDelivery({ courseId, revisionId, content: pkg }: Release
   const lessonFor = (id: string) => String(Math.max(0, pkg.modules.findIndex(m => m.objectiveIds.includes(id))) + 1);
   const topicsFor = (m: AuthoredCoursePackageData['modules'][number]): Topic[] => [
     { stage: 'hook', title: m.problemHook.title, summary: m.problemHook.question },
-    { stage: 'explainer', title: m.narratedStages ? 'Explore the concepts' : 'Learn the handoff routine', summary: m.conceptExplainer.videos.map(v => v.title).join('; ') },
+    { stage: 'explainer', title: 'Explore the concepts', summary: m.conceptExplainer.videos.map(v => v.title).join('; ') },
     { stage: 'worked', title: 'Watch complete examples', summary: m.workedExamples.map(e => e.title).join('; ') },
     { stage: 'guided', title: m.guidedPractice.title, summary: m.guidedPractice.instructions },
     { stage: 'lab', title: m.scenarioLab.title, summary: m.narratedStages ? 'Apply the concepts to a new situation.' : 'Apply the routine to new situations.' },
@@ -54,7 +54,8 @@ export function authoredDelivery({ courseId, revisionId, content: pkg }: Release
       course_id: courseId, course_title: pkg.title, module_id: m.id, version, locale: 'en', title: m.title,
       summary: m.problemHook.situation, estimated_minutes: m.durationMinutes, stages_included: moduleStages(m),
       metadata: { objectives: m.objectiveIds.map(id => ({ id, text: objective(id), lesson })) },
-      ...(m.narratedStages ? { narratedStages: Object.fromEntries(Object.entries(m.narratedStages).map(([stage, slides]) => [stage, slides.map(s => ({ id: s.id, title: s.title, body: s.body, narration: s.narration, audio: `/api/v1/courses/${courseId}/released-audio/${revisionId}/${s.id}` }))])) } : {}),
+      ...(m.conceptExplainer.videos.some(v => v.uploadedVideo) ? { videoFirstActivities: { problemHook: m.problemHook, workedExamples: m.workedExamples, guidedPractice: m.guidedPractice, scenarioLab: m.scenarioLab } } : {}),
+      ...(m.narratedStages && !m.conceptExplainer.videos.some(v => v.uploadedVideo) ? { narratedStages: Object.fromEntries(Object.entries(m.narratedStages).map(([stage, slides]) => [stage, slides.map(s => ({ id: s.id, title: s.title, body: s.body, narration: s.narration, audio: `/api/v1/courses/${courseId}/released-audio/${revisionId}/${s.id}` }))])) } : {}),
       blocks: [
         { ...base, step_id: `${scope}.hook`, stage: 'hook', kicker: 'A fictional workplace case', title: m.problemHook.title,
           brand: { name: 'Cedar', short: 'Cedar' }, roleNotes: {},
@@ -75,10 +76,11 @@ export function authoredDelivery({ courseId, revisionId, content: pkg }: Release
         },
         { ...base, step_id: `${scope}.explain`, stage: 'explainer', duration_min: Math.max(1, Math.ceil(m.conceptExplainer.videos.reduce((n, v) => n + v.plannedMinutes, 0))), concepts: m.objectiveIds.map(objective), segments: [],
           videos: m.conceptExplainer.videos.map(v => ({
+            ...(v.uploadedVideo ? { uploadedVideo: { ...v.uploadedVideo, src: `/api/v1/courses/${courseId}/concept-video/${v.uploadedVideo.assetId}`, transcriptUrl: `/api/v1/courses/${courseId}/concept-video/${v.uploadedVideo.assetId}?transcript=${v.uploadedVideo.transcriptId}` } } : {}),
             id: `${courseId}-${m.id}-${v.id}`, module: m.id, lesson, title: v.title, notes: v.slides.flatMap(s => s.body),
             quizAfter: v.slides.findIndex(s => s.id === v.midpointQuiz.afterSlideId),
             midQuiz: v.midpointQuiz.questions.map(q => ({ q: q.prompt, options: q.choices, ...(q.selectionType === 'multiple' ? { selectionType: 'multiple' as const, correctIndices: correctChoiceIndices(q) } : { correct: q.correct }), explain: q.explanation, hint: q.hint })), endQuiz: [],
-            audio: v.slides.map(s => `/api/v1/courses/${courseId}/released-audio/${revisionId}/${s.id}`),
+            audio: v.uploadedVideo ? [] : v.slides.map(s => `/api/v1/courses/${courseId}/released-audio/${revisionId}/${s.id}`),
             slides: v.slides.map(playerSlide),
           })),
         },

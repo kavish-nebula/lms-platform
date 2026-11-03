@@ -23,6 +23,8 @@ Read [the shared workflow contract](../course-creation/references/workflow-contr
 
 Keep three distinct assessment levels: two formative questions at each video's midpoint, one module-end quiz after that module's Scenario Lab, and exactly one final assessment after the course-end Mini Project. Module quizzes do not replace midpoint checks or the final assessment. Do not add Spaced Review.
 
+For uploaded concept recordings, use the reviewed transcript parts and `uploadedVideo.checkpointSeconds` supplied by video-first authoring. Preserve the recording/transcript IDs, timestamp boundary and existing `afterSlideId` contract. The two internal transcript parts are evidence, not generated teaching slides. Midpoint questions may assess only the first part; module quizzes cover all reviewed topic videos. Replacing a recording or reviewing a changed transcript requires reevaluating affected questions. Do not infer unseen visual demonstrations from speech alone; report missing visual descriptions as source gaps.
+
 ## 5. Workflow
 
 1. Scope requested midpoint checks, module quizzes and the final assessment; preserve unaffected items in focused edits.

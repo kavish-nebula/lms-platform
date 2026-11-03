@@ -1,13 +1,17 @@
 import { z } from "zod/v4";
+import { SourceLibrary, courseSources, sourceCoverage } from './source-library';
 
 export const BLOOM_LEVELS = ["Remember", "Understand", "Apply", "Analyze", "Evaluate", "Create"] as const;
 const note = z.string().max(12000);
 export const CourseBrief = z.object({
   title: z.string().max(200), subject: z.string().max(300), audience: note,
-  prerequisites: note, outcomes: note, duration: z.string().max(100),
+  prerequisites: note, outcomes: note,
+  // Retain optional legacy input for saved courses and frozen production history.
+  duration: z.string().max(100).default(''),
   delivery: z.enum(["", "Self-paced", "Instructor-led", "Blended", "Cohort-based"]),
+  sourceLibrary: SourceLibrary.optional(),
   sourceText: z.string().max(100000), references: note, dependencies: note,
-  contexts: note, difficulties: note,
+  contexts: note.default(''), difficulties: note.default(''),
   objectives: z.array(z.object({ text: z.string().max(1000), bloom: z.enum(BLOOM_LEVELS) }).strict()).max(60),
   physicalSkills: z.boolean(), physicalNotes: note,
 }).strict();
@@ -30,11 +34,9 @@ export function briefReadiness(brief: CourseBriefData) {
   return [
     { label: "Course title, subject and audience supplied", ready: !!(brief.title.trim() && brief.subject.trim() && brief.audience.trim()) },
     { label: "Objectives supplied — SME must verify measurable outcomes", ready: objectives.length > 0 },
-    { label: "At least three Bloom’s levels represented", ready: new Set(objectives.map(o => o.bloom)).size >= 3 },
-    { label: "Raw content and intended outcomes supplied", ready: !!(brief.sourceText.trim() && brief.outcomes.trim()) },
+    { label: "Source evidence and intended outcomes supplied", ready: !!(courseSources(brief).some(s => s.text.trim()) && brief.outcomes.trim()) },
+    ...(brief.sourceLibrary ? [{ label: "Source evidence mapped to every objective, module and topic", ready: sourceCoverage(brief).length === 0 }] : []),
     { label: "Topic sequence and dependencies documented", ready: !!brief.dependencies.trim() },
-    { label: "Authentic workplace contexts supplied", ready: !!brief.contexts.trim() },
-    { label: "Known difficulty areas documented", ready: !!brief.difficulties.trim() },
     { label: "Physical practice requirements documented, if applicable", ready: !brief.physicalSkills || !!brief.physicalNotes.trim() },
   ];
 }

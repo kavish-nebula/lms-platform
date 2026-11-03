@@ -54,7 +54,7 @@ export async function processAuthoredCourseAudio(id: string, token: string, owne
   try {
     const [revision] = await database.select().from(creatorAuthoredCourseRevisions).where(and(eq(creatorAuthoredCourseRevisions.id, job.revisionId), eq(creatorAuthoredCourseRevisions.courseId, courseId), eq(creatorAuthoredCourseRevisions.ownerId, ownerId)));
     if (!revision) throw new Error('Saved narration revision no longer exists.');
-    const slides = revision.content.modules.flatMap(module => [...module.conceptExplainer.videos.flatMap(video => video.slides), ...Object.values(module.narratedStages ?? {}).flat()]);
+    const slides = revision.content.modules.flatMap(module => [...module.conceptExplainer.videos.flatMap(video => video.uploadedVideo ? [] : video.slides), ...Object.values(module.narratedStages ?? {}).flat()]);
     if (!slides.length) throw new Error('This course package has no narrated content slides.');
     const priorRows = await database.select().from(creatorAuthoredCourseAudio).where(and(eq(creatorAuthoredCourseAudio.courseId, courseId), eq(creatorAuthoredCourseAudio.voiceKey, job.voiceKey)));
     const clips: ProductionAudioClip[] = []; const todo: { key: string; text: string; slideId: string; narrationHash: string }[] = [];
@@ -79,7 +79,7 @@ export async function processAuthoredCourseAudio(id: string, token: string, owne
         const audioState = await productionAudioState(ownerId, courseId, revision.blueprintRunId, courseModule.id, source.id);
         const approvedAudio = audioState.jobs.find(a => a.current && a.status === 'ready' && a.voice.provider === job.voice.provider && a.voice.model === job.voice.model && a.voice.voice === job.voice.voice && a.voice.dtype === job.voice.dtype && a.voice.device === job.voice.device && a.voice.version >= 2);
         if (!approvedAudio) continue;
-        const moduleSlides = [...courseModule.conceptExplainer.videos.flatMap(v => v.slides), ...Object.values(courseModule.narratedStages ?? {}).flat()];
+        const moduleSlides = [...courseModule.conceptExplainer.videos.flatMap(v => v.uploadedVideo ? [] : v.slides), ...Object.values(courseModule.narratedStages ?? {}).flat()];
         for (const slide of moduleSlides) {
           const originalId = slide.id.startsWith(`${courseModule.id}-`) ? slide.id.slice(courseModule.id.length + 1) : '';
           const original = sourceRevision.content.slides.find(s => s.id === originalId && s.narration === slide.narration);

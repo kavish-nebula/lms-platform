@@ -187,3 +187,14 @@ The learner Profile page uses one full-width profile editor. The former "Your co
 
 
 Course detail pages no longer show the "Your climb / Climb to Launch" staircase or its summit mission card. The shared CourseJourney retains the course introduction, progress, continue action and daily mission; modules and the course finale remain accessible through the course outline.
+
+
+The creator brief form omits Estimated duration, Authentic workplace contexts and Known difficulty areas. The preparation gate no longer requires the removed context/difficulty inputs. Existing values remain in saved briefs/history as optional legacy data; generated course and narration timing remain available.
+
+
+## Brief and evidence authoring
+
+The creator separates the course-wide brief, objectives, and source library. Library controls provide module/topic outlines, scoped evidence cards, objective checkboxes and a coverage gap list using labelled native controls and shared theme tokens. All creator stages share navigation from brief/sources through blueprint, module review/production, and final package assembly/review/publication. Legacy notes expose an explicit conversion action. See [course-authoring-workflow.md](course-authoring-workflow.md).
+
+
+Video-first authoring supports owner-scoped concept recordings and immutable timestamped transcript reviews in the source library. It generates interactive supporting activities and quizzes, then preserves original recordings in the learner player. Assets/fragments use local ignored storage with range-streamed enrolled-learner access; existing course package, assessment and progress contracts remain compatible. See [video-first-authoring.md](video-first-authoring.md) for workflow, storage, transcription and verification boundaries.

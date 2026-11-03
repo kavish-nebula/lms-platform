@@ -19,6 +19,8 @@ Use the complete assembled package, current SME context/brief revision, audience
 
 ## 4. Instructions
 
+For uploaded concept recordings, check the reviewed transcript/source binding, original video reference, measured duration, captions and checkpoint timestamp rather than requiring generated-slide narration word counts. Supporting activities should remain interactive and use only taught evidence. Verify playback, pause/resume at the midpoint and the module quiz; preserve the recording instead of treating profile adaptation as video regeneration. Report unreviewed transcripts, missing descriptions of essential visuals and unverifiable live transcription as limitations or blockers as applicable.
+
 Read [the shared workflow contract](../course-creation/references/workflow-contract.md). Review actual content rather than the coordinator's claim that it passed. Distinguish structural validation, semantic evidence, fetched research and human verification. Do not silently fix content, record human review checks, approve, publish, generate audio, save drafts or change learner records.
 
 ## 5. Workflow

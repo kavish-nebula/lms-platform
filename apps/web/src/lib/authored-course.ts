@@ -1,5 +1,6 @@
 import { z } from 'zod/v4';
 import { ProjectSandbox } from './project-sandbox';
+import { UploadedConceptVideo } from './concept-video-source';
 
 const id = z.string().regex(/^[A-Za-z0-9_-]{1,80}$/);
 const text = z.string().trim().min(1).max(12000);
@@ -42,6 +43,7 @@ export const AuthoredCoursePackage = z.object({
     problemHook: z.object({ title: text.max(300), situation: text, question: text, ...linked }).strict(),
     conceptExplainer: z.object({ videos: z.array(z.object({
       id, title: text.max(300), plannedMinutes: z.number().positive().max(300), slides: z.array(Slide).min(1).max(40),
+      uploadedVideo: UploadedConceptVideo.optional(),
       midpointQuiz: z.object({ afterSlideId: id, questions: z.array(Question).length(2) }).strict(),
     }).strict()).min(1).max(20) }).strict(),
     workedExamples: z.array(z.object({ id, title: text.max(300), problem: text, reasoning: z.array(text).min(1).max(20), result: text, ...linked }).strict()).min(1).max(20),
@@ -97,6 +99,7 @@ export function validateAuthoredCourse(raw: unknown, context: { objectives: stri
     checkLinks(courseModule.problemHook, courseModule.objectiveIds);
     for (const video of courseModule.conceptExplainer.videos) {
       contentIds.push(video.id);
+      if (video.uploadedVideo && (video.uploadedVideo.checkpointSeconds >= video.uploadedVideo.durationSeconds || Math.abs(video.plannedMinutes * 60 - video.uploadedVideo.durationSeconds) > 0.5)) errors.push(`${video.id}: uploaded video timing must match its recording and checkpoint.`);
       if (new Set(video.slides.map(s => s.id)).size !== video.slides.length) errors.push(`${video.id}: slide IDs must be unique.`);
       for (const slide of video.slides) { contentIds.push(slide.id); checkLinks(slide, courseModule.objectiveIds); }
       const midpointIndex = Math.ceil(video.slides.length / 2) - 1;

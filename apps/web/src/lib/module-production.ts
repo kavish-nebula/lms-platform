@@ -1,4 +1,5 @@
 import { z } from "zod/v4";
+import { courseSources, moduleSourceIssues } from './source-library';
 import type { VideoSlide } from "@/data/types";
 import { BLUEPRINT_STEPS, type BlueprintRun } from "./instructional-blueprint";
 import { CODEX_MODULE_FLOW } from './course-delivery';
@@ -58,7 +59,7 @@ export function validateProduction(raw: unknown, input: ProductionInput, generat
   const content = ProductionPackage.parse(raw);
   const unit = input.run.output!.modules.find(m => m.id === input.moduleId)!;
   const objectives = new Set(unit.objectiveIds); const sources = new Set(input.run.input.sources.map(s => s.id));
-  const errors: string[] = [];
+  const errors: string[] = input.run.input.brief.sourceLibrary ? moduleSourceIssues(content, input.moduleId, courseSources(input.run.input.brief)) : [];
   const lessonMode = !input.unit && input.run.input.deliveryStructure === 'codex-ild-v2';
   if (input.unit?.kind === 'plan') {
     if (content.slides.length || !content.plan) throw new Error('A plan package requires a plan and no narration slides.');

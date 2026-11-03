@@ -16,7 +16,7 @@ assert.deepEqual(await listCreatorDrafts(owner.id), []);
 const draft = await createCreatorDraft(owner.id, { brief: EMPTY_BRIEF });
 assert.equal(draft.revision, 1);
 assert.equal(briefReadiness(draft.brief).filter(c => c.ready).length, 1);
-const updated = { ...EMPTY_BRIEF, title: "Mechanical engineering agents", subject: "AI", audience: "Engineers", sourceText: "Approved notes", outcomes: "Design a brief", dependencies: "Concepts before tools", contexts: "Maintenance documentation", difficulties: "Tool boundaries", objectives: [
+const updated = { ...EMPTY_BRIEF, title: "Mechanical engineering agents", subject: "AI", audience: "Engineers", sourceText: "Approved notes", outcomes: "Design a brief", dependencies: "Concepts before tools", contexts: "", difficulties: "", objectives: [
   { text: "Identify tools", bloom: "Remember" as const }, { text: "Explain agent boundaries", bloom: "Understand" as const }, { text: "Design a brief", bloom: "Create" as const },
 ] };
 assert(briefReadiness(updated).every(c => c.ready));

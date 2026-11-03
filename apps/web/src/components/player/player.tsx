@@ -20,6 +20,7 @@ import { recordActivity, recordLearning, ensureReviews, useLearning } from "@/li
 import { rewardFor } from "@/lib/gamification";
 import { supportFor } from "@/lib/setup";
 import { NarratedStage } from "@/components/player/narrated-stage";
+import { VideoFirstActivity } from './stages/video-first-activity';
 import { HookCinema } from "@/components/player/hook/hook-cinema";
 import { ModuleMap } from "@/components/player/module-map";
 import { useWatchedVideos } from "@/components/player/video/watched";
@@ -178,7 +179,7 @@ export function Player({ module, moduleIndex, stage, video, courseHref, initialD
 
   // The problem hook plays full screen, with no map, tutor or banners around it.
   const hook = stage === "hook" ? getBlock(content, "hook") : undefined;
-  if (hook) {
+  if (hook && !module.videoFirstActivities) {
     return (
       <HookCinema
         key={`${topicKey}:${adapted?.hook?.audio?.open ?? "preparing"}`}
@@ -200,17 +201,20 @@ export function Player({ module, moduleIndex, stage, video, courseHref, initialD
 
   let body: React.ReactNode;
   switch (stage) {
+    case 'hook':
+      if (module.videoFirstActivities) body = <VideoFirstActivity key={`${module.version}:${stage}`} activities={module.videoFirstActivities} stage="hook" {...nav} />;
+      break;
     case "explainer":
       body = <ExplainerStage block={getBlock(content, "explainer")!} adaptation={adaptation} videoId={part?.video?.id} nextTitle={nextTitle} {...nav} />;
       break;
     case "worked":
-      body = <WorkedStage block={getBlock(content, "worked")!} {...nav} />;
+      body = module.videoFirstActivities ? <VideoFirstActivity key={`${module.version}:${stage}`} activities={module.videoFirstActivities} stage="worked" {...nav} /> : <WorkedStage block={getBlock(content, "worked")!} {...nav} />;
       break;
     case "guided":
-      body = <GuidedStage block={getBlock(module, "guided")!} adaptation={adaptation} {...nav} />;
+      body = module.videoFirstActivities ? <VideoFirstActivity key={`${module.version}:${stage}`} activities={module.videoFirstActivities} stage="guided" {...nav} /> : <GuidedStage block={getBlock(module, "guided")!} adaptation={adaptation} {...nav} />;
       break;
     case "lab":
-      body = <ScenarioStage block={getBlock(module, "lab") as ScenarioBlock} support={support} {...nav} />;
+      body = module.videoFirstActivities ? <VideoFirstActivity key={`${module.version}:${stage}`} activities={module.videoFirstActivities} stage="lab" {...nav} /> : <ScenarioStage block={getBlock(module, "lab") as ScenarioBlock} support={support} {...nav} />;
       break;
     case "gate": {
       const gateBlock = getBlock(module, "gate")!;

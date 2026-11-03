@@ -1,4 +1,5 @@
 import "server-only";
+import { sourceCoverage } from '@/lib/source-library';
 import { randomUUID } from "node:crypto";
 import { and, desc, eq, lt, sql } from "drizzle-orm";
 import { z } from "zod/v4";
@@ -27,6 +28,9 @@ export async function listBlueprints(ownerId: string, courseId: string) {
 export async function startBlueprint(ownerId: string, courseId: string, revision: number) {
   const draft = await getCreatorDraft(ownerId, courseId);
   if (draft.revision !== revision) throw new ApiError(409, "draft_conflict", "The SME input has changed. Reload the saved brief before processing.");
+  const gaps = sourceCoverage(draft.brief);
+  if (gaps.length) throw new ApiError(422, 'source_coverage', gaps.join(' '));
+  await (await import('./concept-videos')).assertVideoSources(ownerId, courseId, draft.brief);
   const missing = briefReadiness(draft.brief).filter(c => !c.ready);
   if (missing.length) throw new ApiError(422, "incomplete_input", `Complete the Stage 1 inputs first: ${missing.map(c => c.label).join("; ")}`);
   const promptVersion = draft.deliveryStructure === 'codex-ild-v2' ? CODEX_ILD_BLUEPRINT_PROMPT_VERSION : draft.deliveryStructure === 'six-stage-v1' ? SIX_STAGE_BLUEPRINT_PROMPT_VERSION : BLUEPRINT_PROMPT_VERSION;
