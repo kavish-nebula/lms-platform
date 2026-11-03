@@ -15,6 +15,9 @@ export function hookScenes(hook: VideoHook): HookScene[] {
     }
     return parts;
   });
+  // Keep the teaching-case notice with the first actual event, not as an empty
+  // opening title card. Narration and transcript still retain every word.
+  if (chunks.length > 1 && /^Fictional teaching case/i.test(chunks[0]) && chunks[0].split(/\s+/).length < 18) chunks.splice(0, 2, `${chunks[0]}\n${chunks[1]}`);
   const lines = [...chunks, hook.question];
   const total = lines.reduce((n, text) => n + text.split(/\s+/).length, 0);
   let words = 0;
@@ -23,6 +26,21 @@ export function hookScenes(hook: VideoHook): HookScene[] {
     const kind = i === lines.length - 1 ? 'question' : /^DOC[-\s]/i.test(text) ? 'source' : 'case';
     return { id: `scene-${i}`, kind, title: kind === 'question' ? 'Your decision' : kind === 'source' ? 'Inspect the source' : i === 0 ? 'The situation' : 'Look closer', text, start, end: words / total };
   });
+}
+
+export type HookVisualKind = 'incident' | 'document' | 'draft' | 'comparison' | 'decision';
+export function hookVisualKind(scene: HookScene, index: number): HookVisualKind {
+  if (scene.kind === 'question') return 'decision';
+  if (index === 0) return 'incident';
+  if (scene.kind === 'source') return 'document';
+  if (/\b(?:AI|LLM)\s+draft\b|draft\s+(?:says|claims)/i.test(scene.text)) return 'draft';
+  return 'comparison';
+}
+
+export function hookExcerpt(text: string) {
+  const quotes = [...text.matchAll(/[“"]([^”"]+)[”"]/g)].map(m => m[1]);
+  const clean = quotes[0] ?? text.replace(/^Fictional teaching case[^.]*\.\s*/i, '').replace(/^DOC[-\w]+[^:]*:\s*/i, '').trim();
+  return clean;
 }
 
 export const hookNarration = (hook: VideoHook) => hookScenes(hook).map(s => s.text).join(' ');

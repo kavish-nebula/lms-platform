@@ -128,9 +128,9 @@ const hookWav = path.join(testRoot, 'hook.wav');
 execFileSync(ffmpeg!, ['-v', 'error', '-i', clip, '-vn', '-c:a', 'pcm_s16le', '-fflags', '+bitexact', '-map_metadata', '-1', hookWav], { windowsHide: true });
 const hookVoice = async (dir: string, clips: { key: string; text: string }[]) => {
   speechCalls++;
-  assert.equal(clips[0].text, hookNarration(pkg.modules[0].problemHook));
+  assert.equal(clips.map(c => c.text).join(' '), hookNarration(pkg.modules[0].problemHook));
   await fs.mkdir(dir, { recursive: true });
-  await fs.copyFile(hookWav, path.join(dir, `${clips[0].key}.wav`));
+  for (const c of clips) await fs.copyFile(hookWav, path.join(dir, `${c.key}.wav`));
   return new Set(clips.map(c => c.key));
 };
 await Promise.all([prepareVideoHookAudio(owner.id, draft.id, 'M1', hookVoice), prepareVideoHookAudio(owner.id, draft.id, 'M1', hookVoice)]);
@@ -157,6 +157,7 @@ await finishJob(hookJob.id, hookJob.lease!, personalized, 'test', {}, async (_di
 const view = await adaptedModule(learner, draft.id, 'M1', () => {});
 assert.equal(view.activities?.problemHook?.title, personalized.problemHook.title);
 assert.match(view.activityAudio!.hook, /\/clips\/[a-f0-9]{64}\.wav$/);
+assert.equal(view.activitySceneAudio!.hook.length, hookScenes(personalized.problemHook).length);
 await database.insert(users).values({ id: 'video-learner-two', name: 'Second learner', email: 'video-two@example.test' });
 await repo.saveProfile('video-learner-two', { domain: 'student', studyFieldOther: 'mechanical engineering' }, []);
 await repo.upsertEnrollment('video-learner-two', draft.id, { answers: {}, supportOverride: 'auto', pace: null, precheck: null });

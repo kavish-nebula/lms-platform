@@ -205,7 +205,7 @@ export function Player({ module, moduleIndex, stage, video, courseHref, initialD
   const activityNav = { ...nav, audio: adapted?.activityAudio?.[stage], personalized: !!adapted?.activityAudio?.[stage], preparing: !adapted?.activityAudio?.[stage] && ['writing', 'voicing'].includes(latestAdapted?.pieces[`activity:${stage}`]?.status ?? ''), onInteract: () => setStartedActivity(topicKey) };
   switch (stage) {
     case 'hook':
-      if (content.videoFirstActivities) body = <VideoFirstHook key={`${module.version}:${stage}`} hook={content.videoFirstActivities.problemHook} fallbackAudioUrl={`/api/v1/courses/${module.course_id}/hook-audio/${module.module_id}`} {...activityNav} />;
+      if (content.videoFirstActivities) body = <VideoFirstHook key={`${module.version}:${stage}`} hook={content.videoFirstActivities.problemHook} sceneAudio={adapted?.activitySceneAudio?.hook} fallbackAudioUrl={`/api/v1/courses/${module.course_id}/hook-audio/${module.module_id}`} {...activityNav} />;
       break;
     case "explainer":
       body = <ExplainerStage block={getBlock(content, "explainer")!} adaptation={adaptation} videoId={part?.video?.id} nextTitle={nextTitle} {...nav} />;

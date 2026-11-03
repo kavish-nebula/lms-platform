@@ -186,6 +186,7 @@ async function runModule(
 export type AdaptedModuleView = {
   activities?: Partial<NonNullable<ModuleContent['videoFirstActivities']>>;
   activityAudio?: Record<string, string>;
+  activitySceneAudio?: Record<string, string[]>;
   live?: boolean;
   /** each piece's state, for "being written for you" notes */
   pieces: Record<string, { status: AdaptedStatus }>;
@@ -216,7 +217,8 @@ export async function adaptedModule(user: SessionUser, courseId: string, moduleI
       activities: Object.assign({}, ...current.activities.filter(r => r.status === 'ready').map(r => {
         const content = { ...r.content }; delete content.audio; return content;
       })),
-      activityAudio: Object.fromEntries(current.activities.filter(r => r.status === 'ready').map(r => [r.videoId.slice('activity:'.length), (r.content?.audio as Record<string, string>)?.intro]).filter((entry): entry is [string, string] => !!entry[1])),
+      activityAudio: Object.fromEntries(current.activities.filter(r => r.status === 'ready').map(r => [r.videoId.slice('activity:'.length), (r.content?.audio as Record<string, string>)?.intro ?? (r.content?.audio as Record<string, string>)?.scene0]).filter((entry): entry is [string, string] => !!entry[1])),
+      activitySceneAudio: Object.fromEntries(current.activities.filter(r => r.status === 'ready' && r.videoId === 'activity:hook').map(r => ['hook', Object.entries((r.content?.audio as Record<string, string>) ?? {}).filter(([key]) => /^scene\d+$/.test(key)).sort(([a], [b]) => Number(a.slice(5)) - Number(b.slice(5))).map(([, value]) => value)])),
       world: hook || worked ? { organisation: "Harbour Works" } : null,
     };
   }

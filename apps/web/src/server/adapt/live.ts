@@ -232,7 +232,7 @@ export async function queueModule(user: SessionUser, courseId: string, moduleId:
   const worked = released ? null : await queuePiece("worked");
   const activities: Job[] = [];
   for (const def of piecesOf(mod).filter(p => p.piece.startsWith('activity:'))) {
-    const fingerprint = hash({ enrollment: e.id, moduleId, piece: def.piece, narrationVersion: def.piece === 'activity:hook' ? 2 : undefined, authored: def.authored, context: teachingContext(context) });
+    const fingerprint = hash({ enrollment: e.id, moduleId, piece: def.piece, narrationVersion: def.piece === 'activity:hook' ? 3 : undefined, authored: def.authored, context: teachingContext(context) });
     await d.insert(adaptationJobs).values({ enrollmentId: e.id, moduleId, videoId: def.piece, slide: 0, fingerprint, trigger: 'initial', priority: def.piece === 'activity:hook' ? 2 : 0, input: { authored: def.authored, source: def.authored, context, trigger: 'initial', piece: def.piece, courseId } }).onConflictDoNothing();
     await d.update(adaptationJobs).set({ status: 'superseded', updatedAt: new Date() }).where(and(eq(adaptationJobs.enrollmentId, e.id), eq(adaptationJobs.moduleId, moduleId), eq(adaptationJobs.videoId, def.piece), or(eq(adaptationJobs.status, 'queued'), eq(adaptationJobs.status, 'running')), ne(adaptationJobs.fingerprint, fingerprint)));
     activities.push((await d.select().from(adaptationJobs).where(eq(adaptationJobs.fingerprint, fingerprint)))[0]!);

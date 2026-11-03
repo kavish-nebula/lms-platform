@@ -9,6 +9,7 @@ import type { ConceptVideo, ExplainerBlock, HookBlock, ModuleContent, WorkedBloc
 export type AdaptedModule = {
   activities?: Partial<NonNullable<ModuleContent['videoFirstActivities']>>;
   activityAudio?: Record<string, string>;
+  activitySceneAudio?: Record<string, string[]>;
   live?: boolean;
   pieces: Record<string, { status: "writing" | "voicing" | "ready" | "failed" }>;
   hook: HookBlock | null;

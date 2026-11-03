@@ -10,7 +10,7 @@ export const POST = handle(async (_request: Request, { params }: Context) => {
 });
 export const GET = handle(async (request: Request, { params }: Context) => {
   const { courseId, moduleId } = await params;
-  const bytes = await videoHookAudio((await getSessionUser()).id, courseId, moduleId);
+  const bytes = await videoHookAudio((await getSessionUser()).id, courseId, moduleId, Number(new URL(request.url).searchParams.get('scene') ?? 0));
   const size = bytes.length;
   const headers = { 'Content-Type': 'audio/wav', 'Cache-Control': 'private, no-cache', 'Accept-Ranges': 'bytes' };
   const range = request.headers.get('range');

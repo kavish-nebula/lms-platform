@@ -3,7 +3,7 @@ import { getBlock } from "@/data/client";
 import type { ConceptVideo, HookBlock, ModuleContent, WorkedBlock } from "@/data/types";
 import type { AdaptedPiece } from "@/server/db/schema";
 import type { Clip } from "./tts";
-import { hookNarration } from '@/lib/video-first-hook';
+import { hookScenes } from '@/lib/video-first-hook';
 
 /**
  * The pieces of a module that are rewritten for each learner, in the order
@@ -57,8 +57,8 @@ export function piecesOf(mod: ModuleContent): PieceDef[] {
       authored,
       clips: (content: unknown) => {
         const c = content as Partial<NonNullable<ModuleContent['videoFirstActivities']>>;
-        const text = c.problemHook ? hookNarration(c.problemHook)
-          : c.workedExamples ? c.workedExamples.map(e => `${e.title}. ${e.problem}`).join(' ')
+        if (c.problemHook) return hookScenes(c.problemHook).map((scene, i) => ({ key: `scene${i}`, text: scene.text }));
+        const text = c.workedExamples ? c.workedExamples.map(e => `${e.title}. ${e.problem}`).join(' ')
           : c.guidedPractice ? c.guidedPractice.instructions
           : c.scenarioLab!.scenarios.map(s => `${s.situation} ${s.challenge}`).join(' ');
         return [{ key: 'intro', text }];
