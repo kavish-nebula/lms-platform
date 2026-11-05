@@ -1,3 +1,4 @@
+import { getSessionUser } from './auth';
 import 'server-only';
 import { createHash } from 'node:crypto';
 import fs from 'node:fs/promises';
@@ -13,7 +14,7 @@ import { wavSeconds } from './production-audio';
 
 const pending = new Map<string, Promise<void>>();
 async function source(userId: string, courseId: string, moduleId: string) {
-  const release = await getPublishedAuthoredCourse(courseId);
+  const release = await getPublishedAuthoredCourse(courseId, (await getSessionUser()).id);
   const courseModule = release?.content.modules.find(m => m.id === moduleId);
   if (!release || !courseModule || !courseModule.conceptExplainer.videos.some(v => v.uploadedVideo) || (release.ownerId !== userId && !(await findEnrollment(userId, courseId)))) throw new ApiError(404, 'not_found', 'Published hook not found.');
   const scenes = hookScenes(courseModule.problemHook);

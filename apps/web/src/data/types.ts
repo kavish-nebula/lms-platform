@@ -160,6 +160,9 @@ export type VideoQuiz = { q: string; options: string[]; explain: string; hint: s
 
 /** A narrated slide video for one lesson (audio: /audio/video-{id}-s{n}.mp3). */
 export type ConceptVideo = {
+  /** Reviewed source for a learner-specific derivative; the original stays available. */
+  sourceMedia?: { audio?: string; video?: string; image?: string; transcript: string; referenceOnly?: boolean; reviewNotes?: string[] };
+  personalizationSource?: import('@/lib/personalized-concept').ConceptSource;
   /** An original uploaded recording; never regenerated as slides or TTS. */
   uploadedVideo?: { src: string; transcriptUrl: string; assetId: string; transcriptId: string; durationSeconds: number; checkpointSeconds: number };
   id: string;
@@ -460,6 +463,7 @@ export type CourseModule = {
 };
 
 export type Course = {
+  vertexAdaptive?: boolean;
   importedRevisionId?: string;
   authoredRevisionId?: string;
   subjectLabel?: string;

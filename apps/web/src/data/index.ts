@@ -112,39 +112,39 @@ export async function getLearner(): Promise<Learner> {
   return learner;
 }
 
-export async function getCourses(includePublished = true): Promise<Course[]> {
+export async function getCourses(includePublished = true, userId?: string): Promise<Course[]> {
   if (!includePublished) return courses;
   const { listPublishedAuthoredCourses } = await import('@/server/authored-publication');
   const { authoredDelivery } = await import('@/lib/authored-delivery');
-  return [...courses, ...(await listPublishedAuthoredCourses()).map(r => authoredDelivery(r).course), ...await (await import('@/server/scorm-builder')).activeScormCourses()];
+  return [...courses, ...await Promise.all((await listPublishedAuthoredCourses()).map(async r => authoredDelivery((await (await import('@/server/authored-publication')).getPublishedAuthoredCourse(r.courseId, userId ?? (await (await import('@/server/auth')).getSessionUser()).id)) ?? r).course)), ...await (await import('@/server/scorm-builder')).activeScormCourses()];
 }
 
-export async function getCourse(courseId: string): Promise<Course | undefined> {
-  return courses.find((c) => c.course_id === courseId) ?? (await releasedDelivery(courseId))?.course ?? (await (await import('@/server/scorm-builder')).scormCourseDelivery(courseId))?.course;
+export async function getCourse(courseId: string, userId?: string): Promise<Course | undefined> {
+  return courses.find((c) => c.course_id === courseId) ?? (await releasedDelivery(courseId, userId))?.course ?? (await (await import('@/server/scorm-builder')).scormCourseDelivery(courseId))?.course;
 }
 
-async function releasedDelivery(courseId: string) {
+async function releasedDelivery(courseId: string, userId?: string) {
   const { getPublishedAuthoredCourse } = await import('@/server/authored-publication');
-  const release = await getPublishedAuthoredCourse(courseId);
+  const release = await getPublishedAuthoredCourse(courseId, userId ?? (await (await import('@/server/auth')).getSessionUser()).id);
   if (!release) return undefined;
   const { authoredDelivery } = await import('@/lib/authored-delivery');
   return authoredDelivery(release);
 }
 
 /** Module lesson content: full modules, or a module's concept videos and guided practice. */
-export async function getModule(courseId: string, moduleId: string): Promise<ModuleContent | undefined> {
-  return authored.find((m) => m.course_id === courseId && m.module_id === moduleId) ?? (await releasedDelivery(courseId))?.modules.find(m => m.module_id === moduleId) ?? (await (await import('@/server/scorm-builder')).scormCourseDelivery(courseId))?.modules.find(m => m.module_id === moduleId);
+export async function getModule(courseId: string, moduleId: string, userId?: string): Promise<ModuleContent | undefined> {
+  return authored.find((m) => m.course_id === courseId && m.module_id === moduleId) ?? (await releasedDelivery(courseId, userId))?.modules.find(m => m.module_id === moduleId) ?? (await (await import('@/server/scorm-builder')).scormCourseDelivery(courseId))?.modules.find(m => m.module_id === moduleId);
 }
 
 /** Ids of the modules that have lesson content. */
-export async function getAuthoredModuleIds(courseId: string): Promise<string[]> {
+export async function getAuthoredModuleIds(courseId: string, userId?: string): Promise<string[]> {
   const ids = authored.filter((m) => m.course_id === courseId).map((m) => m.module_id);
-  return ids.length ? ids : (await releasedDelivery(courseId))?.modules.map(m => m.module_id) ?? (await (await import('@/server/scorm-builder')).scormCourseDelivery(courseId))?.modules.map(m => m.module_id) ?? [];
+  return ids.length ? ids : (await releasedDelivery(courseId, userId))?.modules.map(m => m.module_id) ?? (await (await import('@/server/scorm-builder')).scormCourseDelivery(courseId))?.modules.map(m => m.module_id) ?? [];
 }
 
 /** The course finale: capstone, final check and wrap-up, taken after all modules. */
-export async function getFinale(courseId: string): Promise<FinaleContent | undefined> {
-  return finales.find((f) => f.course_id === courseId) ?? (await releasedDelivery(courseId))?.finale;
+export async function getFinale(courseId: string, userId?: string): Promise<FinaleContent | undefined> {
+  return finales.find((f) => f.course_id === courseId) ?? (await releasedDelivery(courseId, userId))?.finale;
 }
 
 /** The ungraded pre-check asked once, before Module 1. */

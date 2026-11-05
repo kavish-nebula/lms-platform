@@ -69,7 +69,10 @@ export const ProjectSandbox = z.object({
     if (g.prompts.some(p => !g.stages.some(stage => stage.promptIds.includes(p.id)))) error('Every explanation prompt needs a guided stage.');
     if (g.artifact.steps.some(step => !g.stages.some(stage => stage.stepIds.includes(step.id)))) error('Every ready-made workflow step needs a guided stage.');
     if (new Set(g.prompts.map(p => p.criterionId)).size !== g.prompts.length || s.criteria.some(c => !g.prompts.some(p => p.criterionId === c.id)) || g.prompts.some(p => !s.criteria.some(c => c.id === p.criterionId))) error('Guided explanation prompts must map one-to-one to the project criteria.');
-    for (const test of s.tests) if (runSandbox(g.artifact, test.inputs).error) error('The ready-made workflow must run successfully for every supplied example.');
+    for (const test of s.tests) {
+      const result = runSandbox(g.artifact, test.inputs);
+      if (result.error) error(`The ready-made workflow must run successfully for ${test.id}: ${result.error}`);
+    }
   }
 });
 export type ProjectSandboxData = z.infer<typeof ProjectSandbox>;

@@ -2,7 +2,7 @@ import 'server-only';
 import { and, eq } from 'drizzle-orm';
 import { z } from 'zod/v4';
 import { db } from './db/client';
-import { enrollments, guidedProjectWork, guidedProjectSubmissions, publishedAuthoredCourses } from './db/schema';
+import { enrollments, guidedProjectWork, guidedProjectSubmissions, publishedAuthoredCourses, courseEditions } from './db/schema';
 import { sandboxProject } from './project-sandbox';
 import { findEnrollment } from './repo';
 import { ApiError } from './http';
@@ -17,7 +17,7 @@ export const GuidedRequest = z.object({
 }).strict();
 
 async function scope(userId: string, courseId: string, revisionId: string) {
-  const context = await sandboxProject(courseId);
+  const context = await sandboxProject(courseId, userId);
   if (context.release.revisionId !== revisionId) throw new ApiError(409, 'release_changed', 'This project has a newer release. Reload; your earlier explanations are retained.');
   if (!context.definition.guided) throw new ApiError(404, 'not_guided', 'This project does not have a guided exploration.');
   const enrollment = await findEnrollment(userId, courseId);
@@ -43,7 +43,9 @@ export async function guidedAction(userId: string, courseId: string, request: z.
   const run = test ? runSandbox(guided.artifact, test.inputs) : undefined;
   if (run?.error) throw new ApiError(422, 'example_failed', 'The supplied example could not run. Your explanations have been retained.');
   return (await db()).transaction(async tx => {
-    const [release] = await tx.select().from(publishedAuthoredCourses).where(eq(publishedAuthoredCourses.courseId, courseId)).for('update');
+    const [release] = enrollment.editionId
+      ? await tx.select().from(courseEditions).where(eq(courseEditions.id, enrollment.editionId)).for('update')
+      : await tx.select().from(publishedAuthoredCourses).where(eq(publishedAuthoredCourses.courseId, courseId)).for('update');
     if (release?.revisionId !== input.revisionId) throw new ApiError(409, 'release_changed', 'The released project changed. Reload before saving.');
     await tx.select().from(enrollments).where(eq(enrollments.id, enrollment.id)).for('update');
     const where = and(eq(guidedProjectWork.enrollmentId, enrollment.id), eq(guidedProjectWork.revisionId, input.revisionId));

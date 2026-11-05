@@ -12,7 +12,7 @@ import { ApiError } from './http';
 import { normalizeScormTopic, scormCourseId, scormDelivery } from '@/lib/scorm-topic';
 
 export type ScormReader = (name: string, args: Record<string, unknown>) => Promise<unknown>;
-const readTools = new Set(['list_courses', 'get_course_structure', 'get_topic', 'list_releases']);
+const readTools = new Set(['list_courses', 'get_course_structure', 'get_topic', 'list_releases', 'get_release']);
 export const readScorm: ScormReader = async (name, args) => {
   if (!readTools.has(name)) throw new ApiError(400, 'read_only', 'Unsupported source read.');
   const c = new Client({ name: 'nebula-lms-importer', version: '1.0.0' });

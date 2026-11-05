@@ -49,3 +49,6 @@ Course authoring now uses an additive source-library contract inside versioned b
 
 
 Video-first authoring supports owner-scoped concept recordings and immutable timestamped transcript reviews in the source library. It generates interactive supporting activities and quizzes, then preserves original recordings in the learner player. Assets/fragments use local ignored storage with range-streamed enrolled-learner access; existing course package, assessment and progress contracts remain compatible. See [video-first-authoring.md](video-first-authoring.md) for workflow, storage, transcription and verification boundaries.
+
+
+Connected SCORM imports now use immutable source snapshots, resumable import/preparation runs and explicit LMS review. Published editions pin enrollments; upgrading archives the prior enrollment and creates a fresh identity for progress, plans, grades and adaptation. Original source media is cached separately from personalised audio. See [connected SCORM courses](connected-scorm-courses.md).

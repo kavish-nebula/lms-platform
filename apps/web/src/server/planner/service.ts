@@ -63,8 +63,12 @@ export async function viewOf(e: repo.EnrollmentRow): Promise<EnrollmentView> {
   const precheck: PrecheckResult | null = e.precheck
     ? { at: e.precheck.at, skipped: e.precheck.skipped, isNew: e.precheck.isNew, lessons: e.precheck.lessons }
     : null;
+  const { courseEditions } = await import('@/server/db/schema');
+  const { db } = await import('@/server/db/client');
+  const { eq, asc } = await import('drizzle-orm');
+  const first = e.editionId ? (await (await db()).select().from(courseEditions).where(eq(courseEditions.courseId, e.courseId)).orderBy(asc(courseEditions.publishedAt)).limit(1))[0] : undefined;
   return {
-    courseId: e.courseId,
+    courseId: e.courseId, enrollmentId: e.id, editionId: e.editionId, allowLegacyResume: !e.editionId || first?.id === e.editionId,
     enrolledAt: e.enrolledAt.toISOString(),
     answers: e.answers,
     supportOverride: e.supportOverride,
@@ -104,7 +108,7 @@ const inputOf = async (user: SessionUser, e: repo.EnrollmentRow): Promise<Planne
 
 /** Enrol, or change the setup of an existing enrollment. Either way the plan is rebuilt. */
 export async function saveSetup(user: SessionUser, courseId: string, setup: SetupIn, schedule: Schedule, api?: PlannerTransport) {
-  const ctx = await courseContext(courseId).catch(() => {
+  const ctx = await courseContext(courseId, user.id).catch(() => {
     throw new ApiError(404, "unknown_course", `There is no course "${courseId}".`);
   });
   const existing = await repo.findEnrollment(user.id, courseId);
@@ -124,14 +128,14 @@ export async function saveSetup(user: SessionUser, courseId: string, setup: Setu
 /** Store answers from lessons; re-plan when the evidence calls for it. */
 export async function recordSignals(user: SessionUser, courseId: string, list: repo.NewSignal[], schedule: Schedule, api?: PlannerTransport) {
   const e = await mustFind(user, courseId);
-  const checked = liveEnabled(courseId) ? await verifiedSignals(courseId, list) : list;
+  const checked = liveEnabled(courseId) ? await verifiedSignals(courseId, list, user.id) : list;
   const fresh = await repo.insertSignals(e.id, checked.map((s) => ({ ...s, key: `${e.id}:${s.key}` })));
   const replanning = fresh.length ? await maybeReplan(user, e, fresh, schedule, api) : false;
   if (liveEnabled(courseId) && fresh.length) {
     for (const moduleId of new Set(fresh.map((s) => s.moduleId).filter((x): x is string => !!x))) {
       await summarize(e.id, moduleId);
       const progress = await repo.progressFor(e.id);
-      const mod = (await courseContext(courseId)).modules.find((m) => m.id === moduleId);
+      const mod = (await courseContext(courseId, user.id)).modules.find((m) => m.id === moduleId);
       const graded = fresh.some((s) => s.moduleId === moduleId && s.payload.verified === true);
       if (graded || (mod?.authored.length && mod.authored.every((stage) => progress.some((r) => r.moduleId === moduleId && r.stage === stage))))
         await adaptNextModule(user, courseId, moduleId, schedule);
@@ -143,7 +147,7 @@ export async function recordSignals(user: SessionUser, courseId: string, list: r
 /** Mark a topic done. Finishing every written topic of a module is itself a signal. */
 export async function recordProgress(user: SessionUser, courseId: string, moduleId: string, stage: string, schedule: Schedule, api?: PlannerTransport) {
   const e = await mustFind(user, courseId);
-  const ctx = await courseContext(courseId);
+  const ctx = await courseContext(courseId, user.id);
   const m = ctx.modules.find((x) => x.id === moduleId);
   if (!m || !m.stages.includes(stage)) throw new ApiError(400, "unknown_topic", `Module ${moduleId} has no topic "${stage}".`);
   const added = await repo.addProgress(e.id, moduleId, stage);
@@ -209,7 +213,7 @@ async function runAi(user: SessionUser, enrollmentId: string, courseId: string, 
   try {
     const e = await repo.findEnrollment(user.id, courseId);
     if (!e || e.id !== enrollmentId) return;
-    const ctx = await courseContext(courseId);
+    const ctx = await courseContext(courseId, user.id);
     const input = await inputOf(user, e);
     const plans = await repo.plansFor(e.id);
     const current = plans.find((p) => p.status === "ready" && p.version < row.version);
@@ -260,7 +264,7 @@ async function runAi(user: SessionUser, enrollmentId: string, courseId: string, 
 /** Every enrollment in a course that still exists (a removed course's rows stay stored, unlisted). */
 export async function enrollmentsOf(user: SessionUser) {
   const rows = await repo.listEnrollments(user.id);
-  const live = await Promise.all(rows.map(async (e) => ((await getCourse(e.courseId)) ? e : null)));
+  const live = await Promise.all(rows.map(async (e) => ((await getCourse(e.courseId, user.id)) ? e : null)));
   return Promise.all(live.filter((e): e is NonNullable<typeof e> => !!e).map(viewOf));
 }
 

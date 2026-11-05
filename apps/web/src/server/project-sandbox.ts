@@ -1,8 +1,9 @@
+import { getSessionUser } from './auth';
 import 'server-only';
 import { and, eq } from 'drizzle-orm';
 import { z } from 'zod/v4';
 import { db } from './db/client';
-import { authoredProjectWork, authoredProjectSubmissions, enrollments, publishedAuthoredCourses } from './db/schema';
+import { authoredProjectWork, authoredProjectSubmissions, enrollments, publishedAuthoredCourses, courseEditions } from './db/schema';
 import { getPublishedAuthoredCourse } from './authored-publication';
 import { findEnrollment } from './repo';
 import { ApiError } from './http';
@@ -10,8 +11,8 @@ import { SandboxArtifact, gradeSandbox, publicSandbox, runSandbox, type SandboxW
 
 export const SandboxRequest = z.object({ revisionId: z.uuid(), version: z.number().int().nonnegative(), artifact: SandboxArtifact, action: z.enum(['save', 'run', 'test', 'submit']) }).strict();
 
-export async function sandboxProject(courseId: string) {
-  const release = await getPublishedAuthoredCourse(courseId);
+export async function sandboxProject(courseId: string, userId?: string) {
+  const release = await getPublishedAuthoredCourse(courseId, userId ?? (await getSessionUser()).id);
   const project = release?.content.courseEnd.miniProject;
   if (!release || !project?.sandbox) throw new ApiError(404, 'no_sandbox', 'This released course has no configured project sandbox.');
   return { release, project, definition: project.sandbox };
@@ -24,7 +25,7 @@ export async function publicSandboxProject(courseId: string) {
 export type PublicSandboxProject = Awaited<ReturnType<typeof publicSandboxProject>>;
 
 async function scoped(userId: string, courseId: string, revisionId: string) {
-  const context = await sandboxProject(courseId);
+  const context = await sandboxProject(courseId, userId);
   if (context.release.revisionId !== revisionId) throw new ApiError(409, 'release_changed', 'The published project changed. Reload the course; your previous release draft is retained.');
   const enrollment = await findEnrollment(userId, courseId);
   if (!enrollment) throw new ApiError(403, 'not_enrolled', 'Enroll in this course to save or submit its project.');
@@ -50,7 +51,9 @@ export async function sandboxAction(userId: string, courseId: string, request: z
   if (input.action === 'test') return { report: gradeSandbox(definition, input.artifact) };
   const database = await db();
   return database.transaction(async tx => {
-    const [release] = await tx.select().from(publishedAuthoredCourses).where(eq(publishedAuthoredCourses.courseId, courseId)).for('update');
+    const [release] = enrollment.editionId
+      ? await tx.select().from(courseEditions).where(eq(courseEditions.id, enrollment.editionId)).for('update')
+      : await tx.select().from(publishedAuthoredCourses).where(eq(publishedAuthoredCourses.courseId, courseId)).for('update');
     if (release?.revisionId !== input.revisionId) throw new ApiError(409, 'release_changed', 'The published project changed. Reload before saving.');
     await tx.select().from(enrollments).where(eq(enrollments.id, enrollment.id)).for('update');
     const where = and(eq(authoredProjectWork.enrollmentId, enrollment.id), eq(authoredProjectWork.revisionId, input.revisionId));

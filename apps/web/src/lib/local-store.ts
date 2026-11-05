@@ -8,6 +8,29 @@ import * as React from "react";
  * and every component reading a key updates when any writer changes it.
  * Storage can be blocked (private mode, policies), so every access is guarded.
  */
+const courseScopes = new Map<string, string>();
+/** New enrollments/editions never inherit another enrollment's local completion. */
+export function registerEnrollmentScope(courseId: string, enrollmentId: string, allowLegacy: boolean) {
+  if (typeof window === 'undefined' || courseScopes.get(courseId) === enrollmentId) return;
+  const previous = courseScopes.get(courseId); courseScopes.set(courseId, enrollmentId);
+  const marker = `lms-enrollment-scope:v1:${courseId}`;
+  try {
+    const recorded = localStorage.getItem(marker);
+    if (allowLegacy && !recorded) for (const key of Object.keys(localStorage)) {
+      if (key.startsWith('lms-') && key.includes(courseId) && !key.includes(':enrollment:') && !key.startsWith('lms-enrollment-scope:') && !key.startsWith('lms-preview')) {
+        const next = `${key}:enrollment:${enrollmentId}`;
+        if (localStorage.getItem(next) === null) localStorage.setItem(next, localStorage.getItem(key)!);
+      }
+    }
+    localStorage.setItem(marker, enrollmentId);
+  } catch { /* Blocked storage keeps the server enrollment authoritative. */ }
+  if (previous !== enrollmentId) listeners.forEach(l => l());
+}
+function scopedKey(key: string) {
+  if (!key.startsWith('lms-') || key.startsWith('lms-enrollment-scope:') || key.startsWith('lms-preview') || key.includes(':enrollment:')) return key;
+  for (const [courseId, enrollmentId] of courseScopes) if (key.includes(courseId)) return `${key}:enrollment:${enrollmentId}`;
+  return key;
+}
 const listeners = new Set<() => void>();
 
 function subscribe(cb: () => void) {
@@ -21,7 +44,7 @@ function subscribe(cb: () => void) {
 
 function safeGet(key: string): string | null {
   try {
-    return localStorage.getItem(key);
+    return localStorage.getItem(scopedKey(key));
   } catch {
     return null;
   }
@@ -29,8 +52,8 @@ function safeGet(key: string): string | null {
 
 export function writeLocal(key: string, value: string | null) {
   try {
-    if (value == null) localStorage.removeItem(key);
-    else localStorage.setItem(key, value);
+    if (value == null) localStorage.removeItem(scopedKey(key));
+    else localStorage.setItem(scopedKey(key), value);
   } catch {
     // Blocked storage: the value lives only in memory listeners for this view.
   }
@@ -58,7 +81,10 @@ export function useLocalString(key: string): string | null {
 function prefixSnapshot(prefix: string): string {
   try {
     const out: Record<string, string> = {};
-    for (const k of Object.keys(localStorage).sort()) if (k.startsWith(prefix)) out[k] = localStorage.getItem(k) ?? "";
+    for (const k of Object.keys(localStorage).sort()) {
+      const bare = k.replace(/:enrollment:[a-f0-9-]+$/, '');
+      if (bare.startsWith(prefix) && scopedKey(bare) === k) out[bare] = localStorage.getItem(k) ?? "";
+    }
     return JSON.stringify(out);
   } catch {
     return "{}";

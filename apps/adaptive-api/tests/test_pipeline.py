@@ -5,7 +5,7 @@ from unittest.mock import patch
 import httpx
 from fastapi.testclient import TestClient
 from adaptive_api.api import app
-from adaptive_api.pipeline import PROMPT_VERSION, SYSTEM, generate, output_constraints, validate, hook_text_map, apply_hook_text_map, normalize_hook_edits
+from adaptive_api.pipeline import PROMPT_VERSION, SYSTEM, generate, output_constraints, validate, hook_text_map, apply_hook_text_map, normalize_hook_edits, validate_concept
 from adaptive_api.worker import run_once
 
 SLIDE = {"kind": "title", "title": "Agents", "icon": "bot", "cue": 0,
@@ -14,6 +14,34 @@ JOB = {"id": "job", "lease": "lease", "input": {"authored": SLIDE, "source": SLI
 
 
 class PipelineTests(unittest.TestCase):
+    def test_personalized_concept_keeps_phase_and_source_structure(self):
+        import copy
+        job = copy.deepcopy(JOB)
+        source = {'scenes': [{'id': 'source-before', 'phase': 'before', 'visual': 'language', 'title': 'Language models', 'points': ['Use the supplied notes.', 'Check the result.'], 'narration': 'Use the supplied notes to draft a summary, then check the result.', 'bridge': 'Connect this idea to a familiar task before selecting the tool you would use.', 'sourceIds': ['S1'], 'objectiveIds': ['O1']}]}
+        job['input'].update(authored=source, source=source, piece='concept:lesson', trigger='initial')
+        job['input']['context'].update(authoredCourse=True)
+        calls = []
+        def model(req):
+            calls.append(json.loads(req.content))
+            result = copy.deepcopy(source)
+            result['scenes'][0].update(title='Healthcare draft review', phase='after', visual='prompt', sourceIds=['invented'], bridge='For a fictional healthcare report, compare the draft with supplied clinical notes.')
+            return httpx.Response(200, json={'choices': [{'message': {'content': json.dumps({k: v for k, v in hook_text_map(result).items() if not k.endswith('.narration')})}}]})
+        with httpx.Client(transport=httpx.MockTransport(model)) as client:
+            result = generate(job, client)['content']['scenes'][0]
+        self.assertEqual(result['phase'], 'before')
+        self.assertEqual(result['visual'], 'language')
+        self.assertEqual(result['sourceIds'], ['S1'])
+        self.assertIn('narration paths are protected', calls[0]['messages'][0]['content'])
+        self.assertIn('never move later concepts before the midpoint', calls[0]['messages'][0]['content'].lower())
+
+    def test_concept_rejects_title_only_personalisation(self):
+        import copy
+        source = {'scenes': [{'narration': 'Use supplied notes to draft a summary and review its claims.', 'bridge': 'Connect this idea to a familiar task before selecting the tool you would use.', 'points': ['Use notes.', 'Review claims.'], 'title': 'Drafts'}]}
+        candidate = copy.deepcopy(source)
+        candidate['scenes'][0]['title'] = 'Healthcare drafts'
+        with self.assertRaisesRegex(ValueError, 'Personalise contextual bridge'):
+            validate_concept(source, candidate)
+
     def test_video_activity_preserves_evidence_links_and_uses_course_prompt(self):
         import copy
         job = copy.deepcopy(JOB)

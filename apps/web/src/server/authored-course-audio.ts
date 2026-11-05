@@ -1,4 +1,5 @@
 import 'server-only';
+import { courseNarrationSlides } from '@/lib/authored-course';
 import { createHash, randomUUID } from 'node:crypto';
 import { readFile, mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -35,6 +36,7 @@ export async function startAuthoredCourseAudio(ownerId: string, courseId: string
     const [revision] = await tx.select().from(creatorAuthoredCourseRevisions).where(and(eq(creatorAuthoredCourseRevisions.id, revisionId), eq(creatorAuthoredCourseRevisions.courseId, courseId), eq(creatorAuthoredCourseRevisions.ownerId, ownerId)));
     const [head] = await tx.select().from(creatorAuthoredCourseRevisions).where(eq(creatorAuthoredCourseRevisions.courseId, courseId)).orderBy(desc(creatorAuthoredCourseRevisions.version)).limit(1);
     if (!course || !revision) throw new ApiError(404, 'not_found', 'Saved course package revision not found.');
+    if (!courseNarrationSlides(revision.content).length) throw new ApiError(422, 'recorded_narration', 'This course uses recorded source narration. No duplicate narration generation is needed.');
     if (revision.id !== head?.id || revision.briefRevision !== course.revision || course.revision !== draft.revision) throw new ApiError(409, 'revision_outdated', 'Only the latest course scripts for the current SME input can generate audio.');
     const [existing] = await tx.select().from(creatorAuthoredCourseAudio).where(and(eq(creatorAuthoredCourseAudio.revisionId, revisionId), eq(creatorAuthoredCourseAudio.voiceKey, voiceKey)));
     if (existing?.status === 'ready' || existing?.status === 'running') return { id: existing.id, token: null, status: existing.status };
@@ -54,7 +56,7 @@ export async function processAuthoredCourseAudio(id: string, token: string, owne
   try {
     const [revision] = await database.select().from(creatorAuthoredCourseRevisions).where(and(eq(creatorAuthoredCourseRevisions.id, job.revisionId), eq(creatorAuthoredCourseRevisions.courseId, courseId), eq(creatorAuthoredCourseRevisions.ownerId, ownerId)));
     if (!revision) throw new Error('Saved narration revision no longer exists.');
-    const slides = revision.content.modules.flatMap(module => [...module.conceptExplainer.videos.flatMap(video => video.uploadedVideo ? [] : video.slides), ...Object.values(module.narratedStages ?? {}).flat()]);
+    const slides = courseNarrationSlides(revision.content);
     if (!slides.length) throw new Error('This course package has no narrated content slides.');
     const priorRows = await database.select().from(creatorAuthoredCourseAudio).where(and(eq(creatorAuthoredCourseAudio.courseId, courseId), eq(creatorAuthoredCourseAudio.voiceKey, job.voiceKey)));
     const clips: ProductionAudioClip[] = []; const todo: { key: string; text: string; slideId: string; narrationHash: string }[] = [];
@@ -79,7 +81,7 @@ export async function processAuthoredCourseAudio(id: string, token: string, owne
         const audioState = await productionAudioState(ownerId, courseId, revision.blueprintRunId, courseModule.id, source.id);
         const approvedAudio = audioState.jobs.find(a => a.current && a.status === 'ready' && a.voice.provider === job.voice.provider && a.voice.model === job.voice.model && a.voice.voice === job.voice.voice && a.voice.dtype === job.voice.dtype && a.voice.device === job.voice.device && a.voice.version >= 2);
         if (!approvedAudio) continue;
-        const moduleSlides = [...courseModule.conceptExplainer.videos.flatMap(v => v.uploadedVideo ? [] : v.slides), ...Object.values(courseModule.narratedStages ?? {}).flat()];
+        const moduleSlides = courseNarrationSlides({ ...revision.content, modules: [courseModule] });
         for (const slide of moduleSlides) {
           const originalId = slide.id.startsWith(`${courseModule.id}-`) ? slide.id.slice(courseModule.id.length + 1) : '';
           const original = sourceRevision.content.slides.find(s => s.id === originalId && s.narration === slide.narration);

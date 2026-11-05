@@ -17,7 +17,9 @@ import * as repo from "@/server/repo";
 import { ApiError } from "@/server/http";
 import { mergeShape } from "./shape";
 import { audioRoot, defaultVoicer, type Voicer } from "./tts";
-import { piecesOf } from "./pieces";
+import { piecesOf, conceptPiece } from "./pieces";
+import { validatePersonalizedConcept, type PersonalizedConcept } from '@/lib/personalized-concept';
+import { wavSeconds } from '@/server/production-audio';
 
 // Every enrolled course uses the adaptive lane. Enrollment and module access
 // are checked before jobs are queued; no per-course configuration is needed.
@@ -51,20 +53,20 @@ export async function requireEnrollment(user: SessionUser, courseId: string) {
   return e;
 }
 
-async function videosOf(courseId: string, moduleId: string) {
-  const mod = await getModule(courseId, moduleId);
+async function videosOf(courseId: string, moduleId: string, userId?: string) {
+  const mod = await getModule(courseId, moduleId, userId);
   if (!mod) throw new ApiError(404, "unknown_module", "Module not found.");
   return { mod, videos: getBlock(mod, "explainer")?.videos ?? [] };
 }
 
 /** Scores only identifiable responses against authored keys, never client correctness flags. */
-export async function verifiedSignals(courseId: string, list: repo.NewSignal[]) {
+export async function verifiedSignals(courseId: string, list: repo.NewSignal[], userId?: string) {
   const result: repo.NewSignal[] = [];
   for (const s of list) {
     const payload = { ...s.payload };
     delete payload.verified;
     if (s.kind === "video_check" && s.moduleId) {
-      const { videos } = await videosOf(courseId, s.moduleId);
+      const { videos } = await videosOf(courseId, s.moduleId, userId);
       const v = videos.find((v) => v.id === payload.videoId);
       const qs = payload.section === "mid" ? v?.midQuiz : payload.section === "end" ? v?.endQuiz : undefined;
       const index = Number(payload.question);
@@ -77,7 +79,7 @@ export async function verifiedSignals(courseId: string, list: repo.NewSignal[]) 
       payload.verified = true;
       s.lesson = v!.lesson;
     } else if (s.kind === "module_check" && s.moduleId && payload.responses) {
-      const { mod } = await videosOf(courseId, s.moduleId);
+      const { mod } = await videosOf(courseId, s.moduleId, userId);
       const gate = getBlock(mod, "gate");
       if (!gate || !payload.responses || typeof payload.responses !== "object" || Array.isArray(payload.responses))
         throw new ApiError(400, "invalid_answer", "Invalid module answers.");
@@ -85,18 +87,18 @@ export async function verifiedSignals(courseId: string, list: repo.NewSignal[]) 
       if (Object.values(responses).some((v) => typeof v !== "string" && !(Array.isArray(v) && v.every((x) => typeof x === "string"))))
         throw new ApiError(400, "invalid_answer", "Invalid module answer values.");
       const r = gate.authoredAssessment
-        ? await gradeAuthoredAssessment(courseId, { revisionId: gate.authoredAssessment.revisionId, moduleId: gate.authoredAssessment.moduleId, responses })
+        ? await gradeAuthoredAssessment(courseId, { revisionId: gate.authoredAssessment.revisionId, moduleId: gate.authoredAssessment.moduleId, responses }, userId)
         : await gradeGate(`gate-${s.moduleId}`, gate, responses);
       Object.assign(payload, { ...r, verified: true });
       payload.missedLessons = mod.metadata.objectives.filter((o) => r.failedObjectives.includes(o.id)).map((o) => o.lesson);
     } else if (s.kind === "scenario_answer" && s.moduleId && typeof payload.response === "string") {
-      const { mod } = await videosOf(courseId, s.moduleId);
+      const { mod } = await videosOf(courseId, s.moduleId, userId);
       const scenario = getBlock(mod, "lab")?.scenarios.find((v) => v.question.step_id === payload.stepId);
       const option = scenario?.question.options.find((o) => o.id === payload.response);
       if (!option) throw new ApiError(400, "invalid_answer", "Unknown scenario answer.");
       payload.correct = !!option.correct; payload.verified = true; s.lesson = scenario!.lesson;
     } else if (s.kind === "recall_answer" && s.moduleId && typeof payload.response === "string") {
-      const { mod } = await videosOf(courseId, s.moduleId);
+      const { mod } = await videosOf(courseId, s.moduleId, userId);
       const question = getBlock(mod, "review")?.variants.find((v) => v.id === payload.variantId);
       const option = question?.options.find((o) => o.id === payload.response);
       if (!option) throw new ApiError(400, "invalid_answer", "Unknown recall answer.");
@@ -146,7 +148,7 @@ async function contextOf(user: SessionUser, courseId: string, moduleId: string) 
   const e = await requireEnrollment(user, courseId);
   const profile = await repo.getProfile(user.id);
   e.answers = normalizeAnswers(learnerAnswers(profile?.answers, e.answers), profile?.derived);
-  const course = await getCourse(courseId);
+  const course = await getCourse(courseId, user.id);
   const index = course?.modules.findIndex((m) => m.module_id === moduleId) ?? -1;
   const evidence = [];
   for (const m of course?.modules.slice(0, Math.max(0, index)) ?? []) evidence.push(await summarize(e.id, m.module_id));
@@ -157,12 +159,12 @@ async function contextOf(user: SessionUser, courseId: string, moduleId: string) 
   // definitions, without assessment keys, so reminders stay grounded.
   const prerequisiteTeaching = [];
   for (const m of course?.modules.slice(0, Math.max(0, index)) ?? []) {
-    const prior = await getModule(courseId, m.module_id);
+    const prior = await getModule(courseId, m.module_id, user.id);
     for (const v of prior ? getBlock(prior, "explainer")?.videos ?? [] : []) {
       if (weak.includes(v.lesson)) prerequisiteTeaching.push({ lessonId: v.lesson, title: v.title, keyIdeas: v.notes });
     }
   }
-  return { e, context: { profile: profile?.answers, derived: profile?.derived, answers: e.answers, precheck: e.precheck?.lessons, supportOverride: e.supportOverride, plan: plan?.plan, planVersion: plan?.version ?? 0, courseVersion: course?.version, llmProvider: course?.importedRevisionId ? 'vertex' : undefined, importedCourse: !!course?.importedRevisionId, voice: course?.importedRevisionId ? { ...voiceSettings(), provider: 'vertex' } : voiceSettings(), evidence: evidence.map((r) => ({ moduleId: r.moduleId, version: r.version, summary: r.summary })), prerequisiteReminders: weak, prerequisiteTeaching, promptVersion: ADAPTIVE_PROMPT_VERSION, authoredCourse: !!(course?.authoredRevisionId || course?.importedRevisionId), courseTitle: course?.title, world: course?.authoredRevisionId || course?.importedRevisionId ? "Preserve the source course facts and teach using the learner's field without introducing unsupported claims." : "Harbour Works is the fictional organisation; adapt its activities to the learner's field. Retain the agent name Scout." } };
+  return { e, context: { profile: profile?.answers, derived: profile?.derived, answers: e.answers, precheck: e.precheck?.lessons, supportOverride: e.supportOverride, plan: plan?.plan, planVersion: plan?.version ?? 0, courseVersion: course?.version, llmProvider: (course?.importedRevisionId || course?.vertexAdaptive) ? 'vertex' : undefined, importedCourse: !!(course?.importedRevisionId || course?.vertexAdaptive), voice: (course?.importedRevisionId || course?.vertexAdaptive) ? { ...voiceSettings(), provider: 'vertex' } : voiceSettings(), evidence: evidence.map((r) => ({ moduleId: r.moduleId, version: r.version, summary: r.summary })), prerequisiteReminders: weak, prerequisiteTeaching, promptVersion: ADAPTIVE_PROMPT_VERSION, authoredCourse: !!(course?.authoredRevisionId || course?.importedRevisionId), courseTitle: course?.title, world: course?.authoredRevisionId || course?.importedRevisionId ? "Preserve the source course facts and teach using the learner's field without introducing unsupported claims." : "Harbour Works is the fictional organisation; adapt its activities to the learner's field. Retain the agent name Scout." } };
 }
 
 type ProfileContext = { profile?: unknown; derived?: unknown; answers?: unknown; courseVersion?: string };
@@ -177,14 +179,14 @@ export async function currentLearnerContextKey(userId: string, courseId: string)
   const enrollment = await repo.findEnrollment(userId, courseId);
   if (!enrollment) throw new ApiError(404, "not_enrolled", "Enrollment not found.");
   const profile = await repo.getProfile(userId);
-  const course = await getCourse(courseId);
+  const course = await getCourse(courseId, userId);
   return learnerContextKey({ profile: profile?.answers, derived: profile?.derived, answers: normalizeAnswers(learnerAnswers(profile?.answers, enrollment.answers), profile?.derived), courseVersion: course?.version });
 }
 export const matchesLearnerContext = (context: unknown, current: string) => learnerContextKey((context ?? {}) as ProfileContext) === current;
 
 export async function queueSlide(user: SessionUser, courseId: string, moduleId: string, videoId: string, slide: number, trigger: Trigger, requestId?: string, baseRevision?: string) {
   if (!liveEnabled(courseId)) throw new ApiError(409, "disabled", "Live adaptation is disabled.");
-  const { videos } = await videosOf(courseId, moduleId);
+  const { videos } = await videosOf(courseId, moduleId, user.id);
   const video = videos.find((v) => v.id === videoId);
   if (video?.uploadedVideo) throw new ApiError(409, 'fixed_video', 'Uploaded concept videos remain unchanged. Request support around the lesson instead.');
   const authored = video?.slides[slide];
@@ -211,7 +213,7 @@ export async function queueSlide(user: SessionUser, courseId: string, moduleId: 
 }
 
 export async function queueModule(user: SessionUser, courseId: string, moduleId: string, openPiece?: "hook" | "worked") {
-  const { videos, mod } = await videosOf(courseId, moduleId);
+  const { videos, mod } = await videosOf(courseId, moduleId, user.id);
   const { e, context } = await contextOf(user, courseId, moduleId);
   const d = await db();
   const queuePiece = async (piece: "hook" | "worked") => {
@@ -224,7 +226,7 @@ export async function queueModule(user: SessionUser, courseId: string, moduleId:
     if (openPiece === piece) await d.update(adaptationJobs).set({ priority: 3 }).where(and(eq(adaptationJobs.fingerprint, fingerprint), eq(adaptationJobs.status, "queued")));
     return (await d.select().from(adaptationJobs).where(eq(adaptationJobs.fingerprint, fingerprint)))[0] ?? null;
   };
-  const sourceCourse = await getCourse(courseId);
+  const sourceCourse = await getCourse(courseId, user.id);
   const released = !!(sourceCourse?.authoredRevisionId || sourceCourse?.importedRevisionId);
   const hook = released ? null : await queuePiece("hook");
   // The DB preserves playback order for equal priorities. No model runs in this request.
@@ -238,6 +240,27 @@ export async function queueModule(user: SessionUser, courseId: string, moduleId:
     activities.push((await d.select().from(adaptationJobs).where(eq(adaptationJobs.fingerprint, fingerprint)))[0]!);
   }
   return { hook, worked, activities };
+}
+
+/** Only the requested concept is prepared; opening a course does not enqueue
+ * every recording. Explicit lesson requests use the reserved interactive lane. */
+export async function queueConcept(user: SessionUser, courseId: string, moduleId: string, videoId: string, retry = false) {
+  if (!liveEnabled(courseId)) throw new ApiError(409, 'disabled', 'Live adaptation is disabled.');
+  const { videos } = await videosOf(courseId, moduleId, user.id);
+  const video = videos.find(v => v.id === videoId);
+  if (!video?.personalizationSource) throw new ApiError(422, 'reviewed_source_required', 'This concept needs a reviewed source transcript.');
+  const { e, context } = await contextOf(user, courseId, moduleId);
+  const def = conceptPiece(video);
+  const fingerprint = hash({ enrollment: e.id, moduleId, piece: def.piece, conceptVersion: 3, authored: def.authored, context: teachingContext(context) });
+  const d = await db();
+  const inserted = await d.insert(adaptationJobs).values({ enrollmentId: e.id, moduleId, videoId: def.piece, slide: 0, fingerprint, trigger: 'initial', priority: 10, input: { authored: def.authored, source: def.authored, context, trigger: 'initial', piece: def.piece, courseId, sourceVideoId: video.id, transcriptId: video.personalizationSource.transcriptId } }).onConflictDoNothing().returning();
+  if (inserted.length) await d.update(adaptationJobs).set({ status: 'superseded', updatedAt: new Date() }).where(and(eq(adaptationJobs.enrollmentId, e.id), eq(adaptationJobs.moduleId, moduleId), eq(adaptationJobs.videoId, def.piece), ne(adaptationJobs.fingerprint, fingerprint), or(eq(adaptationJobs.status, 'queued'), eq(adaptationJobs.status, 'running'))));
+  let row = (await d.select().from(adaptationJobs).where(eq(adaptationJobs.fingerprint, fingerprint)))[0]!;
+  if (row.status === 'superseded' || (retry && row.status === 'failed')) {
+    [row] = await d.update(adaptationJobs).set({ status: 'queued', attempts: 0, lease: null, leaseUntil: null, error: null, updatedAt: new Date() }).where(and(eq(adaptationJobs.id, row.id), eq(adaptationJobs.status, row.status))).returning();
+    row ??= (await d.select().from(adaptationJobs).where(eq(adaptationJobs.fingerprint, fingerprint)))[0]!;
+  }
+  return row;
 }
 
 export async function jobsFor(enrollmentId: string, moduleId: string) {
@@ -282,18 +305,25 @@ export async function finishJob(id: string, lease: string, generated: unknown, m
   const checkRelease = async () => {
     if (!context?.authoredCourse) return;
     const [enrollment] = await (await db()).select().from(enrollments).where(eq(enrollments.id, row.enrollmentId)).limit(1);
-    const course = enrollment ? await getCourse(enrollment.courseId) : undefined;
+    const course = enrollment ? await getCourse(enrollment.courseId, enrollment.userId) : undefined;
     if (!(course?.authoredRevisionId || course?.importedRevisionId) || course.version !== context.courseVersion) throw new ApiError(409, "release_changed", "The source course changed; regenerate this lesson.");
     if (!matchesLearnerContext(row.input.context, await currentLearnerContextKey(enrollment!.userId, enrollment!.courseId))) throw new ApiError(409, "profile_changed", "The learner profile changed; regenerate this lesson.");
   };
   await checkRelease();
   if (row.input.piece) {
-    const { mod } = await videosOf(String(row.input.courseId), row.moduleId);
-    const def = piecesOf(mod).find((p) => p.piece === row.input.piece);
+    const [jobEnrollment] = await (await db()).select().from(enrollments).where(eq(enrollments.id, row.enrollmentId));
+    const { mod } = await videosOf(String(row.input.courseId), row.moduleId, jobEnrollment.userId);
+    const isConcept = String(row.input.piece).startsWith('concept:');
+    const video = isConcept ? getBlock(mod, 'explainer')?.videos?.find(v => v.id === row.input.sourceVideoId) : undefined;
+    const def = isConcept && video ? conceptPiece(video) : piecesOf(mod).find((p) => p.piece === row.input.piece);
     if (!def) throw new ApiError(422, "invalid_content", "Unknown lesson piece.");
     const merged = mergeShape(def.authored, generated, row.input.piece === "hook" ? { banned: /\b(?:Orbit|ORB-\d+)\b/i } : {});
     if (merged.problems.length) throw new ApiError(422, "invalid_content", "Lesson structure changed.");
     const content = merged.value as Record<string, unknown>;
+    if (isConcept) {
+      try { validatePersonalizedConcept(def.authored as PersonalizedConcept, content as PersonalizedConcept); }
+      catch (error) { throw new ApiError(422, 'invalid_content', error instanceof Error ? error.message : 'Invalid concept lesson.'); }
+    }
     const clips = def.clips(content).filter((c) => c.text.trim());
     const keys = clips.map((c) => ({ original: c.key, key: clipKey(c.text), text: c.text }));
     const dir = path.join(audioRoot(), row.enrollmentId, row.moduleId, "clips");
@@ -301,6 +331,7 @@ export async function finishJob(id: string, lease: string, generated: unknown, m
     const cached = new Set(keys.filter((c) => fs.existsSync(path.join(dir, `${c.key}.wav`))).map((c) => c.key));
     const done = voice ? new Set([...cached, ...await voice(dir, keys.filter((c) => !cached.has(c.key)))]) : cached;
     if (keys.some((c) => !done.has(c.key))) throw new ApiError(503, "voice_unavailable", "Matching narration could not be prepared.");
+    if (isConcept && keys.reduce((seconds, c) => seconds + wavSeconds(fs.readFileSync(path.join(dir, `${c.key}.wav`))), 0) > 420) throw new ApiError(422, 'duration_exceeded', 'Personalized concept narration exceeds seven minutes.');
     const audio = Object.fromEntries(keys.map((c) => [c.original, `/api/v1/adapted-audio/${row.enrollmentId}/${row.moduleId}/clips/${c.key}.wav`]));
     await leasedJob(id, lease);
     await checkRelease();

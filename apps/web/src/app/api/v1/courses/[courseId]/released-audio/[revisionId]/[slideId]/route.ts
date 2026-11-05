@@ -1,10 +1,11 @@
+import { getSessionUser } from '@/server/auth';
 import { getPublishedAuthoredCourse } from '@/server/authored-publication';
 import { authoredCourseAudioClip } from '@/server/authored-course-audio';
 import { ApiError, handle } from '@/server/http';
 
 export const GET = handle(async (request: Request, { params }: { params: Promise<{ courseId: string; revisionId: string; slideId: string }> }) => {
   const { courseId, revisionId, slideId } = await params;
-  const release = await getPublishedAuthoredCourse(courseId);
+  const release = await getPublishedAuthoredCourse(courseId, (await getSessionUser()).id);
   if (!release || release.revisionId !== revisionId) throw new ApiError(404, 'not_found', 'Released narration not found.');
   const { bytes } = await authoredCourseAudioClip(release.ownerId, courseId, revisionId, slideId);
   const size = bytes.length;

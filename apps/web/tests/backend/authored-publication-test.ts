@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { EMPTY_BRIEF } from '@/lib/content-creator';
-import { COURSE_REVIEW_CHECKS, type CourseReviewChecklist, type AuthoredCoursePackageData } from '@/lib/authored-course';
+import { courseNarrationSlides, COURSE_REVIEW_CHECKS, type CourseReviewChecklist, type AuthoredCoursePackageData } from '@/lib/authored-course';
 import { createCreatorDraft } from '@/server/content-creator';
 import { saveAuthoredCourse, reviewAuthoredCourse } from '@/server/authored-course';
 import { getPublishedAuthoredCourse, listPublishedAuthoredCourses, publishAuthoredCourse } from '@/server/authored-publication';
@@ -38,6 +38,10 @@ const content: AuthoredCoursePackageData = {
   }],
   courseEnd: { miniProject: { title: 'Project', brief: 'Find A.', deliverable: 'A', rubric: ['Uses A.'], ...links }, masteryGate: { title: 'Check', instructions: 'Select A.', passPercent: 80, questions: [q('MG1')] }, reflection: { prompts: ['What did you find?'] } },
 };
+const recorded = structuredClone(content);
+recorded.modules[0].conceptExplainer.videos[0].sourceMedia = { audio: '/source.wav', transcript: 'The fact is A.' };
+assert.equal(courseNarrationSlides(recorded).length, 0, 'Source recordings do not create duplicate TTS work.');
+assert.equal(courseNarrationSlides(content).length, 1, 'Editable slide narration still needs synthesis.');
 const head = await saveAuthoredCourse(user.id, draft.id, { expectedBriefRevision: draft.revision, expectedVersion: 0, content });
 assert.equal(await getPublishedAuthoredCourse(draft.id), undefined);
 assert.equal(await getCourse(draft.id), undefined, 'Unpublished courses stay out of the shared learner data.');
@@ -132,7 +136,13 @@ await reviewAuthoredCourse(user.id, user, draft.id, { revisionId: newer.id, expe
 await assert.rejects(publishAuthoredCourse(user.id, draft.id, { revisionId: newer.id, reviewId: approved.id }), { status: 409 });
 const reapproved = await reviewAuthoredCourse(user.id, user, draft.id, { revisionId: newer.id, expectedReviewVersion: 2, verdict: 'approved', checklist, feedback: '' });
 await publishAuthoredCourse(user.id, draft.id, { revisionId: newer.id, reviewId: reapproved.id });
-await assert.rejects(finishJob(staleClaim!.id, staleClaim!.lease!, personalVideo.slides[0], 'test-model', {}, async (_dir, clips) => new Set(clips.map(c => c.key))), { code: 'release_changed' });
+await finishJob(staleClaim!.id, staleClaim!.lease!, personalVideo.slides[0], 'test-model', {}, async (_dir, clips) => new Set(clips.map(c => c.key)));
+assert.equal((await getPublishedAuthoredCourse(draft.id, user.id))?.revisionId, head.id, 'Existing learners remain pinned to the earlier approved edition.');
+const previousEnrollment = (await repo.findEnrollment(user.id, draft.id))!;
+const upgradedEnrollment = await repo.upgradeEnrollment(user.id, draft.id, previousEnrollment.editionId);
+assert.notEqual(upgradedEnrollment.id, previousEnrollment.id);
+assert.equal((await repo.progressFor(upgradedEnrollment.id)).length, 0, 'The expanded edition receives no previous completion credit.');
+assert.equal((await getPublishedAuthoredCourse(draft.id, user.id))?.revisionId, newer.id);
 await assert.rejects(queueSlide(user, draft.id, 'M1', personalVideo.id, 0, 'example', crypto.randomUUID(), finished.id), { code: 'invalid_revision' });
 assert.equal(await getPublishedAuthoredCourse('invalid-id'), undefined);
 // A newly published, unrelated course must immediately use the same enrollment

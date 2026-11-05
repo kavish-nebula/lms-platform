@@ -22,7 +22,7 @@ import "server-only";
 const QUIZZES = new Set(["midQuiz", "endQuiz"]);
 const namesStory = (x: unknown, banned?: RegExp) => !!banned && new RegExp(banned.source, banned.flags.replace("g", "")).test(JSON.stringify(x));
 /** String keys that name things rather than say them. */
-const LOCKED = new Set(["id", "step_id", "lesson", "module", "stage", "icon", "correct", "source", "target", "objective_ids", "objectiveIds", "sourceIds", "bloom", "load"]);
+const LOCKED = new Set(["id", "step_id", "lesson", "module", "stage", "icon", "correct", "source", "target", "objective_ids", "objectiveIds", "sourceIds", "phase", "visual", "bloom", "load"]);
 /** String keys that are an enum when their value is a short lowercase word (an email's `from` is a name, a chat line's is "customer"). */
 const ENUMISH = new Set(["kind", "type", "tone", "role", "state", "from"]);
 const isEnumValue = (v: string) => /^[a-z][a-z-]{0,15}$/.test(v);

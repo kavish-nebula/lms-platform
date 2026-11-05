@@ -1,8 +1,9 @@
 # Video-first course creation
 
 Concept teaching can now use uploaded recordings. Existing narrated-slide courses
-keep their current player and audio. Recordings are never rewritten or sent to
-the adaptive slide/TTS queue.
+keep their current player and audio. Original recordings stay unchanged. Enrolled
+learners can also open a separate personalised concept video built from the reviewed
+transcript, using the same illustrated HTML/CSS and narration approach as the hook.
 
 ## Creator flow
 
@@ -47,7 +48,8 @@ initial thinking for the hook, sequential worked reasoning/result, attempts/hint
 and expected evidence for practice and scenarios. Practice responses are local
 to the mounted activity and ungraded; their expected evidence is not an AI grade.
 Assessment results and stage completion continue through existing persistence.
-Changing a learner profile does not regenerate the recording.
+Changing a learner profile does not regenerate the original recording. It invalidates
+the learner-specific concept revision for the next topic opening.
 
 ## Storage and integrity
 
@@ -115,3 +117,36 @@ interactive activities and creator upload/review/save.
 ## Profile-based learner delivery
 
 Enrolled learners receive personalised framing and support for the hook, worked examples, guided practice and scenario lab through the existing adaptive service. Their recorded concept videos and all graded assessments remain fixed. Activity introduction audio matches the personalised text and does not disclose hidden expected evidence. Original activities remain usable while generation runs or fails; a started activity stays steady until reopened. Updating a profile or published revision invalidates its old activity jobs without changing course progress.
+
+## Personalised concept delivery
+
+With the adaptive service enabled, opening an uploaded concept queues only that
+video's `concept:<videoId>` job in the interactive worker lane. The input contains
+reviewed teaching, source/objective IDs and the existing profile/enrollment context;
+assessment questions and answer keys are excluded. Source chunks never cross the
+reviewed checkpoint. Reviewed scene narration is protected. The model supplies a short learner-context
+explanation per scene plus concise titles and visual points. It cannot replace
+source definitions or examples. Cosmetic title-only changes fail before speech. Planning caps narration at 910 words; the
+server separately rejects measured total audio above 420 seconds.
+
+A ready learner-specific script is paired with per-scene audio. The player offers
+**Personalised video** and **Original recording**, captions, transcript, speed,
+scene navigation and playback controls. Post-checkpoint scenes and transcript are
+locked until the existing two-question formative check finishes. Existing answer
+signals, video IDs and completion rules remain in use; every scene must finish
+before personalized playback awards completion. Position/checkpoint state uses a
+separate versioned browser key scoped to course, video and revision. No approved
+content or learner grades are rewritten by generation.
+
+Jobs deduplicate by enrollment, source/release, profile and concept prompt version.
+Profile/release changes reject stale results, including after speech. Ready playback
+stays steady while the topic is open. Original recordings remain available during
+preparation, failure and previews; Retry explicitly requeues failed preparation.
+Gemini speech can fall back to Kokoro when quota is exhausted, increasing first-run
+latency. Completed script/audio pairs are cached rather than regenerated on refresh.
+
+Validation covers source/phase mapping, numerical facts, lost teaching, superficial
+rewrites, two-profile isolation, stale profiles, measured duration, and preservation
+of uploaded recordings and quizzes. The browser smoke test exercises actual scene
+playback and checkpoint locking. Review generated examples for teaching quality;
+structural checks do not establish factual equivalence by themselves.

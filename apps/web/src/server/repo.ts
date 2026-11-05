@@ -1,9 +1,10 @@
 import "server-only";
+import { ApiError } from './http';
 import { and, asc, desc, eq, inArray, isNull } from "drizzle-orm";
 import type { SetupAnswers, SupportOverride } from "@/lib/setup";
 import type { ProfileDerived } from "@/lib/profiling/derived";
 import { db } from "./db/client";
-import { adaptedContent, enrollments, importedCourseProgress, learnerPlans, profileDrafts, profiles, signals, stepProgress, type AdaptedPiece, type Pace, type StoredPrecheck } from "./db/schema";
+import { adaptedContent, courseEditions, publishedAuthoredCourses, enrollments, importedCourseProgress, learnerPlans, profileDrafts, profiles, signals, stepProgress, type AdaptedPiece, type Pace, type StoredPrecheck } from "./db/schema";
 
 /** Queries for learner data. Callers pass the session user's id; nothing here reads across users. */
 
@@ -59,12 +60,12 @@ export async function deleteProfileDraft(userId: string) {
 
 export async function findEnrollment(userId: string, courseId: string) {
   const d = await db();
-  return (await d.query.enrollments.findFirst({ where: and(eq(enrollments.userId, userId), eq(enrollments.courseId, courseId)) })) ?? null;
+  return (await d.query.enrollments.findFirst({ where: and(eq(enrollments.userId, userId), eq(enrollments.courseId, courseId), isNull(enrollments.archivedAt)) })) ?? null;
 }
 
 export async function listEnrollments(userId: string) {
   const d = await db();
-  return d.query.enrollments.findMany({ where: eq(enrollments.userId, userId), orderBy: asc(enrollments.enrolledAt) });
+  return d.query.enrollments.findMany({ where: and(eq(enrollments.userId, userId), isNull(enrollments.archivedAt)), orderBy: asc(enrollments.enrolledAt) });
 }
 
 export type EnrollmentPatch = { answers: SetupAnswers; supportOverride: SupportOverride; pace: Pace | null; precheck: StoredPrecheck | null; enrolledAt?: Date };
@@ -72,20 +73,35 @@ export type EnrollmentPatch = { answers: SetupAnswers; supportOverride: SupportO
 export async function upsertEnrollment(userId: string, courseId: string, patch: EnrollmentPatch): Promise<EnrollmentRow> {
   const d = await db();
   const now = new Date();
+  const [edition] = await d.select({ id: courseEditions.id }).from(courseEditions).innerJoin(publishedAuthoredCourses, and(eq(publishedAuthoredCourses.courseId,courseEditions.courseId),eq(publishedAuthoredCourses.revisionId,courseEditions.revisionId))).where(eq(courseEditions.courseId, /^[a-f0-9-]{36}$/i.test(courseId) ? courseId : '00000000-0000-0000-0000-000000000000')).orderBy(desc(courseEditions.publishedAt)).limit(1);
   const [row] = await d
     .insert(enrollments)
-    .values({ userId, courseId, ...patch, enrolledAt: patch.enrolledAt ?? now, updatedAt: now })
+    .values({ userId, courseId, editionId: edition?.id ?? null, ...patch, enrolledAt: patch.enrolledAt ?? now, updatedAt: now })
     .onConflictDoUpdate({
       target: [enrollments.userId, enrollments.courseId],
+      targetWhere: isNull(enrollments.archivedAt),
       set: { answers: patch.answers, supportOverride: patch.supportOverride, pace: patch.pace, precheck: patch.precheck, updatedAt: now },
     })
     .returning();
   return row!;
 }
 
+export async function upgradeEnrollment(userId: string, courseId: string, expectedEditionId: string | null) {
+  if(!/^[a-f0-9-]{36}$/i.test(courseId))throw new ApiError(400,'unsupported_edition','Only published authored courses have upgradeable editions.');
+  return (await db()).transaction(async tx => {
+    const [current] = await tx.select().from(enrollments).where(and(eq(enrollments.userId, userId), eq(enrollments.courseId, courseId), isNull(enrollments.archivedAt))).for('update');
+    const [edition] = await tx.select({ id: courseEditions.id }).from(courseEditions).innerJoin(publishedAuthoredCourses, and(eq(publishedAuthoredCourses.courseId,courseEditions.courseId),eq(publishedAuthoredCourses.revisionId,courseEditions.revisionId))).where(eq(courseEditions.courseId, courseId)).orderBy(desc(courseEditions.publishedAt)).limit(1);
+    if (!current || current.editionId !== expectedEditionId || !edition) throw new ApiError(409, 'edition_changed', 'Enrollment edition changed. Reload before upgrading.');
+    if (current.editionId === edition.id) return current;
+    await tx.update(enrollments).set({ archivedAt: new Date() }).where(eq(enrollments.id, current.id));
+    const [next] = await tx.insert(enrollments).values({ userId, courseId, editionId: edition.id, answers: current.answers, supportOverride: current.supportOverride, pace: current.pace, precheck: null }).returning();
+    return next;
+  });
+}
+
 export async function deleteEnrollment(userId: string, courseId: string) {
   const d = await db();
-  await d.delete(enrollments).where(and(eq(enrollments.userId, userId), eq(enrollments.courseId, courseId)));
+  await d.delete(enrollments).where(and(eq(enrollments.userId, userId), eq(enrollments.courseId, courseId), isNull(enrollments.archivedAt)));
 }
 
 /** Everything the learner has stored: enrollments (and with them plans, signals, progress) and the profile. */

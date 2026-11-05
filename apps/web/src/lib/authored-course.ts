@@ -19,6 +19,7 @@ const Question = z.union([
       if (q.correctIndices.length >= q.choices.length) ctx.addIssue({ code: 'custom', message: 'Multiple-answer questions need at least one incorrect choice.' });
     }),
 ]);
+export { Question as AuthoredQuestion };
 const ModuleQuiz = z.object({
   title: text.max(300), instructions: text,
   // Omitted thresholds inherit the course's creator-configured pass rule.
@@ -30,6 +31,7 @@ const Slide = z.object({
 }).strict();
 
 export const AuthoredCoursePackage = z.object({
+  sourceConnection: z.object({ connectionId: z.uuid(), runId: z.uuid() }).strict().optional(),
   schemaVersion: z.literal(1), title: z.string().trim().min(1).max(200), subject: text.max(300),
   durationMinutes: z.number().positive().max(10000), briefRevision: z.number().int().positive(),
   blueprintRunId: z.string().uuid().optional(),
@@ -44,6 +46,8 @@ export const AuthoredCoursePackage = z.object({
     conceptExplainer: z.object({ videos: z.array(z.object({
       id, title: text.max(300), plannedMinutes: z.number().positive().max(300), slides: z.array(Slide).min(1).max(40),
       uploadedVideo: UploadedConceptVideo.optional(),
+      sourceChecks: z.array(Question).max(100).optional(),
+      sourceMedia: z.object({ audio: z.string().optional(), video: z.string().optional(), image: z.string().optional(), transcript: z.string(), referenceOnly: z.boolean().optional(), reviewNotes: z.array(text).max(10).optional() }).strict().optional(),
       midpointQuiz: z.object({ afterSlideId: id, questions: z.array(Question).length(2) }).strict(),
     }).strict()).min(1).max(20) }).strict(),
     workedExamples: z.array(z.object({ id, title: text.max(300), problem: text, reasoning: z.array(text).min(1).max(20), result: text, ...linked }).strict()).min(1).max(20),
@@ -143,3 +147,8 @@ export function validateAuthoredCourse(raw: unknown, context: { objectives: stri
   return course;
 }
 
+
+/** Recordings supply their own voice; only editable narration needs synthesis. */
+export function courseNarrationSlides(course: AuthoredCoursePackageData) {
+  return course.modules.flatMap(module => [...module.conceptExplainer.videos.flatMap(video => video.uploadedVideo || video.sourceMedia?.audio || video.sourceMedia?.video ? [] : video.slides), ...Object.values(module.narratedStages ?? {}).flat()]);
+}

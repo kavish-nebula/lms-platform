@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import useSWR, { mutate } from "swr";
-import { useHydrated } from "@/lib/local-store";
+import { useHydrated, registerEnrollmentScope } from "@/lib/local-store";
 import type { EnrollmentView } from "@/lib/learner-plan";
 import type { SetupAnswers } from "@/lib/setup";
 import type { ProfileDerived } from "@/lib/profiling/derived";
@@ -34,6 +34,8 @@ export async function api<T>(url: string, init: { method?: string; body?: unknow
   });
   const data = (await res.json().catch(() => ({}))) as { error?: { code: string; message: string } };
   if (!res.ok) throw new ApiRequestError(res.status, data.error?.code ?? "http_error", data.error?.message ?? `Request failed (${res.status})`);
+  const state = data as { enrollments?: EnrollmentView[]; enrollment?: EnrollmentView };
+  for (const e of state.enrollments ?? (state.enrollment ? [state.enrollment] : [])) if (e.enrollmentId) registerEnrollmentScope(e.courseId, e.enrollmentId, e.allowLegacyResume ?? false);
   return data as T;
 }
 

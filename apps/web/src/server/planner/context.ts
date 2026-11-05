@@ -31,18 +31,20 @@ export type CourseContext = {
 
 const cache = new Map<string, Promise<CourseContext>>();
 
-export function courseContext(courseId: string): Promise<CourseContext> {
-  let hit = cache.get(courseId);
+export async function courseContext(courseId: string, userId?: string): Promise<CourseContext> {
+  const course = await getCourse(courseId, userId);
+  const key = `${courseId}:${userId ?? "session"}:${course?.version}`;
+  let hit = cache.get(key);
   if (!hit) {
-    hit = build(courseId);
-    cache.set(courseId, hit);
-    hit.catch(() => cache.delete(courseId));
+    hit = build(courseId, userId);
+    cache.set(key, hit);
+    hit.catch(() => cache.delete(key));
   }
   return hit;
 }
 
-async function build(courseId: string): Promise<CourseContext> {
-  const course = await getCourse(courseId);
+async function build(courseId: string, userId?: string): Promise<CourseContext> {
+  const course = await getCourse(courseId, userId);
   if (!course) throw new Error(`Unknown course ${courseId}`);
   const precheck = await getPrecheck(courseId);
   const modules: ContextModule[] = [];
@@ -56,7 +58,7 @@ async function build(courseId: string): Promise<CourseContext> {
   lines.push("");
 
   for (const [i, m] of course.modules.entries()) {
-    const content = await getModule(courseId, m.module_id);
+    const content = await getModule(courseId, m.module_id, userId);
     const hook = content?.blocks.find((b) => b.stage === "hook") as HookBlock | undefined;
     const explainer = content?.blocks.find((b) => b.stage === "explainer") as ExplainerBlock | undefined;
     for (const v of explainer?.videos ?? []) if (v.slides.some((s) => s.kind === "code")) codeLessons.add(v.lesson);

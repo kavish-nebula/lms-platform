@@ -73,10 +73,10 @@ const needsWork = (r: repo.AdaptedRow | undefined, hash: string) =>
 export async function ensureModule(user: SessionUser, courseId: string, moduleId: string, schedule: Schedule, deps: AdaptDeps = {}): Promise<boolean> {
   if (liveEnabled(courseId)) { await queueModule(user, courseId, moduleId); return true; }
   // Other released courses remain pinned to their reviewed content.
-  if ((await getCourse(courseId))?.authoredRevisionId) return false;
+  if ((await getCourse(courseId, user.id))?.authoredRevisionId) return false;
   if (!deps.transport && !aiConfigured()) return false;
   const e = await repo.findEnrollment(user.id, courseId);
-  const mod = await getModule(courseId, moduleId);
+  const mod = await getModule(courseId, moduleId, user.id);
   if (!e || !mod) return false;
   const defs = piecesOf(mod);
   if (!defs.length) return false;
@@ -102,14 +102,14 @@ function serial(key: string, task: () => Promise<void>): Promise<void> {
 
 /** Module 1 (the first with lesson content), right after enrolling. */
 export async function adaptFirstModule(user: SessionUser, courseId: string, schedule: Schedule, deps: AdaptDeps = {}) {
-  const course = await getCourse(courseId);
+  const course = await getCourse(courseId, user.id);
   const first = course?.modules.find((m) => m.authored?.length);
   return first ? ensureModule(user, courseId, first.module_id, schedule, deps) : false;
 }
 
 /** The module after this one, once this one is finished. */
 export async function adaptNextModule(user: SessionUser, courseId: string, moduleId: string, schedule: Schedule, deps: AdaptDeps = {}) {
-  const course = await getCourse(courseId);
+  const course = await getCourse(courseId, user.id);
   const mods = course?.modules.filter((m) => m.authored?.length) ?? [];
   const next = mods[mods.findIndex((m) => m.module_id === moduleId) + 1];
   return next ? ensureModule(user, courseId, next.module_id, schedule, deps) : false;
@@ -130,7 +130,7 @@ async function runModule(
   claimed: { def: PieceDef; row: repo.AdaptedRow }[],
   deps: AdaptDeps,
 ) {
-  const course = await getCourse(courseId);
+  const course = await getCourse(courseId, user.id);
   const mod = course?.modules.find((m) => m.module_id === moduleId);
   if (!course || !mod) return;
   const plan = (await repo.plansFor(e.id)).find((p) => p.status === "ready")?.plan ?? null;

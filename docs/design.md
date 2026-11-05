@@ -208,3 +208,8 @@ The teaching activity preview uses three keyboard-accessible stage buttons and o
 ## Video-first problem hooks
 
 Video-first hooks match the concept video's illustrated 16:9 composition, with a production incident, actual source excerpt, AI draft and evidence comparison. The source concept's factory illustration is reused with token-based colors. Dedicated scene audio advances the visuals at clip boundaries; captions and a complete transcript retain all source text. Reduced motion keeps a static illustration and removes scene transitions. Keyboard-accessible controls include speed, mute, fullscreen, seeking and manual scene navigation. On narrow screens the composition stacks to keep documents readable. The last scene asks for an ungraded initial response; the hook's stable progress key is unchanged.
+
+Uploaded concept lessons offer Personalised video / Original recording. The personalised view reuses the hook illustration, theme tokens and reduced-motion behavior, with two concise visual points beside each scene. Per-scene narration drives progression; later chapters stay locked until the midpoint check. The original is accessible during preparation or failure. Captions, a phase-gated transcript, labelled controls and responsive stacking remain available.
+
+
+The connected importer presents source selection, coverage, import, preparation, review and publication as distinct steps. Original objectives appear alongside editable proposed outcomes, with an explicit review checkbox. Source conflicts require per-field creator decisions. Learners see an edition-upgrade notice only when a newer course edition is available; its explanation makes the fresh enrollment and preserved earlier history explicit.

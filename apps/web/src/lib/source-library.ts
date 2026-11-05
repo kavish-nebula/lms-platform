@@ -14,7 +14,7 @@ export const SourceLibrary = z.object({
 }).strict().superRefine((value, ctx) => {
   const ids = [...value.modules.map(m => m.id), ...value.modules.flatMap(m => m.topics.map(t => t.id)), ...value.sources.map(s => s.id)];
   if (new Set(ids).size !== ids.length) ctx.addIssue({ code: 'custom', message: 'Module, topic and source IDs must be unique.', path: ['sources'] });
-  if (value.sources.reduce((n, s) => n + s.text.length, 0) > 200000) ctx.addIssue({ code: 'custom', message: 'Source library exceeds 200,000 characters.', path: ['sources'] });
+  if (value.sources.reduce((n, s) => n + s.text.length, 0) > 1000000) ctx.addIssue({ code: 'custom', message: 'Source library exceeds 1,000,000 characters.', path: ['sources'] });
 });
 export type SourceLibraryData = z.infer<typeof SourceLibrary>;
 type Brief = { sourceText: string; sourceLibrary?: SourceLibraryData; objectives: { text: string }[] };

@@ -88,6 +88,7 @@ export type PlanVersion = {
 
 /** An enrollment as the API returns it: setup, the plan the course follows now, and progress. */
 export type EnrollmentView = {
+  enrollmentId?: string; editionId?: string | null; allowLegacyResume?: boolean;
   courseId: string;
   enrolledAt: string;
   answers: SetupAnswers;

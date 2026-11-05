@@ -1,12 +1,13 @@
 import copy
 import json
 import logging
+import math
 import re
 import time
 import httpx
 from .config import settings
 
-LOCKED = {"id", "kind", "type", "icon", "role", "tone", "state", "source", "target", "code", "term", "cue", "correct", "objectiveIds", "sourceIds"}
+LOCKED = {"id", "kind", "type", "icon", "role", "tone", "state", "source", "target", "code", "term", "cue", "correct", "objectiveIds", "sourceIds", "phase", "visual"}
 PROMPT_VERSION = 4
 SYSTEM = """You are an adaptive course teaching editor for an LMS.
 
@@ -360,6 +361,23 @@ def apply_hook_text_map(authored, edits, sparse=False):
     return validate(authored, walk(authored))
 
 
+def validate_concept(authored, content):
+    """Reject cosmetic adaptation before requesting matching narration."""
+    changed = 0
+    for before, after in zip(authored['scenes'], content['scenes']):
+        if before['narration'] != after['narration']:
+            raise ValueError('Reviewed concept narration is protected. Rewrite only title, points and bridge paths.')
+        if not 8 <= len(after.get('bridge', '').split()) <= 18:
+            raise ValueError('Each bridge needs 8 to 18 words: one concrete fictional learner-context analogy, not a generic reminder.')
+        changed += after['bridge'] != before['bridge']
+        if len(after['points']) != 2 or any(len(p) > 180 or len(p.split()) > 24 for p in after['points']):
+            raise ValueError('Each scene needs two complete concise visual points, at most 24 words and 180 characters each.')
+    if changed < math.ceil(len(authored['scenes']) * .6):
+        raise ValueError('Personalise contextual bridge explanations in most scenes, not just titles.')
+    if len(' '.join(s['narration'] + ' ' + s['bridge'] for s in content['scenes']).split()) > 910:
+        raise ValueError('Keep total narration including bridges within 910 words.')
+
+
 def call_model(client, config, model, messages):
     if config['provider'] == 'vertex':
         from .config import vertex_access_token
@@ -412,8 +430,9 @@ def generate(job, client=None):
             example_placement = {"visiblePath": visible, "narrationPath": spoken,
                 "fieldWords": field_words,
                 "instruction": "Use a field word naturally in an authentic example at both paths. Preserve the original lesson, sentence count, and character limits; rewrite the surrounding example consistently, not just the label."}
-    text_map = source.get("piece") == "hook" and source.get("textMapVersion") in {1, 2, 3, 4, 5, 6, 7}
-    sparse_map = text_map and source.get("textMapVersion") in {2, 3, 4, 5, 6, 7}
+    concept_job = str(source.get("piece", "")).startswith("concept:")
+    text_map = concept_job or source.get("piece") == "hook" and source.get("textMapVersion") in {1, 2, 3, 4, 5, 6, 7}
+    sparse_map = concept_job or text_map and source.get("textMapVersion") in {2, 3, 4, 5, 6, 7}
     if context.get("prerequisiteTeaching") and isinstance(authored.get("note"), dict) and isinstance(authored["note"].get("text"), str) and authored.get("sentences"):
         placement = {"visiblePath": "$.note.text", "narrationPath": "$.sentences[0]",
                      "instruction": "Place the brief Quick reminder in the existing note text and incorporate it into the first existing narration entry. Keep the original teaching, numeric facts, cue indexes and exact sentence-list length. Keep flow-node labels and sublabels short. Obey the supplied character limits."}
@@ -430,12 +449,17 @@ def generate(job, client=None):
         protocol = "\nPersonalise only the supplied approved slide. Keep its source facts and meaning, including uncertainty and privacy qualifications. Do not add or remove numerical facts."
     if str(source.get("piece", "")).startswith("activity:"):
         protocol += "\nThis is an interactive practice activity around an unchanged uploaded video, not a slide or assessment. Adapt the framing, reasoning, hints and practice support consistently to LEARNER_FOCUS. Keep the supplied fictional case documents and quoted claims verbatim, including identifiers, times, percentages and leading zeros. Connect their lesson to the learner's field without replacing source evidence with a different case. Preserve every ID, objectiveIds, sourceIds, array length, technical claim and evidence standard. Do not invent personal circumstances or claim the recorded video was changed. Return the complete SOURCE JSON shape."
+    if concept_job:
+        protocol = "\nCONCEPT TEXT-EDIT PROTOCOL: Return a flat JSON object of changed SOURCE path/text pairs only. Personalise each scene's bridge with one concrete fictional analogy or explanation connected to LEARNER_FOCUS and the concept just taught. Bridge length: 8 to 18 words. This is learner support, not a claim about their actual work. Retain reviewed narration exactly: narration paths are protected and omitted from editable SOURCE. Never replace source technical definitions or examples. Give each scene a specific concise title and two complete visual points grounded in its reviewed teaching (max 24 words / 180 characters each). Keep all taught definitions, technical facts, IDs, numerical facts and checkpoint phases unchanged. Do not add numerical facts. Never reveal assessment answers. No Markdown, no truncated sentences. Personalise bridges at most scene paths, not just the opening title. Never move later concepts before the midpoint. SOURCE lists editable text; REQUIRED_TEACHING provides the protected source narration for context. Unchanged paths may be omitted; the server reconstructs the complete scenes."
+    editable_text = hook_text_map(authored)
+    if concept_job:
+        editable_text = {k: v for k, v in editable_text.items() if not k.endswith('.narration')}
     messages = [{"role": "system", "content": (AUTHORED_SYSTEM if context.get("authoredCourse") else SYSTEM) + protocol}, {"role": "user", "content": json.dumps({
         "LEARNER_FOCUS": focus, "LEARNER": teaching_context, "TRIGGER": source["trigger"],
         "OUTPUT_CONSTRAINTS": output_constraints(authored), "PREREQUISITE_BRIDGE_PLACEMENT": placement, "EXAMPLE_PLACEMENT": example_placement,
         "EXAMPLE_REQUIREMENT": f"For an example request, explicitly use at least one of these field words in a concrete example in visible prose and narration: {', '.join(field_words)}" if field_words else "Use the learner's stated context.",
         "CONTENT_FORMAT": "Flat JSON changed-path/text pairs only; omit unchanged paths. The server owns the structure. Use the learner's field and goal throughout visible story and narration." if sparse_map else "A flat JSON text map with exactly the SOURCE keys" if text_map else "The authored JSON structure",
-        "SOURCE": hook_text_map(authored) if text_map else source["source"], "REQUIRED_TEACHING": authored})}]
+        "SOURCE": editable_text if text_map else source["source"], "REQUIRED_TEACHING": authored})}]
     own_client = client is None
     client = client or httpx.Client(timeout=45)
     try:
@@ -455,6 +479,8 @@ def generate(job, client=None):
                         raise ValueError("Return an object of SOURCE text paths")
                     for path, value in candidate.items():
                         try:
+                            if concept_job and path not in editable_text:
+                                raise ValueError('Protected concept path: ' + path)
                             pending_edits.update(normalize_hook_edits(authored, {path: value}))
                         except ValueError as exc:
                             errors.append(str(exc))
@@ -462,6 +488,8 @@ def generate(job, client=None):
                         raise ValueError("; ".join(errors))
                     candidate = pending_edits
                 content = apply_hook_text_map(authored, candidate, sparse=sparse_map) if text_map else validate(authored, candidate)
+                if str(source.get("piece", "")).startswith("concept:"):
+                    validate_concept(authored, content)
                 if context.get("authoredCourse") and authored_numbers(content) != authored_numbers(authored):
                     missing = sorted(authored_numbers(authored) - authored_numbers(content))
                     added = sorted(authored_numbers(content) - authored_numbers(authored))

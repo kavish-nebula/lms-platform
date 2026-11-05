@@ -42,3 +42,6 @@ Use an actual local credential path or configure ADC; do not put JSON/private ke
 - `node scripts/verify-scorm-vertex.mjs` from the root: live paid Vertex generation plus matching speech for all imported slides and two synthetic profiles, in an in-memory database. This is the live check, not a mocked test. `SCORM_VERIFY_SAMPLE=true` limits it to the first slide of each lesson and records that limited coverage explicitly. Reports/audio are under ignored `apps/web/.data/scorm-vertex-verification`. It rejects unavailable authentication before creating synthetic learners; failed or partial runs cannot produce a passing report. It never modifies main learner profiles, progress or source content.
 
 On November 3, 2026, real MCP import/activation and browser hierarchy checks succeeded. Production build, lint and mocked provider tests passed. The live Vertex check was **blocked before generation** because neither a credential-file path nor ADC was present. Live personalized narration playback for two profiles is not yet verified.
+
+
+The legacy single-topic pilot described above is retained. Whole-course reviewed imports and edition-safe expansion now use the connected importer; see [connected SCORM courses](connected-scorm-courses.md). Source drafts can be staged for review without being treated as published releases.

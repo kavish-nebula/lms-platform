@@ -1,4 +1,5 @@
 "use client";
+import { CourseEditionNotice } from "./course-edition-notice";
 
 /**
  * Course details page sections (Coursera layout): About, How it works,
@@ -62,6 +63,7 @@ export function AboutSection({ course }: { course: Course }) {
   const shown = allSkills ? course.skills : course.skills.slice(0, 9);
   return (
     <section id="about" tabIndex={-1} aria-labelledby="about-title" className="flex scroll-mt-40 flex-col gap-8 outline-none">
+      <CourseEditionNotice courseId={course.course_id} />
       <div className="flex flex-col gap-4">
         <SectionTitle id="about">{t("whatYoullLearn")}</SectionTitle>
         <ul className="grid gap-x-8 gap-y-4 md:grid-cols-2">

@@ -1,5 +1,6 @@
 'use client';
 import * as React from 'react';
+import { ConnectedScormImporter } from './connected-scorm-importer';
 import Link from 'next/link';
 import { api } from '@/lib/api';
 import { Button } from '@/components/ui/button';
@@ -8,7 +9,8 @@ import { Surface } from '@/components/kit/surface';
 type ImportRow = { courseId: string; id: string; topicId: string; title: string; version: number; status: string; active: boolean; fingerprint: string };
 type Preview = { topicId: string; title: string; version: number; status: string; objectives: string[]; concepts: number; lessons: number };
 type Structure = { modules: { num: number; topics: { topicId: string; title: string; status: string }[] }[] };
-export function ScormImporter() {
+export function ScormImporter() { return <><ConnectedScormImporter /><details className="mt-8"><summary>Legacy topic pilot importer</summary><LegacyScormImporter /></details></>; }
+function LegacyScormImporter() {
   const [courses, setCourses] = React.useState<{ name: string }[]>([]);
   const [imports, setImports] = React.useState<ImportRow[]>([]);
   const [course, setCourse] = React.useState(''); const [topic, setTopic] = React.useState('');

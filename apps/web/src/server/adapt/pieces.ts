@@ -4,6 +4,7 @@ import type { ConceptVideo, HookBlock, ModuleContent, WorkedBlock } from "@/data
 import type { AdaptedPiece } from "@/server/db/schema";
 import type { Clip } from "./tts";
 import { hookScenes } from '@/lib/video-first-hook';
+import { conceptTemplate, conceptNarration, type PersonalizedConcept } from '@/lib/personalized-concept';
 
 /**
  * The pieces of a module that are rewritten for each learner, in the order
@@ -19,6 +20,11 @@ export type PieceDef = {
   /** the narration lines, keyed as the player asks for them */
   clips: (content: unknown) => Clip[];
 };
+
+export function conceptPiece(video: ConceptVideo): PieceDef {
+  return { piece: `concept:${video.id}`, label: 'a personalized illustrated concept lesson from a reviewed source transcript, preserving its checkpoint boundary', authored: conceptTemplate(video),
+    clips: content => (content as PersonalizedConcept).scenes.map((s, i) => ({ key: `scene${i}`, text: conceptNarration(s) })) };
+}
 
 /** The story each course's authored lessons tell, which a rewrite leaves behind. */
 export const AUTHORED_WORLD: Record<string, { text: string; banned: RegExp }> = {

@@ -25,6 +25,24 @@ await assert.rejects(startBlueprint('blueprint-other', draft.id, 1), { status: 4
 await assert.rejects(listBlueprints('blueprint-other', draft.id), { status: 404 });
 const input = blueprintInput(brief); const expected = blueprintShape(input);
 validateBlueprint(expected, input);
+const libraryInput = blueprintInput({ ...brief, sourceLibrary: { version: 1, modules: [{ id: 'M1', title: 'Source module', topics: [{ id: 'T1', title: 'Source topic' }] }], sources: input.sources.map(source => ({ ...source, title: 'Source topic evidence', reference: 'Supplied synthetic notes', revision: 1, scope: 'topic' as const, moduleId: 'M1', topicId: 'T1', objectiveIds: input.objectives.map(o => o.id) })) } });
+await generateBlueprint(libraryInput, async request => {
+  const sent = JSON.parse(request.messages[1].content).input;
+  assert.deepEqual(sent.sources, libraryInput.sources, 'Retain complete scoped source evidence once.');
+  assert(sent.brief.sourceLibrary.sources.every((source: { text?: string }) => source.text === undefined), 'Do not send duplicate source text inside the brief.');
+  assert(libraryInput.brief.sourceLibrary!.sources.every(source => source.text.length > 0), 'Keep the original frozen input intact.');
+  return { choices: [{ message: { content: JSON.stringify(blueprintShape(libraryInput)) } }] };
+});
+const mappedInput = structuredClone(libraryInput);
+mappedInput.sources = mappedInput.sources.slice(0, 1);
+mappedInput.brief.sourceLibrary!.sources = mappedInput.brief.sourceLibrary!.sources.slice(0, 1);
+mappedInput.brief.prerequisites = 'Basic familiarity with the supplied source notes.';
+const topicReferences = blueprintShape(mappedInput);
+for (const record of [...topicReferences.modules, ...topicReferences.tasks, ...topicReferences.recommendations.objectives, ...topicReferences.recommendations.cognitiveLoad]) record.sourceIds = ['T1'];
+topicReferences.modules[0].prerequisites = [mappedInput.brief.prerequisites];
+const resolvedReferences = await generateBlueprint(mappedInput, async () => ({ choices: [{ message: { content: JSON.stringify(topicReferences) } }] }));
+assert.deepEqual(resolvedReferences.output.modules[0].sourceIds, [mappedInput.sources[0].id]);
+assert.deepEqual(resolvedReferences.output.modules[0].prerequisites, [], 'Known entry prerequisite prose is not a module dependency.');
 const sixInput = blueprintInput(brief, 'six-stage-v1'); const six = blueprintShape(sixInput);
 validateBlueprint(six, sixInput);
 assert.deepEqual(six.modules[0].steps.map(s => s.kind), MODULE_FLOW);

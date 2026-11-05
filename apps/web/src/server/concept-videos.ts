@@ -121,13 +121,13 @@ export async function serveConceptVideo(userId: string, courseId: string, assetI
   let owner = false;
   try { owner = (await getCreatorDraft(userId, courseId)).id === courseId && asset.ownerId === userId; } catch { /* learner access below */ }
   if (!owner) {
-    const release = await getPublishedAuthoredCourse(courseId);
+    const release = await getPublishedAuthoredCourse(courseId, userId);
     if (!release || !(await findEnrollment(userId, courseId)) || !release.content.modules.some(m => m.conceptExplainer.videos.some(v => v.uploadedVideo?.assetId === assetId))) throw new ApiError(404, 'not_found', 'Video not found.');
   }
   const transcriptId = new URL(request.url).searchParams.get('transcript');
   if (transcriptId) {
     if (!owner) {
-      const release = await getPublishedAuthoredCourse(courseId);
+      const release = await getPublishedAuthoredCourse(courseId, userId);
       if (!release?.content.modules.some(m => m.conceptExplainer.videos.some(v => v.uploadedVideo?.assetId === assetId && v.uploadedVideo.transcriptId === transcriptId))) throw new ApiError(404, 'not_found', 'Transcript not found.');
     }
     const transcript = await readVideoTranscript(courseId, assetId, transcriptId);

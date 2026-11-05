@@ -14,10 +14,16 @@ const Question = z.preprocess(value => {
   if (!answers.length || new Set(answers).size !== answers.length || answers.some(i => i === undefined || i < 0 || i >= q.options.length)) ctx.addIssue({ code: 'custom', message: 'Invalid quiz answer indices' });
 }));
 const Quiz = z.object({ title: text.default('Knowledge check'), questions: z.array(Question).max(100).default([]) });
-const SubConcept = z.object({ id, title: text, learning_content: text, bot_context: text.default(''), voicebot_context: text.default(''), image: text.nullish(), video: z.object({ src: text, type: z.enum(['local', 'embed']), durationSeconds: z.number().optional() }).nullish(), audio: z.array(z.object({ id, language: text, file: text, transcript: text })).max(10).default([]) });
-export const ScormTopic = z.object({ topicId: id, title: text, description: text.default(''), courseId: text, courseName: id, moduleId: z.number().int().positive(), sourceVersion: z.number().int().nonnegative(), status: text, objectives: z.array(text).min(1).max(50), concepts: z.array(z.object({ id, title: text, sub_concepts: z.array(SubConcept).min(1).max(30), quiz: Quiz.optional() })).min(1).max(20), quiz: Quiz.optional(), tasks: z.array(z.object({ id, title: text, unlock_after: text.nullish(), steps: z.array(z.object({ title: text.default('Step'), instructions: text.default(''), description: text.default('') })).max(50) })).max(30).default([]) });
+const SubConcept = z.object({ id, title: text, learning_content: text, bot_context: text.default(''), voicebot_context: text.default(''), image: text.nullish(), video: z.object({ src: text, type: z.enum(['local', 'embed']), durationSeconds: z.number().optional() }).nullish(), audio: z.array(z.object({ id, language: text, file: text, transcript: text, filename: text.optional(), storagePath: text.optional(), segments: z.array(z.unknown()).optional() })).max(10).default([]) });
+export const ScormTopic = z.object({ topicId: id, title: text, description: text.default(''), courseId: text, courseName: id, moduleId: z.number().int().positive(), sourceVersion: z.number().int().nonnegative(), status: text, objectives: z.array(text).min(1).max(50), sourceContent: z.record(z.string(),z.unknown()).default({}), concepts: z.array(z.object({ id, title: text, sub_concepts: z.array(SubConcept).min(1).max(30), quiz: Quiz.optional() })).min(1).max(20), quiz: Quiz.optional(), tasks: z.array(z.object({ id, title: text, unlock_after: text.nullish(), steps: z.array(z.object({ title: text.default('Step'), instructions: text.default(''), description: text.default(''), code: z.unknown().optional(), images: z.unknown().optional(), taskPage: z.unknown().optional(), hints: z.unknown().optional(), video: z.unknown().optional() })).max(50) })).max(30).default([]) });
 export type ScormTopicData = z.infer<typeof ScormTopic>;
 export type ScormImport = { id: string; courseId: string; topicId: string; fingerprint: string; source: ScormTopicData; hierarchy: { num: number; topics: { topicId: string; title: string }[] }[]; active: boolean };
+
+function sourceMetadata(value:unknown):unknown {
+  if(Array.isArray(value))return value.map(sourceMetadata);
+  if(value&&typeof value==='object')return Object.fromEntries(Object.entries(value).filter(([key])=>!/^(?:api_?key|access_?token|refresh_?token|bearer_?token|password|secret|credentials?|authorization|token)$/i.test(key)).map(([key,item])=>[key,sourceMetadata(item)]));
+  return value;
+}
 
 /** Explicitly choose the working draft; never persist ownership, tokens or arbitrary source fields. */
 export function normalizeScormTopic(raw: Record<string, unknown>, courseName: string): ScormTopicData {
@@ -26,7 +32,7 @@ export function normalizeScormTopic(raw: Record<string, unknown>, courseName: st
   const content = (data.content ?? {}) as Record<string, unknown>;
   const match = /^(.+)-M(\d+)-T(\d+)$/.exec(String(data.topicId));
   if (!match || match[1] !== courseName) throw new Error('Topic ID does not match the selected course.');
-  return ScormTopic.parse({ ...data, courseName, moduleId: Number(match[2]), sourceVersion: raw.version ?? 0, objectives: data.learning_objectives ?? content.learning_objectives });
+  return ScormTopic.parse({ ...data, courseName, moduleId: Number(match[2]), sourceVersion: raw.version ?? 0, objectives: data.learning_objectives ?? content.learning_objectives, sourceContent: sourceMetadata(content) });
 }
 
 export function scormCourseId(name: string) { return name === 'AIforProduction' ? 'ai-for-production' : `scorm-${name.toLowerCase()}`; }

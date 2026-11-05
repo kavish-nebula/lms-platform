@@ -163,3 +163,7 @@ checks preserve the slide structure and numerical facts. These checks do not pro
 all generated statements factually correct; failed generation retains the original.
 The stream and worker reject stale results when the learner profile or published
 revision changes. Audio uses bounded sentence chunks, with a separate cache policy.
+
+## Uploaded concept revisions
+
+Reviewed transcripts support separate learner-specific illustrated concept videos. `queueConcept` deduplicates one interactive job on topic opening. Profile, source/release and prompt versions scope cache identity; stale results are rejected before adoption and after speech. Every scene requires matching audio and total measured narration must stay below 420 seconds. Assessment keys never enter generation; existing midpoint questions and grading remain authored. See [video-first-authoring.md](video-first-authoring.md#personalised-concept-delivery).

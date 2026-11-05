@@ -1,0 +1,20 @@
+.personal-concept-composition { display: grid; grid-template-columns: 1.1fr 1fr; gap: 24px; align-items: center; }
+.personal-concept-illustration { display: flex; flex-direction: column; align-items: center; gap: 15px; }
+.personal-concept-illustration .hook-film-factory { min-height: 160px; }
+.personal-concept-diagram { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 28px; padding: 20px 6px; }
+.personal-concept-node { position: relative; flex: 1; display: grid; place-items: center; aspect-ratio: 1; background: var(--panel); border: 1px solid var(--ok-line); color: var(--ok); border-radius: var(--r-sm); box-shadow: var(--shadow-sm); }
+.personal-concept-node > svg { width: 55%; height: 55%; stroke-width: 1.3; }
+.personal-concept-link { position: absolute; left: 100%; top: 50%; width: 29px; border-top: 2px solid var(--ok-line); }
+.personal-concept-diagram-retrieval .personal-concept-node:nth-child(2), .personal-concept-diagram-language .personal-concept-node:nth-child(2) { transform: translateY(-25px); }
+.personal-concept-diagram-deployment .personal-concept-node:nth-child(2) { background: transparent; border: 0; box-shadow: none; }
+.personal-concept-points { display: flex; flex-direction: column; gap: 16px; }
+.personal-concept-points p { display: flex; align-items: flex-start; gap: 10px; margin: 0; padding: 16px; border: 1px solid var(--line); border-radius: var(--r-sm); background: var(--panel); font-size: 16px; line-height: 1.55; }
+.personal-concept-points p > span { color: var(--ok); font-size: 12px; font-weight: 650; padding-top: 3px; }
+.personal-concept-chapters { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; }
+.personal-concept-chapters button { font-size: 12px; border: 1px solid var(--line); padding: 6px 10px; border-radius: var(--r-xs); }
+.personal-concept-chapters button[aria-current] { border-color: var(--ok); color: var(--ok); }
+.personal-concept-chapters button:disabled { opacity: .45; cursor: not-allowed; }
+@media (max-width: 640px) { .personal-concept-composition { grid-template-columns: 1fr; gap: 12px; } .personal-concept-illustration .hook-film-factory { max-height: 120px; min-height: 0; } .personal-concept-diagram { width: 75%; padding: 15px 0; } .personal-concept-points { gap: 8px; } .personal-concept-points p { font-size: 13px; padding: 10px; } .personal-concept-scene { min-height: 480px; } }
+
+.personal-concept-points .personal-concept-bridge { display: block; border-color: var(--ok-line); background: var(--panel-2); }
+.personal-concept-bridge strong { display: block; margin-bottom: 6px; color: var(--ok); font-size: 12px; }

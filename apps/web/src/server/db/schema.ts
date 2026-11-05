@@ -1,3 +1,4 @@
+import { sql } from "drizzle-orm";
 import { boolean, integer, jsonb, pgTable, primaryKey, text, timestamp, uniqueIndex, uuid } from "drizzle-orm/pg-core";
 import type { LearnerPlan, PlanChangeT, PlanSource, PlanStatus, PlanVersion } from "@/lib/learner-plan";
 import type { PrecheckResult, SetupAnswers, SupportOverride } from "@/lib/setup";
@@ -28,6 +29,31 @@ export const scormTopicImports = pgTable('scorm_topic_imports', {
   active: boolean('active').notNull().default(false),
   importedAt: timestamp('imported_at', { withTimezone: true }).notNull().defaultNow(),
 }, t => [uniqueIndex('scorm_import_source').on(t.ownerId, t.topicId, t.fingerprint)]);
+
+/** Source connection and resumable runs are separate from learner publication. */
+export const scormConnections = pgTable('scorm_connections', {
+  id: uuid('id').defaultRandom().primaryKey(), ownerId: text('owner_id').notNull(),
+  sourceCourseId: text('source_course_id').notNull(), sourceCourseName: text('source_course_name').notNull(),
+  targetCourseId: uuid('target_course_id').notNull().references(() => creatorCourses.id),
+  mapping: jsonb('mapping').$type<Record<string, string>>().notNull().default({}),
+  baseline: jsonb('baseline').$type<Record<string, unknown>>().notNull().default({}),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+}, t => [uniqueIndex('scorm_connection_target').on(t.ownerId, t.sourceCourseId, t.targetCourseId)]);
+export const scormImportRuns = pgTable('scorm_import_runs', {
+  id: uuid('id').defaultRandom().primaryKey(), connectionId: uuid('connection_id').notNull().references(() => scormConnections.id),
+  ownerId: text('owner_id').notNull(), fingerprint: text('fingerprint').notNull(),
+  status: text('status').notNull().default('queued'),
+  input: jsonb('input').$type<Record<string, unknown>>().notNull(),
+  output: jsonb('output').$type<Record<string, unknown>>().notNull().default({}),
+  error: text('error'), lease: uuid('lease'), leaseUntil: timestamp('lease_until', { withTimezone: true }),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
+}, t => [uniqueIndex('scorm_run_identity').on(t.connectionId, t.fingerprint)]);
+export const courseEditions = pgTable('course_editions', {
+  id: uuid('id').defaultRandom().primaryKey(), courseId: uuid('course_id').notNull().references(() => creatorCourses.id),
+  revisionId: uuid('revision_id').notNull().references(() => creatorAuthoredCourseRevisions.id),
+  reviewId: uuid('review_id').notNull().references(() => creatorAuthoredCourseReviews.id),
+  publishedAt: timestamp('published_at', { withTimezone: true }).defaultNow().notNull(),
+}, t => [uniqueIndex('course_edition_revision').on(t.courseId, t.revisionId)]);
 
 /** Imported packages report their own SCORM state; native assessment grades stay separate. */
 export const importedCourseProgress = pgTable('imported_course_progress', {
@@ -280,6 +306,8 @@ export const enrollments = pgTable(
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     courseId: text("course_id").notNull(),
+    editionId: uuid("edition_id").references(() => courseEditions.id),
+    archivedAt: timestamp("archived_at", { withTimezone: true }),
     answers: jsonb("answers").$type<SetupAnswers>().notNull(),
     supportOverride: text("support_override").$type<SupportOverride>().notNull().default("auto"),
     pace: jsonb("pace").$type<Pace | null>(),
@@ -287,7 +315,7 @@ export const enrollments = pgTable(
     enrolledAt: timestamp("enrolled_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
-  (t) => [uniqueIndex("enrollments_user_course").on(t.userId, t.courseId)],
+  (t) => [uniqueIndex("enrollments_user_course_active").on(t.userId, t.courseId).where(sql`${t.archivedAt} IS NULL`)],
 );
 
 export const learnerPlans = pgTable(
@@ -340,7 +368,7 @@ export const stepProgress = pgTable(
 );
 
 /** One piece of a module rewritten for one learner (content/adapt): the hook, a concept video, or the worked examples. */
-export type AdaptedPiece = "hook" | "worked" | "world" | `video:${string}` | `activity:${"hook" | "worked" | "guided" | "lab"}`;
+export type AdaptedPiece = "hook" | "worked" | "world" | `video:${string}` | `concept:${string}` | `activity:${"hook" | "worked" | "guided" | "lab"}`;
 export type AdaptedStatus = "writing" | "voicing" | "ready" | "failed";
 
 /**

@@ -78,6 +78,9 @@ const get = await GET(new Request(`http://localhost/project-sandbox?revisionId=$
 const next = await saveAuthoredCourse(user.id, draft.id, { expectedBriefRevision: 1, expectedVersion: 1, content: { ...pkg, title: 'New release' } });
 const nextReview = await reviewAuthoredCourse(user.id, user, draft.id, { revisionId: next.id, expectedReviewVersion: 0, verdict: 'approved', checklist, feedback: '' });
 await publishAuthoredCourse(user.id, draft.id, { revisionId: next.id, reviewId: nextReview.id });
+assert((await sandboxWork(user.id, draft.id, head.id)).artifact, 'The pinned edition retains earlier work after publication.');
+const editionEnrollment=(await (await import('@/server/repo')).findEnrollment(user.id,draft.id))!;
+await (await import('@/server/repo')).upgradeEnrollment(user.id,draft.id,editionEnrollment.editionId);
 await assert.rejects(sandboxAction(user.id, draft.id, { ...request, version: 4 }), { status: 409 });
 assert.equal((await sandboxWork(user.id, draft.id, next.id)).artifact, null, 'A new release gets its own draft.');
 assert.equal((await (await db()).select().from(authoredProjectSubmissions).where(and(eq(authoredProjectSubmissions.revisionId, head.id)))).length, 2, 'Old release submissions remain intact.');

@@ -71,9 +71,10 @@ export function blueprintSystem(input: BlueprintInput) {
   return BLUEPRINT_SYSTEM.replace(/4\. SUBMODULE STRUCTURE:[\s\S]*?\n5\. TASK DESIGN:/, '4. SUBMODULE STRUCTURE: each module has EXACTLY six steps in order: hook, concept, worked_example, guided_practice, scenario, quiz. No mini-project, project_contribution, mastery_gate, reflection or spaced_review inside a module. Keep module timing sums accurate. Add courseEnd with exactly mastery_gate, reflection, spaced_review, all afterModuleId equal to the final module ID. The Mastery Gate covers ALL modules.\n5. TASK DESIGN:') + '\nDELIVERY STRUCTURE v1 OVERRIDES LEGACY PROJECT WORDING: Practice/Application/Extension are short learning exercises, not mandatory mini-projects. Do not use T8. Keep finalDeliverable only as a compatibility field with minutes:0 and a statement that no mini-project is required. L4 assessment specifications belong to the course end, associated with the last module, and collectively cover every course objective; earlier modules have local quizzes and practice feedback. T5/T6/T7 and all spaced-review schedules occur after the last module. Return courseEnd in the supplied output shape. Preserve existingModules IDs and order when supplied; retain their topics and objective coverage while restructuring their stages. No learner completion is claimed.';
 }
 
-export async function generateBlueprint(input: BlueprintInput, transport: LlmTransport = llmHttp({ timeoutMs: 90_000, retries: 0, backoffMs: 1000 })) {
-  // Keep the original snapshot for revision checks; hidden legacy notes must not override scoped evidence.
-  const modelInput = input.brief.sourceLibrary ? { ...input, brief: { ...input.brief, sourceText: '', references: '', duration: '', contexts: '', difficulties: '' } } : input;
+export async function generateBlueprint(input: BlueprintInput, transport: LlmTransport = llmHttp({ timeoutMs: 180_000, retries: 0, backoffMs: 1000 })) {
+  // Keep the frozen snapshot for revision checks. Send source text once in input.sources;
+  // repeating the entire library in brief doubles large-course requests and can time out.
+  const modelInput = input.brief.sourceLibrary ? { ...input, brief: { ...input.brief, sourceText: '', references: '', duration: '', contexts: '', difficulties: '', sourceLibrary: { ...input.brief.sourceLibrary, sources: input.brief.sourceLibrary.sources.map(source => ({ ...source, text: undefined })) } } } : input;
   const messages: LlmMessage[] = [{ role: "system", content: blueprintSystem(input) }, { role: "user", content: JSON.stringify({ instruction: "Analyse the SME input. The shape below is an example contract, not a fixed number of modules. Populate concise, concrete content for the supplied course. Check outputConstraints before returning JSON.", input: modelInput, outputShape: blueprintShape(input), outputConstraints: { bloom: BLOOM_LEVELS, solo: ["Unistructural", "Multistructural", "Relational", "Extended abstract"], knowledgeType: ["Factual", "Conceptual", "Procedural", "Metacognitive"], assessmentLayersRequired: ["L1", "L2", "L3", "L4"], objectivesRequiredInTeachingPracticeAssessment: input.objectives.map(o => o.id), topLevelKeys: ["recommendations", "modules", "tasks", "assessments", "motivation", "tools", "accessibility", "finalDeliverable", ...(['six-stage-v1', 'codex-ild-v2'].includes(input.deliveryStructure ?? '') ? ['courseEnd'] : [])] } }) }];
   const usage: Record<string, number> = { promptTokens: 0, completionTokens: 0, modelCalls: 0 };
   let lastValidation: string | undefined;
@@ -103,6 +104,17 @@ export async function generateBlueprint(input: BlueprintInput, transport: LlmTra
             }
           }
         }
+        // Topic IDs and source IDs share a stable suffix in connected imports.
+        // Resolve only a unique declared topic-to-source mapping; unknown IDs still fail.
+        const records = [...(candidate.modules ?? []), ...(candidate.tasks ?? []), ...(candidate.recommendations?.objectives ?? []), ...(candidate.recommendations?.cognitiveLoad ?? [])];
+        for (const record of records) if (Array.isArray(record.sourceIds)) record.sourceIds = record.sourceIds.map((id: string) => {
+          if (input.sources.some(source => source.id === id)) return id;
+          const mapped = input.sources.filter(source => source.topicId === id);
+          return mapped.length === 1 ? mapped[0].id : id;
+        });
+        // Entry prerequisites already live in the frozen brief, not in the module DAG.
+        const moduleIds = new Set((candidate.modules ?? []).map((unit: { id: string }) => unit.id));
+        for (const unit of candidate.modules ?? []) if (Array.isArray(unit.prerequisites)) unit.prerequisites = unit.prerequisites.filter((id: string) => moduleIds.has(id) || !(id.length > 20 && input.brief.prerequisites.includes(id)));
         const output = validateBlueprint(candidate, input);
         return { output, model: reply.model ?? model, usage };
       } catch (error) {

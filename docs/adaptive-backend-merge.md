@@ -23,3 +23,6 @@ Run `npm run lint`, `npm run typecheck`, `npm run build`, `node fixtures/scripts
 The merge is validated against the adaptive pure/UI suite and the existing backend, engagement and workflow suites. Browser regression checks use a separate preview, leaving the running port-3001 server and existing Python work intact.
 
 Validation completed: lint, typecheck and production build pass; all 31 adaptive tests and the backend, engagement and workflow suites pass. Course authoring validation reports zero errors and nine existing module-5 warnings for manual steps without simulator metadata. Browser checks confirmed server-plan example-first ordering, the experiment workspace, direct module-2 access in demo mode, Python editor readiness, retained saved workflow revision/report, and disabled notebook/course hints during the final assessment.
+
+
+Connected SCORM imports now use immutable source snapshots, resumable import/preparation runs and explicit LMS review. Published editions pin enrollments; upgrading archives the prior enrollment and creates a fresh identity for progress, plans, grades and adaptation. Original source media is cached separately from personalised audio. See [connected SCORM courses](connected-scorm-courses.md).

@@ -67,6 +67,9 @@ assert.equal((await POST(new Request('http://localhost/guided', { method: 'POST'
 const next = await saveAuthoredCourse(user.id, draft.id, { expectedBriefRevision: 1, expectedVersion: 1, content });
 const nextReview = await reviewAuthoredCourse(user.id, user, draft.id, { revisionId: next.id, expectedReviewVersion: 0, verdict: 'approved', checklist, feedback: 'Test release.' });
 await publishAuthoredCourse(user.id, draft.id, { revisionId: next.id, reviewId: nextReview.id });
+assert((await guidedWork(user.id, draft.id, head.id)).version >= 7, 'The pinned edition retains earlier work after publication.');
+const editionEnrollment=(await (await import('@/server/repo')).findEnrollment(user.id,draft.id))!;
+await (await import('@/server/repo')).upgradeEnrollment(user.id,draft.id,editionEnrollment.editionId);
 await assert.rejects(guidedAction(user.id, draft.id, { ...request, version: 7 }), { status: 409 });
 assert.equal((await guidedWork(user.id, draft.id, next.id)).version, 0);
 console.log('PASS guided exploration: fixed workflow, private grading, real run evidence, owned revisioned answers, conflicts, retry, immutable submissions, saved navigation and stale-release rejection.');

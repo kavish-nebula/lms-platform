@@ -12,9 +12,9 @@ export const AuthoredAssessmentInput = z.object({
 }).strict();
 
 /** Always select keys from the published snapshot, never from a learner payload. */
-export async function gradeAuthoredAssessment(courseId: string, request: z.infer<typeof AuthoredAssessmentInput>) {
+export async function gradeAuthoredAssessment(courseId: string, request: z.infer<typeof AuthoredAssessmentInput>, userId?: string) {
   const input = AuthoredAssessmentInput.parse(request);
-  const release = await getPublishedAuthoredCourse(courseId);
+  const release = await getPublishedAuthoredCourse(courseId, userId);
   if (!release) throw new ApiError(404, 'not_found', 'Released course not found.');
   if (release.revisionId !== input.revisionId) throw new ApiError(409, 'release_changed', 'The released course changed. Reload before submitting your answers.');
   const courseModule = input.moduleId === undefined ? undefined : release.content.modules.find(m => m.id === input.moduleId);
