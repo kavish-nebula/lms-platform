@@ -28,4 +28,4 @@ await build({
   external: ["ffmpeg-static","google-auth-library","@electric-sql/pglite", "pg", "drizzle-orm", "zod", "react", "react-dom"],
   logLevel: "warning",
 });
-execFileSync(process.execPath, [path.join(out, "out.mjs")], { stdio: "inherit", env: { ...process.env, PGLITE_DIR: suite === 'video-first-test.ts' && process.env.VIDEO_FIRST_UI_DB ? process.env.VIDEO_FIRST_UI_DB : "memory://", GLM_API_KEY: "", LLM_API_KEY: "", AUDIO: "off", AUDIO_API_KEY: "", KOKORO: "off", PLATFORM_ENGAGEMENT_ENABLED: suite === "engagement-test.ts" ? "true" : "false" } });
+execFileSync(process.execPath, [path.join(out, "out.mjs")], { stdio: "inherit", env: { ...process.env, DATABASE_URL: "", PGLITE_DIR: suite === 'video-first-test.ts' && process.env.VIDEO_FIRST_UI_DB ? process.env.VIDEO_FIRST_UI_DB : "memory://", GLM_API_KEY: "", LLM_API_KEY: "", AUDIO: "off", AUDIO_API_KEY: "", KOKORO: "off", PLATFORM_ENGAGEMENT_ENABLED: suite === "engagement-test.ts" ? "true" : "false" } });

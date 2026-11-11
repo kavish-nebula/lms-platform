@@ -1,5 +1,11 @@
 # Current learning experience extension
 
+PGlite-to-PostgreSQL migration is available through `scripts/migrate-postgres.mjs`.
+It creates a new local database and dedicated role, preserves the original PGlite
+files, validates all copied tables before switching `DATABASE_URL`, and retains
+physical/logical backups. Both database drivers support graceful shutdown. Media
+remains in its existing folders. See [PostgreSQL migration](postgresql-migration.md).
+
 Local PGlite startup acquires a process ownership lock beside the data directory to prevent competing web processes. Failed startup stays failed until restart rather than repeatedly creating aborted WASM clients. The adaptive launcher handles Ctrl+C by stopping Python writers, calling its authenticated internal shutdown action to close PGlite, then terminating Next. Force-killing the launcher bypasses this graceful close; preserve database files before any recovery.
 
 The root `npm run dev` loads the web environment and starts the web app, Python adaptive service and worker together when `ADAPTIVE_PYTHON_ENABLED=true`. Its default web port remains 3000 (overridable through `ADAPTIVE_WEB_PORT`). This prevents a web-only server from leaving personalization jobs queued without a worker. Use one app process per local PGlite data directory.
