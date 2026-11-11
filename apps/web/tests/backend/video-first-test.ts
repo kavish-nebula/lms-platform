@@ -216,6 +216,23 @@ const secondText = structuredClone(tailored);
 await assert.rejects(finishJob(conceptB.id, secondClaim.lease!, secondText, 'test', {}, longVoice), { code: 'duration_exceeded' });
 await repo.saveProfile('video-learner-two', { domain: 'student', studyFieldOther: 'mechanical engineering' }, []);
 await assert.rejects(finishJob(conceptB.id, secondClaim.lease!, secondText, 'test', {}, null), { code: 'profile_changed' });
+// Connected recordings need the same hook speech path as uploaded recordings.
+const connectedDraft = await createCreatorDraft(owner.id, { brief: { ...draft.brief, sourceLibrary: undefined, sourceText: 'Use AI to draft from supplied notes. Review the draft against the notes before sharing it.' } });
+const connectedPackage = JSON.parse(JSON.stringify(pkg).replaceAll('Svideo', 'S1')) as AuthoredCoursePackageData;
+connectedPackage.briefRevision = connectedDraft.revision;
+delete connectedPackage.blueprintRunId;
+connectedPackage.sources = [{ id: 'S1', kind: 'sme', title: 'Connected source fixture', reference: 'Synthetic source evidence.' }];
+for (const video of connectedPackage.modules[0].conceptExplainer.videos) {
+  delete video.uploadedVideo;
+  video.sourceMedia = { audio: '/source-fixture.wav', transcript: video.slides.map(s => s.narration).join(' ') };
+}
+const connectedHead = await saveAuthoredCourse(owner.id, connectedDraft.id, { expectedBriefRevision: connectedDraft.revision, expectedVersion: 0, content: connectedPackage });
+const connectedReview = await reviewAuthoredCourse(owner.id, owner, connectedDraft.id, { revisionId: connectedHead.id, expectedReviewVersion: 0, verdict: 'approved', checklist: Object.fromEntries(COURSE_REVIEW_CHECKS.map(k => [k, true])) as Parameters<typeof reviewAuthoredCourse>[3]['checklist'], feedback: 'Synthetic connected-media regression fixture.' });
+await publishAuthoredCourse(owner.id, connectedDraft.id, { revisionId: connectedHead.id, reviewId: connectedReview.id });
+await prepareVideoHookAudio(owner.id, connectedDraft.id, 'M1', hookVoice);
+await repo.upsertEnrollment('video-learner', connectedDraft.id, { answers: {}, supportOverride: 'auto', pace: null, precheck: null });
+assert((await videoHookAudio('video-learner', connectedDraft.id, 'M1')).length > 0, 'Connected source media supports enrolled-learner hook narration.');
+await assert.rejects(videoHookAudio('stranger', connectedDraft.id, 'M1'), { status: 404 });
 if (process.env.VIDEO_FIRST_UI_SEED === '1') {
   await database.insert(profiles).values({ userId: owner.id, answers: {}, needs: [] }).onConflictDoNothing();
   await database.insert(enrollments).values({ userId: owner.id, courseId: draft.id, answers: {} });

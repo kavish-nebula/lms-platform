@@ -44,3 +44,5 @@ The final review record identifies the work as AI-assisted review under the crea
 Large source-library blueprints send complete source evidence once in `input.sources`, with only source metadata repeated in the brief. The saved input snapshot remains unchanged. Blueprint requests allow up to 180 seconds per provider call to accommodate reviewed multi-module imports.
 
 Blueprint generation resolves only uniquely declared topic-to-source references and separates known entry-prerequisite prose from module dependencies; unknown references still fail validation. Creator review and publication links use the existing `/authoring` workspace.
+
+Original hook narration accepts both uploaded recordings and connected source audio/video, and resolves the requesting learner's pinned edition. This prevents connected imports from failing with `Published hook not found` while retaining enrollment and ownership checks. The video-first regression covers connected-media hook preparation and access by an enrolled learner.

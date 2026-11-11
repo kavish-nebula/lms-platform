@@ -1,4 +1,3 @@
-import { getSessionUser } from './auth';
 import 'server-only';
 import { createHash } from 'node:crypto';
 import fs from 'node:fs/promises';
@@ -14,9 +13,9 @@ import { wavSeconds } from './production-audio';
 
 const pending = new Map<string, Promise<void>>();
 async function source(userId: string, courseId: string, moduleId: string) {
-  const release = await getPublishedAuthoredCourse(courseId, (await getSessionUser()).id);
+  const release = await getPublishedAuthoredCourse(courseId, userId);
   const courseModule = release?.content.modules.find(m => m.id === moduleId);
-  if (!release || !courseModule || !courseModule.conceptExplainer.videos.some(v => v.uploadedVideo) || (release.ownerId !== userId && !(await findEnrollment(userId, courseId)))) throw new ApiError(404, 'not_found', 'Published hook not found.');
+  if (!release || !courseModule || !courseModule.conceptExplainer.videos.some(v => v.uploadedVideo || v.sourceMedia?.audio || v.sourceMedia?.video) || (release.ownerId !== userId && !(await findEnrollment(userId, courseId)))) throw new ApiError(404, 'not_found', 'Published hook not found.');
   const scenes = hookScenes(courseModule.problemHook);
   const key = createHash('sha256').update(JSON.stringify({ revision: release.revisionId, moduleId, scenes, provider: process.env.AUDIO_PROVIDER, model: process.env.AUDIO_MODEL, voice: process.env.AUDIO_VOICE, style: process.env.AUDIO_STYLE, kokoroVoice: process.env.KOKORO_VOICE })).digest('hex');
   const dir = path.join(appRoot(), '.data', 'video-hook-audio');
