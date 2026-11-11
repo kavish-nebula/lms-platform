@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Lesson — Proofcraft</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body data-bot-page="lesson" data-bot-topic="REST API Engineering">
+<div id="topbar"></div>
+
+<div class="player-shell">
+  <div class="breadcrumb" id="crumb"></div>
+  <h1 id="v-title" style="font-size:1.5rem;margin-bottom:18px"></h1>
+
+  <div class="player">
+    <div class="player-screen" id="screen">
+      <div class="wave" id="wave"></div>
+      <div class="v-big" id="screen-title"></div>
+      <div class="v-note">Prototype playback — runs at 10× speed · intervention fires at the 2:00 dip point</div>
+    </div>
+    <div class="player-bar">
+      <button id="btn-play">▶ Play</button>
+      <button id="btn-skip">+30s</button>
+      <div class="progress-track"><div class="progress-fill" id="fill"></div></div>
+      <span class="time-label" id="time">0:00 / 4:00</span>
+    </div>
+  </div>
+
+  <div class="gate-strip" id="gate-strip"></div>
+
+  <div class="card lesson-side">
+    <div class="eyebrow">Module chapters</div>
+    <div class="video-list" id="chapters"></div>
+    <div id="after-lesson" style="margin-top:16px"></div>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+<script>
+const params = new URLSearchParams(location.search);
+const MOD = Number(params.get("module") || 1);
+const VID = Number(params.get("video") || 0);
+const mod = COURSE.modules.find((m) => m.n === MOD);
+const video = mod.videos[VID];
+
+document.body.dataset.botModule = MOD;
+document.body.dataset.botTopic = video.title;
+topbar("courses");
+
+document.getElementById("crumb").innerHTML =
+  `<a href="course.html">${COURSE.title}</a> › Module ${MOD}: ${mod.title} › Video ${VID + 1}`;
+document.getElementById("v-title").textContent = video.title;
+document.getElementById("screen-title").textContent = video.title;
+document.getElementById("wave").innerHTML = Array.from({ length: 22 }, () =>
+  `<span style="height:${8 + Math.random() * 18}px"></span>`).join("");
+
+/* chapters sidebar */
+document.getElementById("chapters").innerHTML = mod.videos.map((v, i) => {
+  const w = videosWatched(MOD).includes(i);
+  return `<a class="video-row ${i === VID ? "" : ""} ${w ? "watched" : ""}" href="lesson.html?module=${MOD}&video=${i}" style="${i === VID ? "border-color:var(--accent)" : ""}">
+    <span class="play-dot">${w ? "✓" : "▶"}</span>
+    <span class="v-meta"><div class="v-title">${v.title}</div><div class="v-sub">${v.mins} min</div></span>
+  </a>`;
+}).join("");
+
+/* ---------- simulated player ---------- */
+const DURATION = 240;          // 4:00 of "video"
+const SPEED = 10;              // 10x demo speed
+let t = 0, playing = false, intervened = false, timer = null;
+
+const fill = document.getElementById("fill");
+const timeEl = document.getElementById("time");
+const btnPlay = document.getElementById("btn-play");
+
+function fmt(s) { return Math.floor(s / 60) + ":" + String(Math.floor(s % 60)).padStart(2, "0"); }
+function paint() {
+  fill.style.width = (t / DURATION) * 100 + "%";
+  timeEl.textContent = `${fmt(t)} / ${fmt(DURATION)}`;
+}
+
+function tick() {
+  if (!playing) return;
+  t = Math.min(t + SPEED / 4, DURATION);   // ~1s wall = 2.5s video → full clip in ~96s... make faster
+  paint();
+  if (!intervened && t >= DURATION / 2) { intervened = true; pause(); fireIntervention(); return; }
+  if (t >= DURATION) { pause(); finish(); return; }
+}
+
+function play() {
+  if (t >= DURATION) return;
+  playing = true; btnPlay.textContent = "❚❚ Pause";
+  timer = setInterval(tick, 250);
+}
+function pause() { playing = false; btnPlay.textContent = "▶ Play"; clearInterval(timer); }
+
+btnPlay.onclick = () => (playing ? pause() : play());
+document.getElementById("btn-skip").onclick = () => {
+  t = Math.min(t + 60, DURATION); paint();
+  if (!intervened && t >= DURATION / 2) { intervened = true; pause(); fireIntervention(); }
+  else if (t >= DURATION) { pause(); finish(); }
+};
+
+/* ---------- the mid-video intervention (answer-or-skip: can never stall the player) ---------- */
+function fireIntervention() {
+  const iv = withCorrectSecond(video.intervention);
+  openModal("Quick check — the 2-minute dip", "Intervention", `
+    <p class="lede" style="font-size:.92rem;margin-bottom:12px">You've been watching for a while. Two minutes in is where attention dips — so before continuing, prove the last two minutes landed:</p>
+    <div class="q-text">${iv.q}</div>
+    <div id="iv-opts">${iv.options.map((o, i) =>
+      `<button class="verify-opt" style="width:100%;margin-bottom:8px" onclick="answerIntervention(${i},${iv.correct})">${o}</button>`).join("")}</div>
+    <div id="iv-fb" class="choice-feedback"></div>
+    <div style="margin-top:14px"><button class="btn-quiet" id="iv-skip" onclick="skipIntervention()">Skip check — resume video →</button></div>
+  `, { locked: true });
+}
+function skipIntervention() { closeModal(); play(); }
+function answerIntervention(i, correct) {
+  document.querySelectorAll("#iv-opts button").forEach((b, bi) => { b.disabled = true; if (bi === i) b.style.borderColor = i === correct ? "var(--good)" : "var(--warn)"; });
+  const skip = document.getElementById("iv-skip");
+  if (skip) skip.style.display = "none";
+  recordIntervention(MOD, VID, i === correct);
+  const fb = document.getElementById("iv-fb");
+  fb.className = "choice-feedback " + (i === correct ? "best" : "poor");
+  fb.textContent = (i === correct ? "✓ Right — " : "△ ") + video.intervention.explain;
+  const next = document.createElement("div");
+  next.style.textAlign = "right"; next.style.marginTop = "14px";
+  next.innerHTML = `<button class="btn btn-primary btn-sm" onclick="closeModal();play()">Back to the video →</button>`;
+  fb.parentElement.appendChild(next);
+}
+
+/* ---------- end of video ---------- */
+function gateCtaHtml() {
+  return `<a class="btn btn-primary" href="assessment.html?module=${MOD}">Take the mastery gate →</a>
+          <a class="btn btn-ghost btn-sm" href="course.html" style="margin-left:8px">Back to Module ${MOD}</a>`;
+}
+function showGateCta() {
+  document.getElementById("after-lesson").innerHTML = `
+    <div class="eyebrow">Chapters complete</div>
+    <p style="font-size:.92rem;color:var(--muted);margin:8px 0 12px">You've watched this module — the mastery gate (5 questions, pass 4) is what unlocks the next one.</p>
+    <div>${gateCtaHtml()}</div>`;
+}
+function finish() {
+  markVideoWatched(MOD, VID);
+  const rows = document.querySelectorAll("#chapters .video-row");
+  if (rows[VID]) {
+    rows[VID].classList.add("watched");
+    rows[VID].querySelector(".play-dot").textContent = "✓";
+  }
+  const isLast = VID === mod.videos.length - 1;
+  document.getElementById("after-lesson").innerHTML = isLast
+    ? `<div class="eyebrow">All chapters done</div>
+       <p style="font-size:.92rem;color:var(--muted);margin:8px 0 12px">Concepts complete — now prove them. ${MOD < 5 ? `Passing the gate unlocks Module ${MOD + 1}.` : "Passing the gate unlocks the final build."}</p>
+       <div>${gateCtaHtml()}</div>`
+    : `<div class="eyebrow">Chapter done</div>
+       <p style="font-size:.92rem;color:var(--muted);margin:8px 0 12px">Logged. Next chapter is below.</p>
+       <a class="btn btn-primary btn-sm" href="lesson.html?module=${MOD}&video=${VID + 1}">Next: ${mod.videos[VID + 1].title} →</a>`;
+  toast("Video logged to your progress.");
+}
+
+paint();
+if (!moduleUnlocked(MOD)) {
+  document.getElementById("screen").innerHTML =
+    `<div class="v-big">🔒 Module ${MOD} is locked</div><div class="v-note">Pass Module ${MOD - 1}'s mastery gate first.</div>`;
+  document.querySelector(".player-bar").style.display = "none";
+} else {
+  document.getElementById("gate-strip").innerHTML =
+    `Videos done? Jump straight to the <a href="assessment.html?module=${MOD}"><strong>Module ${MOD} mastery gate →</strong></a> — videos don't block it.`;
+  // re-watch relief: already-watched videos resume near the end
+  const alreadyWatched = videosWatched(MOD).includes(VID);
+  if (alreadyWatched) { t = 200; intervened = true; paint(); }
+  play();
+  // if every chapter is watched, surface the gate CTA immediately
+  if (mod.videos.every((v, i) => videosWatched(MOD).includes(i))) showGateCta();
+}
+</script>
+<script src="bot.js"></script>
+</body>
+</html>

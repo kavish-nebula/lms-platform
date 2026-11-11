@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Let's understand how you want to learn — Proofcraft</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body data-bot-page="courses">
+<div id="topbar"></div>
+
+<div class="onb-wrap">
+  <div class="onb-count" id="onb-count"></div>
+  <div class="onb-progress" id="onb-progress"></div>
+
+  <div id="onb-stage"></div>
+
+  <div class="onb-nav">
+    <button class="btn btn-ghost btn-sm" id="btn-back" style="visibility:hidden">← Back</button>
+    <button class="btn btn-primary" id="btn-next" disabled>Continue →</button>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+<script>
+/* ---------- Iteration 3: profiling is the entry page.
+   9 fixed questions, universal content for all learners.
+   (Adaptive questions based on earlier answers come in a later iteration.) ---------- */
+
+/* ---------- the 9 questions (structured values, not display text) ---------- */
+const QUESTIONS = [
+  {
+    key: "learning_goal", title: "What is your main goal for learning this subject?",
+    sub: "This decides what the course optimizes for.", type: "radio",
+    options: [
+      ["fundamentals", "Understand the fundamentals", "The 'why', not just the 'how'"],
+      ["improve_skills", "Improve my existing skills", "I can do some of this — I want to be better"],
+      ["build_projects", "Build real-world projects", "A real project is waiting"],
+      ["current_job", "Use it in my current job", "There's a task at work that needs this"],
+      ["exam_prep", "Prepare for an exam/certification", "There's a date and a bar to clear"],
+      ["career_change", "Prepare for a career change", "This is the door to somewhere new"],
+      ["teach_others", "Teach or train others", "I need to explain it clearly"],
+      ["explore", "Explore the subject out of interest", "Curiosity, honestly"],
+    ],
+  },
+  {
+    key: "experience_level", title: "How would you describe your current experience with this subject?",
+    sub: "Be honest — overestimating makes the course skip things you needed.", type: "radio",
+    options: [
+      ["complete_beginner", "Complete beginner", "I have never studied it"],
+      ["beginner", "Beginner", "I know a few basic concepts"],
+      ["intermediate", "Intermediate", "I understand the fundamentals and have some practice"],
+      ["advanced", "Advanced", "I can work with the subject independently"],
+      ["expert", "Expert", "I have extensive practical/professional experience"],
+    ],
+  },
+  {
+    key: "known_topics", title: "Which areas of this subject are you already familiar with?",
+    sub: "Select all that apply. We'll go faster where you're solid and slower where you're not.",
+    type: "check", topics: true,
+    options: UNIVERSAL_TOPICS,
+  },
+  {
+    key: "confidence_level", title: "How confident are you in your current understanding of this subject?",
+    sub: "There's no good answer — only your honest one.", type: "confidence",
+  },
+  {
+    key: "preferred_content_formats", title: "What types of content help you understand a new concept best?",
+    sub: "Pick all that work for you — the course shifts its weight toward these.", type: "check",
+    options: [
+      ["simple_explanations", "Simple explanations"],
+      ["real_world_examples", "Real-world examples"],
+      ["diagrams", "Diagrams and visual explanations"],
+      ["demos", "Step-by-step demonstrations"],
+      ["videos", "Videos"],
+      ["code_examples", "Code/examples that I can follow"],
+      ["hands_on", "Hands-on exercises"],
+      ["quizzes", "Quizzes and practice questions"],
+      ["reading", "Detailed reading/documentation"],
+    ],
+  },
+  {
+    key: "available_learning_time", title: "How much time can you usually spend learning?",
+    sub: "This sets lesson length and how we spread spaced review.", type: "radio",
+    options: [
+      ["lt_15m", "Less than 15 minutes per day"],
+      ["15_30m", "15–30 minutes per day"],
+      ["30_60m", "30–60 minutes per day"],
+      ["1_2h", "1–2 hours per day"],
+      ["gt_2h", "More than 2 hours per day"],
+      ["varies", "My schedule varies"],
+    ],
+  },
+  {
+    key: "learning_style_preference", title: "What best describes how you want to learn?",
+    sub: "The same content, paced and packaged differently.", type: "radio",
+    options: [
+      ["quick_simple", "Quick and simple", "I want the essentials"],
+      ["balanced", "Balanced", "Explanation + examples + practice"],
+      ["deep", "Deep learning", "I want detailed explanations"],
+      ["hands_on", "Hands-on", "I prefer learning by doing"],
+      ["project_based", "Project-based", "I want to learn by building something"],
+    ],
+  },
+  {
+    key: "domain_interest", title: "What is your main area of interest or the context in which you want to use this skill?",
+    sub: "Examples and scenarios will be drawn from this world.", type: "radio_with_text",
+    options: [
+      ["academic", "Academic/studies"],
+      ["software_dev", "Software development"],
+      ["business", "Business"],
+      ["data_ai", "Data/AI"],
+      ["design", "Design/creative work"],
+      ["research", "Research"],
+      ["current_job", "Current job/work"],
+      ["career_dev", "Career development"],
+      ["personal_projects", "Personal projects"],
+      ["other", "Other"],
+    ],
+    textKey: "intended_use",
+    textLabel: "Tell us briefly what you would like to use this skill for.",
+    textPlaceholder: "e.g. I want to build the API for a small e-commerce side project…",
+    textOptional: true,
+  },
+  {
+    key: "learning_constraints", title: "Do you have any limitations that may affect how you learn?",
+    sub: "So the course fits your reality — not an ideal one.", type: "check",
+    options: [
+      ["mobile_main", "I mainly learn on a mobile device"],
+      ["laptop_access", "I have access to a laptop/desktop"],
+      ["limited_internet", "I have limited internet/data"],
+      ["limited_time", "I have limited study time"],
+      ["offline", "I prefer downloadable/offline-friendly content"],
+      ["none", "None of these"],
+      ["other", "Other"],
+    ],
+  },
+];
+
+const LABELS = {
+  learning_goal: { fundamentals: "Fundamentals", improve_skills: "Skill-up", build_projects: "Builder", current_job: "For work", exam_prep: "Exam prep", career_change: "Career change", teach_others: "Teacher", explore: "Curious" },
+  experience_level: { complete_beginner: "Beginner", beginner: "Beginner+", intermediate: "Intermediate", advanced: "Advanced", expert: "Expert" },
+  available_learning_time: { lt_15m: "<15 min/day", "15_30m": "15–30 min/day", "30_60m": "30–60 min/day", "1_2h": "1–2 hrs/day", gt_2h: ">2 hrs/day", varies: "Varies" },
+  learning_style_preference: { quick_simple: "Essentials", balanced: "Balanced", deep: "Deep", hands_on: "Hands-on", project_based: "Project-based" },
+  domain_interest: { academic: "Academic", software_dev: "Software", business: "Business", data_ai: "Data/AI", design: "Design", research: "Research", current_job: "Work", career_dev: "Career", personal_projects: "Personal", other: "Other" },
+};
+
+/* ---------- draft profile ---------- */
+const blank = {
+  version: 2, course: null,
+  learning_goal: null, experience_level: null, known_topics: [],
+  confidence_level: null, preferred_content_formats: [],
+  available_learning_time: null, learning_style_preference: null,
+  domain_interest: null, intended_use: "", learning_constraints: [],
+  diagnostics: {}, createdAt: Date.now(),
+};
+let draft = blank;
+const existing = lmGet();
+if (existing && existing.version === 2) {
+  draft = { ...blank, ...existing, course: null }; // resume with previous answers pre-filled
+}
+
+let step = 0;
+const stage = document.getElementById("onb-stage");
+const dots = document.getElementById("onb-progress");
+const count = document.getElementById("onb-count");
+const btnNext = document.getElementById("btn-next");
+const btnBack = document.getElementById("btn-back");
+
+function topicLabel(v) {
+  for (const t of UNIVERSAL_TOPICS) if (t[0] === v) return t[1];
+  return v;
+}
+function renderDots() {
+  count.textContent = `Question ${step + 1} of ${QUESTIONS.length}`;
+  dots.innerHTML = QUESTIONS.map((_, i) => `<div class="onb-dot ${i <= step ? "done" : ""}"></div>`).join("");
+}
+
+function selected(k, i) {
+  const q = QUESTIONS[k];
+  return q.type === "radio" || q.type === "radio_with_text"
+    ? draft[q.key] === q.options[i][0]
+    : draft[q.key].includes(q.options[i][0]);
+}
+
+function renderStep() {
+  renderDots();
+  btnNext.style.display = "";
+  btnBack.textContent = "← Back";
+  const q = QUESTIONS[step];
+
+  let body = "";
+  if (q.type === "radio" || q.type === "check") {
+    body = `<div id="opts">${q.options.map((o, i) => `
+      <label class="opt ${selected(step, i) ? "selected" : ""}">
+        <input type="${q.type === "radio" ? "radio" : "checkbox"}" name="${q.key}" value="${o[0]}" ${selected(step, i) ? "checked" : ""} />
+        <span><span class="opt-label">${o[1]}</span>${o[2] ? `<div class="opt-sub">${o[2]}</div>` : ""}</span>
+      </label>`).join("")}</div>`;
+  } else if (q.type === "confidence") {
+    body = `<div class="conf-row">${[1, 2, 3, 4, 5].map((n) => `
+      <button class="conf-btn ${draft.confidence_level === n ? "selected" : ""}" data-n="${n}">
+        <span class="conf-num">${n}</span>
+        <span class="conf-word">${["Not at all", "Slightly", "Moderately", "Very", "Extremely"][n - 1]}</span>
+      </button>`).join("")}</div>`;
+  } else if (q.type === "radio_with_text") {
+    body = `<div id="opts">${q.options.map((o, i) => `
+      <label class="opt ${selected(step, i) ? "selected" : ""}">
+        <input type="radio" name="${q.key}" value="${o[0]}" ${selected(step, i) ? "checked" : ""} />
+        <span class="opt-label">${o[1]}</span>
+      </label>`).join("")}</div>
+      <div style="margin-top:22px">
+        <div class="eyebrow">${q.textLabel} <span style="text-transform:none;letter-spacing:0;color:var(--faint)">(optional)</span></div>
+        <textarea class="text-input" id="qtext" rows="2" placeholder="${q.textPlaceholder}">${draft[q.textKey] || ""}</textarea>
+      </div>`;
+  }
+
+  stage.innerHTML = `
+    <span class="chip gold">Getting started</span>
+    <h1 style="margin-top:14px">${q.title}</h1>
+    <p class="lede" style="margin-top:8px">${q.sub}</p>
+    <div style="margin-top:22px">${body}</div>`;
+
+  // wire option handlers
+  stage.querySelectorAll(".opt input").forEach((inp) =>
+    inp.addEventListener("change", () => {
+      const i = Number([...stage.querySelectorAll(".opt input")].indexOf(inp));
+      const val = q.options[i][0];
+      if (q.type === "radio" || q.type === "radio_with_text") draft[q.key] = val;
+      else {
+        let set = new Set(draft[q.key]);
+        if (val === "none") { set = new Set(inp.checked ? ["none"] : []); }
+        else { set.delete("none"); inp.checked ? set.add(val) : set.delete(val); }
+        draft[q.key] = [...set];
+      }
+      renderStep();
+    })
+  );
+  stage.querySelectorAll(".conf-btn").forEach((b) =>
+    b.addEventListener("click", () => { draft.confidence_level = Number(b.dataset.n); renderStep(); })
+  );
+  const ta = document.getElementById("qtext");
+  if (ta) ta.addEventListener("input", (e) => { draft[q.textKey] = e.target.value; updateNext(); });
+
+  btnBack.style.visibility = step === 0 ? "hidden" : "visible";
+  btnNext.textContent = step === QUESTIONS.length - 1 ? "Finish →" : "Continue →";
+  updateNext();
+}
+
+function stepValid() {
+  const q = QUESTIONS[step];
+  if (q.type === "radio" || q.type === "radio_with_text") return draft[q.key] !== null;
+  if (q.type === "check") return draft[q.key].length > 0;
+  if (q.type === "confidence") return draft.confidence_level !== null;
+  return true;
+}
+function updateNext() { btnNext.disabled = !stepValid(); }
+
+function renderSummary() {
+  count.textContent = "Done";
+  dots.innerHTML = QUESTIONS.map(() => `<div class="onb-dot done"></div>`).join("");
+  const chips = [
+    LABELS.learning_goal[draft.learning_goal],
+    LABELS.experience_level[draft.experience_level],
+    LABELS.learning_style_preference[draft.learning_style_preference],
+    LABELS.available_learning_time[draft.available_learning_time],
+    draft.known_topics.length && !draft.known_topics.includes("none")
+      ? `${draft.known_topics.length} familiar area${draft.known_topics.length > 1 ? "s" : ""}`
+      : "New to all of it",
+  ].filter(Boolean);
+  stage.innerHTML = `
+    <span class="chip accent">Your learner profile</span>
+    <h1 style="margin-top:14px">Here's what we understood about you.</h1>
+    <p class="lede" style="margin-top:8px">Saved to your learner profile. Every course adapts to it — scenario difficulty, lesson pace, the examples you're shown.</p>
+    <div class="meta-row" style="margin-top:20px">${chips.map((c) => `<span class="chip">${c}</span>`).join("")}</div>
+    <div class="card" style="margin-top:22px">
+      <div class="eyebrow">How this profile gets used</div>
+      <div class="stat-row"><span>Scenario difficulty</span><strong>from experience + confidence</strong></div>
+      <div class="stat-row"><span>Content style</span><strong>${LABELS.learning_style_preference[draft.learning_style_preference]}</strong></div>
+      <div class="stat-row"><span>Spaced review pacing</span><strong>${LABELS.available_learning_time[draft.available_learning_time]}</strong></div>
+      <div class="stat-row"><span>Faster through</span><strong>${draft.known_topics.filter((t) => t !== "none").length || 0} familiar topics</strong></div>
+    </div>
+    <div style="display:flex;gap:12px;margin-top:24px">
+      <a class="btn btn-primary" href="courses.html">Take me to my courses →</a>
+    </div>`;
+  btnBack.style.visibility = "hidden";
+  btnNext.style.display = "none";
+}
+
+btnNext.addEventListener("click", () => {
+  if (!stepValid()) return;
+  if (step < QUESTIONS.length - 1) { step++; renderStep(); }
+  else { lmSet({ ...draft, createdAt: Date.now() }); renderSummary(); }
+});
+btnBack.addEventListener("click", () => { if (step > 0) { step--; renderStep(); } });
+
+topbar("", { hideProfile: true });
+renderStep();
+</script>
+<script src="bot.js"></script>
+</body>
+</html>

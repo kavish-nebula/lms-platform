@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Courses — Proofcraft</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body data-bot-page="courses">
+<div id="topbar"></div>
+
+<div class="container">
+  <div class="page-head">
+    <div class="eyebrow">Courses</div>
+    <div class="head-row">
+      <h1>Learn it so you can <em style="font-style:italic;color:var(--accent)">prove it</em>.</h1>
+    </div>
+    <p class="lede">
+      No streaks, no badges, no completion percentages. Each course ends with evidence:
+      what you demonstrated, at what difficulty, and what you can now do unaided.
+    </p>
+  </div>
+
+  <div class="course-grid" id="grid"></div>
+</div>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+<script>
+topbar("courses");
+const hasProfile = !!(lmGet() && lmGet().version === 2);
+if (!hasProfile) {
+  const banner = document.createElement("div");
+  banner.className = "review-strip";
+  banner.style.cssText = "background:var(--accent-soft);border-color:#cfe2dc;margin-top:20px";
+  banner.innerHTML = `<span class="label" style="color:var(--accent-deep)">First time here?</span>
+    <span style="font-size:.9rem;color:var(--accent-deep)">Set up how you learn first — 9 quick questions, and every course adapts to your answers.</span>
+    <a class="btn btn-primary btn-sm" href="index.html">Set up how you learn →</a>`;
+  document.querySelector(".page-head").after(banner);
+}
+const startHref = hasProfile ? "course.html" : "index.html";
+document.getElementById("grid").innerHTML = CATALOG.map((c) => `
+  <div class="card course-card">
+    <h3>${c.title}</h3>
+    <p class="lede" style="font-size:.92rem">
+      <strong style="color:var(--ink);font-style:normal">The real problem:</strong> ${c.problem}
+    </p>
+    <ul class="cap-list">${c.capabilities.map((x) => `<li>${x}</li>`).join("")}</ul>
+    <div class="foot">
+      <span class="chip">${c.hours}</span>
+      ${c.open
+        ? `<a class="btn btn-primary btn-sm" href="${startHref}">Start learning →</a>`
+        : `<span class="chip">Course</span>`}
+    </div>
+  </div>`).join("");
+</script>
+<script src="bot.js"></script>
+</body>
+</html>
