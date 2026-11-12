@@ -20,6 +20,7 @@ import { audioRoot, defaultVoicer, type Voicer } from "./tts";
 import { piecesOf, conceptPiece } from "./pieces";
 import { validatePersonalizedConcept, type PersonalizedConcept } from '@/lib/personalized-concept';
 import { wavSeconds } from '@/server/production-audio';
+import { llmConfig } from '@/server/ai/llm';
 
 // Every enrolled course uses the adaptive lane. Enrollment and module access
 // are checked before jobs are queued; no per-course configuration is needed.
@@ -34,8 +35,17 @@ function teachingContext(context: Awaited<ReturnType<typeof contextOf>>["context
     insufficientEvidence: r.summary.insufficientEvidence, supportRequests: r.summary.supportRequests,
   } })) };
 }
-const voiceSettings = () => ({ speechPolicy: 2, provider: process.env.AUDIO_PROVIDER, model: process.env.AUDIO_MODEL, voice: process.env.AUDIO_VOICE, style: process.env.AUDIO_STYLE, kokoroVoice: process.env.KOKORO_VOICE });
+const voiceSettings = () => ({ speechPolicy: 3, provider: process.env.AUDIO_PROVIDER, model: process.env.AUDIO_MODEL, voice: process.env.AUDIO_VOICE, style: process.env.AUDIO_STYLE, kokoroVoice: process.env.KOKORO_VOICE, kokoroModel: process.env.KOKORO_MODEL, kokoroDtype: process.env.KOKORO_DTYPE });
 const clipKey = (text: string, voice = voiceSettings()) => hash({ text, voice });
+
+function providerSettings(importedCourse: boolean) {
+  const policy = process.env.IMPORTED_ADAPTIVE_PROVIDER?.trim() || 'vertex';
+  if (importedCourse && policy !== 'vertex' && policy !== 'configured') throw new ApiError(500, 'provider_configuration', 'IMPORTED_ADAPTIVE_PROVIDER must be vertex or configured.');
+  const useVertex = importedCourse && policy === 'vertex';
+  const configured = llmConfig();
+  const voice = { ...voiceSettings(), provider: useVertex ? 'vertex' : process.env.AUDIO_PROVIDER || (process.env.AUDIO_API_KEY ? 'gemini' : 'kokoro') };
+  return { llmProvider: importedCourse ? useVertex ? 'vertex' : configured.provider : undefined, llmModel: configured.model, voice };
+}
 type Job = typeof adaptationJobs.$inferSelect;
 export type Trigger = "initial" | "simplify" | "example" | "wrong_answer";
 
@@ -164,7 +174,10 @@ async function contextOf(user: SessionUser, courseId: string, moduleId: string) 
       if (weak.includes(v.lesson)) prerequisiteTeaching.push({ lessonId: v.lesson, title: v.title, keyIdeas: v.notes });
     }
   }
-  return { e, context: { profile: profile?.answers, derived: profile?.derived, answers: e.answers, precheck: e.precheck?.lessons, supportOverride: e.supportOverride, plan: plan?.plan, planVersion: plan?.version ?? 0, courseVersion: course?.version, llmProvider: (course?.importedRevisionId || course?.vertexAdaptive) ? 'vertex' : undefined, importedCourse: !!(course?.importedRevisionId || course?.vertexAdaptive), voice: (course?.importedRevisionId || course?.vertexAdaptive) ? { ...voiceSettings(), provider: 'vertex' } : voiceSettings(), evidence: evidence.map((r) => ({ moduleId: r.moduleId, version: r.version, summary: r.summary })), prerequisiteReminders: weak, prerequisiteTeaching, promptVersion: ADAPTIVE_PROMPT_VERSION, authoredCourse: !!(course?.authoredRevisionId || course?.importedRevisionId), courseTitle: course?.title, world: course?.authoredRevisionId || course?.importedRevisionId ? "Preserve the source course facts and teach using the learner's field without introducing unsupported claims." : "Harbour Works is the fictional organisation; adapt its activities to the learner's field. Retain the agent name Scout." } };
+  const importedCourse = !!(course?.importedRevisionId || course?.vertexAdaptive);
+  // Vertex remains the default. An explicit operator setting allows imported
+  // teaching to use the configured Gemini/API-key + local-speech stack instead.
+  return { e, context: { profile: profile?.answers, derived: profile?.derived, answers: e.answers, precheck: e.precheck?.lessons, supportOverride: e.supportOverride, plan: plan?.plan, planVersion: plan?.version ?? 0, courseVersion: course?.version, ...providerSettings(importedCourse), importedCourse, evidence: evidence.map((r) => ({ moduleId: r.moduleId, version: r.version, summary: r.summary })), prerequisiteReminders: weak, prerequisiteTeaching, promptVersion: ADAPTIVE_PROMPT_VERSION, authoredCourse: !!(course?.authoredRevisionId || course?.importedRevisionId), courseTitle: course?.title, world: course?.authoredRevisionId || course?.importedRevisionId ? "Preserve the source course facts and teach using the learner's field without introducing unsupported claims." : "Harbour Works is the fictional organisation; adapt its activities to the learner's field. Retain the agent name Scout." } };
 }
 
 type ProfileContext = { profile?: unknown; derived?: unknown; answers?: unknown; courseVersion?: string };
@@ -276,7 +289,10 @@ export async function claimJob(lane: "all" | "interactive" | "background" = "all
   for (const r of candidates) {
     const predicate = and(eq(adaptationJobs.id, r.id), eq(adaptationJobs.attempts, r.attempts), or(eq(adaptationJobs.status, "queued"), and(eq(adaptationJobs.status, "running"), lt(adaptationJobs.leaseUntil, now))));
     // A prompt deployment must never generate old snapshots with new instructions.
-    if ((r.input.context as { promptVersion?: number } | undefined)?.promptVersion !== ADAPTIVE_PROMPT_VERSION) {
+    const context = r.input.context as { promptVersion?: number; importedCourse?: boolean; llmProvider?: string; llmModel?: string; voice?: ReturnType<typeof voiceSettings> } | undefined;
+    const expected = context?.importedCourse ? providerSettings(true) : undefined;
+    const staleProvider = expected && (context?.llmProvider !== expected.llmProvider || context?.llmModel !== expected.llmModel || JSON.stringify(canonical(context?.voice)) !== JSON.stringify(canonical(expected.voice)));
+    if (context?.promptVersion !== ADAPTIVE_PROMPT_VERSION || staleProvider) {
       await d.update(adaptationJobs).set({ status: "superseded", updatedAt: now }).where(predicate);
       continue;
     }
@@ -300,8 +316,8 @@ export async function heartbeat(id: string, lease: string) {
 
 export async function finishJob(id: string, lease: string, generated: unknown, model: string, metrics: Record<string, number>, voice: Voicer | null | undefined = undefined) {
   const row = await leasedJob(id, lease);
-  const context = row.input.context as { authoredCourse?: boolean; importedCourse?: boolean; courseVersion?: string };
-  if (voice === undefined) voice = defaultVoicer(context?.importedCourse ? 'vertex' : undefined);
+  const context = row.input.context as { authoredCourse?: boolean; importedCourse?: boolean; courseVersion?: string; voice?: ReturnType<typeof voiceSettings> };
+  if (voice === undefined) voice = defaultVoicer(context?.voice?.provider ?? (context?.importedCourse ? 'vertex' : undefined));
   const checkRelease = async () => {
     if (!context?.authoredCourse) return;
     const [enrollment] = await (await db()).select().from(enrollments).where(eq(enrollments.id, row.enrollmentId)).limit(1);
@@ -325,7 +341,7 @@ export async function finishJob(id: string, lease: string, generated: unknown, m
       catch (error) { throw new ApiError(422, 'invalid_content', error instanceof Error ? error.message : 'Invalid concept lesson.'); }
     }
     const clips = def.clips(content).filter((c) => c.text.trim());
-    const keys = clips.map((c) => ({ original: c.key, key: clipKey(c.text), text: c.text }));
+    const keys = clips.map((c) => ({ original: c.key, key: clipKey(c.text, context.voice), text: c.text }));
     const dir = path.join(audioRoot(), row.enrollmentId, row.moduleId, "clips");
     const started = Date.now();
     const cached = new Set(keys.filter((c) => fs.existsSync(path.join(dir, `${c.key}.wav`))).map((c) => c.key));

@@ -14,6 +14,12 @@ Imported content is enabled as a clearly labelled learner **pilot**, not a human
 
 ## Personalization and narration
 
+The Vertex behavior below remains the default. Operators can explicitly choose
+`IMPORTED_ADAPTIVE_PROVIDER=configured` to use the configured LLM API and speech
+provider instead, including Gemini API-key generation with Kokoro narration.
+This preserves imported-source validation and original recordings. See
+[connected-course provider configuration](connected-scorm-courses.md) for setup.
+
 The adapter registers active pilot content with the existing `getCourse`/`getModule` data accessors and course companion. Native enrollment and profiling apply. Existing Python generation, durable claims, leases, SSE, audio serving and learner progress are reused. Opening the module prepares the first two videos; later slide openings prioritize their own generation. Original text can be previewed while matching audio is unavailable, with explicit status. No unsplit source audio is paired with split or rewritten text.
 
 Imported jobs explicitly select `vertex` in trusted server context. Python uses Google Application Default Credentials with refreshed OAuth access tokens and the project OpenAI-compatible Vertex endpoint. Next.js narration uses the Vertex `generateContent` endpoint and Gemini TTS audio output, validated/stored as WAV. These pilot jobs never silently switch to Gemini API-key generation or Kokoro. Other existing courses retain their configured provider. Source revision, profile context and voice configuration participate in generation identity; publication rejects stale source/profile content and incomplete narration. Quiz answer standards remain source-authored.

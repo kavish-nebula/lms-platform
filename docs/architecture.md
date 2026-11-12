@@ -1,5 +1,12 @@
 # Current learning experience extension
 
+Imported-course personalization defaults to Vertex, with an explicit
+`IMPORTED_ADAPTIVE_PROVIDER=configured` alternative for the configured LLM and
+speech stack. This permits Gemini API-key teaching with Kokoro narration when
+Google ADC is unavailable. Source facts, checkpoints, edition isolation and
+complete text/audio publication remain unchanged; cached speech uses each job's
+saved voice configuration. See [Connected SCORM courses](connected-scorm-courses.md).
+
 PGlite-to-PostgreSQL migration is available through `scripts/migrate-postgres.mjs`.
 It creates a new local database and dedicated role, preserves the original PGlite
 files, validates all copied tables before switching `DATABASE_URL`, and retains

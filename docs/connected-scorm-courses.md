@@ -27,7 +27,40 @@ Check for source updates is manual. A new import run never replaces a live publi
 
 Media is stored in ignored `apps/web/.data/connected-scorm-media`, outside Git. Downloads accept only registered HTTPS CDN references, bounded supported media containers and complete responses, with SHA-256 identities. The media route supports byte ranges and requires creator ownership or inclusion in the learner's pinned enrolled edition. Include this directory, the database and other narration storage when transferring the app.
 
-Connected-course personalization uses the existing Python worker with trusted Vertex context. Both a validated learner-specific script and matching narration must be complete before adoption. Google ADC or `GOOGLE_APPLICATION_CREDENTIALS` is required. Source recordings remain available when generation is unavailable. No unsplit source recording is represented as a matching personalised clip; long split concepts identify full source media as reference material.
+Connected-course personalization uses the existing Python worker. The default
+`IMPORTED_ADAPTIVE_PROVIDER=vertex` requires Google ADC or
+`GOOGLE_APPLICATION_CREDENTIALS`. An explicit
+`IMPORTED_ADAPTIVE_PROVIDER=configured` setting instead uses the existing
+`LLM_PROVIDER`/`LLM_BASE_URL`/`LLM_MODEL` and `AUDIO_PROVIDER` settings; Gemini's
+OpenAI-compatible endpoint and `AUDIO_PROVIDER=kokoro` support local narration
+without Vertex authentication. This is an operator-selected policy, not a silent
+authentication fallback. Provider/model/voice settings scope generated revisions
+and narration caches. Both a validated learner-specific script and matching
+narration must be complete before adoption. Imported source checks, enrollment
+editions and assessment exclusions remain enforced. Source recordings stay
+available when generation is unavailable. No unsplit source recording is
+represented as a matching personalised clip; long split concepts identify full
+source media as reference material.
+
+For a local Gemini/Kokoro setup, retain `LLM_API_KEY` and use:
+
+```dotenv
+IMPORTED_ADAPTIVE_PROVIDER=configured
+LLM_PROVIDER=openai
+LLM_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai
+LLM_MODEL=gemini-3.5-flash-lite
+LLM_FALLBACK_MODEL=gemini-3.5-flash
+AUDIO_PROVIDER=kokoro
+KOKORO=on
+```
+
+Restart the web service and Python worker after changing providers. Obsolete
+pending imported-course jobs are superseded before worker generation. Existing
+published content, enrollments and grades stay intact; reopening a concept queues
+the current provider-scoped derivative. The first local speech preparation can
+take minutes; completed clips are cached. An existing `gcloud auth login` does not
+configure ADC for the Vertex mode. Use the separate Google ADC setup when choosing
+Vertex again.
 
 ## Verification
 
