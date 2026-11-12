@@ -1,5 +1,13 @@
 # Current learning experience extension
 
+Creator-workspace MCP is available at `/api/mcp/course-authoring`, configured
+through `/content/mcp`. Migration 0024 adds hashed eight-hour owner grants with
+an explicit optional approved-publication permission. Existing single-course
+MCP remains unchanged. Workspace tools reuse course brief/package validation,
+focused fragment merging, optimistic versions, human review and immutable
+edition publication; agents cannot grant human approval. Schemas and workflow
+prompts are discoverable through MCP. See [creator MCP workflow](creator-mcp-workflow.md).
+
 Learner navigation no longer assembles the entire course library for the
 assistant. Its client provider loads only the current course through the private
 `companion-context` endpoint after navigation. Published delivery and catalog

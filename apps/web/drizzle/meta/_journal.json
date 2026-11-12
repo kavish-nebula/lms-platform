@@ -169,6 +169,13 @@
       "when": 1793760000000,
       "tag": "0023_connected_course_editions",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1794450600000,
+      "tag": "0024_creator_mcp_grants",
+      "breakpoints": true
     }
   ]
 }

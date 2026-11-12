@@ -1,5 +1,14 @@
 # Adaptive teaching system design
 
+Prompt-driven creator operations use a separate owner-workspace MCP endpoint,
+`/api/mcp/course-authoring`. Eight-hour hashed grants default to draft authoring;
+publication is an explicit optional scope. MCP exposes current schemas, planning
+and review prompts, owner-scoped brief/package operations and validated focused
+lesson/quiz edits. Final human approval remains in the creator workspace, and
+publication reuses exact-revision locks and immutable learner editions. The
+legacy three-tool single-course endpoint is unchanged. See
+[creator MCP workflow](creator-mcp-workflow.md) for setup and boundaries.
+
 The practical sandbox separates content, learner state and authoritative grading. miniProject.sandbox declares bounded data-workflow fields/steps/input cases and criterion predicates. Package validation checks rubric/objective/video coverage and valid test references; instructional semantics remain human reviewed. The existing session scopes the project-sandbox API to an enrollment and published revision. Save/Submit lock release/enrollment and check optimistic versions, preventing stale tab/release writes. Run can execute locally; Test and Submit use published server predicates. Submission artifacts and reports are append-only. Migration 0019 adds release-scoped drafts/submissions; earlier revisions and reference-course workflows remain intact. Supported tasks are structured artifact/data-flow simulations, not arbitrary code execution or live tools.
 
 Authored module quizzes and multiple-answer questions now use the existing delivery and grading boundaries. Optional moduleQuiz fields preserve old JSON packages; strict single/multiple question variants reject ambiguous keys. The released assessment endpoint accepts optional moduleId and scalar/array responses, rejects stale releases and cross-scope or invalid selections, and uses exact-set grading. Keys for module and final quizzes remain server-side; explanatory feedback is withheld on failed attempts. Video midpoint checks remain formative and can also use multiple selections. Telemetry verification calls the shared authored grader directly on the server. Existing progress and publication approval records are retained.

@@ -1,5 +1,10 @@
 # Content Creator Studio — SME input through Stage 4 production
 
+For conversational course, lesson and quiz authoring, open
+**Create courses through prompts (MCP)** at `/content/mcp`. The connection setup,
+source/schema workflow, review and optional approved publication are documented
+in [creator MCP workflow](creator-mcp-workflow.md).
+
 Open `/content`, or select **Content creator** from the sidebar role menu. Return to **Learner** through the same menu. Both views use the existing shared demo session; switching views is not authentication or a permission grant. Other roles remain unavailable.
 
 ## Available now

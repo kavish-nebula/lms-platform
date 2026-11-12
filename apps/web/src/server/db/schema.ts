@@ -196,6 +196,17 @@ export const creatorCodexGrants = pgTable('creator_codex_grants', {
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 });
 
+/** Short-lived creator-workspace MCP grants never expand existing course grants. */
+export const creatorMcpGrants = pgTable('creator_mcp_grants', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  ownerId: text('owner_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  tokenHash: text('token_hash').notNull().unique(),
+  allowPublication: boolean('allow_publication').notNull().default(false),
+  expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+  revokedAt: timestamp('revoked_at', { withTimezone: true }),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
 /** Locally rendered narration belongs to an immutable course package revision. */
 export const creatorAuthoredCourseAudio = pgTable('creator_authored_course_audio', {
   id: uuid('id').primaryKey().defaultRandom(),

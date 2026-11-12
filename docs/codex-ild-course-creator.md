@@ -1,5 +1,10 @@
 # Codex-assisted ILD course creation
 
+For workspace-wide prompt authoring, including new course briefs, focused lesson
+and quiz edits, and optional publication after human approval, see the
+[creator MCP workflow](creator-mcp-workflow.md). That separate connection does
+not expand existing single-course grants or change the three tools below.
+
 The authoring route uses Codex during course creation. It does not run an LLM job from the LMS server. The creator opens a saved brief, creates a short-lived course-scoped connection, adds the endpoint and bearer-token environment variable to local Codex MCP configuration, then asks Codex to use the `course-creation` skill. The coordinator reads the saved SME context, runs the specialist workflows in the same conversation, assembles a complete course and saves an append-only editable revision through the LMS MCP tools. The LMS validates the imported structure and source/objective references.
 
 ## Six coordinated skills
