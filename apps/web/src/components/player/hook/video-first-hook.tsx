@@ -4,7 +4,6 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useReducedMotionConfig } from 'motion/react';
 import { Play, Pause, RotateCcw, ChevronLeft, ChevronRight, Captions, Maximize, Volume2, VolumeX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
 import { StageShell } from '../stage-shell';
 import { hookSceneAt, hookScenes, type VideoHook } from '@/lib/video-first-hook';
 import { HookStoryboard } from './hook-storyboard';
@@ -28,7 +27,6 @@ export function VideoFirstHook({ hook, audio, sceneAudio, fallbackAudioUrl, pers
   const [captions, setCaptions] = useState(true);
   const [muted, setMuted] = useState(false);
   const [rate, setRate] = useState(1);
-  const [hunch, setHunch] = useState('');
   const [seen, setSeen] = useState<Set<number>>(() => new Set([0]));
   const segmented = sceneAudio?.length === scenes.length || !audio;
   const src = segmented ? sceneAudio?.[index] ?? `${fallbackAudioUrl}?scene=${index}` : audio;
@@ -65,9 +63,9 @@ export function VideoFirstHook({ hook, audio, sceneAudio, fallbackAudioUrl, pers
     try { await a.play(); setPlaying(true); } catch { setError('Playback could not start. Try again or read the scenes.'); }
   };
 
-  return <StageShell stage="hook" title={hook.title} bloom="understand" onPrev={onPrev} onComplete={onComplete} done={done} canComplete={done || (seen.size === scenes.length && !!hunch.trim())} completeHint="Watch the case and write your initial thinking to continue.">
+  return <StageShell stage="hook" title={hook.title} bloom="understand" onPrev={onPrev} onComplete={onComplete} done={done} canComplete={done || seen.size === scenes.length} completeHint="Explore all the case scenes to continue.">
     <div className="space-y-5">
-      <p className="text-sm text-ink-muted">{personalized ? 'Your personalised case study' : preparing ? 'Your personalised case is preparing. You can watch the original now.' : 'Watch the case, inspect the evidence, then make your prediction.'}</p>
+      <p className="text-sm text-ink-muted">{personalized ? 'Your personalised case study' : preparing ? 'Your personalised case is preparing. You can watch the original now.' : 'Watch the case and inspect the evidence before exploring the concepts.'}</p>
       <section ref={screen} aria-label="Problem hook video" className="hook-film">
         <HookStoryboard scenes={scenes} index={index} seconds={elapsed} reducedMotion={reducedMotion} />
         <div className="hook-film-progress" aria-label="Scene navigation">{scenes.map((s, i) => <button key={s.id} onClick={() => seekScene(i)} aria-label={`Go to scene ${i + 1}: ${s.title}`} aria-current={index === i ? 'step' : undefined} data-seen={i !== index && seen.has(i) ? 'true' : undefined} />)}</div>
@@ -91,7 +89,6 @@ export function VideoFirstHook({ hook, audio, sceneAudio, fallbackAudioUrl, pers
       </section>
       {error && <p role="alert" className="text-sm text-ink-muted">{error}</p>}
       <details><summary className="cursor-pointer text-sm font-medium">Read the full hook transcript</summary><div className="mt-3 space-y-3 text-sm leading-relaxed">{scenes.map(s => <p key={s.id}>{s.text}</p>)}</div></details>
-      {index === scenes.length - 1 && <div className="space-y-3 rounded-xl border border-line bg-panel-2 p-5"><label htmlFor="hook-first-thought" className="block font-medium">Your initial thinking</label><p className="text-sm text-ink-muted">{hook.question}</p><Textarea id="hook-first-thought" value={hunch} onChange={e => { onInteract?.(); setHunch(e.target.value); }} rows={3} maxLength={6000} /><p className="text-xs text-ink-muted">This prediction is ungraded. Explore the concepts next.</p></div>}
     </div>
   </StageShell>;
 }

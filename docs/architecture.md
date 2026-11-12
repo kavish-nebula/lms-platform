@@ -1,5 +1,17 @@
 # Current learning experience extension
 
+Learner navigation no longer assembles the entire course library for the
+assistant. Its client provider loads only the current course through the private
+`companion-context` endpoint after navigation. Published delivery and catalog
+reads are deduplicated with React's request-scoped cache during server renders;
+they are never shared across learners or retained across requests. Development
+mode still compiles routes on demand; use a production build for learner demos.
+
+Video-first problem hooks present the case without an initial-thinking response
+field. Storyboard hooks allow continuation after all scenes have been explored;
+the text fallback also requires no written prediction. Guided practice and
+scenario response requirements remain unchanged.
+
 Imported-course personalization defaults to Vertex, with an explicit
 `IMPORTED_ADAPTIVE_PROVIDER=configured` alternative for the configured LLM and
 speech stack. This permits Gemini API-key teaching with Kokoro narration when

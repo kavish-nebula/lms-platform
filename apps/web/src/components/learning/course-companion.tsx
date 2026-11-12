@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import useSWR from 'swr';
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BookOpen, Check, Compass, Download, Lightbulb, MessageCircle, NotebookPen, ShieldCheck, Sparkles, X } from "lucide-react";
@@ -33,11 +34,14 @@ export function openPipNotes() {
   window.dispatchEvent(new Event("pip:notes"));
 }
 
-export function CourseCompanionProvider({ catalog, children }: { catalog: CompanionCourse[]; children: React.ReactNode }) {
+export function CourseCompanionProvider({ children }: { children: React.ReactNode }) {
   const path = usePathname();
   const pieces = path.split("/");
   const courseId = pieces[2] === "courses" ? pieces[3] ?? "" : "";
-  const selected = catalog.find((c) => c.course.course_id === courseId);
+  // Load only the active course after navigation, rather than blocking every
+  // learner page on all published modules and serializing the whole library.
+  const { data: selected } = useSWR(courseId ? `/api/v1/courses/${encodeURIComponent(courseId)}/companion-context` : null,
+    (url: string) => api<CompanionCourse>(url), { revalidateOnFocus: true });
   const moduleId = selected?.course.modules.find((m) => m.module_id === pieces[4])?.module_id ?? "";
   const phase = pieces[4] === "enroll" ? "profile" : pieces[4] === "finale" ? pieces[5] ?? "capstone" : pieces[5] ?? "course";
   const [active, setActive] = React.useState<{ path: string; step: CompanionStep } | null>(null);
