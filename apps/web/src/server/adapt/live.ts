@@ -25,7 +25,7 @@ import { llmConfig } from '@/server/ai/llm';
 // Every enrolled course uses the adaptive lane. Enrollment and module access
 // are checked before jobs are queued; no per-course configuration is needed.
 export const liveEnabled = (courseId: string) => process.env.ADAPTIVE_PYTHON_ENABLED === "true" && courseId.trim().length > 0;
-export const ADAPTIVE_PROMPT_VERSION = 4;
+export const ADAPTIVE_PROMPT_VERSION = 5;
 const hash = (x: unknown) => createHash("sha256").update(JSON.stringify(x)).digest("hex");
 // Keep the full evidence snapshot for audit, but do not rewrite a module every
 // time its prerequisite's playback timer advances. Only teaching inputs matter.
@@ -197,7 +197,7 @@ export async function currentLearnerContextKey(userId: string, courseId: string)
 }
 export const matchesLearnerContext = (context: unknown, current: string) => learnerContextKey((context ?? {}) as ProfileContext) === current;
 
-export async function queueSlide(user: SessionUser, courseId: string, moduleId: string, videoId: string, slide: number, trigger: Trigger, requestId?: string, baseRevision?: string) {
+export async function queueSlide(user: SessionUser, courseId: string, moduleId: string, videoId: string, slide: number, trigger: Trigger, requestId?: string, baseRevision?: string, preparationPriority = 0) {
   if (!liveEnabled(courseId)) throw new ApiError(409, "disabled", "Live adaptation is disabled.");
   const { videos } = await videosOf(courseId, moduleId, user.id);
   const video = videos.find((v) => v.id === videoId);
@@ -215,7 +215,8 @@ export async function queueSlide(user: SessionUser, courseId: string, moduleId: 
   const fingerprint = trigger === "initial"
     ? hash({ enrollment: e.id, moduleId, videoId, slide, authored, context: teachingContext(context), trigger })
     : hash({ enrollment: e.id, requestId });
-  const inserted = await d.insert(adaptationJobs).values({ enrollmentId: e.id, moduleId, videoId, slide, fingerprint, trigger, priority: trigger === "initial" ? 0 : 10, input: { authored, source, context, courseId, lesson: video!.lesson, trigger, baseRevision, requestId } }).onConflictDoNothing().returning();
+  const inserted = await d.insert(adaptationJobs).values({ enrollmentId: e.id, moduleId, videoId, slide, fingerprint, trigger, priority: trigger === "initial" ? preparationPriority : 10, input: { authored, source, context, courseId, lesson: video!.lesson, trigger, baseRevision, requestId } }).onConflictDoNothing().returning();
+  if (trigger === 'initial') await d.update(adaptationJobs).set({ priority: preparationPriority }).where(and(eq(adaptationJobs.fingerprint, fingerprint), eq(adaptationJobs.status, 'queued'), lt(adaptationJobs.priority, preparationPriority)));
   if (inserted.length && trigger === "initial") {
     await d.update(adaptationJobs).set({ status: "superseded", updatedAt: new Date() }).where(and(eq(adaptationJobs.enrollmentId, e.id), eq(adaptationJobs.moduleId, moduleId), eq(adaptationJobs.videoId, videoId), eq(adaptationJobs.slide, slide), eq(adaptationJobs.trigger, "initial"), or(eq(adaptationJobs.status, "queued"), eq(adaptationJobs.status, "running")), ne(adaptationJobs.fingerprint, fingerprint), lt(adaptationJobs.createdAt, inserted[0]!.createdAt)));
   }
@@ -225,7 +226,7 @@ export async function queueSlide(user: SessionUser, courseId: string, moduleId: 
   return (await d.select().from(adaptationJobs).where(eq(adaptationJobs.fingerprint, fingerprint)))[0]!;
 }
 
-export async function queueModule(user: SessionUser, courseId: string, moduleId: string, openPiece?: "hook" | "worked") {
+export async function queueModule(user: SessionUser, courseId: string, moduleId: string, openPiece?: "hook" | "worked", preparationPriority = 0) {
   const { videos, mod } = await videosOf(courseId, moduleId, user.id);
   const { e, context } = await contextOf(user, courseId, moduleId);
   const d = await db();
@@ -234,7 +235,9 @@ export async function queueModule(user: SessionUser, courseId: string, moduleId:
     if (!def) return null;
     const textMapVersion = piece === "hook" ? 7 : undefined;
     const fingerprint = hash({ enrollment: e.id, moduleId, piece, textMapVersion, authored: def.authored, context: teachingContext(context) });
-    const inserted = await d.insert(adaptationJobs).values({ enrollmentId: e.id, moduleId, videoId: piece, slide: 0, fingerprint, trigger: "initial", priority: piece === "hook" ? 1 : 0, input: { authored: def.authored, source: def.authored, context, trigger: "initial", piece, courseId, textMapVersion } }).onConflictDoNothing().returning();
+    const priority = preparationPriority < 0 ? preparationPriority : piece === 'hook' ? 1 : 0;
+    const inserted = await d.insert(adaptationJobs).values({ enrollmentId: e.id, moduleId, videoId: piece, slide: 0, fingerprint, trigger: "initial", priority, input: { authored: def.authored, source: def.authored, context, trigger: "initial", piece, courseId, textMapVersion } }).onConflictDoNothing().returning();
+    await d.update(adaptationJobs).set({ priority }).where(and(eq(adaptationJobs.fingerprint, fingerprint), eq(adaptationJobs.status, 'queued'), lt(adaptationJobs.priority, priority)));
     if (inserted.length) await d.update(adaptationJobs).set({ status: "superseded", updatedAt: new Date() }).where(and(eq(adaptationJobs.enrollmentId, e.id), eq(adaptationJobs.moduleId, moduleId), eq(adaptationJobs.videoId, piece), or(eq(adaptationJobs.status, "queued"), eq(adaptationJobs.status, "running")), ne(adaptationJobs.fingerprint, fingerprint), lt(adaptationJobs.createdAt, inserted[0]!.createdAt)));
     if (openPiece === piece) await d.update(adaptationJobs).set({ priority: 3 }).where(and(eq(adaptationJobs.fingerprint, fingerprint), eq(adaptationJobs.status, "queued")));
     return (await d.select().from(adaptationJobs).where(eq(adaptationJobs.fingerprint, fingerprint)))[0] ?? null;
@@ -243,21 +246,26 @@ export async function queueModule(user: SessionUser, courseId: string, moduleId:
   const released = !!(sourceCourse?.authoredRevisionId || sourceCourse?.importedRevisionId);
   const hook = released ? null : await queuePiece("hook");
   // The DB preserves playback order for equal priorities. No model runs in this request.
-  for (const v of sourceCourse?.importedRevisionId ? videos.slice(0, 2) : videos.filter(v => !v.uploadedVideo)) for (let i = 0; i < v.slides.length; i++) await queueSlide(user, courseId, moduleId, v.id, i, "initial");
+  for (const v of videos) {
+    if (v.personalizationSource) await queueConcept(user, courseId, moduleId, v.id, false, preparationPriority);
+    else if (!v.uploadedVideo) for (let i = 0; i < v.slides.length; i++) await queueSlide(user, courseId, moduleId, v.id, i, 'initial', undefined, undefined, preparationPriority);
+  }
   const worked = released ? null : await queuePiece("worked");
   const activities: Job[] = [];
   for (const def of piecesOf(mod).filter(p => p.piece.startsWith('activity:'))) {
     const fingerprint = hash({ enrollment: e.id, moduleId, piece: def.piece, narrationVersion: def.piece === 'activity:hook' ? 3 : undefined, authored: def.authored, context: teachingContext(context) });
-    await d.insert(adaptationJobs).values({ enrollmentId: e.id, moduleId, videoId: def.piece, slide: 0, fingerprint, trigger: 'initial', priority: def.piece === 'activity:hook' ? 2 : 0, input: { authored: def.authored, source: def.authored, context, trigger: 'initial', piece: def.piece, courseId } }).onConflictDoNothing();
+    const priority = preparationPriority < 0 ? preparationPriority : def.piece === 'activity:hook' ? 2 : 0;
+    await d.insert(adaptationJobs).values({ enrollmentId: e.id, moduleId, videoId: def.piece, slide: 0, fingerprint, trigger: 'initial', priority, input: { authored: def.authored, source: def.authored, context, trigger: 'initial', piece: def.piece, courseId } }).onConflictDoNothing();
+    await d.update(adaptationJobs).set({ priority }).where(and(eq(adaptationJobs.fingerprint, fingerprint), eq(adaptationJobs.status, 'queued'), lt(adaptationJobs.priority, priority)));
     await d.update(adaptationJobs).set({ status: 'superseded', updatedAt: new Date() }).where(and(eq(adaptationJobs.enrollmentId, e.id), eq(adaptationJobs.moduleId, moduleId), eq(adaptationJobs.videoId, def.piece), or(eq(adaptationJobs.status, 'queued'), eq(adaptationJobs.status, 'running')), ne(adaptationJobs.fingerprint, fingerprint)));
     activities.push((await d.select().from(adaptationJobs).where(eq(adaptationJobs.fingerprint, fingerprint)))[0]!);
   }
   return { hook, worked, activities };
 }
 
-/** Only the requested concept is prepared; opening a course does not enqueue
- * every recording. Explicit lesson requests use the reserved interactive lane. */
-export async function queueConcept(user: SessionUser, courseId: string, moduleId: string, videoId: string, retry = false) {
+/** Explicit concept requests reserve the interactive lane; module preparation
+ * supplies a lower priority and reuses the same validated text/audio job. */
+export async function queueConcept(user: SessionUser, courseId: string, moduleId: string, videoId: string, retry = false, priority = 10) {
   if (!liveEnabled(courseId)) throw new ApiError(409, 'disabled', 'Live adaptation is disabled.');
   const { videos } = await videosOf(courseId, moduleId, user.id);
   const video = videos.find(v => v.id === videoId);
@@ -266,7 +274,8 @@ export async function queueConcept(user: SessionUser, courseId: string, moduleId
   const def = conceptPiece(video);
   const fingerprint = hash({ enrollment: e.id, moduleId, piece: def.piece, conceptVersion: 3, authored: def.authored, context: teachingContext(context) });
   const d = await db();
-  const inserted = await d.insert(adaptationJobs).values({ enrollmentId: e.id, moduleId, videoId: def.piece, slide: 0, fingerprint, trigger: 'initial', priority: 10, input: { authored: def.authored, source: def.authored, context, trigger: 'initial', piece: def.piece, courseId, sourceVideoId: video.id, transcriptId: video.personalizationSource.transcriptId } }).onConflictDoNothing().returning();
+  const inserted = await d.insert(adaptationJobs).values({ enrollmentId: e.id, moduleId, videoId: def.piece, slide: 0, fingerprint, trigger: 'initial', priority, input: { authored: def.authored, source: def.authored, context, trigger: 'initial', piece: def.piece, courseId, sourceVideoId: video.id, transcriptId: video.personalizationSource.transcriptId } }).onConflictDoNothing().returning();
+  await d.update(adaptationJobs).set({ priority }).where(and(eq(adaptationJobs.fingerprint, fingerprint), eq(adaptationJobs.status, 'queued'), lt(adaptationJobs.priority, priority)));
   if (inserted.length) await d.update(adaptationJobs).set({ status: 'superseded', updatedAt: new Date() }).where(and(eq(adaptationJobs.enrollmentId, e.id), eq(adaptationJobs.moduleId, moduleId), eq(adaptationJobs.videoId, def.piece), ne(adaptationJobs.fingerprint, fingerprint), or(eq(adaptationJobs.status, 'queued'), eq(adaptationJobs.status, 'running'))));
   let row = (await d.select().from(adaptationJobs).where(eq(adaptationJobs.fingerprint, fingerprint)))[0]!;
   if (row.status === 'superseded' || (retry && row.status === 'failed')) {

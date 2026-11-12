@@ -8,6 +8,17 @@ focused fragment merging, optimistic versions, human review and immutable
 edition publication; agents cannot grant human approval. Schemas and workflow
 prompts are discoverable through MCP. See [creator MCP workflow](creator-mcp-workflow.md).
 
+Personalization prepares the first playable module on enrollment. Once that
+module is opened, its adapted-module request schedules all remaining playable
+modules after the response, in course order. Each module includes source-backed
+personalized concepts as well as its supported teaching activities. Later
+modules use negative queue priorities; Module 1 and explicit learner requests
+take precedence. Opening a queued concept promotes its existing job into the
+interactive lane without duplicating it. Durable jobs resume after restart;
+profile/edition/prompt changes produce new scoped work. Background preparation
+does not mark future modules complete or infer knowledge before it is observed.
+Text and matching audio must both validate before a derivative becomes ready.
+
 Learner navigation no longer assembles the entire course library for the
 assistant. Its client provider loads only the current course through the private
 `companion-context` endpoint after navigation. Published delivery and catalog

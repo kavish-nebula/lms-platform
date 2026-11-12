@@ -1,0 +1,47 @@
+import assert from 'node:assert/strict';
+import { getCourse, getModule } from '@/data';
+import { getSessionUser } from '@/server/auth';
+import * as repo from '@/server/repo';
+import { adaptFirstModule, adaptedModule, prepareFollowingModules } from '@/server/adapt/service';
+import { claimJob, jobsFor, queueSlide } from '@/server/adapt/live';
+import { getBlock } from '@/data/client';
+
+process.env.ADAPTIVE_PYTHON_ENABLED = 'true';
+process.env.ADAPTIVE_BACKGROUND_ENABLED = 'true';
+const user = await getSessionUser();
+await repo.saveProfile(user.id, { domain: 'finance', role: 'analyst' }, []);
+const enrollment = await repo.upsertEnrollment(user.id, 'ai-agent', { answers: {}, supportOverride: 'auto', pace: null, precheck: null });
+const modules = (await getCourse('ai-agent'))!.modules.filter(m => m.authored?.length);
+const tasks: (() => Promise<void>)[] = [];
+const schedule = (task: () => Promise<void>) => { tasks.push(task); };
+await adaptFirstModule(user, 'ai-agent', schedule);
+assert((await jobsFor(enrollment.id, modules[0].module_id)).length > 0);
+for (const m of modules.slice(1)) assert.equal((await jobsFor(enrollment.id, m.module_id)).length, 0, 'Enrollment prepares only Module 1.');
+await prepareFollowingModules(user, 'ai-agent', modules[1].module_id, schedule);
+assert.equal(tasks.length, 0, 'A later module must not trigger course-wide prefetch.');
+await adaptedModule(user, 'ai-agent', modules[0].module_id, schedule);
+assert.equal(tasks.length, 1, 'Opening Module 1 schedules preparation after the response.');
+assert.equal((await jobsFor(enrollment.id, modules[1].module_id)).length, 0, 'No later work is assembled in the foreground.');
+await tasks.shift()!();
+for (const [index, m] of modules.slice(1).entries()) {
+  const jobs = await jobsFor(enrollment.id, m.module_id);
+  assert(jobs.length > 0);
+  assert(jobs.every(j => j.priority === -(index + 1)), 'Later modules are ordered below opening work.');
+}
+assert.equal((await claimJob('background'))!.moduleId, modules[0].module_id, 'Module 1 wins over later background work.');
+const later = modules[1].module_id;
+const video = getBlock((await getModule('ai-agent', later))!, 'explainer')!.videos![0];
+const before = (await jobsFor(enrollment.id, later)).find(j => j.videoId === video.id && j.slide === 0)!;
+const promoted = await queueSlide(user, 'ai-agent', later, video.id, 0, 'initial', 'explicit-open');
+assert.equal(promoted.id, before.id, 'Explicit opening reuses its prefetched job.');
+assert.equal(promoted.priority, 2);
+const count = (await jobsFor(enrollment.id, later)).length;
+await prepareFollowingModules(user, 'ai-agent', modules[0].module_id, schedule);
+await tasks.shift()!();
+assert.equal((await jobsFor(enrollment.id, later)).length, count, 'Polling does not duplicate preparation.');
+assert.equal((await jobsFor(enrollment.id, later)).find(j => j.id === before.id)!.priority, 2, 'Background assembly cannot demote foreground work.');
+assert.deepEqual(await repo.progressFor(enrollment.id), [], 'Prefetch never completes learner topics.');
+process.env.ADAPTIVE_BACKGROUND_ENABLED = 'false';
+await prepareFollowingModules(user, 'ai-agent', modules[0].module_id, schedule);
+assert.equal(tasks.length, 0);
+console.log('PASS progressive adaptation: first-module enrollment, deferred later modules, ordered durable jobs, demand promotion, deduplication and unchanged progress.');

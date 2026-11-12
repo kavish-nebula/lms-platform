@@ -12,7 +12,7 @@ import { acceptable, mergeShape, skeletonOf, type MergeResult } from "./shape";
  * so the whole course tells one story.
  */
 
-export const ADAPT_PROMPT_VERSION = 1;
+export const ADAPT_PROMPT_VERSION = 2;
 
 export type World = {
   organisation: string;
@@ -55,6 +55,8 @@ export class AdaptError extends Error {
 }
 
 const INSTRUCTIONS = `You rewrite one piece of an online lesson for one learner on Nebula KnowLab. You write a fully new scenario set in the learner's own world, and you keep the lesson's teaching exactly.
+
+The app prepares Module 1 first, then later modules in the background while the learner studies Module 1. Return only this requested content piece. Do not generate other modules or assume earlier lessons have been completed. Narration must match the returned scenes and visuals. Queue order and readiness are controlled by the app.
 
 The piece is JSON that the app draws as animated scenes or slides. Reply with the same JSON shape:
 - the same keys, the same order, and the same number of items in every list;
