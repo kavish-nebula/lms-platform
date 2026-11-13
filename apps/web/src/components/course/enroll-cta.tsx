@@ -10,7 +10,7 @@ import { useCourseProgress } from "@/lib/course-progress";
 import type { Course } from "@/data/types";
 
 /**
- * The course's primary action. Not enrolled: "Enroll for free" opens the
+ * The course's primary action. Not enrolled: "Enroll" opens the
  * six-question setup. Enrolled: "Continue" resumes at the next stage, with
  * "Edit setup" alongside.
  */
