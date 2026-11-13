@@ -409,19 +409,6 @@ export const adaptedContent = pgTable(
   (t) => [uniqueIndex("adapted_content_piece").on(t.enrollmentId, t.moduleId, t.piece)],
 );
 
-/**
- * The retired Python mini project ("Code and run"): learners' files and last
- * test report, kept so nothing they wrote is lost. Nothing writes to it now.
- */
-export const projectWork = pgTable("project_work", {
-  enrollmentId: uuid("enrollment_id")
-    .primaryKey()
-    .references(() => enrollments.id, { onDelete: "cascade" }),
-  files: jsonb("files").$type<Record<string, string>>().notNull(),
-  report: jsonb("report").$type<Record<string, unknown>>(),
-  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
-});
-
 /** The mini project: the agent's workflow, as the learner drew it. */
 export const workflowProjects = pgTable("workflow_projects", {
   enrollmentId: uuid("enrollment_id").primaryKey().references(() => enrollments.id, { onDelete: "cascade" }),

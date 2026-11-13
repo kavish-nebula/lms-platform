@@ -1,5 +1,17 @@
 # Adaptive teaching system design
 
+AI for Production's continuous concept player derives one measured audio timeline
+from existing personalized clips. Combined assets are enrollment/revision scoped,
+cached by ordered content hashes and streamed through authenticated range access.
+Visual segments remain source-linked; quiz gates and completion are independent
+of seeking. This presentation change adds no database tables or generation jobs.
+See [continuous personalized lessons](continuous-personalized-lessons.md).
+
+Migration 0025 removes the unused, empty `project_work` storage for the retired
+Python mini project. It locks and checks the table first, refusing to delete
+historical learner files. The 35 remaining active tables support current or
+compatible workflows. See [database schema cleanup](database-schema-cleanup.md).
+
 Prompt-driven creator operations use a separate owner-workspace MCP endpoint,
 `/api/mcp/course-authoring`. Eight-hour hashed grants default to draft authoring;
 publication is an explicit optional scope. MCP exposes current schemas, planning

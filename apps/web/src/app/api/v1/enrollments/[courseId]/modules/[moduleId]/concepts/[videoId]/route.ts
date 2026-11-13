@@ -1,6 +1,8 @@
 import { getSessionUser } from '@/server/auth';
 import { handle, ok } from '@/server/http';
 import { queueConcept } from '@/server/adapt/live';
+import { continuousConceptEnabled } from '@/lib/continuous-concept';
+import { continuousNarration } from '@/server/adapt/continuous-audio';
 
 /** Enrollment/profile/release-scoped delivery; no assessment answers or keys are
  * supplied to the model, and incomplete text/audio never becomes playable. */
@@ -10,7 +12,8 @@ async function view({ params }: Context, retry: boolean) {
   const job = await queueConcept(await getSessionUser(), courseId, moduleId, videoId, retry);
   const ready = job.status === 'ready';
   const content = ready ? job.content as unknown as import('@/lib/personalized-concept').PersonalizedConcept & { audio: Record<string, string> } : undefined;
-  return ok({ concept: { id: job.id, status: job.status, ...(content ? { scenes: content.scenes.map((scene, i) => ({ ...scene, audio: content.audio[`scene${i}`] })) } : {}) } });
+  const playback = content && continuousConceptEnabled(courseId) ? await continuousNarration({ enrollmentId:job.enrollmentId,moduleId,revisionId:job.id,scenes:content.scenes,audio:content.audio }) : undefined;
+  return ok({ concept: { id: job.id, status: job.status, ...(content ? { scenes: content.scenes.map((scene, i) => ({ ...scene, audio: content.audio[`scene${i}`] })), ...(playback ? { playback } : {}) } : {}) } });
 }
 export const GET = handle(async (_request: Request, context: Context) => view(context, false));
 export const POST = handle(async (_request: Request, context: Context) => view(context, true));

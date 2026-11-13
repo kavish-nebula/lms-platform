@@ -1,5 +1,17 @@
 # Current learning experience extension
 
+AI for Production personalized concepts use one cached WAV and a measured global
+timeline to drive continuous HTML/CSS visuals. The concept API adds optional
+playback metadata only for that course; other players remain scene-based.
+Checkpoint and end checks, watched evidence and enrollment-scoped resume remain
+enforced. Existing narration is reused without model or speech regeneration.
+See [continuous personalized lessons](continuous-personalized-lessons.md).
+
+Migration 0025 retires only the empty, runtime-unused `project_work` table.
+It refuses removal if historical learner files exist. The active public schema
+then has 35 tables; current project, adaptation and progress stores remain.
+See [database schema cleanup](database-schema-cleanup.md).
+
 Creator-workspace MCP is available at `/api/mcp/course-authoring`, configured
 through `/content/mcp`. Migration 0024 adds hashed eight-hour owner grants with
 an explicit optional approved-publication permission. Existing single-course
