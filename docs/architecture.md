@@ -355,3 +355,5 @@ Uploaded concept personalisation reuses enrollment-scoped adaptation jobs and th
 
 
 Connected SCORM course imports now have durable source snapshots/runs, whole-course selection, proposed objective mappings and incremental course preparation. Published editions pin enrollments; explicit upgrades archive earlier enrollments without transferring completion. See [connected SCORM courses](connected-scorm-courses.md).
+
+The retired single-module `ai-for-production` import is omitted from learner dashboard/catalog/search listings and recommendations. Its direct course/package routes and existing progress records remain available; the published seven-module course keeps its separate identity. The raw imported-course registry remains intact, while listing components use its filtered view.

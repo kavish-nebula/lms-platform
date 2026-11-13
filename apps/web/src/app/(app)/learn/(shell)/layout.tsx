@@ -3,7 +3,7 @@ import { getCourses, getLearner } from "@/data";
 import { connection } from "next/server";
 import { engagementEnabled } from "@/server/engagement";
 import { EngagementProvider } from "@/components/engagement/provider";
-import { importedCourses } from '@/lib/imported-courses';
+import { listedImportedCourses } from '@/lib/imported-courses';
 
 /** Learner app frame. Role comes from the session once auth exists. */
 export default async function LearnShellLayout({ children }: { children: React.ReactNode }) {
@@ -15,7 +15,7 @@ export default async function LearnShellLayout({ children }: { children: React.R
       role="learner"
       heldRoles={["learner", "content_creator"]}
       user={{ name: learner.user.name, email: learner.user.email }}
-      courses={[...courses.map((c) => ({ id: c.course_id, title: c.title, href: `/learn/courses/${c.course_id}` })), ...importedCourses.map(c => ({ id: c.id, title: c.title, href: `/learn/courses/${c.id}` }))]}
+      courses={[...courses.map((c) => ({ id: c.course_id, title: c.title, href: `/learn/courses/${c.course_id}` })), ...listedImportedCourses.map(c => ({ id: c.id, title: c.title, href: `/learn/courses/${c.id}` }))]}
       notifications={[
         ...learner.assignments.map((a) => ({
           id: a.id,
