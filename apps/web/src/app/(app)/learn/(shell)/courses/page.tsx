@@ -11,6 +11,7 @@ import { engagementEnabled } from "@/server/engagement";
 import { CatalogExplorer } from "@/components/engagement/catalog";
 import { importedCourses } from '@/lib/imported-courses';
 import { ImportedCourseCard } from '@/components/course/imported-course';
+import Link from 'next/link';
 
 export const metadata: Metadata = { title: "Courses" };
 
@@ -21,6 +22,7 @@ export default async function CatalogPage() {
   return (
     <div className="flex flex-col gap-6">
       <PageHeader title={t("title")} description={t("subtitle")} />
+      <Link href="/learn/recommended" className="text-sm font-medium text-brand-ink underline underline-offset-4">See courses suggested for you</Link>
       {engagementEnabled() ? <Suspense><CatalogExplorer courses={courses} /></Suspense> : courses.length ? (
         <Stagger className="flex flex-col gap-5">
           {courses.map((c) => (
