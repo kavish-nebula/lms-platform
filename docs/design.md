@@ -1,5 +1,10 @@
 # Learning experience UI
 
+The course-brief form has a labelled optional System prompt textarea with existing
+theme/focus tokens and the normal saved/unsaved draft behavior. Its hint separates
+creator instructions from SME evidence and identifies the generation stages that
+consume it.
+
 The video-first course brief separates module instructions from SME evidence.
 Each outline module has a labelled, keyboard-accessible instructions disclosure
 with objective/dependency checkboxes and scope, exclusions, prerequisites and

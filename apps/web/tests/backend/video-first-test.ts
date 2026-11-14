@@ -13,6 +13,8 @@ import { uploadConceptVideo, reviewVideoTranscript, assertVideoSources, serveCon
 import { generateVideoModule, videoModuleDrafts } from '@/server/video-first-authoring';
 import { MODULE_CORE_PROMPT, MODULE_CORE_VERSION, moduleReadiness } from '@/lib/module-authoring';
 import { sourceCoverage } from '@/lib/source-library';
+import { courseAuthoringSystem } from '@/lib/course-authoring-prompt';
+import { moduleInputHash } from '@/server/video-first-authoring';
 import { authoredDelivery } from '@/lib/authored-delivery';
 import { saveAuthoredCourse, reviewAuthoredCourse, getCodexCourseContext } from '@/server/authored-course';
 import { publishAuthoredCourse } from '@/server/authored-publication';
@@ -67,6 +69,7 @@ assert((await captions.text()).startsWith('WEBVTT'));
 process.env.TRANSCRIPTION_PROVIDER = 'gemini'; process.env.AUDIO_API_KEY = 'test-only';
 const draftTranscript = await transcribeConceptVideo(owner.id, draft.id, asset.id, async (_url, init) => {
   const body = JSON.parse(String(init?.body)); assert.equal(body.contents[0].parts[0].inlineData.mimeType, 'audio/mp3');
+  assert.equal('audioTimestamp' in body.generationConfig, false, 'Gemini API must not receive the Vertex-only timestamp option');
   return Response.json({ candidates: [{ content: { parts: [{ text: JSON.stringify({ cues: transcript.cues }) }] } }] });
 });
 assert.equal(draftTranscript.status, 'needs_review');
@@ -318,5 +321,20 @@ await assert.rejects(generateVideoModule(owner.id, partial.id, 'M1', partial.rev
 }), { code: 'generation_validation' });
 assert.equal(rejectedAttempts, 2, 'Invalid cross-module evidence gets one bounded repair, never a saved draft.');
 assert.equal((await videoModuleDrafts(owner.id, partial.id)).length, 1);
+const promptBrief = { ...partial.brief, systemPrompt: 'Use short sentences and practical production examples.' };
+assert.notEqual(moduleInputHash(promptBrief, 'M1'), moduleInputHash(partial.brief, 'M1'), 'Changed course instructions invalidate generated module input.');
+assert.equal(moduleInputHash({ ...partial.brief, systemPrompt: '' }, 'M1'), moduleInputHash(partial.brief, 'M1'), 'Blank optional guidance preserves legacy module hashes.');
+assert(courseAuthoringSystem(MODULE_CORE_PROMPT, promptBrief).includes(promptBrief.systemPrompt));
+assert.equal(courseAuthoringSystem(MODULE_CORE_PROMPT, partial.brief), MODULE_CORE_PROMPT);
+partial = await updateCreatorDraft(owner.id, partial.id, { brief: promptBrief, revision: partial.revision });
+assert.equal((await getCodexCourseContext(owner.id, partial.id)).brief.systemPrompt, promptBrief.systemPrompt);
+assert.equal((await videoModuleDrafts(owner.id, partial.id))[0].outdated, true);
+const withPrompt = await generateVideoModule(owner.id, partial.id, 'M1', partial.revision, async request => {
+  assert(request.messages[0].content.includes(promptBrief.systemPrompt));
+  assert(request.messages[0].content.includes('CREATOR COURSE SYSTEM PROMPT'));
+  assert.equal(JSON.parse(request.messages[1].content).courseContext.systemPrompt, promptBrief.systemPrompt);
+  return moduleTransport({ ...request, messages: [{ ...request.messages[0], content: MODULE_CORE_PROMPT }, ...request.messages.slice(1)] });
+});
+assert.equal((await videoModuleDrafts(owner.id, partial.id)).find(m => m.id === withPrompt.id)!.outdated, false);
 await closeDb();
 console.log('PASS video-first: upload/transcripts, module-scoped generation, separate instructions/evidence, prompt provenance, unrelated-edit preservation, stale/concurrent writes, cross-module rejection, bounded repair, learner streaming and review/publication');

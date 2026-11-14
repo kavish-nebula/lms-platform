@@ -155,7 +155,7 @@ export async function getCodexCourseContext(ownerId: string, courseId: string) {
   })) : [];
   return {
     schemaVersion: 1, courseId, briefRevision: draft.revision, deliveryStructure: 'codex-ild-v2',
-    brief: { title: brief.title, subject: brief.subject, audience: brief.audience, prerequisites: brief.prerequisites, outcomes: brief.outcomes, duration: brief.duration, delivery: brief.delivery, dependencies: brief.dependencies, contexts: brief.contexts, difficulties: brief.difficulties, physicalSkills: brief.physicalSkills, physicalNotes: brief.physicalNotes },
+    brief: { systemPrompt: brief.systemPrompt ?? "", title: brief.title, subject: brief.subject, audience: brief.audience, prerequisites: brief.prerequisites, outcomes: brief.outcomes, duration: brief.duration, delivery: brief.delivery, dependencies: brief.dependencies, contexts: brief.contexts, difficulties: brief.difficulties, physicalSkills: brief.physicalSkills, physicalNotes: brief.physicalNotes },
     workflow: brief.sourceLibrary?.sources.some(s => s.video) ? 'Course brief and module instructions → scoped SME sources and reviewed topic videos → generate ready modules independently → blueprint and SME review → assemble course package → final review → publish' : 'Course brief and source library → blueprint → SME module review → teaching and narration → assemble course package → final review → publish',
     moduleAuthoring: brief.sourceLibrary ? {
       corePromptVersion: MODULE_CORE_VERSION, moduleInstructionsVersion: MODULE_INSTRUCTIONS_VERSION,

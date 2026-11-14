@@ -39,6 +39,14 @@ transcript, using the same illustrated HTML/CSS and narration approach as the ho
 
 ## Prompt layers and module revisions
 
+The SME course brief includes an optional **System prompt** textarea (12,000
+characters) for creator-authored course-wide guidance. It is persisted separately
+from technical source evidence and supplied to blueprint and video-first module
+generation. Blank legacy values preserve existing module fingerprints; changing
+the prompt marks affected generated modules outdated. The prompt does not replace
+schema validation, source boundaries or human approval. MCP course context exposes
+the saved field so prompt-based authors see the same creator instructions.
+
 `lib/module-authoring.ts` owns the reusable, versioned shared system prompt.
 Every generation request has the same core rules, followed by the selected
 module's structured instructions, exact objectives, complete ordered course
@@ -181,3 +189,12 @@ rewrites, two-profile isolation, stale profiles, measured duration, and preserva
 of uploaded recordings and quizzes. The browser smoke test exercises actual scene
 playback and checkpoint locking. Review generated examples for teaching quality;
 structural checks do not establish factual equivalence by themselves.
+
+Transcription requests send `audioTimestamp` only to Vertex AI. Gemini API rejects
+that Vertex-only setting with HTTP 400; Gemini transcription instead requests
+numeric cue timestamps in the structured transcript prompt. Returned cues remain
+unreviewed until their timing and spoken content have been checked.
+
+Source review guidance is displayed above uploaded original recordings as well as
+personalized and source-reference views. This keeps creator-supplied qualifications
+visible when learners choose the original video, without rewriting its transcript.

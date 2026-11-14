@@ -1,0 +1,1020 @@
+{
+  "title": "AI for Production — Module 1: Introduction to LLMs",
+  "modules": [
+    {
+      "id": "M1",
+      "title": "Introduction to LLMs",
+      "sourceIds": [
+        "M1S1",
+        "M1S2"
+      ],
+      "moduleQuiz": {
+        "title": "Module 1: automation, LLMs and supplied evidence",
+        "questions": [
+          {
+            "id": "M1_QUIZ_01",
+            "hint": "Classify the behavior described, not how advanced the machinery looks.",
+            "prompt": "Select one answer: A line repeats a human-programmed sequence. How should it be classified?",
+            "choices": [
+              "Fixed-rule automation.",
+              "Self-training language AI.",
+              "Goal-setting human review.",
+              "Pattern-learning analytics."
+            ],
+            "correct": 0,
+            "sourceIds": [
+              "M1S1"
+            ],
+            "explanation": "Fixed-rule automation follows the predefined sequence in the case. The description contains no language-model training, pattern-learning process or human goal-setting action.",
+            "objectiveIds": [
+              "O1"
+            ],
+            "selectionType": "single"
+          },
+          {
+            "id": "M1_QUIZ_02",
+            "hint": "Consider the relationship between predefined rules and an irregular input.",
+            "prompt": "Select one answer: A new input stops the fixed sequence in the example. What explains the limit?",
+            "choices": [
+              "The line has learned a new objective.",
+              "The sensors have trained a new model.",
+              "The rule lacks an adapted response.",
+              "The cooler has rewritten its logic."
+            ],
+            "correct": 2,
+            "sourceIds": [
+              "M1S1"
+            ],
+            "explanation": "The new condition falls outside the illustrated fixed path. The supplied description does not show the line learning a new objective, sensors training a model or a cooler rewriting its own program.",
+            "objectiveIds": [
+              "O1"
+            ],
+            "selectionType": "single"
+          },
+          {
+            "id": "M1_QUIZ_03",
+            "hint": "Recall the information the AI model uses in the second half of the recording.",
+            "prompt": "Select one answer: What distinguishes the AI cooling example from the unchanged threshold?",
+            "choices": [
+              "It removes the need for all sensors.",
+              "It learns patterns from past readings.",
+              "It performs the same fixed test only.",
+              "It sets every production goal itself."
+            ],
+            "correct": 1,
+            "sourceIds": [
+              "M1S1"
+            ],
+            "explanation": "The AI example uses past readings and cooling events to identify patterns. It does not remove sensors, remain only an unchanged threshold test or take over the humans’ role of setting all production goals.",
+            "objectiveIds": [
+              "O1"
+            ],
+            "selectionType": "single"
+          },
+          {
+            "id": "M1_QUIZ_04",
+            "hint": "Separate execution, pattern-based coordination and human goal-setting.",
+            "prompt": "Select all correct answers: Which roles match the production hierarchy illustrated in the recording?",
+            "choices": [
+              "Automation executes repetitive physical steps.",
+              "AI coordinates decisions using learned patterns.",
+              "Humans no longer set the production objectives.",
+              "Every fixed sequence retrains itself each cycle."
+            ],
+            "sourceIds": [
+              "M1S1"
+            ],
+            "explanation": "Select the execution and learned-pattern coordination statements. The video keeps human goal-setting in the hierarchy; it does not claim people stop setting objectives or every fixed sequence retrains itself.",
+            "objectiveIds": [
+              "O1"
+            ],
+            "selectionType": "multiple",
+            "correctIndices": [
+              0,
+              1
+            ]
+          },
+          {
+            "id": "M1_QUIZ_05",
+            "hint": "Use the recording’s mathematical-knob analogy.",
+            "prompt": "Select one answer: What do an LLM’s parameters represent in the recording?",
+            "choices": [
+              "Current readings from the factory sensors.",
+              "Folders holding every customer’s documents.",
+              "Instructions that move the conveyor motors.",
+              "Mathematical values holding learned patterns."
+            ],
+            "correct": 3,
+            "sourceIds": [
+              "M1S2"
+            ],
+            "explanation": "Learned model values match the parameter analogy. Live sensor readings, a factory document archive and conveyor-control instructions are not the meaning of parameters in this example.",
+            "objectiveIds": [
+              "O2"
+            ],
+            "selectionType": "single"
+          },
+          {
+            "id": "M1_QUIZ_06",
+            "hint": "Choose the example involving technical text.",
+            "prompt": "Select one answer: Which request matches a text-based use shown in the video?",
+            "choices": [
+              "Set the physical cooler’s valve position.",
+              "Replace the factory’s maintenance technician.",
+              "Summarize the supplied technical manual.",
+              "Guarantee the machine will never fail."
+            ],
+            "correct": 2,
+            "sourceIds": [
+              "M1S2"
+            ],
+            "explanation": "Summarizing supplied technical text matches an example shown in the recording. Physical valve control, replacing a technician and guaranteeing zero future failures are not the text task in the question.",
+            "objectiveIds": [
+              "O2"
+            ],
+            "selectionType": "single"
+          },
+          {
+            "id": "M1_QUIZ_07",
+            "hint": "Distinguish broad training patterns from this facility’s information.",
+            "prompt": "Select one answer: Why is a factory-specific answer unsupported when no local records are supplied?",
+            "choices": [
+              "Training already contains every live status.",
+              "The relevant local evidence is missing.",
+              "Confident wording verifies the exact cause.",
+              "A model name proves the diagnosis is valid."
+            ],
+            "correct": 1,
+            "sourceIds": [
+              "M1S2"
+            ],
+            "explanation": "The evidence gap is the missing local records for the requested factory-specific conclusion. General training, confident wording and a provider/model name do not establish that the relevant records were supplied.",
+            "objectiveIds": [
+              "O2"
+            ],
+            "selectionType": "single"
+          },
+          {
+            "id": "M1_QUIZ_08",
+            "hint": "Recall the two information sources shown before the model generates its answer.",
+            "prompt": "Select all correct answers: Which inputs are combined in the recording’s illustrated context package?",
+            "choices": [
+              "A relevant factory SOP document.",
+              "The current machine-status data.",
+              "An unrelated public product advert.",
+              "A guessed explanation without records."
+            ],
+            "sourceIds": [
+              "M1S2"
+            ],
+            "explanation": "Select the relevant SOP document and current status data, the two inputs shown in the context package. An unrelated advert and an unsupported guess are not those inputs. Identifying retrieval inputs does not guarantee that the resulting answer is correct.",
+            "objectiveIds": [
+              "O2"
+            ],
+            "selectionType": "multiple",
+            "correctIndices": [
+              0,
+              1
+            ]
+          },
+          {
+            "id": "M1_QUIZ_09",
+            "hint": "Recall the on-premises factory zone shown in the recording.",
+            "prompt": "Select one answer: Where does the example using a local model process the query?",
+            "choices": [
+              "Inside the illustrated on-premises system.",
+              "Only inside an unrelated public chat room.",
+              "Inside the machine’s fixed cooling switch.",
+              "Only inside a remote product-advert server."
+            ],
+            "correct": 0,
+            "sourceIds": [
+              "M1S2"
+            ],
+            "explanation": "The example shows processing in the on-premises factory system. A public chat room, a fixed cooling switch and an advertising server are not its processing location. This identifies the depicted location, not a general security guarantee.",
+            "objectiveIds": [
+              "O2"
+            ],
+            "selectionType": "single"
+          },
+          {
+            "id": "M1_QUIZ_10",
+            "hint": "Follow the information path instead of relying on presentation.",
+            "prompt": "Select one answer: In the supplied review case, what supports checking an AI summary?",
+            "choices": [
+              "The confidence of the summary’s wording.",
+              "The number of named model providers.",
+              "The novelty of the tablet’s interface.",
+              "The relevant document and status inputs."
+            ],
+            "correct": 3,
+            "sourceIds": [
+              "M1S2"
+            ],
+            "explanation": "The supplied document and current status are the review evidence in this case. Confidence, a list of providers and the appearance of the interface do not establish whether the summary matches those inputs.",
+            "objectiveIds": [
+              "O2"
+            ],
+            "selectionType": "single"
+          }
+        ],
+        "passPercent": 80,
+        "instructions": "Answer using the two recordings and the supplied review cases. Single-answer questions say Select one answer. Multiple-answer questions say Select all correct answers; select the exact set. This is a knowledge check, not authorization to operate or repair equipment."
+      },
+      "problemHook": {
+        "title": "The cooler follows the rule. Can you trust the AI answer?",
+        "question": "What explains the cooler’s unchanged response, and what evidence is missing from the AI’s answer?",
+        "situation": "Fictional shift-review exercise: the cooler still switches on at its programmed 70-degree threshold, although the coolant has aged. A supervisor asks a general AI assistant what is wrong. It gives a confident explanation, but the question contains no plant manual or current machine-status record. You are reviewing the information at a desk; no machine operation or repair is required.",
+        "sourceIds": [
+          "M1S1",
+          "M1S2"
+        ],
+        "objectiveIds": [
+          "O1",
+          "O2"
+        ]
+      },
+      "scenarioLab": {
+        "title": "Apply the distinction in a new production review",
+        "scenarios": [
+          {
+            "id": "M1_SC_LINE",
+            "title": "A new batch reaches the same programmed line",
+            "challenge": "Explain why that expectation does not follow from the supplied description. Then distinguish the roles of an automation sequence, a pattern-based AI layer and the people setting production goals.",
+            "situation": "Fictional case: a line follows a fixed programmed sequence. A new material dimension causes the line to stop. A manager says the line should have learned a new rule by itself.",
+            "sourceIds": [
+              "M1S1"
+            ],
+            "objectiveIds": [
+              "O1"
+            ],
+            "expectedEvidence": "Cites the fixed sequence and changed input; does not assume learning occurred. Distinguishes physical execution, pattern-based coordination and human goal-setting as illustrated in the recording."
+          },
+          {
+            "id": "M1_SC_TEXT",
+            "title": "Two AI summaries with different supplied context",
+            "challenge": "Compare the information available to each summary. Explain which input gaps the demonstrated grounding workflow addresses, without treating confidence, retrieval or local processing as proof of correctness.",
+            "situation": "Fictional case: Summary A follows a general question with no factory records. Summary B follows the same question plus a relevant SOP excerpt and current status record. Both summaries sound confident. Their wording alone does not show whether their claims match the supplied evidence.",
+            "sourceIds": [
+              "M1S2"
+            ],
+            "objectiveIds": [
+              "O2"
+            ],
+            "expectedEvidence": "Identifies A’s missing factory/current context; identifies the two context inputs supplied for B; compares claims with evidence rather than endorsing a diagnosis or an absolute accuracy/security guarantee."
+          }
+        ]
+      },
+      "objectiveIds": [
+        "O1",
+        "O2"
+      ],
+      "guidedPractice": {
+        "steps": [
+          {
+            "id": "M1_GP_RULE",
+            "hint": "Look for a predefined condition and a repeated response.",
+            "evidence": "Identifies fixed-rule automation and cites the unchanged threshold-to-action rule.",
+            "sourceIds": [
+              "M1S1"
+            ],
+            "instruction": "Case A: a controller switches cooling on above the same programmed threshold on every cycle. Name the technology illustrated and cite the detail that supports your answer.",
+            "objectiveIds": [
+              "O1"
+            ]
+          },
+          {
+            "id": "M1_GP_CHANGE",
+            "hint": "A changing input is different from learning a new decision pattern.",
+            "evidence": "Explains that the controller still applies the same programmed rule; it has not learned an altered response from historical data.",
+            "sourceIds": [
+              "M1S1"
+            ],
+            "instruction": "Case A continues: coolant condition changes, but no one updates the rule. Explain why the change alone does not make this controller adaptive AI.",
+            "objectiveIds": [
+              "O1"
+            ]
+          },
+          {
+            "id": "M1_GP_MISSING",
+            "hint": "Separate factory-specific written context from information about the current event.",
+            "evidence": "Names missing local documentation and missing current machine/status information, without claiming an actual fault diagnosis.",
+            "sourceIds": [
+              "M1S2"
+            ],
+            "instruction": "Case B: an LLM confidently states the cause of a factory fault after receiving only a general question. The prompt contains no local document or current status. Identify two information gaps in the supplied case.",
+            "objectiveIds": [
+              "O2"
+            ]
+          },
+          {
+            "id": "M1_GP_TRACE",
+            "hint": "Trace each input to the claim it could support. A workflow diagram is not proof of the result.",
+            "evidence": "Distinguishes the SOP’s written context from the status record’s current-event context, and proposes comparing the summary’s claims with those supplied inputs.",
+            "sourceIds": [
+              "M1S2"
+            ],
+            "instruction": "Case C supplies this ready-made path: query → relevant SOP excerpt plus current status → LLM summary. Explain what the two context inputs contribute and which statements in the summary you would compare with them.",
+            "objectiveIds": [
+              "O2"
+            ]
+          }
+        ],
+        "title": "Review a supplied production information path",
+        "instructions": "Work only with these fictional cases. Write your interpretation before opening a hint or the expected evidence. No equipment, software account or external environment is needed."
+      },
+      "workedExamples": [
+        {
+          "id": "M1_WE_AUTOMATION",
+          "title": "Separate an unchanged rule from a changed condition",
+          "result": "The existing controller is executing automation. A changed physical condition does not itself rewrite its programmed rule.",
+          "problem": "Supplied fictional evidence: “Cooling starts above 70 degrees.” “The coolant has aged.” “The programmed rule has not changed.” Explain the controller’s behavior using only these facts.",
+          "reasoning": [
+            "Read the supplied rule: the same threshold triggers the same response.",
+            "Separate the physical change—aged coolant—from the software rule, which is unchanged.",
+            "Identify the controller as fixed-rule automation. It does not learn a different threshold merely because the coolant changes.",
+            "Compare this with the later video example in which an AI model uses operating history to identify cooling patterns. Treat that as a description of the example, not permission to change a real machine."
+          ],
+          "sourceIds": [
+            "M1S1"
+          ],
+          "objectiveIds": [
+            "O1"
+          ]
+        },
+        {
+          "id": "M1_WE_CONTEXT",
+          "title": "Spot the gap behind a fluent factory answer",
+          "result": "The answer is not established by the supplied evidence. The review records the information gap without diagnosing or repairing the machine.",
+          "problem": "Supplied fictional evidence: the entire prompt is “Why did our machine stop?” No SOP, plant-specific records or current status is attached. The general LLM replies with a specific cause. Decide what this evidence supports.",
+          "reasoning": [
+            "Identify the requested claim: a cause specific to this factory and this event.",
+            "Identify the evidence actually supplied: one general question, with no factory-specific records.",
+            "Use the recording’s distinction between broad training patterns and a facility’s proprietary information. Fluent wording does not show that the missing factory context was present.",
+            "Keep the cause unresolved in this exercise. Record the missing source information rather than converting the answer into a verified diagnosis."
+          ],
+          "sourceIds": [
+            "M1S2"
+          ],
+          "objectiveIds": [
+            "O2"
+          ]
+        },
+        {
+          "id": "M1_WE_GROUNDING",
+          "title": "Trace the demonstrated grounding workflow",
+          "result": "The supplied SOP and current status make the example’s context explicit. The exercise demonstrates an information path, not a guarantee or a real maintenance action.",
+          "problem": "Supplied fictional workflow: query → relevant factory SOP excerpt plus current machine-status record → LLM summary. Identify the role of each input. This is a ready-made information path, not a running factory connection.",
+          "reasoning": [
+            "The query states what information is being requested.",
+            "The SOP excerpt supplies relevant written factory context.",
+            "The current status record supplies information about the present event.",
+            "The combined context is provided to the model. This follows the recording’s illustrated retrieval-and-live-data example.",
+            "Describe the inputs and inspect the summary against them. Do not describe the resulting answer as automatically correct or the deployment as automatically secure; the recording’s absolute claims require SME review."
+          ],
+          "sourceIds": [
+            "M1S2"
+          ],
+          "objectiveIds": [
+            "O2"
+          ]
+        }
+      ],
+      "durationMinutes": 32,
+      "conceptExplainer": {
+        "videos": [
+          {
+            "id": "V8f0b7aadcdce49b88168",
+            "title": "Automation vs AI",
+            "slides": [
+              {
+                "id": "SL8f0b7aadcdce49b881680",
+                "body": [
+                  "Step onto the floor of a modern manufacturing plant, and you'll immediately notice the perfect synchronization. Every movement is timed down to the millisecond. For decades, we've built these systems to solve one specific problem, eliminating repetitive physical labor. This relies on an environment of known knowns. If the size, weight, and speed of the materials on the line never fluctuate, the output remains entirely predictable. You program a programmable logic controller, or PLC, with a set ladder logic sequence, and the machinery executes those exact steps millions of times without deviation. The result is a consistent execution engine that is completely blind to its surrounding context. The trouble is, a factory floor is a physical space, and physical spaces change. Bearings wear down, ambient room temperature fluctuates, and supply chains deliver materials with slightly different d"
+                ],
+                "title": "Automation vs AI · transcript part 1",
+                "narration": "Step onto the floor of a modern manufacturing plant, and you'll immediately notice the perfect synchronization. Every movement is timed down to the millisecond. For decades, we've built these systems to solve one specific problem, eliminating repetitive physical labor. This relies on an environment of known knowns. If the size, weight, and speed of the materials on the line never fluctuate, the output remains entirely predictable. You program a programmable logic controller, or PLC, with a set ladder logic sequence, and the machinery executes those exact steps millions of times without deviation. The result is a consistent execution engine that is completely blind to its surrounding context. The trouble is, a factory floor is a physical space, and physical spaces change. Bearings wear down, ambient room temperature fluctuates, and supply chains deliver materials with slightly different dimensions. This diagram shows what happens to hard-coded logic when an irregular variable enters the sequence. The rules don't adapt to the new shape. The pathway stops and the line halts. To keep the line moving, engineers must monitor operations, find the new variable, and manually rewrite the code to account for the change. We eliminated the physical repetition, but humans are still performing the repetitive thinking required to manage the machines. To scale operations efficiently, a facility needs a way to hand off that cognitive repetition. It requires artificial intelligence. Let's look at a specific industrial process, managing the internal temperature of a single machine. This chart shows how traditional automation handles the cooling cycle. The rule is simple. If the temperature crosses a hard 70 degrees, the cooler turns on. This logic is deterministic. The machine checks the temperature, returning a strict binary yes or no. Over a month of operation, the coolant fluid inside the machine ages, losing its thermal efficiency. A 70 degree trigger is no longer the most efficient threshold, yet the system will continue waiting for that exact number before activating.",
+                "sourceIds": [
+                  "M1S1"
+                ],
+                "objectiveIds": [
+                  "O1"
+                ]
+              },
+              {
+                "id": "SL8f0b7aadcdce49b881681",
+                "body": [
+                  "The execution is restricted by the initial parameters set by a human programmer, which prevents the system from optimizing for real-time wear and tear. Now, let's apply an artificial intelligence model to that exact same cooling problem. AI plots thousands of past temperature readings against cooler events to discover relationships and identify optimal cooling zones. By recognizing patterns, it manages unknown knowns. As coolant degrades, the AI adapts, triggering coolers earlier. This probabilistic approach generates variable confidence scores for actions based on current conditions rather than binary commands. Probabilistic systems rely on operational history to weigh options and make informed decisions on the fly. Zooming out to the entire factory floor, we can see how these two technologies interact. AI and traditional automation are not competitors. They occupy different layers in a"
+                ],
+                "title": "Automation vs AI · transcript part 2",
+                "narration": "The execution is restricted by the initial parameters set by a human programmer, which prevents the system from optimizing for real-time wear and tear. Now, let's apply an artificial intelligence model to that exact same cooling problem. AI plots thousands of past temperature readings against cooler events to discover relationships and identify optimal cooling zones. By recognizing patterns, it manages unknown knowns. As coolant degrades, the AI adapts, triggering coolers earlier. This probabilistic approach generates variable confidence scores for actions based on current conditions rather than binary commands. Probabilistic systems rely on operational history to weigh options and make informed decisions on the fly. Zooming out to the entire factory floor, we can see how these two technologies interact. AI and traditional automation are not competitors. They occupy different layers in a production hierarchy. On the floor, the conveyor belts and robotic arms remain in place, handling the heavy, repetitive physical execution. Above them, the AI acts as a coordinating layer. It monitors the entire flow, predicting when a motor might fail, or adjusting conveyor speeds to prevent a bottleneck. A modern facility maximizes its throughput when adaptive digital intelligence is layered directly over consistent physical machinery. This division of labor shifts the daily responsibilities of the human workforce. By offloading micro-decisions like when to trigger a valve or how fast a belt should turn to the AI, technicians are no longer required to spend their shifts manually troubleshooting basic logic failures. Instead of fixing a single machine's code, a worker now manages the performance targets for the entire line, adjusting the system's objectives based on production deadlines or material quality. In modern manufacturing, the roles are distinct. Automation executes the physical tasks, AI decides how to optimize those tasks, and humans set the goals that the entire system works toward.",
+                "sourceIds": [
+                  "M1S1"
+                ],
+                "objectiveIds": [
+                  "O1"
+                ]
+              }
+            ],
+            "sourceMedia": {
+              "transcript": "Step onto the floor of a modern manufacturing plant, and you'll immediately notice the perfect synchronization. Every movement is timed down to the millisecond. For decades, we've built these systems to solve one specific problem, eliminating repetitive physical labor. This relies on an environment of known knowns. If the size, weight, and speed of the materials on the line never fluctuate, the output remains entirely predictable. You program a programmable logic controller, or PLC, with a set ladder logic sequence, and the machinery executes those exact steps millions of times without deviation. The result is a consistent execution engine that is completely blind to its surrounding context. The trouble is, a factory floor is a physical space, and physical spaces change. Bearings wear down, ambient room temperature fluctuates, and supply chains deliver materials with slightly different dimensions. This diagram shows what happens to hard-coded logic when an irregular variable enters the sequence. The rules don't adapt to the new shape. The pathway stops and the line halts. To keep the line moving, engineers must monitor operations, find the new variable, and manually rewrite the code to account for the change. We eliminated the physical repetition, but humans are still performing the repetitive thinking required to manage the machines. To scale operations efficiently, a facility needs a way to hand off that cognitive repetition. It requires artificial intelligence. Let's look at a specific industrial process, managing the internal temperature of a single machine. This chart shows how traditional automation handles the cooling cycle. The rule is simple. If the temperature crosses a hard 70 degrees, the cooler turns on. This logic is deterministic. The machine checks the temperature, returning a strict binary yes or no. Over a month of operation, the coolant fluid inside the machine ages, losing its thermal efficiency. A 70 degree trigger is no longer the most efficient threshold, yet the system will continue waiting for that exact number before activating. The execution is restricted by the initial parameters set by a human programmer, which prevents the system from optimizing for real-time wear and tear. Now, let's apply an artificial intelligence model to that exact same cooling problem. AI plots thousands of past temperature readings against cooler events to discover relationships and identify optimal cooling zones. By recognizing patterns, it manages unknown knowns. As coolant degrades, the AI adapts, triggering coolers earlier. This probabilistic approach generates variable confidence scores for actions based on current conditions rather than binary commands. Probabilistic systems rely on operational history to weigh options and make informed decisions on the fly. Zooming out to the entire factory floor, we can see how these two technologies interact. AI and traditional automation are not competitors. They occupy different layers in a production hierarchy. On the floor, the conveyor belts and robotic arms remain in place, handling the heavy, repetitive physical execution. Above them, the AI acts as a coordinating layer. It monitors the entire flow, predicting when a motor might fail, or adjusting conveyor speeds to prevent a bottleneck. A modern facility maximizes its throughput when adaptive digital intelligence is layered directly over consistent physical machinery. This division of labor shifts the daily responsibilities of the human workforce. By offloading micro-decisions like when to trigger a valve or how fast a belt should turn to the AI, technicians are no longer required to spend their shifts manually troubleshooting basic logic failures. Instead of fixing a single machine's code, a worker now manages the performance targets for the entire line, adjusting the system's objectives based on production deadlines or material quality. In modern manufacturing, the roles are distinct. Automation executes the physical tasks, AI decides how to optimize those tasks, and humans set the goals that the entire system works toward.",
+              "reviewNotes": [
+                "This recording illustrates fixed automation and pattern-based AI with fictional production examples. It does not authorize equipment operation or changes."
+              ]
+            },
+            "midpointQuiz": {
+              "questions": [
+                {
+                  "id": "M1_MID_A1",
+                  "hint": "Think about who defines the sequence before it runs.",
+                  "prompt": "Select one answer: What makes the PLC example fixed-rule automation?",
+                  "choices": [
+                    "It learns fresh rules from each batch.",
+                    "It follows a programmed logic sequence.",
+                    "It sets new goals for the whole plant.",
+                    "It predicts actions from past patterns."
+                  ],
+                  "correct": 1,
+                  "sourceIds": [
+                    "M1S1"
+                  ],
+                  "explanation": "The programmed sequence is the supporting evidence. The other options describe learning, human goal-setting or prediction, none of which is how this PLC is described before the checkpoint.",
+                  "objectiveIds": [
+                    "O1"
+                  ],
+                  "selectionType": "single"
+                },
+                {
+                  "id": "M1_MID_A2",
+                  "hint": "Distinguish a changing physical condition from an unchanged rule.",
+                  "prompt": "Select one answer: In the cooling example, what happens when coolant ages but the program is unchanged?",
+                  "choices": [
+                    "The trigger learns a lower temperature.",
+                    "The cooler ignores every temperature.",
+                    "The trigger stays at the set 70 degrees.",
+                    "The program invents a new cooling rule."
+                  ],
+                  "correct": 2,
+                  "sourceIds": [
+                    "M1S1"
+                  ],
+                  "explanation": "The unchanged program still uses the set 70-degree trigger. The other options incorrectly assume the rule learns, ignores its measurement or rewrites itself when the coolant ages. This is a recording example, not a recommended machine setting.",
+                  "objectiveIds": [
+                    "O1"
+                  ],
+                  "selectionType": "single"
+                }
+              ],
+              "afterSlideId": "SL8f0b7aadcdce49b881680"
+            },
+            "uploadedVideo": {
+              "assetId": "09e7b528-beca-40ac-b759-93c8e0751edc",
+              "transcriptId": "10c1b422-c0f3-42c7-a039-584524922d88",
+              "durationSeconds": 241.05,
+              "checkpointSeconds": 123.76
+            },
+            "plannedMinutes": 4.0175
+          },
+          {
+            "id": "Vbb16c2ddabcd4a3380a4",
+            "title": "What are Large Language Models",
+            "slides": [
+              {
+                "id": "SLbb16c2ddabcd4a3380a40",
+                "body": [
+                  "Modern manufacturing relies heavily on constant momentum, right up until a critical piece of machinery suddenly grinds to a halt. To get the line moving again, technicians face an immediate bottleneck. They have to manually dig through mountains of unstructured text, flipping through hundreds of pages of maintenance manuals and dense standard operating procedures just to find a starting point. This search quickly turns into a maze. An obscure error code on one screen rarely matches the disconnected sensor descriptions buried deep in a PDF from five years ago. The actual physical repair often takes minutes. The true financial bleed of machine downtime comes from the hours wasted simply searching for the exact information needed to act. This massive data bottleneck is exactly the problem large language models or LLMs are engineered to solve. They instantly process and synthesize massive vo"
+                ],
+                "title": "What are Large Language Models · transcript part 1",
+                "narration": "Modern manufacturing relies heavily on constant momentum, right up until a critical piece of machinery suddenly grinds to a halt. To get the line moving again, technicians face an immediate bottleneck. They have to manually dig through mountains of unstructured text, flipping through hundreds of pages of maintenance manuals and dense standard operating procedures just to find a starting point. This search quickly turns into a maze. An obscure error code on one screen rarely matches the disconnected sensor descriptions buried deep in a PDF from five years ago. The actual physical repair often takes minutes. The true financial bleed of machine downtime comes from the hours wasted simply searching for the exact information needed to act. This massive data bottleneck is exactly the problem large language models or LLMs are engineered to solve. They instantly process and synthesize massive volumes of unstructured human text. Think of an LLM as an AI trained by reading vast oceans of existing information, everything from heavy technical manuals to complex code bases and millions of web pages. We call them large because of their parameters. These are billions of mathematical knobs storing patterns and logic the model learned during training. This parameter-heavy architecture powers systems dominating the current landscape, including OpenAI's GPT-4, Anthropic's Claude, Google's Gemini, and local alternatives like Meta's Llama 3. By leveraging these billions of parameters, LLMs act as universal translators, taking a factory's overwhelming pile of static documentation and turning it into accessible, interactive knowledge. Out of the box, an LLM offers immediate industrial utility. It inherently understands dense technical jargon, complex error codes, and niche sensor descriptions, without requiring you to retrain the software for every new task. You interact with it through prompting. You simply type plain language instructions, asking the system to summarize a manual, explain a process, or compare technical data, and it responds in context. However, these models arrive with a significant structural flaw. A standard LLM possesses absolutely zero knowledge of your facility's specific proprietary data.",
+                "sourceIds": [
+                  "M1S2"
+                ],
+                "objectiveIds": [
+                  "O2"
+                ]
+              },
+              {
+                "id": "SLbb16c2ddabcd4a3380a41",
+                "body": [
+                  "If you ask an ungrounded LLM about a specific, localized machine, it will experience a hallucination, generating a highly plausible sounding, but entirely false answer. Furthermore, generalized LLMs have no concept of time. They are completely blind to real-time events, live telemetry, and current machine statuses. Deploying a raw, generalized LLM on a factory floor creates a dangerous gap between broad assumptions and specific real-world truths. It quickly becomes a profound operational liability. Safely deploying these models in manufacturing requires a specialized architectural process, known as retrieval augmented generation, or RAG, combined with live data integration. The RAG workflow begins when a technician submits a query. The system first extracts the exact proprietary SOP document from your secure local database. Simultaneously, it pulls real time telemetry, merging it with th"
+                ],
+                "title": "What are Large Language Models · transcript part 2",
+                "narration": "If you ask an ungrounded LLM about a specific, localized machine, it will experience a hallucination, generating a highly plausible sounding, but entirely false answer. Furthermore, generalized LLMs have no concept of time. They are completely blind to real-time events, live telemetry, and current machine statuses. Deploying a raw, generalized LLM on a factory floor creates a dangerous gap between broad assumptions and specific real-world truths. It quickly becomes a profound operational liability. Safely deploying these models in manufacturing requires a specialized architectural process, known as retrieval augmented generation, or RAG, combined with live data integration. The RAG workflow begins when a technician submits a query. The system first extracts the exact proprietary SOP document from your secure local database. Simultaneously, it pulls real time telemetry, merging it with the SOP into a single context package. This forces the LLM to answer strictly using local data. This specific workflow neutralizes the threat of hallucinations. It forces the AI to strictly read your proprietary manual and check your live sensors before it is allowed to speak. Back on the factory floor, our technician is now standing beside the halted machine, actively attempting a diagnosis. They encounter a highly obscure, completely undocumented error code and input it straight into the tablet's interface. Because this facility runs a local model like Llama 3 via Ollama, the entire query processes completely on premises. The factories telemetry and intellectual property never leave the building. Nothing touches the external internet, keeping the proprietary information perfectly secure. This secure local processing instantly synthesizes the relevant manual and the live machine status, delivering a verified step-by-step repair guide directly into the technician's hands. Large language models arrive with no inherent understanding of a specific business or its unique workflows. They function as specialized reasoning engines, using mathematical patterns to organize and navigate complex technical text. This reasoning capability delivers its highest industrial utility when the engine is securely anchored to a facility's specific proprietary truth. Mastering this connection makes once scattered factory data a facility's single most accessible and actionable asset.",
+                "sourceIds": [
+                  "M1S2"
+                ],
+                "objectiveIds": [
+                  "O2"
+                ]
+              }
+            ],
+            "sourceMedia": {
+              "transcript": "Modern manufacturing relies heavily on constant momentum, right up until a critical piece of machinery suddenly grinds to a halt. To get the line moving again, technicians face an immediate bottleneck. They have to manually dig through mountains of unstructured text, flipping through hundreds of pages of maintenance manuals and dense standard operating procedures just to find a starting point. This search quickly turns into a maze. An obscure error code on one screen rarely matches the disconnected sensor descriptions buried deep in a PDF from five years ago. The actual physical repair often takes minutes. The true financial bleed of machine downtime comes from the hours wasted simply searching for the exact information needed to act. This massive data bottleneck is exactly the problem large language models or LLMs are engineered to solve. They instantly process and synthesize massive volumes of unstructured human text. Think of an LLM as an AI trained by reading vast oceans of existing information, everything from heavy technical manuals to complex code bases and millions of web pages. We call them large because of their parameters. These are billions of mathematical knobs storing patterns and logic the model learned during training. This parameter-heavy architecture powers systems dominating the current landscape, including OpenAI's GPT-4, Anthropic's Claude, Google's Gemini, and local alternatives like Meta's Llama 3. By leveraging these billions of parameters, LLMs act as universal translators, taking a factory's overwhelming pile of static documentation and turning it into accessible, interactive knowledge. Out of the box, an LLM offers immediate industrial utility. It inherently understands dense technical jargon, complex error codes, and niche sensor descriptions, without requiring you to retrain the software for every new task. You interact with it through prompting. You simply type plain language instructions, asking the system to summarize a manual, explain a process, or compare technical data, and it responds in context. However, these models arrive with a significant structural flaw. A standard LLM possesses absolutely zero knowledge of your facility's specific proprietary data. If you ask an ungrounded LLM about a specific, localized machine, it will experience a hallucination, generating a highly plausible sounding, but entirely false answer. Furthermore, generalized LLMs have no concept of time. They are completely blind to real-time events, live telemetry, and current machine statuses. Deploying a raw, generalized LLM on a factory floor creates a dangerous gap between broad assumptions and specific real-world truths. It quickly becomes a profound operational liability. Safely deploying these models in manufacturing requires a specialized architectural process, known as retrieval augmented generation, or RAG, combined with live data integration. The RAG workflow begins when a technician submits a query. The system first extracts the exact proprietary SOP document from your secure local database. Simultaneously, it pulls real time telemetry, merging it with the SOP into a single context package. This forces the LLM to answer strictly using local data. This specific workflow neutralizes the threat of hallucinations. It forces the AI to strictly read your proprietary manual and check your live sensors before it is allowed to speak. Back on the factory floor, our technician is now standing beside the halted machine, actively attempting a diagnosis. They encounter a highly obscure, completely undocumented error code and input it straight into the tablet's interface. Because this facility runs a local model like Llama 3 via Ollama, the entire query processes completely on premises. The factories telemetry and intellectual property never leave the building. Nothing touches the external internet, keeping the proprietary information perfectly secure. This secure local processing instantly synthesizes the relevant manual and the live machine status, delivering a verified step-by-step repair guide directly into the technician's hands. Large language models arrive with no inherent understanding of a specific business or its unique workflows. They function as specialized reasoning engines, using mathematical patterns to organize and navigate complex technical text. This reasoning capability delivers its highest industrial utility when the engine is securely anchored to a facility's specific proprietary truth. Mastering this connection makes once scattered factory data a facility's single most accessible and actionable asset.",
+              "reviewNotes": [
+                "Source clarification: retrieving relevant SOP and current-status information can support an answer; it does not guarantee correctness or eliminate hallucinations. Compare every important claim with the supplied evidence.",
+                "Source clarification: the local-model example shows an on-premises processing location. Location alone does not establish perfect security; do not infer an accuracy or security guarantee from this recording."
+              ]
+            },
+            "midpointQuiz": {
+              "questions": [
+                {
+                  "id": "M1_MID_L1",
+                  "hint": "Recall the explanation of why language models are called large.",
+                  "prompt": "Select one answer: What do the recording’s “mathematical knobs” represent?",
+                  "choices": [
+                    "Parameters holding learned patterns.",
+                    "Sensors reporting current vibration.",
+                    "Folders containing the plant manuals.",
+                    "Commands controlling conveyor motors."
+                  ],
+                  "correct": 0,
+                  "sourceIds": [
+                    "M1S2"
+                  ],
+                  "explanation": "Parameters are the recording’s mathematical-knob analogy for learned patterns. The distractors refer to live sensors, document storage and motor commands, which are different from these learned model values.",
+                  "objectiveIds": [
+                    "O2"
+                  ],
+                  "selectionType": "single"
+                },
+                {
+                  "id": "M1_MID_L2",
+                  "hint": "Broad training information is different from a specific facility’s information.",
+                  "prompt": "Select one answer: Which limitation is introduced before the checkpoint?",
+                  "choices": [
+                    "It cannot summarize written documents.",
+                    "It automatically knows every factory.",
+                    "It must be retrained for each request.",
+                    "It lacks the plant’s proprietary data."
+                  ],
+                  "correct": 3,
+                  "sourceIds": [
+                    "M1S2"
+                  ],
+                  "explanation": "Before this checkpoint, the recording distinguishes general training from the plant’s proprietary information. It also shows text summarization and prompting without retraining for every task, so the other statements contradict that teaching.",
+                  "objectiveIds": [
+                    "O2"
+                  ],
+                  "selectionType": "single"
+                }
+              ],
+              "afterSlideId": "SLbb16c2ddabcd4a3380a40"
+            },
+            "uploadedVideo": {
+              "assetId": "df737fd4-db66-400f-a95d-65d75e2c68da",
+              "transcriptId": "c557c345-ea14-4a9e-b1e1-33df13842f99",
+              "durationSeconds": 282.3,
+              "checkpointSeconds": 138.32
+            },
+            "plannedMinutes": 4.705
+          }
+        ]
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "M1S1",
+      "kind": "sme",
+      "title": "Automation vs AI",
+      "reference": "SCORM Builder AIforProduction-M1-T1 v173, sub-concept-1-1; original recording https://scorm-builder-gcs.b-cdn.net/topics/default/AIforProduction-M1-T1/videos/ibmm_bf1fbdda.mp4. Transcript checked locally with Whisper base.en, audio passage rechecks and video frames; final human SME accuracy/sign-off pending."
+    },
+    {
+      "id": "M1S2",
+      "kind": "sme",
+      "title": "What are Large Language Models",
+      "reference": "SCORM Builder AIforProduction-M1-T1 v173, sub-concept-1-2; original recording https://scorm-builder-gcs.b-cdn.net/topics/default/AIforProduction-M1-T1/videos/ibmm2_0c832157.mp4. Transcript checked locally with Whisper base.en, audio passage rechecks and video frames; final human SME accuracy/sign-off pending. SME caveat: RAG and local deployment are not assumed to guarantee accuracy or security."
+    }
+  ],
+  "subject": "Automation and language models in production work: two original concept recordings.",
+  "courseEnd": {
+    "reflection": {
+      "prompts": [
+        "Which production task would you classify as fixed automation, and why?",
+        "What factory information would you need before trusting a language-model summary?",
+        "How would you explain the limits of a confident answer to a colleague?"
+      ]
+    },
+    "masteryGate": {
+      "title": "Final check: automation, language models and evidence",
+      "questions": [
+        {
+          "id": "FINAL_01",
+          "hint": "Classify the behavior described.",
+          "prompt": "Select one answer: A label printer repeats a programmed sequence for every batch. What does this show?",
+          "choices": [
+            "A learned model selecting new goals",
+            "A fixed rule executing a defined task",
+            "A text model retrieving factory records",
+            "A reviewer checking a written claim"
+          ],
+          "correct": 1,
+          "sourceIds": [
+            "M1S1"
+          ],
+          "explanation": "A repeated programmed sequence is fixed-rule automation; no learning or text generation is described.",
+          "objectiveIds": [
+            "O1"
+          ],
+          "selectionType": "single"
+        },
+        {
+          "id": "FINAL_02",
+          "hint": "Recall what the illustrated AI layer uses.",
+          "prompt": "Select one answer: What distinguishes the recording’s AI cooling illustration from the fixed threshold?",
+          "choices": [
+            "It omits all temperature measurements",
+            "It removes people from setting goals",
+            "It uses patterns in historical readings",
+            "It repeats only the unchanged trigger"
+          ],
+          "correct": 2,
+          "sourceIds": [
+            "M1S1"
+          ],
+          "explanation": "The AI example uses historical readings and cooling patterns; a fixed threshold alone does not adapt that way.",
+          "objectiveIds": [
+            "O1"
+          ],
+          "selectionType": "single"
+        },
+        {
+          "id": "FINAL_03",
+          "hint": "Do not infer learning from a stop.",
+          "prompt": "Select one answer: An unfamiliar input stops a programmed path. What follows from the example?",
+          "choices": [
+            "The fixed path may lack a suitable rule",
+            "The controller has learned a new goal",
+            "The model has checked the local SOP",
+            "The sequence has retrained its sensors"
+          ],
+          "correct": 0,
+          "sourceIds": [
+            "M1S1"
+          ],
+          "explanation": "The unfamiliar condition exposes the limits of the illustrated predefined path; stopping is not evidence of learning.",
+          "objectiveIds": [
+            "O1"
+          ],
+          "selectionType": "single"
+        },
+        {
+          "id": "FINAL_04",
+          "hint": "Recall the mathematical-knob analogy.",
+          "prompt": "Select one answer: What do language-model parameters represent in the recording?",
+          "choices": [
+            "A set of current factory sensor logs",
+            "An archive of every private factory file",
+            "A checklist signed by the local reviewer",
+            "Learned values shaping generated text"
+          ],
+          "correct": 3,
+          "sourceIds": [
+            "M1S2"
+          ],
+          "explanation": "Parameters are learned model values; they are not a live feed or guaranteed access to private factory information.",
+          "objectiveIds": [
+            "O2"
+          ],
+          "selectionType": "single"
+        },
+        {
+          "id": "FINAL_05",
+          "hint": "Separate fluency from supplied information.",
+          "prompt": "Select one answer: A general model names a factory fault without receiving factory records. What is missing?",
+          "choices": [
+            "A more polished answer presentation",
+            "The relevant local supporting evidence",
+            "An additional list of provider names",
+            "The same claim in a longer paragraph"
+          ],
+          "correct": 1,
+          "sourceIds": [
+            "M1S2"
+          ],
+          "explanation": "The claim lacks local supporting evidence. Presentation and wording do not provide the missing records.",
+          "objectiveIds": [
+            "O2"
+          ],
+          "selectionType": "single"
+        },
+        {
+          "id": "FINAL_06",
+          "hint": "Choose a task involving supplied text.",
+          "prompt": "Select one answer: Which task matches a text-based use shown in the recording?",
+          "choices": [
+            "Changing the cooler’s physical wiring",
+            "Approving equipment restart unaided",
+            "Summarizing a supplied technical note",
+            "Guaranteeing a machine never fails"
+          ],
+          "correct": 2,
+          "sourceIds": [
+            "M1S2"
+          ],
+          "explanation": "Summarizing supplied technical text is a demonstrated language-model use, unlike physical changes or unconditional guarantees.",
+          "objectiveIds": [
+            "O2"
+          ],
+          "selectionType": "single"
+        },
+        {
+          "id": "FINAL_07",
+          "hint": "Distinguish execution, patterns and human goals.",
+          "prompt": "Select all correct answers: Which roles match the production hierarchy illustrated?",
+          "choices": [
+            "Automation executes a defined sequence",
+            "AI assistance uses learned patterns",
+            "People no longer set production goals",
+            "Every fixed controller retrains itself"
+          ],
+          "sourceIds": [
+            "M1S1"
+          ],
+          "explanation": "Automation executes the defined sequence and the illustrated AI layer uses patterns. Human goals remain; fixed controllers do not automatically retrain.",
+          "objectiveIds": [
+            "O1"
+          ],
+          "selectionType": "multiple",
+          "correctIndices": [
+            0,
+            1
+          ]
+        },
+        {
+          "id": "FINAL_08",
+          "hint": "Identify the two information inputs shown.",
+          "prompt": "Select all correct answers: Which inputs appear in the illustrated factory-context package?",
+          "choices": [
+            "An unrelated advertisement headline",
+            "A relevant operating-procedure excerpt",
+            "An unsupported equipment-fault guess",
+            "A current equipment-status record"
+          ],
+          "sourceIds": [
+            "M1S2"
+          ],
+          "explanation": "The example supplies a relevant SOP and current status. They provide context for reviewing claims, rather than a guarantee that the response is correct.",
+          "objectiveIds": [
+            "O2"
+          ],
+          "selectionType": "multiple",
+          "correctIndices": [
+            1,
+            3
+          ]
+        },
+        {
+          "id": "FINAL_09",
+          "hint": "Identify location without adding guarantees.",
+          "prompt": "Select one answer: What does the local-model example establish about the query?",
+          "choices": [
+            "Its answer is always factually accurate",
+            "Its context contains every private file",
+            "Its security is guaranteed by location",
+            "Its processing occurs in the factory zone"
+          ],
+          "correct": 3,
+          "sourceIds": [
+            "M1S2"
+          ],
+          "explanation": "The depicted example processes the query on premises. The visible course clarification rejects absolute accuracy and security guarantees.",
+          "objectiveIds": [
+            "O2"
+          ],
+          "selectionType": "single"
+        },
+        {
+          "id": "FINAL_10",
+          "hint": "Follow the information path used in the worked example.",
+          "prompt": "Select one answer: How should a supplied AI summary be checked in the review cases?",
+          "choices": [
+            "Compare its claims with the supplied records",
+            "Judge it by the confidence of its wording",
+            "Accept it when its interface looks polished",
+            "Replace its evidence with a provider list"
+          ],
+          "correct": 0,
+          "sourceIds": [
+            "M1S2"
+          ],
+          "explanation": "Compare concrete claims with supplied records; confidence and presentation do not establish support.",
+          "objectiveIds": [
+            "O2"
+          ],
+          "selectionType": "single"
+        }
+      ],
+      "passPercent": 80,
+      "instructions": "Answer all ten questions. Select one answer unless the question says Select all correct answers. Multiple-answer questions require the exact set. Pass mark: 80%."
+    },
+    "miniProject": {
+      "brief": "Run two fictional cases through a supplied evidence-review workflow, inspect the results and explain what the taught concepts imply. AI outputs are provided case material; the sandbox does not call external AI tools.",
+      "title": "Explore a supplied evidence-review workflow",
+      "rubric": [
+        "Runs both fictional cases and gives at least 35 words explaining fixed rules versus learned patterns, language-model context and verification. Automated checks inspect length and stated concepts; they do not certify technical judgement."
+      ],
+      "sandbox": {
+        "tests": [
+          {
+            "id": "case1",
+            "label": "Initial fictional case",
+            "inputs": {
+              "result1": "The cooler follows a fixed rule. A fluent factory-specific summary has no supplied local evidence; the reviewer must identify that context gap.",
+              "evidence1": "Case A: a cooler switches on at the unchanged programmed threshold of 70 degrees. A general language-model question contains no factory SOP or current status."
+            }
+          },
+          {
+            "id": "case2",
+            "label": "Changed fictional case",
+            "inputs": {
+              "result1": "Historical patterns distinguish the illustrated AI assistance from the unchanged threshold. Supplied context can support a summary; compare its claims with the SOP and status rather than assuming guaranteed correctness.",
+              "evidence1": "Case B: the illustrated AI layer uses historical cooling patterns. A language-model query includes a relevant SOP excerpt and current equipment status; its response has not yet been checked."
+            }
+          }
+        ],
+        "fields": [
+          {
+            "id": "label1",
+            "help": "Prepared source-case label; learners do not edit the supplied workflow.",
+            "label": "Introduction to LLMs",
+            "starter": "Introduction to LLMs"
+          }
+        ],
+        "guided": {
+          "stages": [
+            {
+              "id": "overview",
+              "title": "Inspect the supplied cases",
+              "stepIds": [],
+              "promptIds": [],
+              "instruction": "Read the fictional evidence and supplied results. Run both cases before completing the explanation stage."
+            },
+            {
+              "id": "stage1",
+              "title": "Introduction to LLMs",
+              "stepIds": [
+                "readEvidence1",
+                "readResult1",
+                "review1"
+              ],
+              "promptIds": [
+                "explain1"
+              ],
+              "instruction": "Inspect both fictional cases. Run each supplied workflow, compare the evidence with its result, then explain the automation/AI distinction and the language-model evidence gap. The workflow is ready-made: do not build or edit it."
+            }
+          ],
+          "prompts": [
+            {
+              "id": "explain1",
+              "hint": "Use the words fixed rule, pattern, language model, context and verify. Refer to a concrete observation from each case. Naming RAG or a local model is not proof of correctness.",
+              "label": "Explain both cases: which behavior is fixed automation or AI assistance, what the language model can and cannot know from its supplied context, and what you would verify before relying on the summary.",
+              "minWords": 35,
+              "criterionId": "criterion1",
+              "conceptGroups": [
+                [
+                  "fixed rule",
+                  "fixed rules"
+                ],
+                [
+                  "pattern",
+                  "patterns"
+                ],
+                [
+                  "language model",
+                  "LLM"
+                ],
+                [
+                  "context",
+                  "records"
+                ],
+                [
+                  "verify",
+                  "verification"
+                ]
+              ]
+            }
+          ],
+          "artifact": {
+            "steps": [
+              {
+                "id": "readEvidence1",
+                "output": "evidence1",
+                "operation": "copy",
+                "expression": "input.evidence1"
+              },
+              {
+                "id": "readResult1",
+                "output": "result1",
+                "operation": "copy",
+                "expression": "input.result1"
+              },
+              {
+                "id": "review1",
+                "output": "review1",
+                "operation": "template",
+                "expression": "{{values.label1}}: Evidence: {{output.evidence1}} | Supplied result: {{output.result1}}"
+              }
+            ],
+            "values": {
+              "label1": "Introduction to LLMs"
+            },
+            "version": 1
+          },
+          "estimatedMinutes": 12
+        },
+        "inputs": [
+          {
+            "id": "evidence1",
+            "label": "Introduction to LLMs: evidence",
+            "sample": "Case A: a cooler switches on at the unchanged programmed threshold of 70 degrees. A general language-model question contains no factory SOP or current status."
+          },
+          {
+            "id": "result1",
+            "label": "Introduction to LLMs: supplied result",
+            "sample": "The cooler follows a fixed rule. A fluent factory-specific summary has no supplied local evidence; the reviewer must identify that context gap."
+          }
+        ],
+        "runtime": "data-workflow",
+        "version": 1,
+        "criteria": [
+          {
+            "id": "criterion1",
+            "checks": [
+              {
+                "path": "output.evidence1",
+                "testId": "case1",
+                "operator": "notEmpty"
+              },
+              {
+                "path": "output.result1",
+                "testId": "case1",
+                "operator": "notEmpty"
+              },
+              {
+                "path": "output.evidence1",
+                "testId": "case2",
+                "operator": "notEmpty"
+              },
+              {
+                "path": "output.result1",
+                "testId": "case2",
+                "operator": "notEmpty"
+              }
+            ],
+            "weight": 1,
+            "videoIds": [
+              "V8f0b7aadcdce49b88168",
+              "Vbb16c2ddabcd4a3380a4"
+            ],
+            "sourceIds": [
+              "M1S1",
+              "M1S2"
+            ],
+            "rubricIndex": 0,
+            "objectiveIds": [
+              "O1",
+              "O2"
+            ]
+          }
+        ],
+        "instructions": [
+          "Explore the ready-made workflow one stage at a time. All cases are fictional.",
+          "Run both supplied cases and inspect their evidence and supplied results.",
+          "Explain the results using the taught concepts, including limitations and required verification.",
+          "Submit explanations for grading. No code editing or external tools are required."
+        ],
+        "starterSteps": []
+      },
+      "sourceIds": [
+        "M1S1",
+        "M1S2"
+      ],
+      "deliverable": "Saved explanations for each guided stage, supported by running both supplied cases.",
+      "objectiveIds": [
+        "O1",
+        "O2"
+      ]
+    }
+  },
+  "briefRevision": 2,
+  "schemaVersion": 1,
+  "blueprintRunId": "dbfb7317-3241-4e43-82e9-df34303f41b9",
+  "durationMinutes": 55,
+  "objectiveEvidence": [
+    {
+      "objective": "Distinguish fixed automation from AI assistance using production-work examples.",
+      "sourceIds": [
+        "M1S1"
+      ],
+      "objectiveId": "O1"
+    },
+    {
+      "objective": "Explain how language models generate text and why their outputs require verification.",
+      "sourceIds": [
+        "M1S2"
+      ],
+      "objectiveId": "O2"
+    }
+  ]
+}

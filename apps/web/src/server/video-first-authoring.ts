@@ -7,6 +7,7 @@ import { AuthoredCoursePackage, validateAuthoredCourse, type AuthoredCoursePacka
 import { moduleSourceIssues, courseSources } from '@/lib/source-library';
 import { MODULE_CORE_PROMPT, MODULE_CORE_VERSION, MODULE_INSTRUCTIONS_VERSION, moduleAuthoringInput, moduleReadiness } from '@/lib/module-authoring';
 import type { CourseBriefData } from '@/lib/content-creator';
+import { courseAuthoringSystem } from '@/lib/course-authoring-prompt';
 import { getCreatorDraft } from './content-creator';
 import { assertVideoSources, readVideoTranscript } from './concept-videos';
 import { llmHttp, llmModels, type LlmTransport } from './ai/llm';
@@ -54,7 +55,7 @@ export async function generateVideoModule(ownerId: string, courseId: string, mod
   const objectiveIds = authoringInput.objectives.map(o => o.id);
   const models = llmModels();
   let model = models[0];
-  const messages = [{ role: 'system' as const, content: MODULE_CORE_PROMPT },
+  const messages = [{ role: 'system' as const, content: courseAuthoringSystem(MODULE_CORE_PROMPT, draft.brief) },
     { role: 'user' as const, content: JSON.stringify({ ...authoringInput, fixedVideos: videos, outputSchema: z.toJSONSchema(ModuleSchema), instruction: 'Module sourceIds must include all video evidence; objectiveIds must equal the supplied module objectives. Add concise, usable activities rather than slide narration.' }) }];
   let content: Unit | undefined;
   for (let attempt = 0; attempt < 2; attempt++) {

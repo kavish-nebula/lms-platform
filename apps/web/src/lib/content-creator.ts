@@ -6,6 +6,7 @@ const note = z.string().max(12000);
 export const CourseBrief = z.object({
   title: z.string().max(200), subject: z.string().max(300), audience: note,
   prerequisites: note, outcomes: note,
+  systemPrompt: z.string().trim().max(12000).optional(),
   // Retain optional legacy input for saved courses and frozen production history.
   duration: z.string().max(100).default(''),
   delivery: z.enum(["", "Self-paced", "Instructor-led", "Blended", "Cohort-based"]),

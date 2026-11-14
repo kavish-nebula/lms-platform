@@ -30,7 +30,7 @@ export function moduleAuthoringInput(brief: CourseBriefData, moduleId: string) {
   const sources = brief.sourceLibrary!.sources.filter(s => s.scope === 'course' || s.moduleId === moduleId);
   const objectiveIds = unit.instructions?.objectiveIds.length ? unit.instructions.objectiveIds : [...new Set(sources.filter(s => s.scope !== 'course').flatMap(s => s.objectiveIds))];
   return {
-    courseContext: { title: brief.title, subject: brief.subject, audience: brief.audience, outcomes: brief.outcomes, prerequisites: brief.prerequisites, dependencies: brief.dependencies, delivery: brief.delivery, physicalSkills: brief.physicalSkills, physicalNotes: brief.physicalNotes,
+    courseContext: { ...(brief.systemPrompt?.trim() ? { systemPrompt: brief.systemPrompt.trim() } : {}), title: brief.title, subject: brief.subject, audience: brief.audience, outcomes: brief.outcomes, prerequisites: brief.prerequisites, dependencies: brief.dependencies, delivery: brief.delivery, physicalSkills: brief.physicalSkills, physicalNotes: brief.physicalNotes,
       outline: brief.sourceLibrary!.modules.map(m => ({ id: m.id, title: m.title, topics: m.topics, dependsOn: m.instructions?.dependsOn ?? [] })) },
     moduleId, title: unit.title, objectives: brief.objectives.map((o, i) => ({ id: `O${i + 1}`, ...o })).filter(o => objectiveIds.includes(o.id)),
     moduleInstructions: unit.instructions ?? { version: 1 as const, objectiveIds, scope: '', exclusions: '', prerequisites: '', dependsOn: [], teachingNotes: '' },

@@ -17,6 +17,7 @@ const owner = await getSessionUser(); const database = await db();
 await database.insert(users).values({ id: 'blueprint-other', name: 'Other', email: 'other@example.test' });
 const untouched = { profiles: await database.select().from(profiles), progress: await database.select().from(stepProgress) };
 const brief: CourseBriefData = { ...EMPTY_BRIEF, title: 'Fictional HR policy support', subject: 'HR', audience: 'HR coordinators', outcomes: 'Create a grounded brief', sourceText: 'Synthetic policy facts. Do not approve requests.\n\nCurrent and obsolete documents must be distinguished.', dependencies: 'Sources before answers', contexts: 'Fictional company', difficulties: 'Version confusion', objectives: [ { text: 'Explain source grounding', bloom: 'Understand' }, { text: 'Classify policy requests', bloom: 'Analyze' }, { text: 'Create an assistant brief', bloom: 'Create' } ] };
+assert(blueprintSystem(blueprintInput({ ...brief, systemPrompt: "Use plain language." }, "codex-ild-v2")).includes("Use plain language."));
 const draft = await createCreatorDraft(owner.id, { brief });
 await setDeliveryStructure(owner.id, draft.id, { structure: 'legacy', expectedStructure: 'codex-ild-v2' });
 const empty = await createCreatorDraft(owner.id, { brief: EMPTY_BRIEF });

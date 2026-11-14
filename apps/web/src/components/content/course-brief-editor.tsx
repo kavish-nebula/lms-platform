@@ -24,6 +24,7 @@ const fields = [
   ["sourceText", "Raw source content", "Paste expert notes, explanations, procedures or case material. Stage 2 processes the saved input only when you request it.", 100000],
   ["references", "Source references", "One reference or URL per line. References are stored as text and are not fetched.", 12000],
   ["dependencies", "Topic sequence and dependencies", "List topics in order and note which depend on earlier topics.", 12000],
+  ["systemPrompt", "System prompt", "Optional course-wide authoring instructions for the blueprint and video-first modules. Describe teaching style and content rules here; keep technical evidence in the source library. Schema, source checks and human approval still apply.", 12000],
 ] as const;
 
 export function CourseBriefEditor({ draft, lastModule }: { draft: CreatorDraft | null; lastModule?: string }) {
@@ -68,7 +69,7 @@ export function CourseBriefEditor({ draft, lastModule }: { draft: CreatorDraft |
       <form onSubmit={save} className="min-w-0 space-y-6">
         <fieldset disabled={busy} className="min-w-0 space-y-5 rounded-xl border border-line bg-panel p-5 md:p-7"><legend className="px-2 text-lg font-semibold">Course brief (entire course)</legend>
           {fields.filter(([key]) => !brief.sourceLibrary || (key !== "sourceText" && key !== "references")).map(([key, label, hint, max]) => <div className="space-y-2" key={key}><label htmlFor={`brief-${key}`} className="block text-sm font-medium">{label}</label><p id={`hint-${key}`} className="text-xs text-ink-muted">{hint}</p>
-            {key === "title" || key === "subject" ? <Input id={`brief-${key}`} aria-describedby={`hint-${key}`} maxLength={max} value={brief[key]} onChange={e => set(key, e.target.value)} /> : <Textarea id={`brief-${key}`} aria-describedby={`hint-${key}`} maxLength={max} rows={key === "sourceText" ? 10 : 3} value={brief[key]} onChange={e => set(key, e.target.value)} />}
+            {key === "title" || key === "subject" ? <Input id={`brief-${key}`} aria-describedby={`hint-${key}`} maxLength={max} value={brief[key] ?? ""} onChange={e => set(key, e.target.value)} /> : <Textarea id={`brief-${key}`} aria-describedby={`hint-${key}`} maxLength={max} rows={key === "sourceText" ? 10 : 3} value={brief[key] ?? ""} onChange={e => set(key, e.target.value)} />}
           </div>)}
           <div className="space-y-2"><label htmlFor="brief-delivery" className="block text-sm font-medium">Delivery context</label><select id="brief-delivery" className="min-h-11 w-full rounded-lg border border-input bg-panel px-3 text-sm focus-visible:outline-2 focus-visible:outline-ring" value={brief.delivery} onChange={e => set("delivery", e.target.value as CourseBriefData["delivery"])}><option value="">Not specified</option>{["Self-paced", "Instructor-led", "Blended", "Cohort-based"].map(v => <option key={v}>{v}</option>)}</select></div>
         </fieldset>

@@ -14,9 +14,12 @@ const before = { profiles: await database.select().from(profiles), progress: awa
 await database.insert(users).values({ id: "creator-test-other", name: "Other", email: "other@example.test" });
 assert.deepEqual(await listCreatorDrafts(owner.id), []);
 const draft = await createCreatorDraft(owner.id, { brief: EMPTY_BRIEF });
+assert.equal(draft.brief.systemPrompt, undefined, 'Existing briefs need no system prompt.');
+assert(!CourseBrief.safeParse({ ...EMPTY_BRIEF, systemPrompt: 'x'.repeat(12001) }).success);
+assert.equal(CourseBrief.parse({ ...EMPTY_BRIEF, systemPrompt: '  Use clear examples.  ' }).systemPrompt, 'Use clear examples.');
 assert.equal(draft.revision, 1);
 assert.equal(briefReadiness(draft.brief).filter(c => c.ready).length, 1);
-const updated = { ...EMPTY_BRIEF, title: "Mechanical engineering agents", subject: "AI", audience: "Engineers", sourceText: "Approved notes", outcomes: "Design a brief", dependencies: "Concepts before tools", contexts: "", difficulties: "", objectives: [
+const updated = { ...EMPTY_BRIEF, systemPrompt: "Use concise, source-grounded examples.", title: "Mechanical engineering agents", subject: "AI", audience: "Engineers", sourceText: "Approved notes", outcomes: "Design a brief", dependencies: "Concepts before tools", contexts: "", difficulties: "", objectives: [
   { text: "Identify tools", bloom: "Remember" as const }, { text: "Explain agent boundaries", bloom: "Understand" as const }, { text: "Design a brief", bloom: "Create" as const },
 ] };
 assert(briefReadiness(updated).every(c => c.ready));
@@ -49,6 +52,7 @@ assert.equal((await POST(new Request("http://localhost", { method: "POST", body:
 const createResponse = await POST(req({ brief: updated }));
 assert.equal(createResponse.status, 201);
 const created = (await createResponse.json()).course;
+assert.equal(created.brief.systemPrompt, updated.systemPrompt);
 const context = { params: Promise.resolve({ id: created.id }) };
 assert.equal((await GET_ONE(new Request("http://localhost"), context)).status, 200);
 assert.equal((await PATCH(req({ brief: EMPTY_BRIEF, revision: 9 }, "PATCH"), context)).status, 409);

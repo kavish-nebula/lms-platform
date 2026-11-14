@@ -1,5 +1,10 @@
 # Current learning experience extension
 
+SME briefs accept optional `systemPrompt` authoring guidance in their existing
+JSON storage. Blueprint and video-first module generators compose it with their
+shared instructions; module fingerprints include nonblank guidance. No database
+migration, source-evidence substitution or approval bypass is introduced.
+
 Video-first authoring now generates one module at a time from a shared versioned
 system prompt (`lib/module-authoring.ts`), saved module-specific instructions and
 separate course/module/topic evidence. Only the selected module's videos and
