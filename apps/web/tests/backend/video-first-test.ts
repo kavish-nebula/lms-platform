@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
@@ -32,6 +33,37 @@ import { hookScenes, hookSceneAt, hookNarration } from '@/lib/video-first-hook';
 import { prepareVideoHookAudio, videoHookAudio } from '@/server/video-hook-audio';
 import { GET as hookAudioGet } from '@/app/api/v1/courses/[courseId]/hook-audio/[moduleId]/route';
 import { conceptTemplate, conceptCanSeek, validatePersonalizedConcept } from '@/lib/personalized-concept';
+import { healthcareAutomationConcept, healthcareAutomationBridges } from '@/lib/healthcare-automation-concept';
+
+// A full learner-context derivative remains separate from its original recording.
+const productionSnapshot = JSON.parse(await fs.readFile(path.resolve('../../fixtures/authored-courses/ai-for-production-module1/course.json'), 'utf8')) as AuthoredCoursePackageData;
+const productionVideo = authoredDelivery({ courseId: 'dd1fec93-8c51-4f2d-9e0c-943823062c76', revisionId: crypto.randomUUID(), content: productionSnapshot }).modules[0].blocks.find(b => b.stage === 'explainer')!;
+assert(productionVideo.stage === 'explainer');
+const fixedVideo = productionVideo.videos![0];
+const sourceTemplate = conceptTemplate(fixedVideo), sourceBefore = structuredClone(sourceTemplate);
+const healthcare = healthcareAutomationConcept(sourceTemplate, 'dd1fec93-8c51-4f2d-9e0c-943823062c76', fixedVideo.title, { answers: { field: 'healthcare' } })!;
+assert(healthcare && healthcare.scenes.every(s => s.visual === 'healthcare' && /clinic|reception/i.test(s.narration)));
+assert.deepEqual(sourceTemplate, sourceBefore, 'Original transcript/template is never edited.');
+assert.deepEqual(healthcare.scenes.map(s => [s.id, s.phase, s.sourceIds, s.objectiveIds]), sourceTemplate.scenes.map(s => [s.id, s.phase, s.sourceIds, s.objectiveIds]));
+assert(healthcare.scenes.filter(s => s.phase === 'before').some(s => /PLC/.test(s.narration)));
+assert(healthcare.scenes.filter(s => s.phase === 'before').some(s => /70 degrees/.test(s.narration)));
+assert(!healthcareAutomationConcept(sourceTemplate, 'unrelated-course', fixedVideo.title, { answers: { field: 'healthcare' } }));
+assert(!healthcareAutomationConcept(sourceTemplate, 'dd1fec93-8c51-4f2d-9e0c-943823062c76', fixedVideo.title, { answers: { field: 'finance' } }));
+assert(!healthcareAutomationConcept(sourceTemplate, 'dd1fec93-8c51-4f2d-9e0c-943823062c76', 'Another lesson', { answers: { field: 'healthcare' } }));
+const revisedHealthcare = structuredClone(healthcare); revisedHealthcare.scenes.forEach((s,i) => { s.bridge = healthcareAutomationBridges[i]; });
+validatePersonalizedConcept(healthcare, revisedHealthcare);
+const healthcareRoot = path.resolve('../../fixtures/authored-courses/ai-for-production-module1/healthcare-automation');
+const savedHealthcare = JSON.parse(await fs.readFile(path.join(healthcareRoot, 'lesson.json'), 'utf8'));
+assert.deepEqual(savedHealthcare.scenes.map((s: { narration: string; bridge: string }) => [s.narration, s.bridge]), revisedHealthcare.scenes.map(s => [s.narration, s.bridge]));
+const healthcareAudio = JSON.parse(await fs.readFile(path.join(healthcareRoot, 'audio-manifest.json'), 'utf8'));
+assert.equal(healthcareAudio.clips.length, revisedHealthcare.scenes.length);
+assert(healthcareAudio.measuredDurationSeconds > 60 && healthcareAudio.measuredDurationSeconds <= 420);
+for (const clip of healthcareAudio.clips) {
+  const bytes = await fs.readFile(path.join(healthcareRoot, clip.file));
+  assert.equal(bytes.toString('ascii', 0, 4), 'RIFF');
+  assert.equal(bytes.length, clip.bytes);
+  assert.equal(createHash('sha256').update(bytes).digest('hex'), clip.sha256);
+}
 
 const testRoot = path.join(process.cwd(), '.data', 'video-first-test', crypto.randomUUID());
 process.env.LMS_VIDEO_DIR = testRoot;

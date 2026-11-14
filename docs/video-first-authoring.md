@@ -198,3 +198,16 @@ unreviewed until their timing and spoken content have been checked.
 Source review guidance is displayed above uploaded original recordings as well as
 personalized and source-reference views. This keeps creator-supplied qualifications
 visible when learners choose the original video, without rewriting its transcript.
+
+For the explicitly requested AI for Production Module 1 Automation vs AI revision,
+Healthcare profiles receive a source-mapped, locally authored clinic-administration
+script across all seven visual sections, with an administrative workflow diagram.
+The scope is the standalone Module 1 release and its parent Production course;
+other fields, courses and topics retain their existing templates. A different
+template changes the existing job fingerprint, so the old manufacturing-heavy
+derivative is not reused. The finisher validates against the same context-specific
+template used when queuing. Matching Kokoro audio must be complete before delivery.
+Original files, transcript/source bindings, source comparisons before the existing
+checkpoint, questions and grading remain unchanged. Machine thresholds are explicitly
+source examples, never clinical recommendations. The Python prompt preserves this
+reviewed derivative rather than restoring the source factory narrative.

@@ -1,5 +1,14 @@
 # Current learning experience extension
 
+The requested Healthcare Automation vs AI derivative is selected from the saved
+learner field within the concept-piece template for Production Module 1 only.
+Its seven source/phase-mapped clinic-administration scripts and healthcare visuals
+replace the derivative's manufacturing narrative, without editing the release or
+original media. Queueing and result validation select the identical scoped
+template; its changed content naturally invalidates the existing adaptation
+fingerprint. The usual learner/release/voice checks and complete matching-audio
+gate remain required. Other profile fields and lesson templates are unchanged.
+
 SME briefs accept optional `systemPrompt` authoring guidance in their existing
 JSON storage. Blueprint and video-first module generators compose it with their
 shared instructions; module fingerprints include nonblank guidance. No database

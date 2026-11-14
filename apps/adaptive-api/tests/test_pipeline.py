@@ -102,6 +102,23 @@ class PipelineTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'Personalise contextual bridge'):
             validate_concept(source, candidate)
 
+    def test_healthcare_concept_preserves_locally_authored_administrative_narration(self):
+        import copy
+        job = copy.deepcopy(JOB)
+        source = {'scenes': [{'id': 'clinic-before', 'phase': 'before', 'visual': 'healthcare', 'title': 'Clinic reception rule', 'points': ['Check the form.', 'Review exceptions.'], 'narration': 'A fictional clinic reception rule routes complete appointment requests to a staff queue.', 'bridge': 'Connect this idea to a familiar task before selecting the tool you would use.', 'sourceIds': ['M1S1'], 'objectiveIds': ['O1']}]}
+        job['input'].update(authored=source, source=source, piece='concept:clinic', trigger='initial')
+        job['input']['context'].update(authoredCourse=True)
+        calls = []
+        def model(req):
+            calls.append(json.loads(req.content))
+            return httpx.Response(200, json={'choices': [{'message': {'content': json.dumps({'$.scenes[0].bridge': 'In healthcare administration, staff review appointment requests that do not match the fixed rule.'})}}]})
+        with httpx.Client(transport=httpx.MockTransport(model)) as client:
+            result = generate(job, client)['content']['scenes'][0]
+        self.assertEqual(result['narration'], source['scenes'][0]['narration'])
+        self.assertEqual(result['visual'], 'healthcare')
+        self.assertIn('HEALTHCARE AUTOMATION DERIVATIVE', calls[0]['messages'][0]['content'])
+        self.assertIn('never turn a machine threshold into a patient threshold', calls[0]['messages'][0]['content'].lower())
+
     def test_video_activity_preserves_evidence_links_and_uses_course_prompt(self):
         import copy
         job = copy.deepcopy(JOB)

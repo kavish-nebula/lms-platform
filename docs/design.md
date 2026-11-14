@@ -1,5 +1,12 @@
 # Learning experience UI
 
+The Healthcare Automation vs AI derivative uses a labelled clinic-reception SVG
+instead of the factory illustration. Its sequence shows appointment requests,
+fixed rules and a reception queue before the checkpoint, then queue history,
+pattern finding and staff review afterwards. Text and an accessible diagram
+description communicate the sequence without motion or color alone; reduced
+motion freezes the emphasis. Original recording remains a separate video mode.
+
 The course-brief form has a labelled optional System prompt textarea with existing
 theme/focus tokens and the normal saved/unsaved draft behavior. Its hint separates
 creator instructions from SME evidence and identifies the generation stages that

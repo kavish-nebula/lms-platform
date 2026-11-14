@@ -5,6 +5,7 @@ import type { AdaptedPiece } from "@/server/db/schema";
 import type { Clip } from "./tts";
 import { hookScenes } from '@/lib/video-first-hook';
 import { conceptTemplate, conceptNarration, type PersonalizedConcept } from '@/lib/personalized-concept';
+import { healthcareAutomationConcept } from '@/lib/healthcare-automation-concept';
 
 /**
  * The pieces of a module that are rewritten for each learner, in the order
@@ -21,8 +22,10 @@ export type PieceDef = {
   clips: (content: unknown) => Clip[];
 };
 
-export function conceptPiece(video: ConceptVideo): PieceDef {
-  return { piece: `concept:${video.id}`, label: 'a personalized illustrated concept lesson from a reviewed source transcript, preserving its checkpoint boundary', authored: conceptTemplate(video),
+export function conceptPiece(video: ConceptVideo, courseId = '', context?: unknown): PieceDef {
+  const source = conceptTemplate(video);
+  const authored = healthcareAutomationConcept(source, courseId, video.title, context) ?? source;
+  return { piece: `concept:${video.id}`, label: 'a personalized illustrated concept lesson from a reviewed source transcript, preserving its checkpoint boundary', authored,
     clips: content => (content as PersonalizedConcept).scenes.map((s, i) => ({ key: `scene${i}`, text: conceptNarration(s) })) };
 }
 

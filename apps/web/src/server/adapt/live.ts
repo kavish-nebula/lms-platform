@@ -271,7 +271,7 @@ export async function queueConcept(user: SessionUser, courseId: string, moduleId
   const video = videos.find(v => v.id === videoId);
   if (!video?.personalizationSource) throw new ApiError(422, 'reviewed_source_required', 'This concept needs a reviewed source transcript.');
   const { e, context } = await contextOf(user, courseId, moduleId);
-  const def = conceptPiece(video);
+  const def = conceptPiece(video, courseId, context);
   const fingerprint = hash({ enrollment: e.id, moduleId, piece: def.piece, conceptVersion: 3, authored: def.authored, context: teachingContext(context) });
   const d = await db();
   const inserted = await d.insert(adaptationJobs).values({ enrollmentId: e.id, moduleId, videoId: def.piece, slide: 0, fingerprint, trigger: 'initial', priority, input: { authored: def.authored, source: def.authored, context, trigger: 'initial', piece: def.piece, courseId, sourceVideoId: video.id, transcriptId: video.personalizationSource.transcriptId } }).onConflictDoNothing().returning();
@@ -340,7 +340,7 @@ export async function finishJob(id: string, lease: string, generated: unknown, m
     const { mod } = await videosOf(String(row.input.courseId), row.moduleId, jobEnrollment.userId);
     const isConcept = String(row.input.piece).startsWith('concept:');
     const video = isConcept ? getBlock(mod, 'explainer')?.videos?.find(v => v.id === row.input.sourceVideoId) : undefined;
-    const def = isConcept && video ? conceptPiece(video) : piecesOf(mod).find((p) => p.piece === row.input.piece);
+    const def = isConcept && video ? conceptPiece(video, String(row.input.courseId), row.input.context) : piecesOf(mod).find((p) => p.piece === row.input.piece);
     if (!def) throw new ApiError(422, "invalid_content", "Unknown lesson piece.");
     const merged = mergeShape(def.authored, generated, row.input.piece === "hook" ? { banned: /\b(?:Orbit|ORB-\d+)\b/i } : {});
     if (merged.problems.length) throw new ApiError(422, "invalid_content", "Lesson structure changed.");
