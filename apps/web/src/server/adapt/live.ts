@@ -213,7 +213,7 @@ export async function queueSlide(user: SessionUser, courseId: string, moduleId: 
     source = base.content as VideoSlide;
   }
   const fingerprint = trigger === "initial"
-    ? hash({ enrollment: e.id, moduleId, videoId, slide, authored, context: teachingContext(context), trigger })
+    ? hash({ enrollment: e.id, moduleId, videoId, slide, authored, context: teachingContext(context), trigger, titleBridgeVersion: context.prerequisiteTeaching.length && authored.kind === 'title' ? 1 : undefined })
     : hash({ enrollment: e.id, requestId });
   const inserted = await d.insert(adaptationJobs).values({ enrollmentId: e.id, moduleId, videoId, slide, fingerprint, trigger, priority: trigger === "initial" ? preparationPriority : 10, input: { authored, source, context, courseId, lesson: video!.lesson, trigger, baseRevision, requestId } }).onConflictDoNothing().returning();
   if (trigger === 'initial') await d.update(adaptationJobs).set({ priority: preparationPriority }).where(and(eq(adaptationJobs.fingerprint, fingerprint), eq(adaptationJobs.status, 'queued'), lt(adaptationJobs.priority, preparationPriority)));
@@ -233,7 +233,7 @@ export async function queueModule(user: SessionUser, courseId: string, moduleId:
   const queuePiece = async (piece: "hook" | "worked") => {
     const def = piecesOf(mod).find((p) => p.piece === piece);
     if (!def) return null;
-    const textMapVersion = piece === "hook" ? 7 : undefined;
+    const textMapVersion = piece === "hook" ? 10 : undefined;
     const fingerprint = hash({ enrollment: e.id, moduleId, piece, textMapVersion, authored: def.authored, context: teachingContext(context) });
     const priority = preparationPriority < 0 ? preparationPriority : piece === 'hook' ? 1 : 0;
     const inserted = await d.insert(adaptationJobs).values({ enrollmentId: e.id, moduleId, videoId: piece, slide: 0, fingerprint, trigger: "initial", priority, input: { authored: def.authored, source: def.authored, context, trigger: "initial", piece, courseId, textMapVersion } }).onConflictDoNothing().returning();
@@ -253,7 +253,7 @@ export async function queueModule(user: SessionUser, courseId: string, moduleId:
   const worked = released ? null : await queuePiece("worked");
   const activities: Job[] = [];
   for (const def of piecesOf(mod).filter(p => p.piece.startsWith('activity:'))) {
-    const fingerprint = hash({ enrollment: e.id, moduleId, piece: def.piece, narrationVersion: def.piece === 'activity:hook' ? 3 : undefined, authored: def.authored, context: teachingContext(context) });
+    const fingerprint = hash({ enrollment: e.id, moduleId, piece: def.piece, narrationVersion: def.piece === 'activity:hook' ? 6 : undefined, authored: def.authored, context: teachingContext(context) });
     const priority = preparationPriority < 0 ? preparationPriority : def.piece === 'activity:hook' ? 2 : 0;
     await d.insert(adaptationJobs).values({ enrollmentId: e.id, moduleId, videoId: def.piece, slide: 0, fingerprint, trigger: 'initial', priority, input: { authored: def.authored, source: def.authored, context, trigger: 'initial', piece: def.piece, courseId } }).onConflictDoNothing();
     await d.update(adaptationJobs).set({ priority }).where(and(eq(adaptationJobs.fingerprint, fingerprint), eq(adaptationJobs.status, 'queued'), lt(adaptationJobs.priority, priority)));

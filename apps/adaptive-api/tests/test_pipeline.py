@@ -14,6 +14,66 @@ JOB = {"id": "job", "lease": "lease", "input": {"authored": SLIDE, "source": SLI
 
 
 class PipelineTests(unittest.TestCase):
+    def test_prerequisite_bridge_targets_existing_title_subtitle_without_note(self):
+        import copy
+        slide = {**SLIDE, "sub": "How models predict text"}
+        job = copy.deepcopy(JOB)
+        job["input"].update(authored=slide, source=slide, trigger="initial")
+        job["input"]["context"]["prerequisiteTeaching"] = [{"lessonId": "1.1", "keyIdeas": ["Agents use models to choose steps."]}]
+        calls = []
+        def model(req):
+            calls.append(json.loads(req.content))
+            result = {**slide, "sub": "Quick reminder: agents choose steps. Models predict text.", "sentences": ["Quick reminder: agents use models to choose steps."]}
+            return httpx.Response(200, json={"choices": [{"message": {"content": json.dumps(result)}}]})
+        with httpx.Client(transport=httpx.MockTransport(model)) as client:
+            result = generate(job, client)["content"]
+        supplied = json.loads(calls[0]["messages"][1]["content"])
+        self.assertEqual(supplied["PREREQUISITE_BRIDGE_PLACEMENT"]["visiblePath"], "$.sub")
+        self.assertEqual(supplied["PREREQUISITE_BRIDGE_PLACEMENT"]["narrationPath"], "$.sentences[0]")
+        self.assertNotIn('note', result)
+        self.assertEqual(len(result['sentences']), len(slide['sentences']))
+
+    def test_healthcare_hook_repair_includes_retail_details_and_url(self):
+        import copy
+        hook = {"title": "Orbit bot", "narration": "Orbit cannot access records.", "film": {"shots": [{"say": "Orbit cannot find an order.", "url": "orbitoutdoor.com/help", "asks": ["Has my tent shipped?"], "count": 400}]}, "correct": "h1"}
+        job = copy.deepcopy(JOB)
+        job["input"].update(authored=hook, source=hook, piece="hook", trigger="initial", textMapVersion=10, courseId="ai-agent")
+        calls = []
+        def model(req):
+            calls.append(json.loads(req.content))
+            edits = {"$.title": "Healthcare record requests", "$.narration": "Harbour Works healthcare handles record requests.", "$.film.shots[0].say": "The healthcare bot cannot find the record."} if len(calls) == 1 else {"$.film.shots[0].url": "harbourworks.example/help", "$.film.shots[0].asks[0]": "Is my record ready?"}
+            return httpx.Response(200, json={"choices": [{"message": {"content": json.dumps(edits)}}]})
+        with httpx.Client(transport=httpx.MockTransport(model)) as client:
+            content = generate(job, client)["content"]
+        placement = json.loads(calls[0]["messages"][1]["content"])["HOOK_CONTEXT_PLACEMENT"]
+        self.assertIn("$.film.shots[0].url", placement["rewritePaths"])
+        self.assertIn("$.film.shots[0].asks[0]", calls[1]["messages"][-1]["content"])
+        self.assertIn("$.film.shots[0].url", calls[1]["messages"][-1]["content"])
+        self.assertEqual(content["film"]["shots"][0]["count"], 400)
+        self.assertEqual(content["correct"], "h1")
+
+    def test_hook_context_repair_reports_every_missing_anchor_together(self):
+        import copy
+        hook = {"title": "Orbit bot", "narration": "Orbit cannot access records.", "film": {"shots": [{"say": "Orbit cannot find the record.", "label": "Orbit inbox"}]}, "correct": "h1"}
+        job = copy.deepcopy(JOB)
+        job["input"].update(authored=hook, source=hook, piece="hook", trigger="initial", textMapVersion=9, courseId="ai-agent")
+        calls = []
+        def model(req):
+            calls.append(json.loads(req.content))
+            edits = {"$.narration": "Harbour Works cannot access clinic records.", "$.film.shots[0].say": "The clinic bot cannot find the record."} if len(calls) == 1 else {"$.title": "Healthcare record requests", "$.narration": "Harbour Works handles healthcare record requests.", "$.film.shots[0].say": "The healthcare bot cannot find the record.", "$.film.shots[0].label": "Harbour inbox"}
+            return httpx.Response(200, json={"choices": [{"message": {"content": json.dumps(edits)}}]})
+        with httpx.Client(transport=httpx.MockTransport(model)) as client:
+            content = generate(job, client)["content"]
+        self.assertEqual(len(calls), 2)
+        first = json.loads(calls[0]["messages"][1]["content"])
+        self.assertEqual(first["HOOK_CONTEXT_PLACEMENT"]["filmPath"], "$.film.shots[0].say")
+        repair = calls[1]["messages"][-1]["content"]
+        for path in ["$.title", "$.narration", "$.film.shots[0].say", "$.film.shots[0].label"]:
+            self.assertIn(path, repair)
+        self.assertNotIn("Keep the supplied production incident", calls[0]["messages"][0]["content"])
+        self.assertEqual(content["correct"], "h1")
+        self.assertEqual(len(content["film"]["shots"]), 1)
+
     def test_personalized_concept_keeps_phase_and_source_structure(self):
         import copy
         job = copy.deepcopy(JOB)
@@ -143,7 +203,7 @@ class PipelineTests(unittest.TestCase):
         import copy
         hook = {"title": "Orbit chatbot", "narration": "Orbit cannot look up data.", "film": {"say": "Where is my order?", "product": "Trailhead 2P Tent"}, "correct": "h1"}
         job = copy.deepcopy(JOB)
-        job["input"].update(authored=hook, source=hook, piece="hook", textMapVersion=7, courseId="ai-agent")
+        job["input"].update(authored=hook, source=hook, piece="hook", textMapVersion=8, courseId="ai-agent")
         job["input"]["context"]["answers"] = {"domain": "student", "studyFieldOther": "mechanical engineering"}
         calls = []
         def model(req):
@@ -247,6 +307,29 @@ class PipelineTests(unittest.TestCase):
         self.assertIn("Leo and Maya", result["narration"])
         self.assertNotIn("Orbit", result["narration"])
         self.assertEqual(result["correct"], "h1")
+
+    def test_plain_language_hook_rules_reach_both_hook_formats_only(self):
+        import copy
+        for piece in ["hook", "activity:hook", "worked"]:
+            for authored_course in [False, True]:
+                with self.subTest(piece=piece, authored_course=authored_course):
+                    job = copy.deepcopy(JOB)
+                    job["input"].update(piece=piece, trigger="initial")
+                    job["input"]["context"]["authoredCourse"] = authored_course
+                    calls = []
+                    def model(req):
+                        calls.append(json.loads(req.content))
+                        return httpx.Response(200, json={"choices": [{"message": {"content": json.dumps(SLIDE)}}]})
+                    with httpx.Client(transport=httpx.MockTransport(model)) as client:
+                        generate(job, client)
+                    system = calls[0]["messages"][0]["content"]
+                    self.assertEqual("PROBLEM HOOK: PLAIN LANGUAGE FIRST" in system, piece != "worked")
+                    if piece != "worked":
+                        self.assertIn("one familiar situation, one clear difficulty", system)
+                        self.assertIn("without teaching the whole solution", system)
+                    if piece == "activity:hook":
+                        self.assertIn("Only actual quoted evidence stays verbatim", system)
+                        self.assertIn("Do not label the production incident a healthcare case", system)
 
     def test_complete_ild_prompt_and_experience_for_all_triggers(self):
         import copy

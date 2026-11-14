@@ -9,6 +9,34 @@ from .config import settings
 
 LOCKED = {"id", "kind", "type", "icon", "role", "tone", "state", "source", "target", "code", "term", "cue", "correct", "objectiveIds", "sourceIds", "phase", "visual"}
 PROMPT_VERSION = 5
+HOOK_INSTRUCTIONS = """
+PROBLEM HOOK: PLAIN LANGUAGE FIRST
+Make the opening easy to understand on a first watch, including for someone new
+to the subject. Use common everyday words, short direct sentences, and one idea
+per sentence. Prefer sentences of about 8–16 words when natural; clarity and
+preserving required meaning matter more than a rigid word count.
+Use one familiar situation, one clear difficulty, and one simple consequence.
+Make clear what someone is trying to do, what goes wrong, and why it matters.
+Use the learner's field to make the example familiar, without assuming specialist
+knowledge or inventing personal facts. Avoid unnecessary names, backstory,
+multiple competing problems, buzzwords, and dramatic or abstract claims.
+Avoid jargon and unexplained abbreviations. If a required technical term must
+remain, explain it immediately in ordinary words using the supplied teaching.
+Check that titles describe the actual event literally. Never carry a machine
+fault into an unrelated metaphor: a patient record cannot overheat.
+Prefer "AI text that sounds right" to "a fluent AI suggestion" and "an answer
+checked against the supplied report" to "a source-supported explanation".
+Use a short question with one clear action. For example, where the source
+supports it: "The report is missing a step. What would you check before trusting
+the AI answer?" Preserve any required boundaries and assessment meaning.
+Keep on-screen wording brief and narration conversational and easy to follow.
+Build curiosity about the upcoming lesson without teaching the whole solution
+or revealing answers to prediction questions or assessments.
+Before returning, check that a beginner can explain the situation and problem
+after one watch. Simplify wording, not source facts, qualifications, assessment
+meaning, IDs, sentence counts, scene structure, or visual/narration alignment.
+These clarity rules apply within every existing source and output constraint.
+"""
 SYSTEM = """You are an adaptive course teaching editor for an LMS.
 
 Your purpose is to make approved course material relevant, understandable,
@@ -440,15 +468,20 @@ def generate(job, client=None):
                 "fieldWords": field_words,
                 "instruction": "Use a field word naturally in an authentic example at both paths. Preserve the original lesson, sentence count, and character limits; rewrite the surrounding example consistently, not just the label."}
     concept_job = str(source.get("piece", "")).startswith("concept:")
-    text_map = concept_job or source.get("piece") == "hook" and source.get("textMapVersion") in {1, 2, 3, 4, 5, 6, 7}
-    sparse_map = concept_job or text_map and source.get("textMapVersion") in {2, 3, 4, 5, 6, 7}
+    text_map = concept_job or source.get("piece") == "hook" and source.get("textMapVersion") in {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+    sparse_map = concept_job or text_map and source.get("textMapVersion") in {2, 3, 4, 5, 6, 7, 8, 9, 10}
     if context.get("prerequisiteTeaching") and isinstance(authored.get("note"), dict) and isinstance(authored["note"].get("text"), str) and authored.get("sentences"):
         placement = {"visiblePath": "$.note.text", "narrationPath": "$.sentences[0]",
                      "instruction": "Place the brief Quick reminder in the existing note text and incorporate it into the first existing narration entry. Keep the original teaching, numeric facts, cue indexes and exact sentence-list length. Keep flow-node labels and sublabels short. Obey the supplied character limits."}
+    elif context.get("prerequisiteTeaching") and authored.get("sentences"):
+        visible_path = next((f"$.{key}" for key in ('sub', 'title', 'kicker') if isinstance(authored.get(key), str) and authored[key].strip()), None)
+        if visible_path:
+            placement = {"visiblePath": visible_path, "narrationPath": "$.sentences[0]",
+                         "instruction": "This slide has no note field. Put a short source-grounded Quick reminder in the named existing visible field AND first narration entry. Explain one relevant prerequisite before continuing the current lesson. Keep the main teaching, exact sentence-list length, cues and character limits. Never add a note field or extra sentence entries."}
     protocol = "\nHOOK TEXT-EDIT PROTOCOL: For this hook job, return one flat JSON object containing only changed path/text pairs from SOURCE. This replaces the full-structure output instruction above. Unchanged entries may be omitted: the server preserves them and reconstructs the complete film. Never return the film object or an edits wrapper. Never add unknown paths. Rewrite the authored organisation, people and industry examples into the learner's field throughout the hook, including film narration and visible text. Keep required teaching and prediction meanings. Do not repeat unchanged text. JSON only." if sparse_map else ""
-    if source.get("textMapVersion") in {6, 7}:
+    if source.get("textMapVersion") in {6, 7, 8, 9, 10}:
         protocol += " Choose one authentic scenario in the learner's field and goal, then rewrite the title, visible artefact, conversations, stakes, film narration and replay consistently around it. The title must explicitly name the learner's subject. This is scenario adaptation, not organisation or noun substitution. For example, mechanical engineering can use a prototype bench-test or simulation assistant that needs access to test results before a design can be approved. For a student, use plausible academic/project actions. A calculation or report cannot be 'shipped'; do not inherit shop language for academic work. Keep the required lesson about a chatbot lacking tools/data access, including its prediction answer and causal explanation."
-    if source.get("textMapVersion") == 7 and answers.get("domain") == "student" and "mechanical" in field_words:
+    if source.get("textMapVersion") in {7, 8, 9, 10} and answers.get("domain") == "student" and "mechanical" in field_words:
         protocol += " For this mechanical engineering student use one prototype stress-test workflow throughout: a student needs test-bench results, the assistant cannot access the lab's test records, and an agent needs the corresponding data tool before reporting results. Every chat question and inbox subject must concern this same test workflow. Replace the retail product with the tested mechanical assembly. No shipping, parcels, tents, shopping, delivery orders or 2P product branding anywhere in this academic test scenario."
     if source["trigger"] == "example":
         protocol += " For this example request, create a fresh authentic example throughout the relevant visible fields AND spoken sentences; adding the field name to an unchanged example is insufficient. SOURCE is a previous draft and may contain poor phrasing or an unrelated retail story. Correct its grammar and replace such examples while preserving REQUIRED_TEACHING, protected code, numeric facts, cues and exact sentence/list lengths. Do not splice raw profile vocabulary into a sentence. Replace all editable Orbit/ORB identifiers consistently."
@@ -460,12 +493,27 @@ def generate(job, client=None):
         protocol += "\nThis is an interactive practice activity around an unchanged uploaded video, not a slide or assessment. Adapt the framing, reasoning, hints and practice support consistently to LEARNER_FOCUS. Keep the supplied fictional case documents and quoted claims verbatim, including identifiers, times, percentages and leading zeros. Connect their lesson to the learner's field without replacing source evidence with a different case. Preserve every ID, objectiveIds, sourceIds, array length, technical claim and evidence standard. Do not invent personal circumstances or claim the recorded video was changed. Return the complete SOURCE JSON shape."
     if concept_job:
         protocol = "\nCONCEPT TEXT-EDIT PROTOCOL: Return a flat JSON object of changed SOURCE path/text pairs only. Personalise each scene's bridge with one concrete fictional analogy or explanation connected to LEARNER_FOCUS and the concept just taught. Bridge length: 8 to 18 words. This is learner support, not a claim about their actual work. Retain reviewed narration exactly: narration paths are protected and omitted from editable SOURCE. Never replace source technical definitions or examples. Give each scene a specific concise title and two complete visual points grounded in its reviewed teaching (max 24 words / 180 characters each). Keep all taught definitions, technical facts, IDs, numerical facts and checkpoint phases unchanged. Do not add numerical facts. Never reveal assessment answers. No Markdown, no truncated sentences. Personalise bridges at most scene paths, not just the opening title. Never move later concepts before the midpoint. SOURCE lists editable text; REQUIRED_TEACHING provides the protected source narration for context. Unchanged paths may be omitted; the server reconstructs the complete scenes."
+    if source.get("piece") in {"hook", "activity:hook"}:
+        protocol += HOOK_INSTRUCTIONS
+        if source.get("piece") == "activity:hook":
+            protocol += " Preserve the supplied production incident and explain its relevance to the learner. Do not rename source equipment, faults or case evidence into invented clinical facts."
+            protocol += "\nHOOK NARRATIVE CLARIFICATION: The title, situation and question are editable narrative, not a quoted source document. Rewrite their non-quoted wording plainly while retaining the same case, facts, identifiers, uncertainty, safety boundaries and required question meaning. Only actual quoted evidence stays verbatim. Do not return dense original prose unchanged. Explain 'source passages' as relevant parts of the supplied report, 'missing evidence' as information the report does not include, and 'fluent' as sounding right. Do not label the production incident a healthcare case; use the profile only as a brief familiar comparison where appropriate."
     editable_text = hook_text_map(authored)
+    hook_placement = None
+    if source.get("piece") == "hook" and source.get("courseId") == "ai-agent" and source.get("textMapVersion") in {9, 10} and field_words:
+        film_path = next((p for p in editable_text if p.startswith('$.film.') and p.endswith('.say')), None)
+        film_path = film_path or next((p for p in editable_text if p.startswith('$.film.')), None)
+        hook_placement = {"fieldWords": field_words, "titlePath": "$.title", "openingPath": "$.narration", "filmPath": film_path}
+        protocol += ("\nHOOK CONTEXT PLACEMENT: Use at least one exact field word from HOOK_CONTEXT_PLACEMENT naturally in EACH named path: the title, opening narration and film narration. Include these changed paths in the first response. A clinic story alone does not satisfy an explicit healthcare field marker. Keep the scenario coherent throughout, not just the labels. Replace every editable Orbit/ORB reference. For healthcare, use fictional administrative tasks such as appointment requests, record lookups or policy summaries; never give clinical diagnosis, treatment or medication advice. Preserve the authored lesson, prediction meanings, protected fields, numbers and film structure.")
+        if 'healthcare' in field_words and source.get('textMapVersion') == 10:
+            retail = r"\borbit(?:outdoor)?\b|ORB-\d+|\b(?:tents?|hiking|camping|Trailhead|Ridge|parcels?|shipping|shipped|boots?|gift cards?|orders?|customers?|refunds?|returns)\b"
+            hook_placement['rewritePaths'] = {p: v for p, v in editable_text.items() if re.search(retail, v, re.I)}
+            protocol += "\nHEALTHCARE STORY CONSISTENCY: Every rewritePaths entry contains old shop language and MUST be rewritten, including asks, replies, labels, product, URL text, captions, feedback and replay. Use one fictional clinic administration story throughout. Change tent/boot/parcel and shopping references to record requests or appointment administration. Change Orbit Outdoor URL text to harbourworks.example. Use explicitly fictional administrative rules for the policy lesson, retaining its numerical limits and causal meaning. Do not provide clinical advice. Do not leave original text behind just because the main narration is adapted."
     if concept_job:
         editable_text = {k: v for k, v in editable_text.items() if not k.endswith('.narration')}
     messages = [{"role": "system", "content": (AUTHORED_SYSTEM if context.get("authoredCourse") else SYSTEM) + protocol}, {"role": "user", "content": json.dumps({
         "LEARNER_FOCUS": focus, "LEARNER": teaching_context, "TRIGGER": source["trigger"],
-        "OUTPUT_CONSTRAINTS": output_constraints(authored), "PREREQUISITE_BRIDGE_PLACEMENT": placement, "EXAMPLE_PLACEMENT": example_placement,
+        "OUTPUT_CONSTRAINTS": output_constraints(authored), "PREREQUISITE_BRIDGE_PLACEMENT": placement, "EXAMPLE_PLACEMENT": example_placement, "HOOK_CONTEXT_PLACEMENT": hook_placement,
         "EXAMPLE_REQUIREMENT": f"For an example request, explicitly use at least one of these field words in a concrete example in visible prose and narration: {', '.join(field_words)}" if field_words else "Use the learner's stated context.",
         "CONTENT_FORMAT": "Flat JSON changed-path/text pairs only; omit unchanged paths. The server owns the structure. Use the learner's field and goal throughout visible story and narration." if sparse_map else "A flat JSON text map with exactly the SOURCE keys" if text_map else "The authored JSON structure",
         "SOURCE": editable_text if text_map else source["source"], "REQUIRED_TEACHING": authored})}]
@@ -504,24 +552,37 @@ def generate(job, client=None):
                     added = sorted(authored_numbers(content) - authored_numbers(authored))
                     raise ValueError(f"Keep the same numerical facts as the approved slide; do not add, remove or change numbers. Restore these exact numeric strings: {missing}; remove these invented numeric strings: {added}. Keep quoted source evidence verbatim, including times and leading zeros.")
                 if text_map and source.get("courseId") == "ai-agent":
+                    # Return all missing anchors together: a two-call repair must
+                    # not spend its last turn fixing only an old organisation.
+                    if hook_placement:
+                        texts = hook_text_map(content)
+                        issues = [f"Replace the authored organisation at {p}" for p, v in texts.items() if re.search(r"\b(?:Orbit|ORB-\d+)\b", v, re.I)]
+                        if source.get('textMapVersion') == 10 and 'healthcare' in field_words:
+                            issues += [f"Rewrite old retail text at {p} into the same fictional healthcare administration case: {v}" for p, v in texts.items() if re.search(retail, v, re.I)]
+                        for key in ('titlePath', 'openingPath', 'filmPath'):
+                            p = hook_placement[key]
+                            if p and not any(re.search(r"\b" + re.escape(w) + r"\b", texts.get(p, ''), re.I) for w in field_words):
+                                issues.append(f"Rewrite {p} with a natural explicit field word from {field_words}; retain its case meaning")
+                        if issues:
+                            raise ValueError("Hook context corrections: " + "; ".join(issues))
                     # Fictional team members may stay for continuity; it is the
                     # organisation and industry scenario that must be personalised.
                     leftover = [key for key, value in hook_text_map(content).items() if re.search(r"\b(?:Orbit|ORB-\d+)\b", value, re.I)]
                     if leftover:
                         raise ValueError("Replace the authored story with Harbour Works in the learner's field in these text-map paths: " + ", ".join(leftover))
-                    if source.get("textMapVersion") in {5, 6, 7} and field_words:
+                    if source.get("textMapVersion") in {5, 6, 7, 8, 9, 10} and field_words:
                         visible_story = json.dumps(content.get("film", {})).lower()
                         spoken_story = content.get("narration", "").lower()
                         if not any(re.search(r"\b" + re.escape(w) + r"\b", visible_story) for w in field_words) or not any(re.search(r"\b" + re.escape(w) + r"\b", spoken_story) for w in field_words):
                             raise ValueError("Use the learner's actual field in the film scenario and opening narration: " + ", ".join(field_words))
-                        if source.get("textMapVersion") in {6, 7}:
+                        if source.get("textMapVersion") in {6, 7, 8, 9, 10}:
                             scenario_errors = []
                             if not any(re.search(r"\b" + re.escape(w) + r"\b", content.get("title", ""), re.I) for w in field_words):
                                 scenario_errors.append("Rewrite $.title to explicitly name the learner's subject: " + ", ".join(field_words))
                             implausible = [path for path, value in hook_text_map(content).items() if re.search(r"(?:calculation|report|simulation|grade|result).{0,45}\bshipp?", value, re.I)]
                             if implausible:
                                 scenario_errors.append("Use plausible project actions instead of shipping academic work in: " + ", ".join(implausible))
-                            if source.get("textMapVersion") == 7 and answers.get("domain") == "student" and "mechanical" in field_words:
+                            if source.get("textMapVersion") in {7, 8, 9, 10} and answers.get("domain") == "student" and "mechanical" in field_words:
                                 retail = {path: value for path, value in hook_text_map(content).items() if re.search(r"\b(?:shipp?\w*|parcels?|tents?|cart|2P|Trailhead)\b", value, re.I)}
                                 if retail:
                                     scenario_errors.append("Replace all these retail remnants with coherent prototype stress-test actions: " + json.dumps(retail))
