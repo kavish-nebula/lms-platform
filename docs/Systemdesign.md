@@ -1,5 +1,13 @@
 # Adaptive teaching system design
 
+Master course authoring uses separate prompt layers for video-first modules:
+versioned shared system rules, saved structured module instructions and bounded
+SME evidence with reviewed transcripts. A selected module can be generated before
+later modules are ready. Saved fragments include an input fingerprint and source,
+model and prompt provenance; final course assembly retains existing blueprint,
+review and publication checks. This does not change learner personalization or
+the approved original recordings.
+
 AI for Production's continuous concept player derives one measured audio timeline
 from existing personalized clips. Combined assets are enrollment/revision scoped,
 cached by ordered content hashes and streamed through authenticated range access.

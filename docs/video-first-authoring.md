@@ -8,7 +8,10 @@ transcript, using the same illustrated HTML/CSS and narration approach as the ho
 ## Creator flow
 
 1. Save a course brief, add modules/topics and objectives in its source library.
-2. Add a source record with module or topic scope and map its objectives.
+2. Open **Module instructions and objectives** for each module. Set its objective
+   mapping, included/excluded topics, prerequisites, earlier-module dependencies
+   and teaching preferences. These are separate from SME evidence. Add source
+   records with shared-course, module or topic scope and map their objectives.
 3. Upload its concept video: MP4 with H.264 video, or WebM (VP8/VP9/AV1), up to
    250 MB and 420 seconds. FFmpeg checks the actual container, codec and duration.
    Use browser-supported audio codecs such as AAC for MP4 or Opus for WebM.
@@ -16,12 +19,14 @@ transcript, using the same illustrated HTML/CSS and narration approach as the ho
    WebVTT. Correct the words and timestamps against the video. Confirm the review,
    then save the brief. A replacement video or edited transcript requires review
    again. Each source record holds one recording; add records for additional videos.
-5. Click **Generate activities** for a module. Every declared topic must have a
+5. Choose a **Module workspace**, then click **Generate this module**. Every topic in that module must have a
    reviewed concept video. This creates a versioned module draft: problem hook,
    worked examples, guided practice, scenarios, two midpoint questions per video
    and an end quiz. Generation is synchronous with one bounded repair attempt;
    failures retain uploaded media and reviewed transcripts. Refreshing the page
-   restores the latest draft for the current brief revision.
+   restores that module's latest draft. Later modules may have incomplete sources
+   or unreviewed videos; they do not block a ready module. Course title, audience,
+   outcomes, objectives and sequence still need to be supplied.
 6. Review the draft and current blueprint/module decisions. In course assembly,
    **Merge current video module drafts** replaces only matching modules in an
    existing editable package. Other modules and course-end content are preserved.
@@ -31,6 +36,32 @@ transcript, using the same illustrated HTML/CSS and narration approach as the ho
 7. Save and review the complete package, then publish its exact approved revision.
    Video-first Stage 4 modules use this activity generator; the legacy slide
    generator refuses to replace their recordings.
+
+## Prompt layers and module revisions
+
+`lib/module-authoring.ts` owns the reusable, versioned shared system prompt.
+Every generation request has the same core rules, followed by the selected
+module's structured instructions, exact objectives, complete ordered course
+outline and a separate source collection. Only shared course evidence and that
+module's sources/transcripts are sent; other modules contribute outline context,
+not raw teaching evidence. Source text and transcripts cannot override system
+rules. A prerequisite must name an earlier module. Legacy briefs without module
+instructions remain valid and infer objective mapping from module sources.
+
+Each immutable fragment records `needs_review`, core/instruction versions,
+instruction snapshot, selected model, source revisions/transcript IDs and an
+input hash. Editing another module's sources or instructions does not invalidate
+it. Editing its own evidence/instructions, shared evidence, relevant objectives,
+course context/outline or shared prompt does. Older fragments without provenance
+retain the conservative brief-revision check. Generation still checks the saved
+brief revision both before the request and before saving, and never overwrites
+another module, the assembled package or a published edition.
+
+Review module drafts independently; generate drafts without requiring previous
+modules to be approved first. Full source coverage and the existing course
+blueprint, SME review, package validation and final publication gates remain
+required for the assembled course. Mini project, final assessment and reflection
+are assembled once at course end, never generated per module.
 
 ## Learner experience
 

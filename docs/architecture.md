@@ -1,5 +1,14 @@
 # Current learning experience extension
 
+Video-first authoring now generates one module at a time from a shared versioned
+system prompt (`lib/module-authoring.ts`), saved module-specific instructions and
+separate course/module/topic evidence. Only the selected module's videos and
+reviewed transcripts are checked and sent, with the full ordered outline for
+sequencing. Immutable module fragments carry prompt/instruction/source provenance
+and a scoped input hash. Unrelated module source edits preserve valid drafts;
+whole-course validation and human publication gates remain unchanged. The optional
+instructions field extends the JSON brief; no database migration is required.
+
 AI for Production personalized concepts use one cached WAV and a measured global
 timeline to drive continuous HTML/CSS visuals. The concept API adds optional
 playback metadata only for that course; other players remain scene-based.

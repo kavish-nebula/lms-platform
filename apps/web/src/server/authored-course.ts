@@ -1,4 +1,5 @@
 import { courseSources, sourceCoverage, moduleSourceIssues } from '@/lib/source-library';
+import { MODULE_CORE_VERSION, MODULE_INSTRUCTIONS_VERSION, moduleReadiness } from '@/lib/module-authoring';
 import 'server-only';
 import { createHash, randomBytes } from 'node:crypto';
 import { and, desc, eq, gt, isNull, sql } from 'drizzle-orm';
@@ -155,7 +156,12 @@ export async function getCodexCourseContext(ownerId: string, courseId: string) {
   return {
     schemaVersion: 1, courseId, briefRevision: draft.revision, deliveryStructure: 'codex-ild-v2',
     brief: { title: brief.title, subject: brief.subject, audience: brief.audience, prerequisites: brief.prerequisites, outcomes: brief.outcomes, duration: brief.duration, delivery: brief.delivery, dependencies: brief.dependencies, contexts: brief.contexts, difficulties: brief.difficulties, physicalSkills: brief.physicalSkills, physicalNotes: brief.physicalNotes },
-    workflow: 'Course brief and source library → blueprint → SME module review → teaching and narration → assemble course package → final review → publish',
+    workflow: brief.sourceLibrary?.sources.some(s => s.video) ? 'Course brief and module instructions → scoped SME sources and reviewed topic videos → generate ready modules independently → blueprint and SME review → assemble course package → final review → publish' : 'Course brief and source library → blueprint → SME module review → teaching and narration → assemble course package → final review → publish',
+    moduleAuthoring: brief.sourceLibrary ? {
+      corePromptVersion: MODULE_CORE_VERSION, moduleInstructionsVersion: MODULE_INSTRUCTIONS_VERSION,
+      policy: 'Video module generation uses its own readiness gaps, shared course evidence and selected module/topic sources. Whole-course source coverage applies to the blueprint and complete package, not to independent module activity generation. Preserve other modules and course-end content. All generated fragments remain unapproved.',
+      modules: brief.sourceLibrary.modules.map(unit => ({ moduleId: unit.id, instructions: unit.instructions ?? null, gaps: moduleReadiness(brief, unit.id) })),
+    } : null,
     sourceCoverage: { gaps: sourceCoverage(brief), verification: 'Declared mappings only; human source review required.' },
     sourceOutline: brief.sourceLibrary?.modules ?? [],
     objectives, sources, references: refs.map((reference, index) => ({ id: `R${index + 1}`, reference })),

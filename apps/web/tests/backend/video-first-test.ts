@@ -11,6 +11,8 @@ import { db, closeDb } from '@/server/db/client';
 import { users, enrollments, profiles, stepProgress } from '@/server/db/schema';
 import { uploadConceptVideo, reviewVideoTranscript, assertVideoSources, serveConceptVideo, transcribeConceptVideo } from '@/server/concept-videos';
 import { generateVideoModule, videoModuleDrafts } from '@/server/video-first-authoring';
+import { MODULE_CORE_PROMPT, MODULE_CORE_VERSION, moduleReadiness } from '@/lib/module-authoring';
+import { sourceCoverage } from '@/lib/source-library';
 import { authoredDelivery } from '@/lib/authored-delivery';
 import { saveAuthoredCourse, reviewAuthoredCourse, getCodexCourseContext } from '@/server/authored-course';
 import { publishAuthoredCourse } from '@/server/authored-publication';
@@ -252,5 +254,69 @@ if (process.env.VIDEO_FIRST_UI_SEED === '1') {
   await updateCreatorDraft(owner.id, draft.id, { brief: changed, revision: draft.revision + 1 });
   assert.equal((await videoModuleDrafts(owner.id, draft.id))[0].outdated, true);
 }
+// A prepared module must not wait for videos, transcripts or SME input for later modules.
+let partial = await createCreatorDraft(owner.id, { brief: { ...brief, sourceLibrary: undefined } });
+const partialAsset = await uploadConceptVideo(owner.id, partial.id, new File([await fs.readFile(clip)], 'module-one.mp4', { type: 'video/mp4' }));
+const partialTranscript = await reviewVideoTranscript(owner.id, partial.id, partialAsset.id, vtt);
+const partialBrief: CourseBriefData = { ...brief, objectives: [...brief.objectives, { text: 'Evaluate a later topic.', bloom: 'Evaluate' }], sourceLibrary: {
+  version: 1, modules: [
+    { ...brief.sourceLibrary!.modules[0], instructions: { version: 1, objectiveIds: ['O1'], scope: 'Review drafts only', exclusions: 'Later topic', prerequisites: 'None', dependsOn: [], teachingNotes: 'Use short examples.' } },
+    { id: 'M2', title: 'Later topic', topics: [{ id: 'T2', title: 'Later concept' }] },
+  ], sources: [
+    { ...brief.sourceLibrary!.sources[0], text: partialTranscript.text, video: { assetId: partialAsset.id, durationSeconds: 6, transcriptId: partialTranscript.id, checkpointSeconds: 3 } },
+    { id: 'Slater', revision: 1, title: 'Later module evidence', scope: 'topic', moduleId: 'M2', topicId: 'T2', objectiveIds: ['O2'], text: 'PRIVATE_LATER_MODULE_EVIDENCE', reference: '', video: { assetId: crypto.randomUUID(), durationSeconds: 6 } },
+  ],
+} };
+partial = await updateCreatorDraft(owner.id, partial.id, { brief: partialBrief, revision: partial.revision });
+assert(sourceCoverage(partial.brief).length > 0);
+assert.deepEqual(moduleReadiness(partial.brief, 'M1'), []);
+assert(moduleReadiness(partial.brief, 'M2').length > 0);
+const partialContext = await getCodexCourseContext(owner.id, partial.id);
+assert.equal(partialContext.moduleAuthoring!.corePromptVersion, MODULE_CORE_VERSION);
+assert.deepEqual(partialContext.moduleAuthoring!.modules[0].gaps, []);
+assert(partialContext.moduleAuthoring!.modules[1].gaps.length > 0);
+await assert.rejects(generateVideoModule('video-learner', partial.id, 'M1', partial.revision), { status: 404 });
+const moduleTransport: Parameters<typeof generateVideoModule>[4] = async request => {
+  assert.equal(request.messages[0].content, MODULE_CORE_PROMPT);
+  assert(!request.messages[1].content.includes('PRIVATE_LATER_MODULE_EVIDENCE'));
+  const input = JSON.parse(request.messages[1].content);
+  assert.equal(input.courseContext.outline.length, 2);
+  assert.equal(input.moduleInstructions.scope, 'Review drafts only');
+  assert.deepEqual(input.objectives.map((o: { id: string }) => o.id), ['O1']);
+  assert.deepEqual(input.sources.map((s: { id: string }) => s.id), ['Svideo']);
+  return { choices: [{ message: { content: JSON.stringify({ ...generated.content, conceptExplainer: { videos: input.fixedVideos.map((video: Record<string, unknown>) => ({ ...video, midpointQuiz: { ...(video.midpointQuiz as object), questions: [question('M1Q1'), question('M1Q2')] } })) } }) } }] };
+};
+const partialModule = await generateVideoModule(owner.id, partial.id, 'M1', partial.revision, moduleTransport);
+assert.equal(partialModule.status, 'needs_review');
+assert.equal(partialModule.provenance!.corePromptVersion, MODULE_CORE_VERSION);
+assert.equal(partialModule.provenance!.sourceRevisions[0].transcriptId, partialTranscript.id);
+assert.equal((await videoModuleDrafts(owner.id, partial.id))[0].outdated, false);
+const nextModuleBrief = structuredClone(partial.brief);
+nextModuleBrief.sourceLibrary!.sources[1].text += ' Updated later evidence.';
+nextModuleBrief.sourceLibrary!.modules[1].instructions = { version: 1, objectiveIds: ['O2'], scope: 'Only later topic', exclusions: '', prerequisites: '', dependsOn: [], teachingNotes: 'Use an analogy in Module 2.' };
+partial = await updateCreatorDraft(owner.id, partial.id, { brief: nextModuleBrief, revision: partial.revision });
+assert.equal((await videoModuleDrafts(owner.id, partial.id))[0].outdated, false, 'Unrelated module evidence does not invalidate the ready fragment.');
+const ownModuleBrief = structuredClone(partial.brief);
+ownModuleBrief.sourceLibrary!.modules[0].instructions!.scope = 'Changed scope';
+partial = await updateCreatorDraft(owner.id, partial.id, { brief: ownModuleBrief, revision: partial.revision });
+assert.equal((await videoModuleDrafts(owner.id, partial.id))[0].outdated, true, 'Changed module instructions require regeneration.');
+assert.equal((await videoModuleDrafts(owner.id, partial.id)).length, 1, 'Edits retain immutable generation history.');
+await assert.rejects(generateVideoModule(owner.id, partial.id, 'M1', partial.revision - 1, moduleTransport), { code: 'brief_changed' });
+const invalidDependency = structuredClone(partial.brief);
+invalidDependency.sourceLibrary!.modules[0].instructions!.dependsOn = ['M2'];
+assert(moduleReadiness(invalidDependency, 'M1').some(issue => issue.includes('earlier module')));
+const remappedBrief = structuredClone(partial.brief);
+remappedBrief.sourceLibrary!.modules[0].instructions!.scope = 'Review drafts only';
+partial = await updateCreatorDraft(owner.id, partial.id, { brief: remappedBrief, revision: partial.revision });
+let rejectedAttempts = 0;
+await assert.rejects(generateVideoModule(owner.id, partial.id, 'M1', partial.revision, async request => {
+  rejectedAttempts++;
+  const reply = await moduleTransport(request);
+  const value = JSON.parse(reply.choices![0].message!.content!);
+  value.workedExamples[0].sourceIds = ['Slater'];
+  return { choices: [{ message: { content: JSON.stringify(value) } }] };
+}), { code: 'generation_validation' });
+assert.equal(rejectedAttempts, 2, 'Invalid cross-module evidence gets one bounded repair, never a saved draft.');
+assert.equal((await videoModuleDrafts(owner.id, partial.id)).length, 1);
 await closeDb();
-console.log('PASS video-first: real upload/probe/audio extraction, reviewed captions, source binding, generated activities, unchanged original recording, owner/learner access, range/seek streaming, approval/publication, stale drafts and unchanged learner records');
+console.log('PASS video-first: upload/transcripts, module-scoped generation, separate instructions/evidence, prompt provenance, unrelated-edit preservation, stale/concurrent writes, cross-module rejection, bounded repair, learner streaming and review/publication');

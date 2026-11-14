@@ -1,5 +1,13 @@
 # Learning experience UI
 
+The video-first course brief separates module instructions from SME evidence.
+Each outline module has a labelled, keyboard-accessible instructions disclosure
+with objective/dependency checkboxes and scope, exclusions, prerequisites and
+teaching-note text fields. The generation panel uses a Module workspace selector,
+shows only that module's readiness gaps and preview, and keeps generation disabled
+until input is saved. Existing theme tokens and focus styles apply; no new motion
+is introduced. Draft creation remains visibly distinct from human approval.
+
 The authored capstone now embeds a practical project workspace when configured: numbered instructions and deliverable, editable artifact fields, ordered step cards with operation/output/expression controls, sample inputs and test cases, rubric weights, and Run/Test/Save/Submit actions. Output traces and criterion-level feedback are readable in place. Test feedback is labelled practice; only a passing recorded submission enables Continue. Edits clear stale results; reset/reload use explicit replacement dialogs and unsaved-navigation protection. Controls use existing semantic labels, fieldsets, focus styles and tokens; no motion is added. A full in-course workspace route is also available. Legacy projects keep their current UI.
 
 Authored modules with a moduleQuiz show a final Quiz part after Scenario Lab in the existing course outline. The quiz shows its authored title/instructions and configured or inherited pass threshold. Questions explicitly say Select one answer or Select all correct answers; multi-answer choices use the existing accessible checkbox list. Multiple-answer midpoint overlays require an explicit Check answers action, retain selections until retry, and show hints on failure. Exact-set scoring is explained before summative quizzes. Creator previews show module question counts, select-all counts and pass percentages; exported decks include module quizzes and selection instructions. Existing courses without quizzes keep their previous presentation.

@@ -1,5 +1,6 @@
 'use client';
 import { VideoSourceEditor } from './video-source-editor';
+import { ModuleInstructionsEditor } from './module-instructions-editor';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -16,9 +17,10 @@ export function SourceLibraryEditor({ brief, onChange, courseId }: { courseId?: 
   return <fieldset className="min-w-0 space-y-5 rounded-xl border border-line bg-panel p-5 md:p-7"><legend className="px-2 text-lg font-semibold">Source library</legend>
     <p className="text-sm text-ink-muted">The brief describes the entire course. Add shared course evidence, then separate module and topic sources. Paste approved explanations, procedures, examples and limitations. URLs are references only and are not fetched.</p>
     <h3 className="font-semibold">Module and topic outline</h3>
-    <p className="text-sm text-ink-muted">Optional before planning. Every declared module and topic needs its own mapped evidence. IDs remain stable when titles change.</p>
+    <p className="text-sm text-ink-muted">Plan the course outline, then prepare one module at a time. Each module has its own instructions, topic videos and SME evidence. Other modules can remain incomplete while you generate the ready module. IDs remain stable when titles change.</p>
     {library.modules.map((m, i) => <section key={m.id} className="space-y-3 rounded-lg border border-line p-3">
       <label className="block text-sm" htmlFor={`module-${m.id}`}>Module {i + 1} title · {m.id}</label><Input id={`module-${m.id}`} maxLength={200} value={m.title} onChange={e => onChange({ ...library, modules: library.modules.map(item => item.id === m.id ? { ...item, title: e.target.value } : item) })} />
+      <ModuleInstructionsEditor unit={m} modules={library.modules} objectives={brief.objectives} onChange={unit => onChange({ ...library, modules: library.modules.map(item => item.id === unit.id ? unit : item) })} />
       {m.topics.map((t, n) => <div key={t.id} className="space-y-2 pl-3"><label className="text-sm" htmlFor={`topic-${t.id}`}>Topic {n + 1} · {t.id}</label><Input id={`topic-${t.id}`} maxLength={200} value={t.title} onChange={e => onChange({ ...library, modules: library.modules.map(item => item.id === m.id ? { ...item, topics: item.topics.map(topic => topic.id === t.id ? { ...topic, title: e.target.value } : topic) } : item) })} /><Button type="button" variant="outline" onClick={() => onChange({ ...library, modules: library.modules.map(item => item.id === m.id ? { ...item, topics: item.topics.filter(topic => topic.id !== t.id) } : item) })}>Remove topic {n + 1}</Button></div>)}
       <div className="flex flex-wrap gap-2"><Button type="button" variant="outline" disabled={m.topics.length >= 40} onClick={() => onChange({ ...library, modules: library.modules.map(item => item.id === m.id ? { ...item, topics: [...item.topics, { id: newId('T'), title: '' }] } : item) })}>Add topic to module {i + 1}</Button><Button type="button" variant="outline" onClick={() => onChange({ ...library, modules: library.modules.filter(item => item.id !== m.id) })}>Remove module {i + 1}</Button></div>
     </section>)}
@@ -36,6 +38,6 @@ export function SourceLibraryEditor({ brief, onChange, courseId }: { courseId?: 
       <Button type="button" variant="outline" onClick={() => onChange({ ...library, sources: library.sources.filter(item => item.id !== s.id) })}>Remove source {i + 1}</Button>
     </details>)}
     <Button type="button" variant="outline" disabled={library.sources.length >= 100} onClick={() => onChange({ ...library, sources: [...library.sources, { id: newId('S'), revision: 1, title: '', scope: 'course', moduleId: '', topicId: '', objectiveIds: [], text: '', reference: '' }] })}>Add source</Button>
-    <section aria-label="Source coverage" className="space-y-2 border-t border-line pt-4"><h3 className="font-semibold">Source coverage</h3><p className="text-sm text-ink-muted">Checks declared evidence and mappings. Human review must verify accuracy, relevance and sufficient teaching detail. Save incomplete drafts at any time; resolve gaps before generation.</p>{gaps.length ? <ul className="list-disc space-y-1 pl-5 text-sm">{gaps.map(g => <li key={g}>{g}</li>)}</ul> : <p className="text-sm text-brand-ink">All declared objectives, modules and topics have mapped source evidence.</p>}</section>
+    <section aria-label="Source coverage" className="space-y-2 border-t border-line pt-4"><h3 className="font-semibold">Source coverage</h3><p className="text-sm text-ink-muted">Checks declared evidence and mappings. Human review must verify accuracy, relevance and sufficient teaching detail. Save incomplete drafts at any time. Generate a video module when its own sources and shared evidence are ready; resolve all course gaps before the blueprint and final assembly.</p>{gaps.length ? <ul className="list-disc space-y-1 pl-5 text-sm">{gaps.map(g => <li key={g}>{g}</li>)}</ul> : <p className="text-sm text-brand-ink">All declared objectives, modules and topics have mapped source evidence.</p>}</section>
   </fieldset>;
 }
