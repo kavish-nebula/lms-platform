@@ -1,5 +1,15 @@
 # Learning experience UI
 
+The AI Agent enrollment opens with a Starting point step for LLMs and chatbots.
+Each topic has a labelled familiarity radio group; a claimed familiarity reveals
+a brief ungraded concept question. Results distinguish the learner's answer from
+the concept check, focus the result heading, explain the recommendation and show
+matching published introductions. A missing course is stated explicitly; optional
+local primer disclosures remain available. Continuing is a separate, clearly
+labelled choice and does not enroll until Start learning is chosen later. Existing
+Surface/Button tokens, radio focus states and contrast adapt to both themes;
+no motion is required. Existing enrolled learners still open their setup normally.
+
 The Healthcare Automation vs AI derivative uses a labelled clinic-reception SVG
 instead of the factory illustration. Its sequence shows appointment requests,
 fixed rules and a reception queue before the checkpoint, then queue history,

@@ -463,6 +463,8 @@ export type CourseModule = {
 };
 
 export type Course = {
+  /** Explicit topics to check before a new enrollment; this is advisory, not a graded gate. */
+  prerequisiteTopics?: import('@/lib/course-prerequisites').PrerequisiteTopic[];
   vertexAdaptive?: boolean;
   importedRevisionId?: string;
   authoredRevisionId?: string;

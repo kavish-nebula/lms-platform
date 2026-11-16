@@ -11,6 +11,8 @@ import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/kit/logo";
 import { CardSkeleton } from "@/components/kit/states";
 import { QuickEnrollment } from "@/components/enroll/quick-enrollment";
+import { PrerequisiteCheck } from '@/components/enroll/prerequisite-check';
+import { prerequisitesFor, prerequisiteEnrollmentAnswers, type PrerequisiteSelections, type PrerequisiteSuggestion } from '@/lib/course-prerequisites';
 import { CustomizeStep, type Pace } from "@/components/enroll/customize-step";
 import { BuildStep, type BuildServer } from "@/components/enroll/build-step";
 import { useCourseUnits, usePlanState } from "@/components/plan/use-plan";
@@ -21,12 +23,12 @@ import { applyComfort, useProfile } from "@/lib/profile";
 import { adaptationOf, coursePart, normalizeAnswers, profilePart, type SetupAnswers, type SupportOverride } from "@/lib/setup";
 import type { Course } from "@/data/types";
 
-export type EnrollPhase = "fit" | "customize" | "build";
+export type EnrollPhase = "prerequisites" | "fit" | "customize" | "build";
 
 /** "About you" lives right after signing in; editing it from here comes back to this step. */
 export const welcomeHref = (back: string) => `/learn/welcome?return=${encodeURIComponent(back)}`;
 
-/** Enrollment asks only two optional course questions, then starts the course.
+/** New enrollments check configured prerequisites, then ask two optional course questions.
  * The server reuses the canonical saved profile; extra setup is optional.
  * Existing enrollments still open their editable setup and keep their progress. */
 export function EnrollFlow({
@@ -35,14 +37,17 @@ export function EnrollFlow({
   today,
   authoredModules,
   initialPhase,
+  prerequisiteSuggestions = [],
 }: {
   course: Course;
   name: string;
   today: string;
   authoredModules: string[];
   initialPhase?: EnrollPhase;
+  prerequisiteSuggestions?: PrerequisiteSuggestion[];
 }) {
-  const first: EnrollPhase = "fit";
+  const prerequisiteTopics = prerequisitesFor(course);
+  const first: EnrollPhase = prerequisiteTopics.length ? 'prerequisites' : 'fit';
   const t = useTranslations("enroll");
   const router = useRouter();
   const learnerReady = useLearnerReady();
@@ -55,7 +60,9 @@ export function EnrollFlow({
 
   const [phase, setPhase] = React.useState<EnrollPhase | null>(null);
   const [showOptions, setShowOptions] = React.useState(initialPhase === "customize");
-  const PHASES: EnrollPhase[] = showOptions ? ["fit", "customize", "build"] : ["fit", "build"];
+  const [prerequisiteSelections, setPrerequisiteSelections] = React.useState<PrerequisiteSelections>({});
+  // Keep the stepper steady when saving creates the enrollment during Build.
+  const PHASES: EnrollPhase[] = [...(prerequisiteTopics.length && (!enrolled || Object.keys(prerequisiteSelections).length) ? ['prerequisites' as const] : []), ...(showOptions ? ["fit", "customize", "build"] as const : ["fit", "build"] as const)];
   const [answers, setAnswers] = React.useState<SetupAnswers>({});
   const [override, setOverride] = React.useState<SupportOverride>("auto");
   const [pace, setPace] = React.useState<Pace>({ sessionMinutes: 30, studyDays: [1, 3, 5], addToPlan: true });
@@ -72,7 +79,7 @@ export function EnrollFlow({
     setOverride(enrollment?.supportOverride ?? "auto");
     setPace({ sessionMinutes: plan.sessionMinutes, studyDays: plan.studyDays, addToPlan: !enrolled });
     setShowOptions(initialPhase === "customize" || (!initialPhase && enrolled));
-    setPhase(initialPhase ?? (enrolled ? "customize" : first));
+    setPhase(enrolled ? initialPhase ?? 'customize' : prerequisiteTopics.length ? first : initialPhase ?? first);
   }
 
   React.useEffect(() => {
@@ -112,8 +119,12 @@ export function EnrollFlow({
   const editing = enrolled && phase !== "build";
 
   let body: React.ReactNode = <CardSkeleton lines={6} />;
-  if (phase === "fit")
+  if (phase === 'prerequisites')
+    body = <PrerequisiteCheck title={course.title} topics={prerequisiteTopics} suggestions={prerequisiteSuggestions} value={prerequisiteSelections} onChange={setPrerequisiteSelections} onContinue={()=>{setAnswers(current=>prerequisiteEnrollmentAnswers(current,prerequisiteTopics,prerequisiteSelections));setPhase('fit');}} />;
+  else if (phase === "fit")
     body = (
+      <div className="grid gap-6">
+      {!enrolled && prerequisiteTopics.length>0 && <Button variant="ghost" className="justify-self-start" onClick={()=>setPhase('prerequisites')}><ChevronLeft className="size-4"/>Review prerequisites</Button>}
       <QuickEnrollment
         title={course.title}
         topic={course.authoredRevisionId ? course.subjectLabel ?? 'the course topic' : undefined}
@@ -123,6 +134,7 @@ export function EnrollFlow({
         onStart={next=>{setAnswers(next);setPhase("build");void commit(next);}}
         onOptions={next=>{setAnswers(next);setShowOptions(true);setPhase("customize");}}
       />
+      </div>
     );
   else if (phase === "customize")
     body = (

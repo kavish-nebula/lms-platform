@@ -939,6 +939,7 @@
     "phase_profile": "About you",
     "phase_precheck": "Quick check",
     "phase_fit": "Quick start",
+    "phase_prerequisites": "Starting point",
     "phase_customize": "Customise",
     "phase_build": "Build",
     "phaseOf": "Step {n} of {total}",

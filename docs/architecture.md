@@ -1,5 +1,19 @@
 # Current learning experience extension
 
+New enrollments can run an advisory prerequisite step before quick setup. The
+AI Agent course explicitly checks LLM and chatbot familiarity; other courses can
+declare `Course.prerequisiteTopics`, and an empty declaration disables the default.
+Pure `course-prerequisites` functions separate self-reported familiarity from a
+short observed concept response, then match only learner-visible course/module
+metadata. No profile, enrollment, score, progress or external AI write occurs
+during this step. Missing catalog coverage is disclosed with a short local primer.
+Learners may study a suggested introduction or explicitly continue to setup.
+Only actual enrollment retains a bounded, course-local interview summary through
+the existing versioned enrollment path; the global profile is unchanged. Existing
+enrollments keep their setup/progress and do not acquire a new gate. No schema
+migration, final-assessment change or automatic enrollment is introduced. Run
+`node tests/backend/run.mjs course-prerequisites` from `apps/web` for regressions.
+
 The requested Healthcare Automation vs AI derivative is selected from the saved
 learner field within the concept-piece template for Production Module 1 only.
 Its seven source/phase-mapped clinic-administration scripts and healthcare visuals
