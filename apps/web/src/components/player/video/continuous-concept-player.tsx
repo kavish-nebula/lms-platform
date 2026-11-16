@@ -75,7 +75,7 @@ export function ContinuousConceptPlayer({video,scenes,revisionId,playback,onComp
   return <div className="space-y-4">
     <p className="text-sm text-ink-muted">One continuous personalised lesson. Visuals follow the narration; playback pauses for the knowledge check.</p>
     <div ref={screen} className="hook-film relative" aria-label="Continuous personalised lesson">
-      <PersonalizedConceptStory scene={scene} seconds={localSeconds} reducedMotion={reducedMotion}/>
+      <PersonalizedConceptStory scene={scene} seconds={localSeconds} duration={playback.segments[index].endSeconds-playback.segments[index].startSeconds} reducedMotion={reducedMotion}/>
       <div className="hook-film-controls">
         <Button size="sm" variant="ghost" aria-label={playing?'Pause personalised lesson':'Play personalised lesson'} disabled={!restored||checking||endChecking} onClick={()=>playing?pause():void play()}>{playing?<Pause aria-hidden/>:<Play aria-hidden/>}{playing?'Pause':'Play'}</Button>
         <Button size="icon" variant="ghost" aria-label="Restart personalised lesson" disabled={checking||endChecking} onClick={()=>{pause();seek(0);}}><RotateCcw/></Button>

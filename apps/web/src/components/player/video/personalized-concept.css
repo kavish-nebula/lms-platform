@@ -18,3 +18,22 @@
 
 .personal-concept-points .personal-concept-bridge { display: block; border-color: var(--ok-line); background: var(--panel-2); }
 .personal-concept-bridge strong { display: block; margin-bottom: 6px; color: var(--ok); font-size: 12px; }
+
+/* Audio-clock-driven slides: keep the frame stable while its teaching advances. */
+.personal-teaching-deck { gap: 20px; }
+.personal-teaching-frame { display: grid; grid-template-columns: 100px minmax(0, 1fr); align-items: center; gap: 24px; padding: clamp(20px, 4vw, 44px); min-height: 300px; border: 1px solid var(--ok-line); border-radius: var(--r-sm); background: var(--panel); }
+.personal-teaching-symbol { display: grid; place-items: center; width: 90px; height: 90px; color: var(--ok); background: var(--panel-2); border: 1px solid var(--ok-line); border-radius: var(--r-sm); }
+.personal-teaching-symbol svg { width: 48px; height: 48px; stroke-width: 1.5; }
+.personal-teaching-label, .personal-teaching-takeaway > span { display: block; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--ok); margin-bottom: 14px; }
+.personal-teaching-explanation { margin: 0; font-size: clamp(20px, 2.5vw, 30px); line-height: 1.5; color: var(--text); text-wrap: pretty; }
+.personal-teaching-takeaway { grid-column: 1 / -1; border-top: 1px solid var(--line); padding-top: 18px; }
+.personal-teaching-takeaway > span { margin-bottom: 6px; }
+.personal-teaching-takeaway p { margin: 0; font-size: 16px; color: var(--muted); }
+.personal-teaching-layout-1 { grid-template-columns: minmax(0, 1fr) 100px; }
+.personal-teaching-layout-1 .personal-teaching-symbol { grid-column: 2; grid-row: 1; }
+.personal-teaching-layout-1 .personal-teaching-copy { grid-column: 1; grid-row: 1; }
+.personal-teaching-layout-context { background: var(--panel-2); border-width: 2px; }
+.personal-teaching-track { display: flex; gap: 6px; margin-top: auto; }
+.personal-teaching-track span { flex: 1; height: 4px; border-radius: var(--r-sm); background: var(--line); }
+.personal-teaching-track span[data-current="true"], .personal-teaching-track span[data-past="true"] { background: var(--ok); }
+@media (max-width: 640px) { .personal-teaching-frame, .personal-teaching-layout-1 { grid-template-columns: 1fr; gap: 14px; min-height: 340px; } .personal-teaching-layout-1 .personal-teaching-symbol, .personal-teaching-layout-1 .personal-teaching-copy { grid-column: 1; grid-row: auto; } .personal-teaching-symbol { width: 52px; height: 52px; } .personal-teaching-symbol svg { width: 28px; height: 28px; } .personal-teaching-explanation { font-size: 19px; } }
