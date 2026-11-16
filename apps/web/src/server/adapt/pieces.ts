@@ -6,6 +6,7 @@ import type { Clip } from "./tts";
 import { hookScenes } from '@/lib/video-first-hook';
 import { conceptTemplate, conceptNarration, type PersonalizedConcept } from '@/lib/personalized-concept';
 import { healthcareAutomationConcept } from '@/lib/healthcare-automation-concept';
+import { profileProductionHook } from '@/lib/profile-production-hook';
 
 /**
  * The pieces of a module that are rewritten for each learner, in the order
@@ -50,13 +51,13 @@ const hookClips = (c: unknown): Clip[] => {
 
 const videoClips = (c: unknown): Clip[] => (c as ConceptVideo).slides.map((s, i) => ({ key: `s${i}`, text: s.narration }));
 
-export function piecesOf(mod: ModuleContent): PieceDef[] {
+export function piecesOf(mod: ModuleContent, courseId = '', context?: unknown): PieceDef[] {
   if (mod.videoFirstActivities) {
     const a = mod.videoFirstActivities;
     // Keep each activity small enough to prepare independently. Narration must
     // not disclose model answers before the learner attempts the practice.
     return ([
-      ['hook', { problemHook: a.problemHook }],
+      ['hook', { problemHook: profileProductionHook(a.problemHook, courseId, context) }],
       ['worked', { workedExamples: a.workedExamples }],
       ['guided', { guidedPractice: a.guidedPractice }],
       ['lab', { scenarioLab: a.scenarioLab }],

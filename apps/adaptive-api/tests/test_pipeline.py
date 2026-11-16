@@ -348,6 +348,24 @@ class PipelineTests(unittest.TestCase):
                         self.assertIn("Only actual quoted evidence stays verbatim", system)
                         self.assertIn("Do not label the production incident a healthcare case", system)
 
+    def test_profile_hook_transfer_case_keeps_source_comparison_separate(self):
+        import copy
+        job = copy.deepcopy(JOB)
+        authored = copy.deepcopy(SLIDE)
+        authored['title'] = 'Fictional payables analogy for the supplied production lesson'
+        job['input'].update(piece='activity:hook', trigger='initial', authored=authored, source=authored)
+        calls = []
+        def model(req):
+            calls.append(json.loads(req.content))
+            return httpx.Response(200, json={'choices': [{'message': {'content': json.dumps(authored)}}]})
+        with httpx.Client(transport=httpx.MockTransport(model)) as client:
+            generate(job, client)
+        system = calls[0]['messages'][0]['content']
+        self.assertIn('PROFILE TRANSFER CASE', system)
+        self.assertIn('Do not restore the factory as the main story', system)
+        self.assertIn('Never convert the equipment threshold', system)
+        self.assertNotIn('Preserve the supplied production incident', system)
+
     def test_complete_ild_prompt_and_experience_for_all_triggers(self):
         import copy
         headings = ["AUTHORITY AND INPUTS", "INSTRUCTIONAL DESIGN PROCESS", "MODULE 1: PROFILE AND ENROLLMENT PERSONALISATION", "LATER MODULES: PERFORMANCE-DRIVEN ADAPTATION", "TRIGGER-SPECIFIC BEHAVIOUR", "SLIDES, NARRATION, AND ACCESSIBILITY", "STRUCTURAL AND TECHNICAL CONSTRAINTS", "QUALITY GATES AND FALLBACK"]

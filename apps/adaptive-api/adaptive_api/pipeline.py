@@ -498,8 +498,12 @@ def generate(job, client=None):
     if source.get("piece") in {"hook", "activity:hook"}:
         protocol += HOOK_INSTRUCTIONS
         if source.get("piece") == "activity:hook":
-            protocol += " Preserve the supplied production incident and explain its relevance to the learner. Do not rename source equipment, faults or case evidence into invented clinical facts."
-            protocol += "\nHOOK NARRATIVE CLARIFICATION: The title, situation and question are editable narrative, not a quoted source document. Rewrite their non-quoted wording plainly while retaining the same case, facts, identifiers, uncertainty, safety boundaries and required question meaning. Only actual quoted evidence stays verbatim. Do not return dense original prose unchanged. Explain 'source passages' as relevant parts of the supplied report, 'missing evidence' as information the report does not include, and 'fluent' as sounding right. Do not label the production incident a healthcare case; use the profile only as a brief familiar comparison where appropriate."
+            transfer_case = "analogy for the supplied production lesson" in json.dumps(authored)
+            if transfer_case:
+                protocol += "\nPROFILE TRANSFER CASE: SOURCE already supplies a fictional case mapped to the learner's field. Keep that administrative case as the main story throughout title, situation and question. Keep its short explicit comparison to the original recording separate and accurately labelled. Do not restore the factory as the main story. Preserve the case's evidence gap, uncertainty, source/objective IDs and numerical facts. Never convert the equipment threshold into a financial limit or patient measurement. No payment approvals or clinical instructions. Do not solve the final decision for the learner."
+            else:
+                protocol += " Preserve the supplied production incident and explain its relevance to the learner. Do not rename source equipment, faults or case evidence into invented clinical facts. Do not label the production incident a healthcare case; use the profile only as a brief familiar comparison where appropriate."
+            protocol += "\nHOOK NARRATIVE CLARIFICATION: The title, situation and question are editable narrative, not a quoted source document. Rewrite their non-quoted wording plainly while retaining the same case, facts, identifiers, uncertainty, safety boundaries and required question meaning. Only actual quoted evidence stays verbatim. Do not return dense original prose unchanged. Explain 'source passages' as relevant parts of the supplied report, 'missing evidence' as information the report does not include, and 'fluent' as sounding right."
     editable_text = hook_text_map(authored)
     hook_placement = None
     if source.get("piece") == "hook" and source.get("courseId") == "ai-agent" and source.get("textMapVersion") in {9, 10} and field_words:

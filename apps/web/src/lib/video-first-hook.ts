@@ -1,4 +1,5 @@
 import type { ModuleContent } from '@/data/types';
+import type { ConceptScene } from './personalized-concept';
 
 export type VideoHook = NonNullable<ModuleContent['videoFirstActivities']>['problemHook'];
 export type HookScene = { id: string; kind: 'case' | 'source' | 'question'; title: string; text: string; start: number; end: number };
@@ -44,6 +45,20 @@ export function hookExcerpt(text: string) {
 }
 
 export const hookNarration = (hook: VideoHook) => hookScenes(hook).map(s => s.text).join(' ');
+
+/** Reuse the concept slide renderer with exactly this hook section's spoken text.
+ * No context bridge is appended: the audio already contains the complete case. */
+export function hookTeachingScene(scene: HookScene, title: string): ConceptScene {
+  return { id: scene.id, title: scene.kind === 'question' ? 'Your turn to decide' : title,
+    phase: 'before', visual: /healthcare|clinic|reception/i.test(scene.text) ? 'healthcare' : 'prompt',
+    points: [], narration: scene.text, bridge: '', sourceIds: [], objectiveIds: [] };
+}
+
+export function hookTeachingClock(scene: HookScene, elapsed: number, duration: number, segmented: boolean) {
+  return segmented ? { seconds: elapsed, duration } : {
+    seconds: Math.max(0, elapsed - scene.start * duration), duration: Math.max(0, (scene.end - scene.start) * duration),
+  };
+}
 /** Proportional scene timing uses actual clip duration, not invented word timestamps. */
 export function hookSceneAt(scenes: HookScene[], fraction: number) {
   // Seeking a media element can round down slightly at a scene boundary.

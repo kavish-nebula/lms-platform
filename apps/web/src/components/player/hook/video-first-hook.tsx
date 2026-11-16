@@ -1,12 +1,14 @@
 'use client';
 import './hook-storyboard.css';
+import '../video/personalized-concept.css';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useReducedMotionConfig } from 'motion/react';
 import { Play, Pause, RotateCcw, ChevronLeft, ChevronRight, Captions, Maximize, Volume2, VolumeX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { StageShell } from '../stage-shell';
 import { hookSceneAt, hookScenes, type VideoHook } from '@/lib/video-first-hook';
-import { HookStoryboard } from './hook-storyboard';
+import { PersonalizedConceptStory } from '../video/personalized-concept-story';
+import { hookTeachingScene, hookTeachingClock } from '@/lib/video-first-hook';
 
 type Props = { hook: VideoHook; audio?: string; sceneAudio?: string[]; fallbackAudioUrl: string; personalized?: boolean; preparing?: boolean; onInteract?: () => void; onPrev?: () => void; onComplete?: () => void; done?: boolean };
 const clock = (time: number) => `${Math.floor(time / 60)}:${String(Math.floor(time % 60)).padStart(2, '0')}`;
@@ -67,7 +69,7 @@ export function VideoFirstHook({ hook, audio, sceneAudio, fallbackAudioUrl, pers
     <div className="space-y-5">
       <p className="text-sm text-ink-muted">{personalized ? 'Your personalised case study' : preparing ? 'Your personalised case is preparing. You can watch the original now.' : 'Watch the case and inspect the evidence before exploring the concepts.'}</p>
       <section ref={screen} aria-label="Problem hook video" className="hook-film">
-        <HookStoryboard scenes={scenes} index={index} seconds={elapsed} reducedMotion={reducedMotion} />
+        <PersonalizedConceptStory scene={hookTeachingScene(scene, hook.title)} {...hookTeachingClock(scene, elapsed, duration, segmented)} reducedMotion={reducedMotion} purpose="hook" />
         <div className="hook-film-progress" aria-label="Scene navigation">{scenes.map((s, i) => <button key={s.id} onClick={() => seekScene(i)} aria-label={`Go to scene ${i + 1}: ${s.title}`} aria-current={index === i ? 'step' : undefined} data-seen={i !== index && seen.has(i) ? 'true' : undefined} />)}</div>
         <div className="hook-film-controls">
           <Button size="sm" variant="ghost" onClick={() => void play()} disabled={preparingAudio} aria-label={playing ? 'Pause problem hook' : 'Play problem hook'}>{playing ? <Pause aria-hidden /> : <Play aria-hidden />}{preparingAudio ? 'Preparing voice…' : playing ? 'Pause' : 'Play'}</Button>

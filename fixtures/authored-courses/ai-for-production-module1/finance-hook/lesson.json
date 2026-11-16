@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "title": "AI for Production Module 1 — fictional finance/payables hook",
+  "sourceModuleId": "M1",
+  "sourceIds": [
+    "M1S1",
+    "M1S2"
+  ],
+  "objectiveIds": [
+    "O1",
+    "O2"
+  ],
+  "scope": "Finance and audit / accounts-payable spreadsheet transfer case; original recording and assessments remain unchanged.",
+  "problemHook": {
+    "title": "The payables rule stays the same. Can you trust the AI explanation?",
+    "question": "What would you check first in the payables sheet before accepting the AI explanation, and what tells you whether the routing rule changed?",
+    "situation": "Fictional finance and audit case: you review accounts-payable requests in a spreadsheet. A fixed rule routes a request to the same review queue whenever its required fields are complete. The queue has become busier, but the rule has not changed.\nA colleague asks an AI assistant why the queue is growing. The assistant confidently blames duplicate supplier requests. The supplied spreadsheet shows queue entries, but contains no duplicate-check result. Its explanation sounds useful; you still need to inspect what supports it.\nThis is a payables analogy for the supplied production lesson, not a real payment decision. In the original recording, coolant has aged but the cooler still switches on at its programmed 70-degree threshold. That equipment threshold belongs only to the source example. Here you inspect administrative rules and an unsupported explanation; you do not approve payments or change equipment.",
+    "sourceIds": [
+      "M1S1",
+      "M1S2"
+    ],
+    "objectiveIds": [
+      "O1",
+      "O2"
+    ]
+  },
+  "scenes": [
+    {
+      "id": "scene-0",
+      "kind": "case",
+      "title": "The situation",
+      "text": "Fictional finance and audit case: you review accounts-payable requests in a spreadsheet. A fixed rule routes a request to the same review queue whenever its required fields are complete. The queue has become busier, but the rule has not changed.",
+      "start": 0,
+      "end": 0.24539877300613497,
+      "audio": "audio/section-1.wav"
+    },
+    {
+      "id": "scene-1",
+      "kind": "case",
+      "title": "Look closer",
+      "text": "A colleague asks an AI assistant why the queue is growing. The assistant confidently blames duplicate supplier requests. The supplied spreadsheet shows queue entries, but contains no duplicate-check result. Its explanation sounds useful; you still need to inspect what supports it.",
+      "start": 0.24539877300613497,
+      "end": 0.49693251533742333,
+      "audio": "audio/section-2.wav"
+    },
+    {
+      "id": "scene-2",
+      "kind": "case",
+      "title": "Look closer",
+      "text": "This is a payables analogy for the supplied production lesson, not a real payment decision. In the original recording, coolant has aged but the cooler still switches on at its programmed 70-degree threshold. That equipment threshold belongs only to the source example.",
+      "start": 0.49693251533742333,
+      "end": 0.754601226993865,
+      "audio": "audio/section-3.wav"
+    },
+    {
+      "id": "scene-3",
+      "kind": "case",
+      "title": "Look closer",
+      "text": "Here you inspect administrative rules and an unsupported explanation; you do not approve payments or change equipment.",
+      "start": 0.754601226993865,
+      "end": 0.8588957055214724,
+      "audio": "audio/section-4.wav"
+    },
+    {
+      "id": "scene-4",
+      "kind": "question",
+      "title": "Your decision",
+      "text": "What would you check first in the payables sheet before accepting the AI explanation, and what tells you whether the routing rule changed?",
+      "start": 0.8588957055214724,
+      "end": 1,
+      "audio": "audio/section-5.wav"
+    }
+  ]
+}

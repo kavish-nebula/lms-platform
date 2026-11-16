@@ -19,6 +19,8 @@ import { mergeShape } from "./shape";
 import { audioRoot, defaultVoicer, type Voicer } from "./tts";
 import { piecesOf, conceptPiece } from "./pieces";
 import { validatePersonalizedConcept, type PersonalizedConcept } from '@/lib/personalized-concept';
+import { validateProfileProductionHook } from '@/lib/profile-production-hook';
+import type { VideoHook } from '@/lib/video-first-hook';
 import { wavSeconds } from '@/server/production-audio';
 import { llmConfig } from '@/server/ai/llm';
 
@@ -252,8 +254,8 @@ export async function queueModule(user: SessionUser, courseId: string, moduleId:
   }
   const worked = released ? null : await queuePiece("worked");
   const activities: Job[] = [];
-  for (const def of piecesOf(mod).filter(p => p.piece.startsWith('activity:'))) {
-    const fingerprint = hash({ enrollment: e.id, moduleId, piece: def.piece, narrationVersion: def.piece === 'activity:hook' ? 6 : undefined, authored: def.authored, context: teachingContext(context) });
+  for (const def of piecesOf(mod, courseId, context).filter(p => p.piece.startsWith('activity:'))) {
+    const fingerprint = hash({ enrollment: e.id, moduleId, piece: def.piece, narrationVersion: def.piece === 'activity:hook' ? 7 : undefined, authored: def.authored, context: teachingContext(context) });
     const priority = preparationPriority < 0 ? preparationPriority : def.piece === 'activity:hook' ? 2 : 0;
     await d.insert(adaptationJobs).values({ enrollmentId: e.id, moduleId, videoId: def.piece, slide: 0, fingerprint, trigger: 'initial', priority, input: { authored: def.authored, source: def.authored, context, trigger: 'initial', piece: def.piece, courseId } }).onConflictDoNothing();
     await d.update(adaptationJobs).set({ priority }).where(and(eq(adaptationJobs.fingerprint, fingerprint), eq(adaptationJobs.status, 'queued'), lt(adaptationJobs.priority, priority)));
@@ -340,11 +342,15 @@ export async function finishJob(id: string, lease: string, generated: unknown, m
     const { mod } = await videosOf(String(row.input.courseId), row.moduleId, jobEnrollment.userId);
     const isConcept = String(row.input.piece).startsWith('concept:');
     const video = isConcept ? getBlock(mod, 'explainer')?.videos?.find(v => v.id === row.input.sourceVideoId) : undefined;
-    const def = isConcept && video ? conceptPiece(video, String(row.input.courseId), row.input.context) : piecesOf(mod).find((p) => p.piece === row.input.piece);
+    const def = isConcept && video ? conceptPiece(video, String(row.input.courseId), row.input.context) : piecesOf(mod, String(row.input.courseId), row.input.context).find((p) => p.piece === row.input.piece);
     if (!def) throw new ApiError(422, "invalid_content", "Unknown lesson piece.");
     const merged = mergeShape(def.authored, generated, row.input.piece === "hook" ? { banned: /\b(?:Orbit|ORB-\d+)\b/i } : {});
     if (merged.problems.length) throw new ApiError(422, "invalid_content", "Lesson structure changed.");
     const content = merged.value as Record<string, unknown>;
+    if (row.input.piece === 'activity:hook') {
+      try { validateProfileProductionHook((def.authored as { problemHook: VideoHook }).problemHook, content.problemHook as VideoHook); }
+      catch (error) { throw new ApiError(422, 'invalid_content', error instanceof Error ? error.message : 'Invalid profile hook.'); }
+    }
     if (isConcept) {
       try { validatePersonalizedConcept(def.authored as PersonalizedConcept, content as PersonalizedConcept); }
       catch (error) { throw new ApiError(422, 'invalid_content', error instanceof Error ? error.message : 'Invalid concept lesson.'); }
