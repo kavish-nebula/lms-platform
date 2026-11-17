@@ -6,6 +6,7 @@ import type { Clip } from "./tts";
 import { hookScenes } from '@/lib/video-first-hook';
 import { conceptTemplate, conceptNarration, type PersonalizedConcept } from '@/lib/personalized-concept';
 import { healthcareAutomationConcept } from '@/lib/healthcare-automation-concept';
+import { automationAiLesson } from '@/lib/automation-ai-lesson';
 import { profileProductionHook } from '@/lib/profile-production-hook';
 
 /**
@@ -25,7 +26,7 @@ export type PieceDef = {
 
 export function conceptPiece(video: ConceptVideo, courseId = '', context?: unknown): PieceDef {
   const source = conceptTemplate(video);
-  const authored = healthcareAutomationConcept(source, courseId, video.title, context) ?? source;
+  const authored = automationAiLesson(source, courseId, video.title, context) ?? healthcareAutomationConcept(source, courseId, video.title, context) ?? source;
   return { piece: `concept:${video.id}`, label: 'a personalized illustrated concept lesson from a reviewed source transcript, preserving its checkpoint boundary', authored,
     clips: content => (content as PersonalizedConcept).scenes.map((s, i) => ({ key: `scene${i}`, text: conceptNarration(s) })) };
 }

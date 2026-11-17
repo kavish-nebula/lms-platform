@@ -425,3 +425,7 @@ illustrations to Remotion, using the same aligned narration timeline. Motion-onl
 frame capture and FFmpeg holds avoid re-rendering static narration intervals.
 Enrollment-scoped authenticated delivery is unchanged. See
 `docs/hybrid-video-rendering.md` for recovery, setup and current verification.
+
+Automation vs AI creator revision: the scoped derivative in automation-ai-lesson.ts combines the creator's supplemental source with edition-specific checkpoint teaching. Source recordings and questions remain immutable. The updated authored text invalidates adaptation fingerprints; deterministic storyboards use exact narration anchors. See [Automation/AI explainer](automation-ai-explainer.md).
+
+Reference-style video delivery uses source-anchored demonstration compositions, reusable reviewed storyboards for unchanged teaching, and a renderer source fingerprint in each private derivative key. A local resumable regeneration runner rebuilds prepared narration derivatives without publishing or changing grades. See [video rollout](reference-style-videos.md).

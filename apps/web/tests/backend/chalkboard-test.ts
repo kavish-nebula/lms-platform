@@ -42,7 +42,9 @@ await fs.mkdir(audioDir, { recursive: true }); await fs.writeFile(path.join(audi
 playback.audio = `/api/v1/adapted-audio/${c.enrollment.id}/M1/clips/${audioName}`;
 const input = { enrollmentId: c.enrollment.id, moduleId: 'M1', revisionId: nonce, title: scene.title, field: 'Finance / Accounts payable', scenes: [scene], playback };
 const illustrationHash = createHash('sha256').update(await fs.readFile(path.resolve('../adaptive-api/chalkboard_assets/finance-workbench-transparent.png'))).digest('hex');
-const key = createHash('sha256').update(JSON.stringify({ version: DIRECTOR_VERSION, illustrationHash, plan, title: input.title, revision: nonce, audioHash: createHash('sha256').update(bytes).digest('hex') })).digest('hex');
+const rendererRoot=path.resolve('video-renderer'), rendererHash=createHash('sha256');
+for(const name of (await fs.readdir(rendererRoot)).filter(name=>/\.(tsx?|mjs|json)$/.test(name)).sort())rendererHash.update(name).update(await fs.readFile(path.join(rendererRoot,name)));
+const key = createHash('sha256').update(JSON.stringify({ version: DIRECTOR_VERSION, rendererHash:rendererHash.digest('hex'), illustrationHash, plan, title: input.title, revision: nonce, audioHash: createHash('sha256').update(bytes).digest('hex') })).digest('hex');
 const directory = path.join(boardRoot(), c.enrollment.id, 'M1', key);
 await fs.mkdir(directory, { recursive: true }); await fs.writeFile(path.join(directory, 'final.mp4'), 'isolated cache reference only'); await fs.writeFile(path.join(directory, 'status.json'), JSON.stringify({ status: 'ready' }));
 await fs.writeFile(path.join(directory, 'playback.json'), JSON.stringify({ ...playback, captions: plan.beats.map(({ start, end, caption }) => ({ start, end, caption })) }));

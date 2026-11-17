@@ -75,7 +75,7 @@ export function ContinuousConceptPlayer({video,scenes,revisionId,playback,onComp
   const index=continuousSection(playback,Math.max(0,checking?seconds-.001:seconds)),scene=scenes[index];
   const localSeconds=Math.max(0,seconds-playback.segments[index].startSeconds);
   const Media = playback.video ? 'video' : 'audio';
-  const renderedMedia = (<Media ref={media} src={playback.video ?? playback.audio} preload="metadata" muted={muted} playsInline className={playback.video ? "aspect-video w-full bg-panel" : undefined} aria-label={playback.video ? "Chalkboard animated personalised video" : "Continuous personalised narration"}
+  const renderedMedia = (<Media ref={media} src={playback.video ?? playback.audio} preload="metadata" muted={muted} playsInline className={playback.video ? "aspect-video w-full bg-panel" : undefined} aria-label={playback.video ? "Animated personalised video" : "Continuous personalised narration"}
         onLoadedMetadata={e=>{e.currentTarget.playbackRate=rate;e.currentTarget.currentTime=seconds;}}
         onPlay={()=>{lastTime.current=media.current?.currentTime??null;setPlaying(true);}}
         onPause={e=>{recordPlayed(e.currentTarget);lastTime.current=null;setPlaying(false);persist();}}
@@ -84,7 +84,7 @@ export function ContinuousConceptPlayer({video,scenes,revisionId,playback,onComp
         onTimeUpdate={e=>track(e.currentTarget)} onEnded={ended}
         onError={()=>{pause();setMessage('Narration could not load. Retry playback or choose the original lesson.');}}/>);
   return <div className="space-y-4">
-    <p className="text-sm text-ink-muted">{playback.video ? `Chalkboard animated lesson · Diagrams show the process as it is narrated.${hasCheckpoint ? ' Playback pauses for the knowledge check.' : ''}` : 'One continuous personalised lesson. Visuals follow the narration; playback pauses for the knowledge check.'}</p>
+    <p className="text-sm text-ink-muted">{playback.video ? `Personalised visual lesson · Animations follow the narration.${hasCheckpoint ? ' Playback pauses for the knowledge check.' : ''}` : 'One continuous personalised lesson. Visuals follow the narration; playback pauses for the knowledge check.'}</p>
     <div ref={screen} className="hook-film relative" aria-label="Continuous personalised lesson">
       {playback.video ? renderedMedia : <PersonalizedConceptStory scene={scene} seconds={localSeconds} duration={playback.segments[index].endSeconds-playback.segments[index].startSeconds} reducedMotion={reducedMotion}/>}
       <div className="hook-film-controls">

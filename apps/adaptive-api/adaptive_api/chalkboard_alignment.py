@@ -10,8 +10,27 @@ import re
 from pathlib import Path
 
 
+def number_words(raw):
+    """Normalize common spoken measurements for alignment, not lesson editing."""
+    ones = ['zero','one','two','three','four','five','six','seven','eight','nine']
+    small = ones + ['ten','eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen']
+    tens = ['', '', 'twenty','thirty','forty','fifty','sixty','seventy','eighty','ninety']
+    sign = 'minus ' if raw.startswith('-') else ''
+    value = raw.lstrip('-')
+    whole, dot, fraction = value.partition('.')
+    if whole and int(whole) >= 1000:
+        return raw  # Preserve large identifiers; do not guess how they are read.
+    def cardinal(n):
+        if n < 20: return small[n]
+        if n < 100: return tens[n//10] + (' '+ones[n%10] if n%10 else '')
+        return ones[n//100]+' hundred'+(' '+cardinal(n%100) if n%100 else '')
+    spoken = (' '.join(ones[int(c)] for c in whole) if len(whole)>1 and whole.startswith('0') else cardinal(int(whole))) if whole else ''
+    return sign + spoken + (' point '+ ' '.join(ones[int(c)] for c in fraction) if dot else '')
+
+
 def tokens(text):
-    return re.findall(r'[a-z0-9]+', text.lower())
+    text = re.sub(r'(?<![a-z0-9])-?(?:\d+(?:\.\d+)?|\.\d+)(?![a-z0-9])', lambda m: number_words(m.group()), text.lower())
+    return re.findall(r'[a-z0-9]+', text)
 
 
 def align_source(source, recognized):
@@ -28,15 +47,43 @@ def align_source(source, recognized):
     return expected, mapping, coverage
 
 
-def phrase_time(phrase, expected, mapping, after=-1):
+def phrase_anchor(phrase, expected, mapping, after=-1, allow_subphrase=False):
     parts = tokens(phrase)
     for i in range(max(0, after + 1), len(expected) - len(parts) + 1):
         if expected[i:i + len(parts)] == parts:
             positions = [mapping[n] for n in range(i, i + len(parts)) if n in mapping]
             if len(positions) < len(parts) * .7:
+                if allow_subphrase:
+                    # Proper names/acronyms can be misrecognized even when the
+                    # surrounding speech aligns well. Choose a fully recognized
+                    # contiguous quote within the requested source phrase. Its
+                    # timestamp is measured, never inferred or moved earlier.
+                    for length in range(len(parts)-1, 2, -1):
+                        for offset in range(len(parts)-length+1):
+                            first = i + offset
+                            if all(n in mapping for n in range(first, first+length)):
+                                return mapping[first][0], first, ' '.join(expected[first:first+length])
                 raise ValueError('Cue phrase lacks reliable audio word timing: ' + phrase)
-            return positions[0][0], i
+            return positions[0][0], i, phrase
     raise ValueError('Cue phrase not found in source narration: ' + phrase)
+
+
+def phrase_time(phrase, expected, mapping, after=-1):
+    when, word, _ = phrase_anchor(phrase, expected, mapping, after)
+    return when, word
+
+
+def adjacent_layers(a, b, sentence_ranges):
+    """Consecutive spoken ideas can introduce distinct additive layers together.
+
+    This delays the first reveal to an actually spoken later anchor. It never
+    guesses a timestamp or collapses two changes to the same visual state.
+    """
+    if a['target'] == b['target'] or a['action'] == 'change' or b['action'] == 'change':
+        return False
+    first = next((i for i, (low, high, _) in enumerate(sentence_ranges) if low <= a['sourceWord'] < high), -2)
+    second = next((i for i, (low, high, _) in enumerate(sentence_ranges) if low <= b['sourceWord'] < high), -4)
+    return second == first + 1
 
 
 def align_manifest(data, directory):
@@ -89,8 +136,10 @@ def align_manifest(data, directory):
         cues = []
         last = -1
         for cue in chapter['cues']:
-            when, last = phrase_time(cue['phrase'], expected, mapping, last)
-            cues.append({**cue, 'seconds': max(start, when), 'sourceWord': last})
+            when, last, anchor = phrase_anchor(cue['phrase'], expected, mapping, last, allow_subphrase=True)
+            if anchor != cue['phrase']:
+                adjustments.append({'sceneId': chapter['sceneId'], 'from': cue['phrase'], 'to': anchor, 'reason': 'Use a fully recognized contiguous source quote after an unrecognized name/acronym.'})
+            cues.append({**cue, 'phrase': anchor, 'seconds': max(start, when), 'sourceWord': last})
         # Too many closely spaced cues caused the original readability issue.
         # Block instead of speeding up motion or guessing replacement timing.
         cursor = 1
@@ -111,12 +160,12 @@ def align_manifest(data, directory):
                 elif b['target'] == 'result' and scene.get('bridge') and ' '.join(tokens(b['phrase'])) in ' '.join(tokens(scene['bridge'])):
                     adjustments.append({'sceneId': chapter['sceneId'], 'from': b['phrase'], 'reason': 'Omit a redundant analogy badge; retain the full narration and captions.'})
                     cues.pop(cursor); continue
-                elif low <= b['sourceWord'] < high:
+                elif low <= b['sourceWord'] < high or adjacent_layers(a, b, sentence_ranges):
                     # Ideas introduced in the same spoken sentence belong in
                     # one reveal, not two hurried animations. Wait until both
                     # are named; never invent an earlier audio timestamp.
                     b['withTargets'] = list(dict.fromkeys(a.get('withTargets', []) + [a['target']] + b.get('withTargets', [])))
-                    adjustments.append({'sceneId': chapter['sceneId'], 'from': a['phrase'], 'to': b['phrase'], 'reason': 'Co-introduce same-sentence layers at the later spoken cue.'})
+                    adjustments.append({'sceneId': chapter['sceneId'], 'from': a['phrase'], 'to': b['phrase'], 'reason': 'Co-introduce closely narrated additive layers at the later spoken cue; preserve reading time.'})
                     cues.pop(cursor-1); cursor = max(1, cursor-1); continue
                 else:
                     raise ValueError('Visual cues are too close to read: ' + a['phrase'] + ' / ' + b['phrase'])

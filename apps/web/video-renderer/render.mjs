@@ -18,7 +18,12 @@ const manifest = JSON.parse(await fs.readFile(manifestFile,'utf8'));
 const aligned = JSON.parse(await fs.readFile(path.join(dir,'aligned.json'),'utf8'));
 aligned.chapters.forEach((c,i)=>{if(c.kind==='decision')c.question=manifest.scenes[i].narration;});
 const contract = JSON.parse(await fs.readFile(path.join(here,'contract.json'),'utf8'));
-const atomic = async (file, value) => { const tmp=file+'.'+randomUUID()+'.tmp'; await fs.writeFile(tmp,JSON.stringify(value)); await fs.rename(tmp,file); };
+const atomic = async (file, value) => {
+  const tmp=file+'.'+randomUUID()+'.tmp'; await fs.writeFile(tmp,JSON.stringify(value));
+  // Windows scanners/readers can briefly hold the destination. Preserve atomic
+  // replacement and retry the transient lock; never delete a live status file.
+  for(let attempt=0;;attempt++)try{await fs.rename(tmp,file);return;}catch(error){if(attempt===9||!['EPERM','EACCES','EBUSY'].includes(error.code))throw error;await new Promise(resolve=>setTimeout(resolve,100*(attempt+1)));}
+};
 const status = path.join(dir,'status.json');
 const token=randomUUID(), asset='/'+token+'/manim.mp4', mediaFile=path.join(dir,'manim.mp4');
 const server=http.createServer(async (req,res)=>{

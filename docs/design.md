@@ -274,3 +274,7 @@ with 1.2-second Remotion transitions; the finished composition holds for reading
 Uncued structural diagram layers appear together, avoiding disconnected arrows.
 Neutral questions, captions, original-recording access and player controls remain.
 See `docs/hybrid-video-rendering.md` for the inspected Module 1 outputs.
+
+Automation vs AI uses distinct rule-routing, intent interpretation, same-input comparison, machine condition, reviewed workflow and recap compositions. Profile-matched examples share one narrative; visual reveals follow locally aligned speech and hold for reading. The full-course edition also depicts the oversized-part exception and threshold-versus-prediction contrast. See [Automation/AI explainer](automation-ai-explainer.md).
+
+Generated topic videos follow the creator's narrative demonstration reference: source-supported fictional workspaces, readable annotations and state changes matched to speech. The shared dark/rose art direction retains different mechanism, conversation, document and comparison treatments. Original recordings remain separately selectable. See [video rollout](reference-style-videos.md).

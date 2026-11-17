@@ -19,7 +19,10 @@ export const boardRoot = () => path.join(appRoot(), '.data', 'chalkboard-video')
 // One native renderer at a time keeps playback and adaptive generation responsive.
 const state = globalThis as unknown as { __chalkboardQueue?: Promise<void> };
 async function readStatus(file: string) { try { return JSON.parse(await fs.readFile(file, 'utf8')) as { status: ChalkboardView['status']; stage?: string }; } catch { return null; } }
-async function atomic(file: string, value: unknown) { const temp = `${file}.${randomUUID()}.tmp`; await fs.writeFile(temp, JSON.stringify(value)); await fs.rename(temp, file); }
+async function atomic(file: string, value: unknown) {
+  const temp = `${file}.${randomUUID()}.tmp`; await fs.writeFile(temp, JSON.stringify(value));
+  for(let attempt=0;;attempt++)try{await fs.rename(temp,file);return;}catch(error){if(attempt===9||!['EPERM','EACCES','EBUSY'].includes((error as NodeJS.ErrnoException).code??''))throw error;await new Promise(resolve=>setTimeout(resolve,100*(attempt+1)));}
+}
 
 export async function prepareChalkboard(input: { enrollmentId: string; moduleId: string; revisionId: string; title: string; field: string; scenes: ConceptScene[]; playback: ContinuousPlayback; retry?: boolean }): Promise<ChalkboardView> {
   if (![input.enrollmentId, input.moduleId].every(s => /^[\w-]+$/.test(s))) throw Error('Invalid render scope');
@@ -32,7 +35,10 @@ export async function prepareChalkboard(input: { enrollmentId: string; moduleId:
   const audioHash = createHash('sha256').update(await fs.readFile(audio)).digest('hex');
   const illustration = path.resolve(appRoot(), '../adaptive-api/chalkboard_assets/finance-workbench-transparent.png');
   const illustrationHash = createHash('sha256').update(await fs.readFile(illustration)).digest('hex');
-  const key = createHash('sha256').update(JSON.stringify({ version: DIRECTOR_VERSION, illustrationHash, plan: identity, title: input.title, revision: input.revisionId, audioHash })).digest('hex');
+  const rendererRoot=path.join(appRoot(),'video-renderer');
+  const rendererHash=createHash('sha256');
+  for(const name of (await fs.readdir(rendererRoot)).filter(name=>/\.(tsx?|mjs|json)$/.test(name)).sort())rendererHash.update(name).update(await fs.readFile(path.join(rendererRoot,name)));
+  const key = createHash('sha256').update(JSON.stringify({ version: DIRECTOR_VERSION, rendererHash:rendererHash.digest('hex'), illustrationHash, plan: identity, title: input.title, revision: input.revisionId, audioHash })).digest('hex');
   const directory = path.join(boardRoot(), input.enrollmentId, input.moduleId, key);
   await fs.mkdir(directory, { recursive: true });
   const statusFile = path.join(directory, 'status.json'), lock = path.join(directory, 'lock');
