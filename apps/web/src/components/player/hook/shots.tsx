@@ -119,6 +119,13 @@ const CHAT_RUN: [number, number] = [7400, 11600];
 
 /** A plain product tile, for a rewritten story whose shop isn't selling tents. */
 function ProductArt({ context }: { context: string }) {
+  if (/healthcare|medical record|patient|clinic/i.test(context)) {
+    return (
+      <div className="hf-tent flex items-center justify-center" role="img" aria-label="Illustration of a record request">
+        <FileText className="size-[30%] text-white/70" strokeWidth={1.25} aria-hidden />
+      </div>
+    );
+  }
   if (/bracket/i.test(context)) {
     return (
       <svg viewBox="0 0 400 260" className="text-primary" role="img" aria-label="Mechanical engineering drawing of a mounting bracket">
@@ -385,7 +392,7 @@ export function PhoneShot({ shot, t, block, reduce, sfx }: ShotProps<"phone">) {
 const MAIL_GATE = 900;
 const MAIL_TYPE: [number, number] = [1500, 5100];
 
-export function EmailShot({ shot, t, reduce, sfx }: ShotProps<"email">) {
+export function EmailShot({ shot, t, block, reduce, sfx }: ShotProps<"email">) {
   const drafting = t > MAIL_GATE;
   const typed = Math.floor(span(t, ...MAIL_TYPE) * shot.reply.length);
   const markEnd = shot.reply.indexOf(shot.highlight) + shot.highlight.length;
@@ -405,15 +412,15 @@ export function EmailShot({ shot, t, reduce, sfx }: ShotProps<"email">) {
         </div>
         <div className="hf-mail-item">
           <b>Tom Becker</b>
-          Size exchange for jacket
+          {block.brand ? 'Another request' : 'Size exchange for jacket'}
         </div>
         <div className="hf-mail-item">
           <b>Priya Nair</b>
           Scout drafts are on
         </div>
         <div className="hf-mail-item">
-          <b>ParcelPath</b>
-          Daily delivery report
+          <b>{block.brand ? 'Operations' : 'ParcelPath'}</b>
+          {block.brand ? 'Daily status summary' : 'Daily delivery report'}
         </div>
       </div>
       <div className="hf-mail-read">

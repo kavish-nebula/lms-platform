@@ -183,6 +183,10 @@ export async function unusedSignals(enrollmentId: string) {
   return d.query.signals.findMany({ where: and(eq(signals.enrollmentId, enrollmentId), isNull(signals.usedInPlanVersion)), orderBy: asc(signals.createdAt) });
 }
 
+export async function signalsFor(enrollmentId: string) {
+  return (await db()).select().from(signals).where(eq(signals.enrollmentId, enrollmentId));
+}
+
 export async function markSignalsUsed(ids: string[], version: number) {
   if (!ids.length) return;
   const d = await db();

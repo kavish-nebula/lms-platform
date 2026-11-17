@@ -33,6 +33,7 @@ import { api } from "@/lib/api";
 import { applyFieldAccent, FIELD_ACCENTS, type FieldAccent } from "@/lib/field-accent";
 import type { SetupAnswers } from "@/lib/setup";
 import type { ProfileDerived } from "@/lib/profiling/derived";
+import { ProfileCompletion } from './profile-completion';
 
 type Option = { label: string; value: string; kind?: string };
 type Question = { slot: string; q: string; options: Option[]; multi?: boolean; source: "ai" | "rules" };
@@ -267,7 +268,7 @@ export function InterviewChat({
         <span style={{ width: `${pct}%` }} />
       </div>
 
-      <div className="profile-question-surface" aria-busy={loading}>
+      <div className={cn("profile-question-surface", state.done && !course && "profile-completion-surface")} aria-busy={loading}>
         {!started ? <>
           <span className="profile-question-icon"><GraduationCap aria-hidden /></span>
           <p className="profile-greeting">{t("chatHello", { name })}</p>
@@ -286,7 +287,13 @@ export function InterviewChat({
           <h2 className="profile-question-title">{t("interviewFailed")}</h2>
           <p className="profile-question-description">{t("setupRetryHelp")}</p>
           <Button variant="brand" onClick={() => void send(failed)}><RotateCcw data-icon="inline-start" />{t("interviewRetry")}</Button>
-        </div> : state.done ? <>
+        </div> : state.done && !course ? <ProfileCompletion
+          name={name}
+          reduceMotion={state.needs.includes('motion')}
+          headingRef={questionRef}
+          actions={<Button variant="brand" size="lg" disabled={saving} onClick={async () => { setSaving(true); try { await onDone(state); } finally { setSaving(false); } }}>{saving ? t("setupSaving") : continueLabel}<ArrowRight data-icon="inline-end" /></Button>}
+          review={<dl className="profile-answer-review">{turns.map((turn, i) => <div key={`${turn.slot}-${i}`}><dt>{isSlotKey(turn.slot) ? t(`slot_${turn.slot}`) : turn.q}</dt><dd>{turn.a === SKIPPED ? t("chatSkipped") : turn.a}</dd></div>)}</dl>}
+        /> : state.done ? <>
           <span className="profile-question-icon"><CheckCheck aria-hidden /></span>
           <h1 ref={questionRef} tabIndex={-1} className="profile-question-title">{course ? t("fitAllDoneTitle") : t("chatAllDoneTitle")}</h1>
           <p className="profile-question-description">{course ? t("fitAllDone") : t("setupReadyBody")}</p>
@@ -324,7 +331,7 @@ export function InterviewChat({
       </div>
 
       <footer className="profile-setup-footer">
-        {turns.length && !state.done ? <details className="profile-answer-details"><summary>{t("setupViewAnswers", { n: turns.length })}</summary><dl className="profile-answer-review">{turns.map((turn, i) => <div key={`${turn.slot}-${i}`}><dt>{isSlotKey(turn.slot) ? t(`slot_${turn.slot}`) : turn.q}</dt><dd>{turn.a === SKIPPED ? t("chatSkipped") : turn.a}</dd></div>)}</dl></details> : <span>{t("setupEditable")}</span>}
+        {turns.length && !state.done ? <details className="profile-answer-details"><summary>{t("setupViewAnswers", { n: turns.length })}</summary><dl className="profile-answer-review">{turns.map((turn, i) => <div key={`${turn.slot}-${i}`}><dt>{isSlotKey(turn.slot) ? t(`slot_${turn.slot}`) : turn.q}</dt><dd>{turn.a === SKIPPED ? t("chatSkipped") : turn.a}</dd></div>)}</dl></details> : <span>{state.done && !course ? null : t("setupEditable")}</span>}
         {turns.length ? <div className="profile-restart">{confirmRestart ? <><span>{t("interviewRestartAsk")}</span><Button size="sm" variant="outline" onClick={() => void restart()}>{t("interviewRestartYes")}</Button><Button size="sm" variant="ghost" onClick={() => setConfirmRestart(false)}>{t("interviewRestartNo")}</Button></> : <Button size="sm" variant="ghost" disabled={loading || saving} onClick={() => setConfirmRestart(true)}><RotateCcw data-icon="inline-start" />{t("interviewRestart")}</Button>}</div> : null}
       </footer>
     </section>

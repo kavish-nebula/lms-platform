@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>REST API Engineering — Proofcraft</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body data-bot-page="course" data-bot-topic="REST API Engineering">
+<div id="topbar"></div>
+
+<div class="container">
+  <div class="page-head">
+    <div class="eyebrow">Course</div>
+    <h1 id="course-title"></h1>
+    <p class="lede" id="course-problem"></p>
+    <p style="margin-top:12px"><span class="kicker">Ends with:</span> <span id="course-goal"></span></p>
+    <div class="loop-legend" id="loop-legend"></div>
+  </div>
+
+  <div id="review-strip"></div>
+  <div class="path" id="modules"></div>
+</div>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+<script>
+topbar("courses");
+/* Iteration 3: profile is created before courses; attach the course to it on open */
+(function () {
+  const lm = lmGet();
+  if (lm && !lm.course) { lmSet({ ...lm, course: "rest-api" }); }
+})();
+document.getElementById("course-title").textContent = COURSE.title;
+document.getElementById("course-problem").textContent = COURSE.problem;
+document.getElementById("course-goal").textContent = COURSE.goal;
+document.getElementById("loop-legend").innerHTML =
+  `<span class="chip now" style="font-size:.72rem">The loop every module follows:</span>` +
+  COURSE.loop.map((s) => `<span class="chip" style="font-size:.72rem">${s}</span>`).join("");
+
+/* ---------- spaced review strip ---------- */
+function renderReviewStrip() {
+  const due = dueReviews();
+  const el = document.getElementById("review-strip");
+  el.className = due.length ? "review-strip" : "";
+  if (!due.length) { el.innerHTML = ""; return; }
+  el.innerHTML = `<span class="label">Spaced review · due today</span>` +
+    due.map((n) => {
+      const m = COURSE.modules.find((x) => x.n === n);
+      return `<button class="btn btn-ghost btn-sm" onclick="doReview(${n})">Module ${n}: ${m.title.split(":")[0]} — recall check</button>`;
+    }).join("");
+}
+function doReview(n) {
+  const m = COURSE.modules.find((x) => x.n === n);
+  const rv = withCorrectSecond(m.review);
+  openModal("Recall check", "Spaced review", `
+    <p style="margin-bottom:14px">${m.review.q}</p>
+    <div id="rev-opts">${rv.options.map((o, i) =>
+      `<button class="verify-opt" style="width:100%;margin-bottom:6px" onclick="pickReview(${n},${i},${rv.correct})">${o}</button>`).join("")}
+    </div>
+    <div id="rev-fb" class="choice-feedback"></div>`);
+}
+function pickReview(n, i, correct) {
+  const fb = document.getElementById("rev-fb");
+  fb.className = "choice-feedback " + (i === correct ? "best" : "poor");
+  fb.textContent = i === correct
+    ? "Correct — still holding after the gap. That's the point of spaced review."
+    : "Not this time — that's exactly why we revisit. Skim the module's worked example and it'll re-settle.";
+  answerReview(n);
+  setTimeout(() => { closeModal(); renderReviewStrip(); }, 1800);
+}
+renderReviewStrip();
+
+/* ---------- module path ---------- */
+function renderModules() {
+  const wrap = document.getElementById("modules");
+  wrap.innerHTML = COURSE.modules.map((m) => {
+    const unlocked = moduleUnlocked(m.n);
+    const passed = gatePassed(m.n);
+    const watched = videosWatched(m.n);
+    const p = pgGet();
+    const scenDone = p.scenarios && p.scenarios.includes(m.n);
+    const projDone = p.projects && p.projects[m.n];
+    return `
+    <div class="card module-card ${unlocked ? "" : "locked"}">
+      <div class="module-head">
+        <div class="module-num ${passed ? "done" : ""}">${m.n}</div>
+        <div class="module-title">
+          <h2>${m.title}</h2>
+          <div class="problem">Real problem: ${m.problem}</div>
+        </div>
+        <div class="module-state">
+          ${passed
+            ? `<span class="chip good">✓ Gate passed ${gateScore(m.n).score}/${gateScore(m.n).total}</span>`
+            : unlocked
+              ? `<span class="chip accent">Open</span>`
+              : `<span class="chip">Locked</span>`}
+        </div>
+      </div>
+
+      ${m.revisit ? `<div class="revisit-note">↺ ${m.revisit.note}</div>` : ""}
+
+      <div class="video-list">
+        ${m.videos.map((v, i) => `
+          <a class="video-row ${watched.includes(i) ? "watched" : ""}" href="lesson.html?module=${m.n}&video=${i}">
+            <span class="play-dot">${watched.includes(i) ? "✓" : "▶"}</span>
+            <span class="v-meta">
+              <div class="v-title">${v.title}</div>
+              <div class="v-sub">${v.mins} min${watched.includes(i) ? " · watched" : ""}</div>
+            </span>
+            <span class="chip" style="font-size:.7rem">concept</span>
+          </a>`).join("")}
+      </div>
+
+      <div class="module-acts">
+        <a class="act-tile" href="activity.html?type=worked&module=${m.n}">
+          <div class="a-kind">Worked example</div>
+          <div class="a-title">${m.workedExample.title}</div>
+          <div class="a-state">${m.workedExample.steps.length} annotated steps · with screenshots</div>
+        </a>
+        <a class="act-tile ${scenDone ? "done" : ""}" href="activity.html?type=scenario&module=${m.n}">
+          <div class="a-kind">Scenario · adaptive</div>
+          <div class="a-title">${m.scenario.title}</div>
+          <div class="a-state">${scenDone ? "✓ attempted — try a variation" : "Your choices, your reasoning"}</div>
+        </a>
+        <a class="act-tile ${projDone ? "done" : ""}" href="activity.html?type=project&module=${m.n}">
+          <div class="a-kind">Mini project</div>
+          <div class="a-title">${m.project.title}</div>
+          <div class="a-state">${projDone ? "✓ submitted" : m.project.requirements.length + " requirements"}</div>
+        </a>
+      </div>
+
+      <div class="module-foot">
+        <span class="lock-note">🔒 Pass Module ${m.n - 1}'s mastery gate to open this</span>
+        <span style="font-size:.82rem;color:var(--muted)">Gate: 5 questions · pass 4 to unlock Module ${m.n + 1}</span>
+        ${passed
+          ? `<span class="chip good">✓ ${gateScore(m.n).score}/${gateScore(m.n).total}</span>`
+          : `<a class="btn btn-primary btn-sm" href="assessment.html?module=${m.n}">Take the mastery gate →</a>`}
+      </div>
+    </div>`;
+  }).join("") + `
+  <div class="card final-cta">
+    <div>
+      <span class="chip accent">Independent</span>
+      <h2 style="margin-top:10px">Final build: the e-commerce API</h2>
+      <p class="lede" style="font-size:.92rem;margin-top:4px">No hints. No steps. One stakeholder paragraph — your standards from all five modules.</p>
+    </div>
+    ${allGatesPassed()
+      ? `<a class="btn btn-primary" href="assessment.html?module=final">Start the final build →</a>`
+      : `<div class="empty-note">Unlocks when all 5 gates are passed (${gatesPassedCount()}/5)</div>`}
+  </div>`;
+}
+renderModules();
+</script>
+<script src="bot.js"></script>
+</body>
+</html>

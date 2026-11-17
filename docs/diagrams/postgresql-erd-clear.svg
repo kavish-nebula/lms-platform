@@ -1,0 +1,1572 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="4000" height="4812" viewBox="0 0 4000 4812"><rect width="4000" height="4812" fill="#f5f7fb"/><text x="70" y="85" font-family="Arial" font-size="50" font-weight="700" fill="#0f172a">Nebula KnowLab — PostgreSQL ER diagram</text><text x="70" y="135" font-family="Arial" font-size="27" fill="#334155">All 36 application tables · All 61 enforced foreign keys · 12 November 2026</text><text x="70" y="184" font-family="Arial" font-size="24" fill="#334155">Colored cards = main tables. Gray cards = repeated parent references; the section number locates the main table.</text><text x="70" y="223" font-family="Arial" font-size="23" fill="#475569">PK = primary key   FK = foreign key   ? = nullable   | = one   o = optional/zero   crow’s foot = many</text><text x="70" y="260" font-family="Arial" font-size="22" fill="#64748b">Keys shown for clarity. Every relationship appears in its child table’s section; JSON/text links are not database foreign keys.</text><rect x="70" y="300" width="1905" height="724.4495033112582" rx="20" fill="white" stroke="#dbe3ee" stroke-width="2"/><rect x="70" y="300" width="8" height="724.4495033112582" rx="4" fill="#2563eb"/><text x="105" y="350" font-family="Arial" font-size="30" font-weight="700" fill="#2563eb">01  Users &amp; enrollment</text><text x="105" y="382" font-family="Arial" font-size="20" fill="#64748b">4 main tables · 4 foreign-key relationships</text><svg x="745.2752483443709" y="425" width="554.4495033112582" height="554.4495033112582" viewBox="0 0 365 365">
+<g id="p01-graph0" class="graph" transform="scale(1 1) rotate(0) translate(8.64 356.64)">
+<title>D</title>
+<!-- course_editions&#45;&gt;enrollments -->
+<g id="p01-edge1" class="edge">
+<title>course_editions:e&#45;&gt;enrollments:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M176.53,-215C191.24,-215 215.99,-215 232.63,-215"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="168.4" cy="-215" rx="3.4" ry="3.4"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="173.4,-219.25 173.4,-210.75 175.1,-210.75 175.1,-219.25 173.4,-219.25"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="172.55,-215 176.8,-215"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="240.92,-215 249.42,-218.83 245.67,-215 248.92,-215 248.92,-215 248.92,-215 245.67,-215 249.42,-211.18 240.92,-215"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="234.94" cy="-215" rx="3.4" ry="3.4"/>
+</g>
+<!-- users&#45;&gt;profiles -->
+<g id="p01-edge4" class="edge">
+<title>users:e&#45;&gt;profiles:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M124.41,-112.53C149.45,-96.81 233.63,-43.94 263.08,-25.45"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="120.28,-120.15 115.76,-112.95 117.2,-112.04 121.72,-119.24 120.28,-120.15"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="117.3,-117 120.9,-114.74"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="123.88,-117.89 119.36,-110.69 120.8,-109.78 125.32,-116.98 123.88,-117.89"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="120.9,-114.74 124.5,-112.48"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="270.37,-15.85 274.89,-23.05 273.45,-23.96 268.93,-16.76 270.37,-15.85"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="273.35,-19 269.75,-21.26"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="266.24" cy="-23.47" rx="3.4" ry="3.4"/>
+</g>
+<!-- users&#45;&gt;profile_drafts -->
+<g id="p01-edge3" class="edge">
+<title>users:e&#45;&gt;profile_drafts:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M125.69,-117C151.64,-117 230.72,-117 261.2,-117"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="118.15,-121.25 118.15,-112.75 119.85,-112.75 119.85,-121.25 118.15,-121.25"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="117.3,-117 121.55,-117"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="122.4,-121.25 122.4,-112.75 124.1,-112.75 124.1,-121.25 122.4,-121.25"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="121.55,-117 125.8,-117"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="272.5,-112.75 272.5,-121.25 270.8,-121.25 270.8,-112.75 272.5,-112.75"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="273.35,-117 269.1,-117"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="264.95" cy="-117" rx="3.4" ry="3.4"/>
+</g>
+<!-- users&#45;&gt;enrollments -->
+<g id="p01-edge2" class="edge">
+<title>users:e&#45;&gt;enrollments:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M123,-122.84C143.03,-143.38 210.47,-212.55 238.04,-240.81"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="114.85,-120.58 120.93,-114.64 122.12,-115.86 116.04,-121.79 114.85,-120.58"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="117.3,-117 120.27,-120.04"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="117.82,-123.62 123.9,-117.68 125.09,-118.9 119,-124.84 117.82,-123.62"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="120.27,-120.04 123.23,-123.09"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="243.64,-246.56 246.83,-255.31 246.95,-249.96 249.22,-252.28 249.22,-252.28 249.22,-252.28 246.95,-249.96 252.31,-249.97 243.64,-246.56"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="239.46" cy="-242.28" rx="3.4" ry="3.4"/>
+</g>
+<!-- course_editions -->
+<g id="p01-node1" class="node">
+<title>course_editions</title>
+<polygon fill="#f1f5f9" stroke="none" points="0,-196 0,-280 164.25,-280 164.25,-196 0,-196"/>
+<polygon fill="#64748b" stroke="none" points="0,-234 0,-280 164.25,-280 164.25,-234 0,-234"/>
+<polygon fill="none" stroke="#cbd5e1" points="0,-234 0,-280 164.25,-280 164.25,-234 0,-234"/>
+<text xml:space="preserve" text-anchor="start" x="24.61" y="-257.5" font-family="Arial" font-weight="bold" font-size="15.00" fill="white">course_editions</text>
+<text xml:space="preserve" text-anchor="start" x="10" y="-246.1" font-family="Arial" font-size="11.00" fill="white">REFERENCE · SECTION 04</text>
+<polygon fill="none" stroke="#cbd5e1" points="0,-196 0,-234 84.62,-234 84.62,-196 0,-196"/>
+<text xml:space="preserve" text-anchor="start" x="10" y="-212.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#64748b">PK</text>
+<polygon fill="none" stroke="#cbd5e1" points="84.62,-196 84.62,-234 164.25,-234 164.25,-196 84.62,-196"/>
+<text xml:space="preserve" text-anchor="start" x="94.62" y="-209" font-family="Arial" font-size="15.00">id</text>
+</g>
+<!-- users -->
+<g id="p01-node2" class="node">
+<title>users</title>
+<polygon fill="#ffffff" stroke="none" points="47.95,-98 47.95,-174 116.3,-174 116.3,-98 47.95,-98"/>
+<polygon fill="#2563eb" stroke="none" points="47.95,-136 47.95,-174 116.3,-174 116.3,-136 47.95,-136"/>
+<polygon fill="none" stroke="#cbd5e1" points="47.95,-136 47.95,-174 116.3,-174 116.3,-136 47.95,-136"/>
+<text xml:space="preserve" text-anchor="start" x="62.11" y="-151.5" font-family="Arial" font-weight="bold" font-size="15.00" fill="white">users</text>
+<polygon fill="none" stroke="#cbd5e1" points="47.95,-98 47.95,-136 84.62,-136 84.62,-98 47.95,-98"/>
+<text xml:space="preserve" text-anchor="start" x="57.95" y="-114.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#2563eb">PK</text>
+<polygon fill="none" stroke="#cbd5e1" points="84.62,-98 84.62,-136 116.3,-136 116.3,-98 84.62,-98"/>
+<text xml:space="preserve" text-anchor="start" x="94.62" y="-111" font-family="Arial" font-size="15.00">id</text>
+</g>
+<!-- profiles -->
+<g id="p01-node3" class="node">
+<title>profiles</title>
+<polygon fill="#ffffff" stroke="none" points="218.35,0 218.35,-76 343.55,-76 343.55,0 218.35,0"/>
+<polygon fill="#2563eb" stroke="none" points="218.35,-38 218.35,-76 343.55,-76 343.55,-38 218.35,-38"/>
+<polygon fill="none" stroke="#cbd5e1" points="218.35,-38 218.35,-76 343.55,-76 343.55,-38 218.35,-38"/>
+<text xml:space="preserve" text-anchor="start" x="253.86" y="-53.5" font-family="Arial" font-weight="bold" font-size="15.00" fill="white">profiles</text>
+<polygon fill="none" stroke="#cbd5e1" points="218.35,0 218.35,-38 274.35,-38 274.35,0 218.35,0"/>
+<text xml:space="preserve" text-anchor="start" x="228.35" y="-16.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#2563eb">PK,FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="274.35,0 274.35,-38 343.55,-38 343.55,0 274.35,0"/>
+<text xml:space="preserve" text-anchor="start" x="284.35" y="-13" font-family="Arial" font-size="15.00">user_id</text>
+</g>
+<!-- profile_drafts -->
+<g id="p01-node4" class="node">
+<title>profile_drafts</title>
+<polygon fill="#ffffff" stroke="none" points="218.35,-98 218.35,-174 343.55,-174 343.55,-98 218.35,-98"/>
+<polygon fill="#2563eb" stroke="none" points="218.35,-136 218.35,-174 343.55,-174 343.55,-136 218.35,-136"/>
+<polygon fill="none" stroke="#cbd5e1" points="218.35,-136 218.35,-174 343.55,-174 343.55,-136 218.35,-136"/>
+<text xml:space="preserve" text-anchor="start" x="233.02" y="-151.5" font-family="Arial" font-weight="bold" font-size="15.00" fill="white">profile_drafts</text>
+<polygon fill="none" stroke="#cbd5e1" points="218.35,-98 218.35,-136 274.35,-136 274.35,-98 218.35,-98"/>
+<text xml:space="preserve" text-anchor="start" x="228.35" y="-114.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#2563eb">PK,FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="274.35,-98 274.35,-136 343.55,-136 343.55,-98 274.35,-98"/>
+<text xml:space="preserve" text-anchor="start" x="284.35" y="-111" font-family="Arial" font-size="15.00">user_id</text>
+</g>
+<!-- enrollments -->
+<g id="p01-node5" class="node">
+<title>enrollments</title>
+<polygon fill="#ffffff" stroke="none" points="214.25,-196 214.25,-348 347.65,-348 347.65,-196 214.25,-196"/>
+<polygon fill="#2563eb" stroke="none" points="214.25,-310 214.25,-348 347.65,-348 347.65,-310 214.25,-310"/>
+<polygon fill="none" stroke="#cbd5e1" points="214.25,-310 214.25,-348 347.65,-348 347.65,-310 214.25,-310"/>
+<text xml:space="preserve" text-anchor="start" x="238.44" y="-325.5" font-family="Arial" font-weight="bold" font-size="15.00" fill="white">enrollments</text>
+<polygon fill="none" stroke="#cbd5e1" points="214.25,-272 214.25,-310 250.92,-310 250.92,-272 214.25,-272"/>
+<text xml:space="preserve" text-anchor="start" x="224.25" y="-288.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#2563eb">PK</text>
+<polygon fill="none" stroke="#cbd5e1" points="250.92,-272 250.92,-310 347.65,-310 347.65,-272 250.92,-272"/>
+<text xml:space="preserve" text-anchor="start" x="260.92" y="-285" font-family="Arial" font-size="15.00">id</text>
+<polygon fill="none" stroke="#cbd5e1" points="214.25,-234 214.25,-272 250.92,-272 250.92,-234 214.25,-234"/>
+<text xml:space="preserve" text-anchor="start" x="224.25" y="-250.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#2563eb">FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="250.92,-234 250.92,-272 347.65,-272 347.65,-234 250.92,-234"/>
+<text xml:space="preserve" text-anchor="start" x="260.92" y="-247" font-family="Arial" font-size="15.00">user_id</text>
+<polygon fill="none" stroke="#cbd5e1" points="214.25,-196 214.25,-234 250.92,-234 250.92,-196 214.25,-196"/>
+<text xml:space="preserve" text-anchor="start" x="224.25" y="-212.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#2563eb">FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="250.92,-196 250.92,-234 347.65,-234 347.65,-196 250.92,-196"/>
+<text xml:space="preserve" text-anchor="start" x="260.92" y="-209" font-family="Arial" font-size="15.00">edition_id ?</text>
+</g>
+</g>
+</svg><rect x="2025" y="300" width="1905" height="724.4495033112582" rx="20" fill="white" stroke="#dbe3ee" stroke-width="2"/><rect x="2025" y="300" width="8" height="724.4495033112582" rx="4" fill="#0f766e"/><text x="2060" y="350" font-family="Arial" font-size="30" font-weight="700" fill="#0f766e">02  Course brief &amp; blueprint</text><text x="2060" y="382" font-family="Arial" font-size="20" fill="#64748b">3 main tables · 4 foreign-key relationships</text><svg x="2375.2007450331125" y="566.2706953642385" width="1204.5985099337747" height="271.9081125827814" viewBox="0 0 793 179">
+<g id="p02-graph0" class="graph" transform="scale(1 1) rotate(0) translate(8.64 170.64)">
+<title>D</title>
+<!-- users&#45;&gt;creator_courses -->
+<g id="p02-edge2" class="edge">
+<title>users:e&#45;&gt;creator_courses:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M172.37,-21.3C187.94,-25.71 222.27,-35.44 242.89,-41.29"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="163.91,-23.32 166.23,-15.14 167.86,-15.61 165.55,-23.78 163.91,-23.32"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="164.25,-19 168.34,-20.16"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="168,-24.48 170.32,-16.3 171.95,-16.77 169.63,-24.94 168,-24.48"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="168.34,-20.16 172.43,-21.32"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="250.86,-43.55 257.99,-49.54 255.43,-44.84 258.55,-45.73 258.55,-45.73 258.55,-45.73 255.43,-44.84 260.08,-42.18 250.86,-43.55"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="245.11" cy="-41.92" rx="3.4" ry="3.4"/>
+</g>
+<!-- users&#45;&gt;creator_sme_reviews -->
+<g id="p02-edge3" class="edge">
+<title>users:e&#45;&gt;creator_sme_reviews:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M172.51,-18.5C186.71,-17.65 214.25,-16 214.25,-16 214.25,-16 350.98,-16 350.98,-16 350.98,-16 575.65,-25.51 640.59,-28.26"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="165.35,-23.19 164.85,-14.71 166.54,-14.6 167.05,-23.09 165.35,-23.19"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="164.25,-19 168.49,-18.75"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="169.6,-22.94 169.09,-14.45 170.78,-14.35 171.29,-22.84 169.6,-22.94"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="168.49,-18.75 172.74,-18.49"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="648.98,-28.62 657.31,-32.8 653.73,-28.82 656.98,-28.96 656.98,-28.96 656.98,-28.96 653.73,-28.82 657.64,-25.16 648.98,-28.62"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="643.01" cy="-28.37" rx="3.4" ry="3.4"/>
+</g>
+<!-- creator_courses&#45;&gt;creator_blueprints -->
+<g id="p02-edge1" class="edge">
+<title>creator_courses:e&#45;&gt;creator_blueprints:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M359.22,-82.45C375.66,-79.34 412.82,-72.33 434.68,-68.2"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="352.61,-88.02 351.03,-79.67 352.7,-79.35 354.28,-87.7 352.61,-88.02"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="350.98,-84 355.16,-83.21"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="356.78,-87.23 355.21,-78.88 356.88,-78.56 358.46,-86.92 356.78,-87.23"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="355.16,-83.21 359.34,-82.42"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="442.81,-66.67 451.87,-68.85 447.48,-65.79 450.67,-65.19 450.67,-65.19 450.67,-65.19 447.48,-65.79 450.45,-61.33 442.81,-66.67"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="436.93" cy="-67.78" rx="3.4" ry="3.4"/>
+</g>
+<!-- creator_blueprints&#45;&gt;creator_sme_reviews -->
+<g id="p02-edge4" class="edge">
+<title>creator_blueprints:e&#45;&gt;creator_sme_reviews:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M560.6,-100.29C577.72,-94.44 618.51,-80.49 641.5,-72.64"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="554.87,-106.75 552.12,-98.7 553.73,-98.15 556.48,-106.2 554.87,-106.75"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="552.69,-103 556.71,-101.62"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="558.89,-105.37 556.14,-97.33 557.75,-96.78 560.5,-104.82 558.89,-105.37"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="556.71,-101.62 560.73,-100.25"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="649.46,-69.91 658.74,-70.78 653.96,-68.38 657.03,-67.32 657.03,-67.32 657.03,-67.32 653.96,-68.38 656.27,-63.54 649.46,-69.91"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="643.8" cy="-71.85" rx="3.4" ry="3.4"/>
+</g>
+<!-- users -->
+<g id="p02-node1" class="node">
+<title>users</title>
+<polygon fill="#f1f5f9" stroke="none" points="0,0 0,-84 164.25,-84 164.25,0 0,0"/>
+<polygon fill="#64748b" stroke="none" points="0,-38 0,-84 164.25,-84 164.25,-38 0,-38"/>
+<polygon fill="none" stroke="#cbd5e1" points="0,-38 0,-84 164.25,-84 164.25,-38 0,-38"/>
+<text xml:space="preserve" text-anchor="start" x="62.11" y="-61.5" font-family="Arial" font-weight="bold" font-size="15.00" fill="white">users</text>
+<text xml:space="preserve" text-anchor="start" x="10" y="-50.1" font-family="Arial" font-size="11.00" fill="white">REFERENCE · SECTION 01</text>
+<polygon fill="none" stroke="#cbd5e1" points="0,0 0,-38 84.62,-38 84.62,0 0,0"/>
+<text xml:space="preserve" text-anchor="start" x="10" y="-16.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#64748b">PK</text>
+<polygon fill="none" stroke="#cbd5e1" points="84.62,0 84.62,-38 164.25,-38 164.25,0 84.62,0"/>
+<text xml:space="preserve" text-anchor="start" x="94.62" y="-13" font-family="Arial" font-size="15.00">id</text>
+</g>
+<!-- creator_courses -->
+<g id="p02-node2" class="node">
+<title>creator_courses</title>
+<polygon fill="#ffffff" stroke="none" points="214.25,-27 214.25,-141 350.98,-141 350.98,-27 214.25,-27"/>
+<polygon fill="#0f766e" stroke="none" points="214.25,-103 214.25,-141 350.98,-141 350.98,-103 214.25,-103"/>
+<polygon fill="none" stroke="#cbd5e1" points="214.25,-103 214.25,-141 350.98,-141 350.98,-103 214.25,-103"/>
+<text xml:space="preserve" text-anchor="start" x="224.25" y="-118.5" font-family="Arial" font-weight="bold" font-size="15.00" fill="white">creator_courses</text>
+<polygon fill="none" stroke="#cbd5e1" points="214.25,-65 214.25,-103 260.52,-103 260.52,-65 214.25,-65"/>
+<text xml:space="preserve" text-anchor="start" x="224.25" y="-81.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#0f766e">PK</text>
+<polygon fill="none" stroke="#cbd5e1" points="260.52,-65 260.52,-103 350.98,-103 350.98,-65 260.52,-65"/>
+<text xml:space="preserve" text-anchor="start" x="270.52" y="-78" font-family="Arial" font-size="15.00">id</text>
+<polygon fill="none" stroke="#cbd5e1" points="214.25,-27 214.25,-65 260.52,-65 260.52,-27 214.25,-27"/>
+<text xml:space="preserve" text-anchor="start" x="224.25" y="-43.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#0f766e">FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="260.52,-27 260.52,-65 350.98,-65 350.98,-27 260.52,-27"/>
+<text xml:space="preserve" text-anchor="start" x="270.52" y="-40" font-family="Arial" font-size="15.00">owner_id</text>
+</g>
+<!-- creator_blueprints -->
+<g id="p02-node3" class="node">
+<title>creator_blueprints</title>
+<polygon fill="#ffffff" stroke="none" points="400.98,-46 400.98,-160 552.69,-160 552.69,-46 400.98,-46"/>
+<polygon fill="#0f766e" stroke="none" points="400.98,-122 400.98,-160 552.69,-160 552.69,-122 400.98,-122"/>
+<polygon fill="none" stroke="#cbd5e1" points="400.98,-122 400.98,-160 552.69,-160 552.69,-122 400.98,-122"/>
+<text xml:space="preserve" text-anchor="start" x="410.98" y="-137.5" font-family="Arial" font-weight="bold" font-size="15.00" fill="white">creator_blueprints</text>
+<polygon fill="none" stroke="#cbd5e1" points="400.98,-84 400.98,-122 452.65,-122 452.65,-84 400.98,-84"/>
+<text xml:space="preserve" text-anchor="start" x="410.98" y="-100.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#0f766e">PK</text>
+<polygon fill="none" stroke="#cbd5e1" points="452.65,-84 452.65,-122 552.69,-122 552.69,-84 452.65,-84"/>
+<text xml:space="preserve" text-anchor="start" x="462.65" y="-97" font-family="Arial" font-size="15.00">id</text>
+<polygon fill="none" stroke="#cbd5e1" points="400.98,-46 400.98,-84 452.65,-84 452.65,-46 400.98,-46"/>
+<text xml:space="preserve" text-anchor="start" x="410.98" y="-62.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#0f766e">FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="452.65,-46 452.65,-84 552.69,-84 552.69,-46 452.65,-46"/>
+<text xml:space="preserve" text-anchor="start" x="462.65" y="-59" font-family="Arial" font-size="15.00">course_id</text>
+</g>
+<!-- creator_sme_reviews -->
+<g id="p02-node4" class="node">
+<title>creator_sme_reviews</title>
+<polygon fill="#ffffff" stroke="none" points="602.69,-10 602.69,-162 775.3,-162 775.3,-10 602.69,-10"/>
+<polygon fill="#0f766e" stroke="none" points="602.69,-124 602.69,-162 775.3,-162 775.3,-124 602.69,-124"/>
+<polygon fill="none" stroke="#cbd5e1" points="602.69,-124 602.69,-162 775.3,-162 775.3,-124 602.69,-124"/>
+<text xml:space="preserve" text-anchor="start" x="612.69" y="-139.5" font-family="Arial" font-weight="bold" font-size="15.00" fill="white">creator_sme_reviews</text>
+<polygon fill="none" stroke="#cbd5e1" points="602.69,-86 602.69,-124 658.98,-124 658.98,-86 602.69,-86"/>
+<text xml:space="preserve" text-anchor="start" x="612.69" y="-102.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#0f766e">PK</text>
+<polygon fill="none" stroke="#cbd5e1" points="658.98,-86 658.98,-124 775.3,-124 775.3,-86 658.98,-86"/>
+<text xml:space="preserve" text-anchor="start" x="668.98" y="-99" font-family="Arial" font-size="15.00">id</text>
+<polygon fill="none" stroke="#cbd5e1" points="602.69,-48 602.69,-86 658.98,-86 658.98,-48 602.69,-48"/>
+<text xml:space="preserve" text-anchor="start" x="612.69" y="-64.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#0f766e">FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="658.98,-48 658.98,-86 775.3,-86 775.3,-48 658.98,-48"/>
+<text xml:space="preserve" text-anchor="start" x="668.98" y="-61" font-family="Arial" font-size="15.00">run_id</text>
+<polygon fill="none" stroke="#cbd5e1" points="602.69,-10 602.69,-48 658.98,-48 658.98,-10 602.69,-10"/>
+<text xml:space="preserve" text-anchor="start" x="612.69" y="-26.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#0f766e">FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="658.98,-10 658.98,-48 775.3,-48 775.3,-10 658.98,-10"/>
+<text xml:space="preserve" text-anchor="start" x="668.98" y="-23" font-family="Arial" font-size="15.00">reviewer_id</text>
+</g>
+</g>
+</svg><rect x="70" y="1074.4495033112582" width="1905" height="1072.3096026490066" rx="20" fill="white" stroke="#dbe3ee" stroke-width="2"/><rect x="70" y="1074.4495033112582" width="8" height="1072.3096026490066" rx="4" fill="#0284c7"/><text x="105" y="1124.4495033112582" font-family="Arial" font-size="30" font-weight="700" fill="#0284c7">03  Module production</text><text x="105" y="1156.4495033112582" font-family="Arial" font-size="20" fill="#64748b">4 main tables · 11 foreign-key relationships</text><svg x="105.00000000000011" y="1355.1510761589404" width="1834.9999999999998" height="590.9064569536423" viewBox="0 0 1208 389">
+<g id="p03-graph0" class="graph" transform="scale(1 1) rotate(0) translate(8.64 380.64)">
+<title>D</title>
+<!-- creator_sme_reviews&#45;&gt;creator_production_jobs -->
+<g id="p03-edge4" class="edge">
+<title>creator_sme_reviews:e&#45;&gt;creator_production_jobs:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M179.14,-61.97C192.7,-72.27 222.61,-95 222.61,-95 222.61,-95 253.87,-109.02 273.66,-117.89"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="170.71,-60.9 175.86,-54.13 177.21,-55.16 172.07,-61.93 170.71,-60.9"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="172.61,-57 175.99,-59.57"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="174.1,-63.47 179.24,-56.7 180.59,-57.73 175.45,-64.5 174.1,-63.47"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="175.99,-59.57 179.37,-62.14"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="281.3,-121.32 287.49,-128.28 285.63,-123.26 288.6,-124.59 288.6,-124.59 288.6,-124.59 285.63,-123.26 290.62,-121.3 281.3,-121.32"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="275.84" cy="-118.87" rx="3.4" ry="3.4"/>
+</g>
+<!-- creator_courses&#45;&gt;creator_production_jobs -->
+<g id="p03-edge5" class="edge">
+<title>creator_courses:e&#45;&gt;creator_production_jobs:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M176.58,-264.95C195.77,-254.08 248.68,-224.12 274.69,-209.39"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="172.26,-272.28 168.07,-264.88 169.55,-264.05 173.74,-271.44 172.26,-272.28"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="169.43,-269 173.13,-266.91"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="175.96,-270.19 171.77,-262.79 173.25,-261.95 177.44,-269.35 175.96,-270.19"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="173.13,-266.91 176.83,-264.81"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="281.68,-205.44 290.96,-204.58 285.81,-203.09 288.64,-201.49 288.64,-201.49 288.64,-201.49 285.81,-203.09 287.19,-197.92 281.68,-205.44"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="276.48" cy="-208.38" rx="3.4" ry="3.4"/>
+</g>
+<!-- creator_blueprints&#45;&gt;creator_production_jobs -->
+<g id="p03-edge6" class="edge">
+<title>creator_blueprints:e&#45;&gt;creator_production_jobs:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M177.68,-163C197.08,-163 245.89,-163 272.15,-163"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="170.28,-167.25 170.28,-158.75 171.98,-158.75 171.98,-167.25 170.28,-167.25"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="169.43,-163 173.68,-163"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="174.53,-167.25 174.53,-158.75 176.23,-158.75 176.23,-167.25 174.53,-167.25"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="173.68,-163 177.93,-163"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="280.51,-163 289.01,-166.83 285.26,-163 288.51,-163 288.51,-163 288.51,-163 285.26,-163 289.01,-159.18 280.51,-163"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="274.53" cy="-163" rx="3.4" ry="3.4"/>
+</g>
+<!-- users&#45;&gt;creator_production_revisions -->
+<g id="p03-edge7" class="edge">
+<title>users:e&#45;&gt;creator_production_revisions:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M411.79,-21.7C435.34,-29.95 506.67,-54.93 539.07,-66.28"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="403.48,-23.29 406.29,-15.27 407.89,-15.83 405.08,-23.85 403.48,-23.29"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="404.08,-19 408.09,-20.4"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="407.49,-24.7 410.3,-16.67 411.9,-17.24 409.09,-25.26 407.49,-24.7"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="408.09,-20.4 412.1,-21.81"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="546.9,-69.02 553.66,-75.44 551.38,-70.6 554.45,-71.67 554.45,-71.67 554.45,-71.67 551.38,-70.6 556.19,-68.22 546.9,-69.02"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="541.26" cy="-67.05" rx="3.4" ry="3.4"/>
+</g>
+<!-- users&#45;&gt;creator_script_reviews -->
+<g id="p03-edge10" class="edge">
+<title>users:e&#45;&gt;creator_script_reviews:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M412.22,-19.3C461.94,-21.13 724.71,-30.8 794.63,-33.37"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="404.77,-23.28 405.09,-14.78 406.79,-14.85 406.47,-23.34 404.77,-23.28"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="404.08,-19 408.33,-19.16"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="409.02,-23.43 409.33,-14.94 411.03,-15 410.72,-23.5 409.02,-23.43"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="408.33,-19.16 412.58,-19.31"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="802.74,-33.67 811.09,-37.8 807.49,-33.84 810.73,-33.96 810.73,-33.96 810.73,-33.96 807.49,-33.84 811.37,-30.16 802.74,-33.67"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="796.77" cy="-33.45" rx="3.4" ry="3.4"/>
+</g>
+<!-- creator_production_jobs&#45;&gt;creator_production_revisions -->
+<g id="p03-edge8" class="edge">
+<title>creator_production_jobs:e&#45;&gt;creator_production_revisions:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M425.15,-233.46C445.6,-214.07 514.23,-149.02 542.78,-121.96"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="422.84,-241.5 417,-235.33 418.23,-234.16 424.08,-240.33 422.84,-241.5"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="419.3,-239 422.39,-236.08"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="425.93,-238.58 420.08,-232.41 421.32,-231.24 427.16,-237.41 425.93,-238.58"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="422.39,-236.08 425.47,-233.15"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="548.86,-116.19 557.66,-113.12 552.31,-112.92 554.67,-110.69 554.67,-110.69 554.67,-110.69 552.31,-112.92 552.4,-107.57 548.86,-116.19"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="544.52" cy="-120.31" rx="3.4" ry="3.4"/>
+</g>
+<!-- creator_production_jobs&#45;&gt;creator_script_reviews -->
+<g id="p03-edge9" class="edge">
+<title>creator_production_jobs:e&#45;&gt;creator_script_reviews:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M427.74,-238.31C474.61,-234.48 701.03,-216 701.03,-216 701.03,-216 770.64,-149.35 799.46,-121.75"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="420.5,-243.17 419.81,-234.69 421.5,-234.56 422.19,-243.03 420.5,-243.17"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="419.3,-239 423.54,-238.65"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="424.73,-242.82 424.04,-234.35 425.74,-234.21 426.43,-242.68 424.73,-242.82"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="423.54,-238.65 427.78,-238.31"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="805.23,-116.23 814.02,-113.11 808.66,-112.94 811.01,-110.69 811.01,-110.69 811.01,-110.69 808.66,-112.94 808.73,-107.58 805.23,-116.23"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="800.92" cy="-120.36" rx="3.4" ry="3.4"/>
+</g>
+<!-- creator_production_jobs&#45;&gt;creator_production_audio -->
+<g id="p03-edge1" class="edge">
+<title>creator_production_jobs:e&#45;&gt;creator_production_audio:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M427.56,-239.5C441.76,-240.35 469.3,-242 469.3,-242 469.3,-242 944.17,-270.19 1041.55,-275.97"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="419.9,-243.29 420.41,-234.81 422.1,-234.91 421.6,-243.4 419.9,-243.29"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="419.3,-239 423.55,-239.25"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="424.14,-243.55 424.65,-235.06 426.35,-235.16 425.84,-243.65 424.14,-243.55"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="423.55,-239.25 427.79,-239.51"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="1049.89,-276.47 1058.15,-280.79 1054.64,-276.75 1057.88,-276.94 1057.88,-276.94 1057.88,-276.94 1054.64,-276.75 1058.6,-273.15 1049.89,-276.47"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="1043.92" cy="-276.11" rx="3.4" ry="3.4"/>
+</g>
+<!-- creator_production_revisions&#45;&gt;creator_script_reviews -->
+<g id="p03-edge11" class="edge">
+<title>creator_production_revisions:e&#45;&gt;creator_script_reviews:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M707.96,-143.25C725.76,-131.03 773.38,-98.33 797.43,-81.82"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="704.14,-151.02 699.33,-144.02 700.73,-143.05 705.54,-150.06 704.14,-151.02"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="701.03,-148 704.54,-145.59"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="707.64,-148.62 702.83,-141.61 704.23,-140.65 709.04,-147.66 707.64,-148.62"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="704.54,-145.59 708.04,-143.19"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="804.31,-77.09 813.49,-75.44 808.23,-74.41 810.91,-72.57 810.91,-72.57 810.91,-72.57 808.23,-74.41 809.16,-69.13 804.31,-77.09"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="799.39" cy="-80.48" rx="3.4" ry="3.4"/>
+</g>
+<!-- creator_production_revisions&#45;&gt;creator_production_audio -->
+<g id="p03-edge3" class="edge">
+<title>creator_production_revisions:e&#45;&gt;creator_production_audio:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M706.01,-154.77C718.66,-171.97 751.03,-216 751.03,-216 751.03,-216 977.35,-232.91 1041.89,-237.73"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="698.11,-151.2 704.96,-146.17 705.97,-147.54 699.12,-152.57 698.11,-151.2"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="701.03,-148 703.55,-151.42"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="700.63,-154.63 707.48,-149.59 708.49,-150.96 701.64,-156 700.63,-154.63"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="703.55,-151.42 706.07,-154.85"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="1049.9,-238.33 1058.09,-242.78 1054.64,-238.68 1057.88,-238.93 1057.88,-238.93 1057.88,-238.93 1054.64,-238.68 1058.66,-235.15 1049.9,-238.33"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="1043.94" cy="-237.88" rx="3.4" ry="3.4"/>
+</g>
+<!-- creator_script_reviews&#45;&gt;creator_production_audio -->
+<g id="p03-edge2" class="edge">
+<title>creator_script_reviews:e&#45;&gt;creator_production_audio:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M942.25,-151.32C962.36,-159.88 1016.34,-182.88 1043.23,-194.33"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="933.58,-152.24 936.91,-144.42 938.48,-145.09 935.15,-152.91 933.58,-152.24"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="934.47,-148 938.38,-149.67"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="937.49,-153.91 940.82,-146.09 942.39,-146.76 939.06,-154.58 937.49,-153.91"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="938.38,-149.67 942.29,-151.33"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="1050.6,-197.47 1056.92,-204.32 1054.97,-199.33 1057.95,-200.61 1057.95,-200.61 1057.95,-200.61 1054.97,-199.33 1059.92,-197.28 1050.6,-197.47"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="1045.1" cy="-195.13" rx="3.4" ry="3.4"/>
+</g>
+<!-- creator_sme_reviews -->
+<g id="p03-node1" class="node">
+<title>creator_sme_reviews</title>
+<polygon fill="#f1f5f9" stroke="none" points="0,-38 0,-122 172.61,-122 172.61,-38 0,-38"/>
+<polygon fill="#64748b" stroke="none" points="0,-76 0,-122 172.61,-122 172.61,-76 0,-76"/>
+<polygon fill="none" stroke="#cbd5e1" points="0,-76 0,-122 172.61,-122 172.61,-76 0,-76"/>
+<text xml:space="preserve" text-anchor="start" x="10" y="-99.5" font-family="Arial" font-weight="bold" font-size="15.00" fill="white">creator_sme_reviews</text>
+<text xml:space="preserve" text-anchor="start" x="14.18" y="-88.1" font-family="Arial" font-size="11.00" fill="white">REFERENCE · SECTION 02</text>
+<polygon fill="none" stroke="#cbd5e1" points="0,-38 0,-76 88.8,-76 88.8,-38 0,-38"/>
+<text xml:space="preserve" text-anchor="start" x="10" y="-54.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#64748b">PK</text>
+<polygon fill="none" stroke="#cbd5e1" points="88.8,-38 88.8,-76 172.61,-76 172.61,-38 88.8,-38"/>
+<text xml:space="preserve" text-anchor="start" x="98.8" y="-51" font-family="Arial" font-size="15.00">id</text>
+</g>
+<!-- creator_courses -->
+<g id="p03-node2" class="node">
+<title>creator_courses</title>
+<polygon fill="#f1f5f9" stroke="none" points="4.18,-250 4.18,-334 168.43,-334 168.43,-250 4.18,-250"/>
+<polygon fill="#64748b" stroke="none" points="4.18,-288 4.18,-334 168.43,-334 168.43,-288 4.18,-288"/>
+<polygon fill="none" stroke="#cbd5e1" points="4.18,-288 4.18,-334 168.43,-334 168.43,-288 4.18,-288"/>
+<text xml:space="preserve" text-anchor="start" x="27.94" y="-311.5" font-family="Arial" font-weight="bold" font-size="15.00" fill="white">creator_courses</text>
+<text xml:space="preserve" text-anchor="start" x="14.18" y="-300.1" font-family="Arial" font-size="11.00" fill="white">REFERENCE · SECTION 02</text>
+<polygon fill="none" stroke="#cbd5e1" points="4.18,-250 4.18,-288 88.8,-288 88.8,-250 4.18,-250"/>
+<text xml:space="preserve" text-anchor="start" x="14.18" y="-266.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#64748b">PK</text>
+<polygon fill="none" stroke="#cbd5e1" points="88.8,-250 88.8,-288 168.43,-288 168.43,-250 88.8,-250"/>
+<text xml:space="preserve" text-anchor="start" x="98.8" y="-263" font-family="Arial" font-size="15.00">id</text>
+</g>
+<!-- creator_blueprints -->
+<g id="p03-node3" class="node">
+<title>creator_blueprints</title>
+<polygon fill="#f1f5f9" stroke="none" points="4.18,-144 4.18,-228 168.43,-228 168.43,-144 4.18,-144"/>
+<polygon fill="#64748b" stroke="none" points="4.18,-182 4.18,-228 168.43,-228 168.43,-182 4.18,-182"/>
+<polygon fill="none" stroke="#cbd5e1" points="4.18,-182 4.18,-228 168.43,-228 168.43,-182 4.18,-182"/>
+<text xml:space="preserve" text-anchor="start" x="20.45" y="-205.5" font-family="Arial" font-weight="bold" font-size="15.00" fill="white">creator_blueprints</text>
+<text xml:space="preserve" text-anchor="start" x="14.18" y="-194.1" font-family="Arial" font-size="11.00" fill="white">REFERENCE · SECTION 02</text>
+<polygon fill="none" stroke="#cbd5e1" points="4.18,-144 4.18,-182 88.8,-182 88.8,-144 4.18,-144"/>
+<text xml:space="preserve" text-anchor="start" x="14.18" y="-160.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#64748b">PK</text>
+<polygon fill="none" stroke="#cbd5e1" points="88.8,-144 88.8,-182 168.43,-182 168.43,-144 88.8,-144"/>
+<text xml:space="preserve" text-anchor="start" x="98.8" y="-157" font-family="Arial" font-size="15.00">id</text>
+</g>
+<!-- users -->
+<g id="p03-node4" class="node">
+<title>users</title>
+<polygon fill="#f1f5f9" stroke="none" points="238.83,0 238.83,-84 403.08,-84 403.08,0 238.83,0"/>
+<polygon fill="#64748b" stroke="none" points="238.83,-38 238.83,-84 403.08,-84 403.08,-38 238.83,-38"/>
+<polygon fill="none" stroke="#cbd5e1" points="238.83,-38 238.83,-84 403.08,-84 403.08,-38 238.83,-38"/>
+<text xml:space="preserve" text-anchor="start" x="300.94" y="-61.5" font-family="Arial" font-weight="bold" font-size="15.00" fill="white">users</text>
+<text xml:space="preserve" text-anchor="start" x="248.83" y="-50.1" font-family="Arial" font-size="11.00" fill="white">REFERENCE · SECTION 01</text>
+<polygon fill="none" stroke="#cbd5e1" points="238.83,0 238.83,-38 323.45,-38 323.45,0 238.83,0"/>
+<text xml:space="preserve" text-anchor="start" x="248.83" y="-16.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#64748b">PK</text>
+<polygon fill="none" stroke="#cbd5e1" points="323.45,0 323.45,-38 403.08,-38 403.08,0 323.45,0"/>
+<text xml:space="preserve" text-anchor="start" x="333.45" y="-13" font-family="Arial" font-size="15.00">id</text>
+</g>
+<!-- creator_production_jobs -->
+<g id="p03-node5" class="node">
+<title>creator_production_jobs</title>
+<polygon fill="#ffffff" stroke="none" points="222.61,-106 222.61,-296 419.3,-296 419.3,-106 222.61,-106"/>
+<polygon fill="#0284c7" stroke="none" points="222.61,-258 222.61,-296 419.3,-296 419.3,-258 222.61,-258"/>
+<polygon fill="none" stroke="#cbd5e1" points="222.61,-258 222.61,-296 419.3,-296 419.3,-258 222.61,-258"/>
+<text xml:space="preserve" text-anchor="start" x="232.61" y="-273.5" font-family="Arial" font-weight="bold" font-size="15.00" fill="white">creator_production_jobs</text>
+<polygon fill="none" stroke="#cbd5e1" points="222.61,-220 222.61,-258 290.51,-258 290.51,-220 222.61,-220"/>
+<text xml:space="preserve" text-anchor="start" x="232.61" y="-236.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#0284c7">PK</text>
+<polygon fill="none" stroke="#cbd5e1" points="290.51,-220 290.51,-258 419.3,-258 419.3,-220 290.51,-220"/>
+<text xml:space="preserve" text-anchor="start" x="300.51" y="-233" font-family="Arial" font-size="15.00">id</text>
+<polygon fill="none" stroke="#cbd5e1" points="222.61,-182 222.61,-220 290.51,-220 290.51,-182 222.61,-182"/>
+<text xml:space="preserve" text-anchor="start" x="232.61" y="-198.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#0284c7">FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="290.51,-182 290.51,-220 419.3,-220 419.3,-182 290.51,-182"/>
+<text xml:space="preserve" text-anchor="start" x="300.51" y="-195" font-family="Arial" font-size="15.00">course_id</text>
+<polygon fill="none" stroke="#cbd5e1" points="222.61,-144 222.61,-182 290.51,-182 290.51,-144 222.61,-144"/>
+<text xml:space="preserve" text-anchor="start" x="232.61" y="-160.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#0284c7">FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="290.51,-144 290.51,-182 419.3,-182 419.3,-144 290.51,-144"/>
+<text xml:space="preserve" text-anchor="start" x="300.51" y="-157" font-family="Arial" font-size="15.00">run_id</text>
+<polygon fill="none" stroke="#cbd5e1" points="222.61,-106 222.61,-144 290.51,-144 290.51,-106 222.61,-106"/>
+<text xml:space="preserve" text-anchor="start" x="232.61" y="-122.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#0284c7">FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="290.51,-106 290.51,-144 419.3,-144 419.3,-106 290.51,-106"/>
+<text xml:space="preserve" text-anchor="start" x="300.51" y="-119" font-family="Arial" font-size="15.00">approval_id</text>
+</g>
+<!-- creator_production_revisions -->
+<g id="p03-node6" class="node">
+<title>creator_production_revisions</title>
+<polygon fill="#ffffff" stroke="none" points="469.3,-53 469.3,-205 701.03,-205 701.03,-53 469.3,-53"/>
+<polygon fill="#0284c7" stroke="none" points="469.3,-167 469.3,-205 701.03,-205 701.03,-167 469.3,-167"/>
+<polygon fill="none" stroke="#cbd5e1" points="469.3,-167 469.3,-205 701.03,-205 701.03,-167 469.3,-167"/>
+<text xml:space="preserve" text-anchor="start" x="479.3" y="-182.5" font-family="Arial" font-weight="bold" font-size="15.00" fill="white">creator_production_revisions</text>
+<polygon fill="none" stroke="#cbd5e1" points="469.3,-129 469.3,-167 556.4,-167 556.4,-129 469.3,-129"/>
+<text xml:space="preserve" text-anchor="start" x="479.3" y="-145.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#0284c7">PK</text>
+<polygon fill="none" stroke="#cbd5e1" points="556.4,-129 556.4,-167 701.03,-167 701.03,-129 556.4,-129"/>
+<text xml:space="preserve" text-anchor="start" x="566.4" y="-142" font-family="Arial" font-size="15.00">id</text>
+<polygon fill="none" stroke="#cbd5e1" points="469.3,-91 469.3,-129 556.4,-129 556.4,-91 469.3,-91"/>
+<text xml:space="preserve" text-anchor="start" x="479.3" y="-107.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#0284c7">FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="556.4,-91 556.4,-129 701.03,-129 701.03,-91 556.4,-91"/>
+<text xml:space="preserve" text-anchor="start" x="566.4" y="-104" font-family="Arial" font-size="15.00">job_id</text>
+<polygon fill="none" stroke="#cbd5e1" points="469.3,-53 469.3,-91 556.4,-91 556.4,-53 469.3,-53"/>
+<text xml:space="preserve" text-anchor="start" x="479.3" y="-69.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#0284c7">FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="556.4,-53 556.4,-91 701.03,-91 701.03,-53 556.4,-53"/>
+<text xml:space="preserve" text-anchor="start" x="566.4" y="-66" font-family="Arial" font-size="15.00">created_by</text>
+</g>
+<!-- creator_script_reviews -->
+<g id="p03-node7" class="node">
+<title>creator_script_reviews</title>
+<polygon fill="#ffffff" stroke="none" points="751.03,-15 751.03,-205 934.47,-205 934.47,-15 751.03,-15"/>
+<polygon fill="#0284c7" stroke="none" points="751.03,-167 751.03,-205 934.47,-205 934.47,-167 751.03,-167"/>
+<polygon fill="none" stroke="#cbd5e1" points="751.03,-167 751.03,-205 934.47,-205 934.47,-167 751.03,-167"/>
+<text xml:space="preserve" text-anchor="start" x="761.03" y="-182.5" font-family="Arial" font-weight="bold" font-size="15.00" fill="white">creator_script_reviews</text>
+<polygon fill="none" stroke="#cbd5e1" points="751.03,-129 751.03,-167 812.73,-167 812.73,-129 751.03,-129"/>
+<text xml:space="preserve" text-anchor="start" x="761.03" y="-145.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#0284c7">PK</text>
+<polygon fill="none" stroke="#cbd5e1" points="812.73,-129 812.73,-167 934.47,-167 934.47,-129 812.73,-129"/>
+<text xml:space="preserve" text-anchor="start" x="822.73" y="-142" font-family="Arial" font-size="15.00">id</text>
+<polygon fill="none" stroke="#cbd5e1" points="751.03,-91 751.03,-129 812.73,-129 812.73,-91 751.03,-91"/>
+<text xml:space="preserve" text-anchor="start" x="761.03" y="-107.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#0284c7">FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="812.73,-91 812.73,-129 934.47,-129 934.47,-91 812.73,-91"/>
+<text xml:space="preserve" text-anchor="start" x="822.73" y="-104" font-family="Arial" font-size="15.00">job_id</text>
+<polygon fill="none" stroke="#cbd5e1" points="751.03,-53 751.03,-91 812.73,-91 812.73,-53 751.03,-53"/>
+<text xml:space="preserve" text-anchor="start" x="761.03" y="-69.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#0284c7">FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="812.73,-53 812.73,-91 934.47,-91 934.47,-53 812.73,-53"/>
+<text xml:space="preserve" text-anchor="start" x="822.73" y="-66" font-family="Arial" font-size="15.00">revision_id</text>
+<polygon fill="none" stroke="#cbd5e1" points="751.03,-15 751.03,-53 812.73,-53 812.73,-15 751.03,-15"/>
+<text xml:space="preserve" text-anchor="start" x="761.03" y="-31.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#0284c7">FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="812.73,-15 812.73,-53 934.47,-53 934.47,-15 812.73,-15"/>
+<text xml:space="preserve" text-anchor="start" x="822.73" y="-28" font-family="Arial" font-size="15.00">reviewer_id</text>
+</g>
+<!-- creator_production_audio -->
+<g id="p03-node8" class="node">
+<title>creator_production_audio</title>
+<polygon fill="#ffffff" stroke="none" points="984.47,-182 984.47,-372 1190.32,-372 1190.32,-182 984.47,-182"/>
+<polygon fill="#0284c7" stroke="none" points="984.47,-334 984.47,-372 1190.32,-372 1190.32,-334 984.47,-334"/>
+<polygon fill="none" stroke="#cbd5e1" points="984.47,-334 984.47,-372 1190.32,-372 1190.32,-334 984.47,-334"/>
+<text xml:space="preserve" text-anchor="start" x="994.47" y="-349.5" font-family="Arial" font-weight="bold" font-size="15.00" fill="white">creator_production_audio</text>
+<polygon fill="none" stroke="#cbd5e1" points="984.47,-296 984.47,-334 1059.88,-334 1059.88,-296 984.47,-296"/>
+<text xml:space="preserve" text-anchor="start" x="994.47" y="-312.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#0284c7">PK</text>
+<polygon fill="none" stroke="#cbd5e1" points="1059.88,-296 1059.88,-334 1190.32,-334 1190.32,-296 1059.88,-296"/>
+<text xml:space="preserve" text-anchor="start" x="1069.88" y="-309" font-family="Arial" font-size="15.00">id</text>
+<polygon fill="none" stroke="#cbd5e1" points="984.47,-258 984.47,-296 1059.88,-296 1059.88,-258 984.47,-258"/>
+<text xml:space="preserve" text-anchor="start" x="994.47" y="-274.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#0284c7">FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="1059.88,-258 1059.88,-296 1190.32,-296 1190.32,-258 1059.88,-258"/>
+<text xml:space="preserve" text-anchor="start" x="1069.88" y="-271" font-family="Arial" font-size="15.00">job_id</text>
+<polygon fill="none" stroke="#cbd5e1" points="984.47,-220 984.47,-258 1059.88,-258 1059.88,-220 984.47,-220"/>
+<text xml:space="preserve" text-anchor="start" x="994.47" y="-236.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#0284c7">FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="1059.88,-220 1059.88,-258 1190.32,-258 1190.32,-220 1059.88,-220"/>
+<text xml:space="preserve" text-anchor="start" x="1069.88" y="-233" font-family="Arial" font-size="15.00">revision_id</text>
+<polygon fill="none" stroke="#cbd5e1" points="984.47,-182 984.47,-220 1059.88,-220 1059.88,-182 984.47,-182"/>
+<text xml:space="preserve" text-anchor="start" x="994.47" y="-198.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#0284c7">FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="1059.88,-182 1059.88,-220 1190.32,-220 1190.32,-182 1059.88,-182"/>
+<text xml:space="preserve" text-anchor="start" x="1069.88" y="-195" font-family="Arial" font-size="15.00">review_id</text>
+</g>
+</g>
+</svg><rect x="2025" y="1074.4495033112582" width="1905" height="1072.3096026490066" rx="20" fill="white" stroke="#dbe3ee" stroke-width="2"/><rect x="2025" y="1074.4495033112582" width="8" height="1072.3096026490066" rx="4" fill="#7c3aed"/><text x="2060" y="1124.4495033112582" font-family="Arial" font-size="30" font-weight="700" fill="#7c3aed">04  Course packages &amp; publication</text><text x="2060" y="1156.4495033112582" font-family="Arial" font-size="20" fill="#64748b">5 main tables · 17 foreign-key relationships</text><svg x="2203.5492549668875" y="1199.4495033112582" width="1547.901490066225" height="902.3096026490066" viewBox="0 0 1019 594">
+<g id="p04-graph0" class="graph" transform="scale(1 1) rotate(0) translate(8.64 585.64)">
+<title>D</title>
+<!-- creator_courses&#45;&gt;creator_authored_course_revisions -->
+<g id="p04-edge11" class="edge">
+<title>creator_courses:e&#45;&gt;creator_authored_course_revisions:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M167.64,-431.25C182.15,-398.08 239.15,-267.76 259.17,-221.99"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="168.49,-439.92 160.7,-436.52 161.38,-434.96 169.17,-438.37 168.49,-439.92"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="164.25,-439 165.95,-435.11"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="170.19,-436.03 162.4,-432.62 163.08,-431.07 170.87,-434.47 170.19,-436.03"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="165.95,-435.11 167.66,-431.21"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="262.56,-214.25 269.47,-207.99 264.46,-209.89 265.76,-206.92 265.76,-206.92 265.76,-206.92 264.46,-209.89 262.46,-204.93 262.56,-214.25"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="260.16" cy="-219.72" rx="3.4" ry="3.4"/>
+</g>
+<!-- creator_courses&#45;&gt;creator_authored_course_reviews -->
+<g id="p04-edge7" class="edge">
+<title>creator_courses:e&#45;&gt;creator_authored_course_reviews:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M172.01,-435.56C215.14,-416.42 423.49,-324 423.49,-324 423.49,-324 521.51,-212.74 555.59,-174.06"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="166.75,-442.54 163.31,-434.77 164.86,-434.08 168.31,-441.85 166.75,-442.54"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="164.25,-439 168.14,-437.28"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="170.64,-440.82 167.19,-433.05 168.74,-432.36 172.19,-440.13 170.64,-440.82"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="168.14,-437.28 172.02,-435.55"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="561.15,-167.75 569.64,-163.91 564.29,-164.19 566.44,-161.75 566.44,-161.75 566.44,-161.75 564.29,-164.19 563.9,-158.85 561.15,-167.75"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="557.2" cy="-172.24" rx="3.4" ry="3.4"/>
+</g>
+<!-- creator_courses&#45;&gt;creator_authored_course_audio -->
+<g id="p04-edge4" class="edge">
+<title>creator_courses:e&#45;&gt;creator_authored_course_audio:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M172.72,-438.83C222.97,-437.84 482.23,-432.72 552.19,-431.34"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="165.19,-443.23 165.02,-434.73 166.72,-434.7 166.88,-443.2 165.19,-443.23"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="164.25,-439 168.5,-438.92"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="169.43,-443.15 169.27,-434.65 170.97,-434.62 171.13,-443.11 169.43,-443.15"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="168.5,-438.92 172.75,-438.83"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="560.6,-431.18 569.17,-434.83 565.35,-431.08 568.59,-431.02 568.59,-431.02 568.59,-431.02 565.35,-431.08 569.02,-427.19 560.6,-431.18"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="554.62" cy="-431.3" rx="3.4" ry="3.4"/>
+</g>
+<!-- creator_courses&#45;&gt;published_authored_courses -->
+<g id="p04-edge14" class="edge">
+<title>creator_courses:e&#45;&gt;published_authored_courses:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M172.21,-441.52C220.61,-456.86 473.49,-537 473.49,-537 473.49,-537 722.74,-537 722.74,-537 722.74,-537 772.74,-234 772.74,-234 772.74,-234 830.44,-167.32 852.08,-142.32"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="163.78,-443.31 166.35,-435.21 167.97,-435.72 165.4,-443.82 163.78,-443.31"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="164.25,-439 168.3,-440.28"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="167.83,-444.59 170.4,-436.49 172.02,-437 169.45,-445.11 167.83,-444.59"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="168.3,-440.28 172.35,-441.57"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="856.37,-130.86 862.8,-136.42 861.69,-137.71 855.26,-132.15 856.37,-130.86"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="860.14,-133 857.36,-136.21"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="854.64" cy="-139.35" rx="3.4" ry="3.4"/>
+</g>
+<!-- creator_courses&#45;&gt;course_editions -->
+<g id="p04-edge1" class="edge">
+<title>creator_courses:e&#45;&gt;course_editions:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M167.08,-446.81C177.66,-476.01 214.25,-577 214.25,-577 214.25,-577 722.74,-577 722.74,-577 722.74,-577 820.52,-406.71 850.31,-354.83"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="160.55,-441.25 168.54,-438.35 169.12,-439.95 161.12,-442.85 160.55,-441.25"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="164.25,-439 165.7,-443"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="161.99,-445.24 169.98,-442.35 170.56,-443.95 162.57,-446.84 161.99,-445.24"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="165.7,-443 167.15,-446.99"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="854.34,-347.81 861.89,-342.34 856.71,-343.69 858.33,-340.87 858.33,-340.87 858.33,-340.87 856.71,-343.69 855.26,-338.53 854.34,-347.81"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="851.37" cy="-352.99" rx="3.4" ry="3.4"/>
+</g>
+<!-- users&#45;&gt;creator_authored_course_revisions -->
+<g id="p04-edge12" class="edge">
+<title>users:e&#45;&gt;creator_authored_course_revisions:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M172.25,-68.04C188.86,-72.28 227.4,-82.11 249.6,-87.77"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="164.02,-70.33 166.13,-62.09 167.77,-62.51 165.67,-70.75 164.02,-70.33"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="164.25,-66 168.37,-67.05"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="168.14,-71.38 170.24,-63.14 171.89,-63.56 169.79,-71.8 168.14,-71.38"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="168.37,-67.05 172.49,-68.1"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="257.44,-89.77 264.73,-95.58 262.05,-90.95 265.19,-91.75 265.19,-91.75 265.19,-91.75 262.05,-90.95 266.62,-88.17 257.44,-89.77"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="251.65" cy="-88.3" rx="3.4" ry="3.4"/>
+</g>
+<!-- users&#45;&gt;creator_authored_course_revisions -->
+<g id="p04-edge13" class="edge">
+<title>users:e&#45;&gt;creator_authored_course_revisions:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M170.02,-71.78C186.11,-87.88 231.71,-133.51 253.83,-155.65"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="161.85,-69.61 167.86,-63.6 169.06,-64.8 163.05,-70.81 161.85,-69.61"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="164.25,-66 167.26,-69.01"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="164.85,-72.61 170.86,-66.6 172.06,-67.81 166.05,-73.81 164.85,-72.61"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="167.26,-69.01 170.26,-72.01"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="259.8,-161.63 263.1,-170.35 263.16,-164.99 265.45,-167.29 265.45,-167.29 265.45,-167.29 263.16,-164.99 268.52,-164.94 259.8,-161.63"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="255.58" cy="-157.4" rx="3.4" ry="3.4"/>
+</g>
+<!-- users&#45;&gt;creator_authored_course_reviews -->
+<g id="p04-edge8" class="edge">
+<title>users:e&#45;&gt;creator_authored_course_reviews:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M172.51,-65.34C186.71,-64.2 214.25,-62 214.25,-62 214.25,-62 423.49,-62 423.49,-62 423.49,-62 512.02,-76.18 550.06,-82.27"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="165.44,-70.17 164.76,-61.7 166.45,-61.56 167.13,-70.03 165.44,-70.17"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="164.25,-66 168.49,-65.66"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="169.67,-69.83 169,-61.36 170.69,-61.22 171.37,-69.69 169.67,-69.83"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="168.49,-65.66 172.72,-65.32"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="558.21,-83.58 566,-88.7 562.9,-84.33 566.11,-84.84 566.11,-84.84 566.11,-84.84 562.9,-84.33 567.21,-81.14 558.21,-83.58"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="552.31" cy="-82.63" rx="3.4" ry="3.4"/>
+</g>
+<!-- users&#45;&gt;creator_authored_course_audio -->
+<g id="p04-edge5" class="edge">
+<title>users:e&#45;&gt;creator_authored_course_audio:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M165.86,-74.29C174.42,-118.45 214.25,-324 214.25,-324 214.25,-324 481.48,-375.89 552.46,-389.67"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="160.24,-67.64 168.59,-66.03 168.91,-67.69 160.56,-69.31 160.24,-67.64"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="164.25,-66 165.06,-70.17"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="161.05,-71.82 169.39,-70.2 169.72,-71.87 161.37,-73.48 161.05,-71.82"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="165.06,-70.17 165.87,-74.34"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="560.76,-391.28 568.38,-396.66 565.43,-392.19 568.61,-392.81 568.61,-392.81 568.61,-392.81 565.43,-392.19 569.83,-389.15 560.76,-391.28"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="554.89" cy="-390.14" rx="3.4" ry="3.4"/>
+</g>
+<!-- users&#45;&gt;published_authored_courses -->
+<g id="p04-edge15" class="edge">
+<title>users:e&#45;&gt;published_authored_courses:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M172.51,-64.51C186.71,-61.96 214.25,-57 214.25,-57 214.25,-57 740.15,-26.06 842.87,-20.02"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="165.84,-70.03 164.34,-61.67 166.01,-61.37 167.51,-69.73 165.84,-70.03"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="164.25,-66 168.43,-65.25"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="170.02,-69.28 168.52,-60.91 170.19,-60.61 171.7,-68.98 170.02,-69.28"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="168.43,-65.25 172.62,-64.49"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="851.16,-19.53 859.87,-22.85 855.9,-19.25 859.14,-19.06 859.14,-19.06 859.14,-19.06 855.9,-19.25 859.42,-15.21 851.16,-19.53"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="845.19" cy="-19.88" rx="3.4" ry="3.4"/>
+</g>
+<!-- creator_blueprints&#45;&gt;creator_authored_course_revisions -->
+<g id="p04-edge10" class="edge">
+<title>creator_blueprints:e&#45;&gt;creator_authored_course_revisions:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M175.55,-167.34C193.69,-159.87 229.37,-145.16 250.14,-136.61"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="168.09" cy="-170.42" rx="3.4" ry="3.4"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="174.33,-172.44 171.09,-164.58 172.66,-163.94 175.9,-171.8 174.33,-172.44"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="171.93,-168.84 175.85,-167.22"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="257.84,-133.43 267.16,-133.73 262.23,-131.62 265.24,-130.38 265.24,-130.38 265.24,-130.38 262.23,-131.62 264.24,-126.65 257.84,-133.43"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="252.31" cy="-135.71" rx="3.4" ry="3.4"/>
+</g>
+<!-- creator_authored_course_revisions&#45;&gt;creator_authored_course_reviews -->
+<g id="p04-edge9" class="edge">
+<title>creator_authored_course_revisions:e&#45;&gt;creator_authored_course_reviews:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M429.67,-238.8C451.25,-220.62 523.66,-159.6 553.78,-134.22"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="426.88,-246.7 421.41,-240.2 422.71,-239.11 428.18,-245.61 426.88,-246.7"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="423.49,-244 426.74,-241.26"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="430.13,-243.96 424.66,-237.46 425.96,-236.37 431.43,-242.87 430.13,-243.96"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="426.74,-241.26 429.99,-238.52"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="560.22,-128.8 569.18,-126.25 563.85,-125.74 566.33,-123.65 566.33,-123.65 566.33,-123.65 563.85,-125.74 564.25,-120.4 560.22,-128.8"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="555.65" cy="-132.65" rx="3.4" ry="3.4"/>
+</g>
+<!-- creator_authored_course_revisions&#45;&gt;creator_authored_course_audio -->
+<g id="p04-edge6" class="edge">
+<title>creator_authored_course_revisions:e&#45;&gt;creator_authored_course_audio:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M428.11,-250.92C440.49,-269.49 473.49,-319 473.49,-319 473.49,-319 525.88,-338.62 553.3,-348.89"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="420.43,-247.06 427.5,-242.35 428.45,-243.76 421.37,-248.48 420.43,-247.06"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="423.49,-244 425.85,-247.54"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="422.79,-250.6 429.86,-245.89 430.8,-247.3 423.73,-252.02 422.79,-250.6"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="425.85,-247.54 428.21,-251.07"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="561.17,-351.84 567.79,-358.41 565.62,-353.51 568.66,-354.65 568.66,-354.65 568.66,-354.65 565.62,-353.51 570.47,-351.24 561.17,-351.84"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="555.57" cy="-349.75" rx="3.4" ry="3.4"/>
+</g>
+<!-- creator_authored_course_revisions&#45;&gt;published_authored_courses -->
+<g id="p04-edge17" class="edge">
+<title>creator_authored_course_revisions:e&#45;&gt;published_authored_courses:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M425.64,-235.88C435.21,-199.7 473.49,-55 473.49,-55 473.49,-55 722.74,-55 722.74,-55 722.74,-55 807.02,-79.54 843.57,-90.18"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="427.82,-244.27 419.6,-242.09 420.04,-240.45 428.26,-242.62 427.82,-244.27"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="423.49,-244 424.58,-239.89"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="428.91,-240.16 420.69,-237.98 421.13,-236.34 429.34,-238.51 428.91,-240.16"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="424.58,-239.89 425.67,-235.78"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="851.5,-92.48 858.59,-98.53 856.06,-93.81 859.18,-94.72 859.18,-94.72 859.18,-94.72 856.06,-93.81 860.73,-91.19 851.5,-92.48"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="845.76" cy="-90.81" rx="3.4" ry="3.4"/>
+</g>
+<!-- creator_authored_course_revisions&#45;&gt;course_editions -->
+<g id="p04-edge3" class="edge">
+<title>creator_authored_course_revisions:e&#45;&gt;course_editions:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M430.45,-248.87C444.19,-258.48 473.49,-279 473.49,-279 473.49,-279 766.54,-296.49 841.52,-300.97"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="421.75,-247.97 426.63,-241.01 428.02,-241.98 423.15,-248.94 421.75,-247.97"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="423.49,-244 426.98,-246.44"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="425.24,-250.41 430.11,-243.44 431.5,-244.42 426.63,-251.38 425.24,-250.41"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="426.98,-246.44 430.46,-248.87"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="849.84,-301.46 858.1,-305.79 854.58,-301.75 857.82,-301.94 857.82,-301.94 857.82,-301.94 854.58,-301.75 858.55,-298.15 849.84,-301.46"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="843.87" cy="-301.11" rx="3.4" ry="3.4"/>
+</g>
+<!-- creator_authored_course_reviews&#45;&gt;published_authored_courses -->
+<g id="p04-edge16" class="edge">
+<title>creator_authored_course_reviews:e&#45;&gt;published_authored_courses:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M709.68,-193.61C732.55,-172.84 815.28,-97.73 847.33,-68.63"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="707.22,-201.58 701.51,-195.28 702.77,-194.14 708.48,-200.43 707.22,-201.58"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="703.74,-199 706.88,-196.14"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="710.37,-198.72 704.66,-192.43 705.91,-191.28 711.63,-197.58 710.37,-198.72"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="706.88,-196.14 710.03,-193.29"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="853.48,-63.05 862.34,-60.17 857,-59.86 859.4,-57.67 859.4,-57.67 859.4,-57.67 857,-59.86 857.2,-54.51 853.48,-63.05"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="849.05" cy="-67.07" rx="3.4" ry="3.4"/>
+</g>
+<!-- creator_authored_course_reviews&#45;&gt;course_editions -->
+<g id="p04-edge2" class="edge">
+<title>creator_authored_course_reviews:e&#45;&gt;course_editions:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M711.22,-202.14C735.12,-212.15 810,-243.53 842.97,-257.35"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="702.88,-203.25 706.16,-195.41 707.73,-196.07 704.45,-203.91 702.88,-203.25"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="703.74,-199 707.66,-200.64"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="706.8,-204.89 710.08,-197.05 711.65,-197.71 708.37,-205.55 706.8,-204.89"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="707.66,-200.64 711.58,-202.29"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="850.52,-260.52 856.89,-267.33 854.91,-262.36 857.9,-263.61 857.9,-263.61 857.9,-263.61 854.91,-262.36 859.84,-260.28 850.52,-260.52"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="845.01" cy="-258.21" rx="3.4" ry="3.4"/>
+</g>
+<!-- creator_courses -->
+<g id="p04-node1" class="node">
+<title>creator_courses</title>
+<polygon fill="#f1f5f9" stroke="none" points="0,-420 0,-504 164.25,-504 164.25,-420 0,-420"/>
+<polygon fill="#64748b" stroke="none" points="0,-458 0,-504 164.25,-504 164.25,-458 0,-458"/>
+<polygon fill="none" stroke="#cbd5e1" points="0,-458 0,-504 164.25,-504 164.25,-458 0,-458"/>
+<text xml:space="preserve" text-anchor="start" x="23.76" y="-481.5" font-family="Arial" font-weight="bold" font-size="15.00" fill="white">creator_courses</text>
+<text xml:space="preserve" text-anchor="start" x="10" y="-470.1" font-family="Arial" font-size="11.00" fill="white">REFERENCE · SECTION 02</text>
+<polygon fill="none" stroke="#cbd5e1" points="0,-420 0,-458 84.62,-458 84.62,-420 0,-420"/>
+<text xml:space="preserve" text-anchor="start" x="10" y="-436.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#64748b">PK</text>
+<polygon fill="none" stroke="#cbd5e1" points="84.62,-420 84.62,-458 164.25,-458 164.25,-420 84.62,-420"/>
+<text xml:space="preserve" text-anchor="start" x="94.62" y="-433" font-family="Arial" font-size="15.00">id</text>
+</g>
+<!-- users -->
+<g id="p04-node2" class="node">
+<title>users</title>
+<polygon fill="#f1f5f9" stroke="none" points="0,-47 0,-131 164.25,-131 164.25,-47 0,-47"/>
+<polygon fill="#64748b" stroke="none" points="0,-85 0,-131 164.25,-131 164.25,-85 0,-85"/>
+<polygon fill="none" stroke="#cbd5e1" points="0,-85 0,-131 164.25,-131 164.25,-85 0,-85"/>
+<text xml:space="preserve" text-anchor="start" x="62.11" y="-108.5" font-family="Arial" font-weight="bold" font-size="15.00" fill="white">users</text>
+<text xml:space="preserve" text-anchor="start" x="10" y="-97.1" font-family="Arial" font-size="11.00" fill="white">REFERENCE · SECTION 01</text>
+<polygon fill="none" stroke="#cbd5e1" points="0,-47 0,-85 84.62,-85 84.62,-47 0,-47"/>
+<text xml:space="preserve" text-anchor="start" x="10" y="-63.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#64748b">PK</text>
+<polygon fill="none" stroke="#cbd5e1" points="84.62,-47 84.62,-85 164.25,-85 164.25,-47 84.62,-47"/>
+<text xml:space="preserve" text-anchor="start" x="94.62" y="-60" font-family="Arial" font-size="15.00">id</text>
+</g>
+<!-- creator_blueprints -->
+<g id="p04-node3" class="node">
+<title>creator_blueprints</title>
+<polygon fill="#f1f5f9" stroke="none" points="0,-153 0,-237 164.25,-237 164.25,-153 0,-153"/>
+<polygon fill="#64748b" stroke="none" points="0,-191 0,-237 164.25,-237 164.25,-191 0,-191"/>
+<polygon fill="none" stroke="#cbd5e1" points="0,-191 0,-237 164.25,-237 164.25,-191 0,-191"/>
+<text xml:space="preserve" text-anchor="start" x="16.27" y="-214.5" font-family="Arial" font-weight="bold" font-size="15.00" fill="white">creator_blueprints</text>
+<text xml:space="preserve" text-anchor="start" x="10" y="-203.1" font-family="Arial" font-size="11.00" fill="white">REFERENCE · SECTION 02</text>
+<polygon fill="none" stroke="#cbd5e1" points="0,-153 0,-191 84.62,-191 84.62,-153 0,-153"/>
+<text xml:space="preserve" text-anchor="start" x="10" y="-169.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#64748b">PK</text>
+<polygon fill="none" stroke="#cbd5e1" points="84.62,-153 84.62,-191 164.25,-191 164.25,-153 84.62,-153"/>
+<text xml:space="preserve" text-anchor="start" x="94.62" y="-166" font-family="Arial" font-size="15.00">id</text>
+</g>
+<!-- creator_authored_course_revisions -->
+<g id="p04-node4" class="node">
+<title>creator_authored_course_revisions</title>
+<polygon fill="#ffffff" stroke="none" points="214.25,-73 214.25,-313 423.49,-313 423.49,-73 214.25,-73"/>
+<polygon fill="#7c3aed" stroke="none" points="214.25,-263 214.25,-313 423.49,-313 423.49,-263 214.25,-263"/>
+<polygon fill="none" stroke="#cbd5e1" points="214.25,-263 214.25,-313 423.49,-313 423.49,-263 214.25,-263"/>
+<text xml:space="preserve" text-anchor="start" x="224.25" y="-290.5" font-family="Arial" font-weight="bold" font-size="15.00" fill="white">creator_authored_course_</text>
+<text xml:space="preserve" text-anchor="start" x="285.94" y="-275.5" font-family="Arial" font-weight="bold" font-size="15.00" fill="white">revisions</text>
+<polygon fill="none" stroke="#cbd5e1" points="214.25,-225 214.25,-263 267.16,-263 267.16,-225 214.25,-225"/>
+<text xml:space="preserve" text-anchor="start" x="224.25" y="-241.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#7c3aed">PK</text>
+<polygon fill="none" stroke="#cbd5e1" points="267.16,-225 267.16,-263 423.49,-263 423.49,-225 267.16,-225"/>
+<text xml:space="preserve" text-anchor="start" x="277.16" y="-238" font-family="Arial" font-size="15.00">id</text>
+<polygon fill="none" stroke="#cbd5e1" points="214.25,-187 214.25,-225 267.16,-225 267.16,-187 214.25,-187"/>
+<text xml:space="preserve" text-anchor="start" x="224.25" y="-203.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#7c3aed">FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="267.16,-187 267.16,-225 423.49,-225 423.49,-187 267.16,-187"/>
+<text xml:space="preserve" text-anchor="start" x="277.16" y="-200" font-family="Arial" font-size="15.00">course_id</text>
+<polygon fill="none" stroke="#cbd5e1" points="214.25,-149 214.25,-187 267.16,-187 267.16,-149 214.25,-149"/>
+<text xml:space="preserve" text-anchor="start" x="224.25" y="-165.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#7c3aed">FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="267.16,-149 267.16,-187 423.49,-187 423.49,-149 267.16,-149"/>
+<text xml:space="preserve" text-anchor="start" x="277.16" y="-162" font-family="Arial" font-size="15.00">owner_id</text>
+<polygon fill="none" stroke="#cbd5e1" points="214.25,-111 214.25,-149 267.16,-149 267.16,-111 214.25,-111"/>
+<text xml:space="preserve" text-anchor="start" x="224.25" y="-127.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#7c3aed">FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="267.16,-111 267.16,-149 423.49,-149 423.49,-111 267.16,-111"/>
+<text xml:space="preserve" text-anchor="start" x="277.16" y="-124" font-family="Arial" font-size="15.00">blueprint_run_id ?</text>
+<polygon fill="none" stroke="#cbd5e1" points="214.25,-73 214.25,-111 267.16,-111 267.16,-73 214.25,-73"/>
+<text xml:space="preserve" text-anchor="start" x="224.25" y="-89.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#7c3aed">FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="267.16,-73 267.16,-111 423.49,-111 423.49,-73 267.16,-73"/>
+<text xml:space="preserve" text-anchor="start" x="277.16" y="-86" font-family="Arial" font-size="15.00">created_by</text>
+</g>
+<!-- creator_authored_course_reviews -->
+<g id="p04-node5" class="node">
+<title>creator_authored_course_reviews</title>
+<polygon fill="#ffffff" stroke="none" points="493.49,-66 493.49,-268 702.74,-268 702.74,-66 493.49,-66"/>
+<polygon fill="#7c3aed" stroke="none" points="493.49,-218 493.49,-268 702.74,-268 702.74,-218 493.49,-218"/>
+<polygon fill="none" stroke="#cbd5e1" points="493.49,-218 493.49,-268 702.74,-268 702.74,-218 493.49,-218"/>
+<text xml:space="preserve" text-anchor="start" x="503.49" y="-245.5" font-family="Arial" font-weight="bold" font-size="15.00" fill="white">creator_authored_course_</text>
+<text xml:space="preserve" text-anchor="start" x="570.59" y="-230.5" font-family="Arial" font-weight="bold" font-size="15.00" fill="white">reviews</text>
+<polygon fill="none" stroke="#cbd5e1" points="493.49,-180 493.49,-218 568.1,-218 568.1,-180 493.49,-180"/>
+<text xml:space="preserve" text-anchor="start" x="503.49" y="-196.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#7c3aed">PK</text>
+<polygon fill="none" stroke="#cbd5e1" points="568.1,-180 568.1,-218 702.74,-218 702.74,-180 568.1,-180"/>
+<text xml:space="preserve" text-anchor="start" x="578.1" y="-193" font-family="Arial" font-size="15.00">id</text>
+<polygon fill="none" stroke="#cbd5e1" points="493.49,-142 493.49,-180 568.1,-180 568.1,-142 493.49,-142"/>
+<text xml:space="preserve" text-anchor="start" x="503.49" y="-158.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#7c3aed">FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="568.1,-142 568.1,-180 702.74,-180 702.74,-142 568.1,-142"/>
+<text xml:space="preserve" text-anchor="start" x="578.1" y="-155" font-family="Arial" font-size="15.00">course_id</text>
+<polygon fill="none" stroke="#cbd5e1" points="493.49,-104 493.49,-142 568.1,-142 568.1,-104 493.49,-104"/>
+<text xml:space="preserve" text-anchor="start" x="503.49" y="-120.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#7c3aed">FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="568.1,-104 568.1,-142 702.74,-142 702.74,-104 568.1,-104"/>
+<text xml:space="preserve" text-anchor="start" x="578.1" y="-117" font-family="Arial" font-size="15.00">revision_id</text>
+<polygon fill="none" stroke="#cbd5e1" points="493.49,-66 493.49,-104 568.1,-104 568.1,-66 493.49,-66"/>
+<text xml:space="preserve" text-anchor="start" x="503.49" y="-82.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#7c3aed">FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="568.1,-66 568.1,-104 702.74,-104 702.74,-66 568.1,-66"/>
+<text xml:space="preserve" text-anchor="start" x="578.1" y="-79" font-family="Arial" font-size="15.00">reviewer_id</text>
+</g>
+<!-- creator_authored_course_audio -->
+<g id="p04-node6" class="node">
+<title>creator_authored_course_audio</title>
+<polygon fill="#ffffff" stroke="none" points="473.49,-336 473.49,-526 722.74,-526 722.74,-336 473.49,-336"/>
+<polygon fill="#7c3aed" stroke="none" points="473.49,-488 473.49,-526 722.74,-526 722.74,-488 473.49,-488"/>
+<polygon fill="none" stroke="#cbd5e1" points="473.49,-488 473.49,-526 722.74,-526 722.74,-488 473.49,-488"/>
+<text xml:space="preserve" text-anchor="start" x="483.49" y="-503.5" font-family="Arial" font-weight="bold" font-size="15.00" fill="white">creator_authored_course_audio</text>
+<polygon fill="none" stroke="#cbd5e1" points="473.49,-450 473.49,-488 570.6,-488 570.6,-450 473.49,-450"/>
+<text xml:space="preserve" text-anchor="start" x="483.49" y="-466.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#7c3aed">PK</text>
+<polygon fill="none" stroke="#cbd5e1" points="570.6,-450 570.6,-488 722.74,-488 722.74,-450 570.6,-450"/>
+<text xml:space="preserve" text-anchor="start" x="580.6" y="-463" font-family="Arial" font-size="15.00">id</text>
+<polygon fill="none" stroke="#cbd5e1" points="473.49,-412 473.49,-450 570.6,-450 570.6,-412 473.49,-412"/>
+<text xml:space="preserve" text-anchor="start" x="483.49" y="-428.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#7c3aed">FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="570.6,-412 570.6,-450 722.74,-450 722.74,-412 570.6,-412"/>
+<text xml:space="preserve" text-anchor="start" x="580.6" y="-425" font-family="Arial" font-size="15.00">course_id</text>
+<polygon fill="none" stroke="#cbd5e1" points="473.49,-374 473.49,-412 570.6,-412 570.6,-374 473.49,-374"/>
+<text xml:space="preserve" text-anchor="start" x="483.49" y="-390.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#7c3aed">FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="570.6,-374 570.6,-412 722.74,-412 722.74,-374 570.6,-374"/>
+<text xml:space="preserve" text-anchor="start" x="580.6" y="-387" font-family="Arial" font-size="15.00">owner_id</text>
+<polygon fill="none" stroke="#cbd5e1" points="473.49,-336 473.49,-374 570.6,-374 570.6,-336 473.49,-336"/>
+<text xml:space="preserve" text-anchor="start" x="483.49" y="-352.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#7c3aed">FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="570.6,-336 570.6,-374 722.74,-374 722.74,-336 570.6,-336"/>
+<text xml:space="preserve" text-anchor="start" x="580.6" y="-349" font-family="Arial" font-size="15.00">revision_id</text>
+</g>
+<!-- published_authored_courses -->
+<g id="p04-node7" class="node">
+<title>published_authored_courses</title>
+<polygon fill="#ffffff" stroke="none" points="772.74,0 772.74,-190 1001.95,-190 1001.95,0 772.74,0"/>
+<polygon fill="#7c3aed" stroke="none" points="772.74,-152 772.74,-190 1001.95,-190 1001.95,-152 772.74,-152"/>
+<polygon fill="none" stroke="#cbd5e1" points="772.74,-152 772.74,-190 1001.95,-190 1001.95,-152 772.74,-152"/>
+<text xml:space="preserve" text-anchor="start" x="782.74" y="-167.5" font-family="Arial" font-weight="bold" font-size="15.00" fill="white">published_authored_courses</text>
+<polygon fill="none" stroke="#cbd5e1" points="772.74,-114 772.74,-152 861.14,-152 861.14,-114 772.74,-114"/>
+<text xml:space="preserve" text-anchor="start" x="782.74" y="-130.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#7c3aed">PK,FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="861.14,-114 861.14,-152 1001.95,-152 1001.95,-114 861.14,-114"/>
+<text xml:space="preserve" text-anchor="start" x="871.14" y="-127" font-family="Arial" font-size="15.00">course_id</text>
+<polygon fill="none" stroke="#cbd5e1" points="772.74,-76 772.74,-114 861.14,-114 861.14,-76 772.74,-76"/>
+<text xml:space="preserve" text-anchor="start" x="782.74" y="-92.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#7c3aed">FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="861.14,-76 861.14,-114 1001.95,-114 1001.95,-76 861.14,-76"/>
+<text xml:space="preserve" text-anchor="start" x="871.14" y="-89" font-family="Arial" font-size="15.00">revision_id</text>
+<polygon fill="none" stroke="#cbd5e1" points="772.74,-38 772.74,-76 861.14,-76 861.14,-38 772.74,-38"/>
+<text xml:space="preserve" text-anchor="start" x="782.74" y="-54.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#7c3aed">FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="861.14,-38 861.14,-76 1001.95,-76 1001.95,-38 861.14,-38"/>
+<text xml:space="preserve" text-anchor="start" x="871.14" y="-51" font-family="Arial" font-size="15.00">review_id</text>
+<polygon fill="none" stroke="#cbd5e1" points="772.74,0 772.74,-38 861.14,-38 861.14,0 772.74,0"/>
+<text xml:space="preserve" text-anchor="start" x="782.74" y="-16.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#7c3aed">FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="861.14,0 861.14,-38 1001.95,-38 1001.95,0 861.14,0"/>
+<text xml:space="preserve" text-anchor="start" x="871.14" y="-13" font-family="Arial" font-size="15.00">published_by</text>
+</g>
+<!-- course_editions -->
+<g id="p04-node8" class="node">
+<title>course_editions</title>
+<polygon fill="#ffffff" stroke="none" points="819.83,-245 819.83,-435 954.86,-435 954.86,-245 819.83,-245"/>
+<polygon fill="#7c3aed" stroke="none" points="819.83,-397 819.83,-435 954.86,-435 954.86,-397 819.83,-397"/>
+<polygon fill="none" stroke="#cbd5e1" points="819.83,-397 819.83,-435 954.86,-435 954.86,-397 819.83,-397"/>
+<text xml:space="preserve" text-anchor="start" x="829.83" y="-412.5" font-family="Arial" font-weight="bold" font-size="15.00" fill="white">course_editions</text>
+<polygon fill="none" stroke="#cbd5e1" points="819.83,-359 819.83,-397 859.83,-397 859.83,-359 819.83,-359"/>
+<text xml:space="preserve" text-anchor="start" x="829.83" y="-375.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#7c3aed">PK</text>
+<polygon fill="none" stroke="#cbd5e1" points="859.83,-359 859.83,-397 954.86,-397 954.86,-359 859.83,-359"/>
+<text xml:space="preserve" text-anchor="start" x="869.83" y="-372" font-family="Arial" font-size="15.00">id</text>
+<polygon fill="none" stroke="#cbd5e1" points="819.83,-321 819.83,-359 859.83,-359 859.83,-321 819.83,-321"/>
+<text xml:space="preserve" text-anchor="start" x="829.83" y="-337.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#7c3aed">FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="859.83,-321 859.83,-359 954.86,-359 954.86,-321 859.83,-321"/>
+<text xml:space="preserve" text-anchor="start" x="869.83" y="-334" font-family="Arial" font-size="15.00">course_id</text>
+<polygon fill="none" stroke="#cbd5e1" points="819.83,-283 819.83,-321 859.83,-321 859.83,-283 819.83,-283"/>
+<text xml:space="preserve" text-anchor="start" x="829.83" y="-299.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#7c3aed">FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="859.83,-283 859.83,-321 954.86,-321 954.86,-283 859.83,-283"/>
+<text xml:space="preserve" text-anchor="start" x="869.83" y="-296" font-family="Arial" font-size="15.00">revision_id</text>
+<polygon fill="none" stroke="#cbd5e1" points="819.83,-245 819.83,-283 859.83,-283 859.83,-245 819.83,-245"/>
+<text xml:space="preserve" text-anchor="start" x="829.83" y="-261.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#7c3aed">FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="859.83,-245 859.83,-283 954.86,-283 954.86,-245 859.83,-245"/>
+<text xml:space="preserve" text-anchor="start" x="869.83" y="-258" font-family="Arial" font-size="15.00">review_id</text>
+</g>
+</g>
+</svg><rect x="70" y="2196.7591059602646" width="1905" height="1459.6647350993376" rx="20" fill="white" stroke="#dbe3ee" stroke-width="2"/><rect x="70" y="2196.7591059602646" width="8" height="1459.6647350993376" rx="4" fill="#c2410c"/><text x="105" y="2246.7591059602646" font-family="Arial" font-size="30" font-weight="700" fill="#c2410c">05  Personalization &amp; progress</text><text x="105" y="2278.7591059602646" font-family="Arial" font-size="20" fill="#64748b">6 main tables · 6 foreign-key relationships</text><svg x="720.2110927152319" y="2321.7591059602646" width="604.5778145695364" height="1289.6647350993376" viewBox="0 0 398 849">
+<g id="p05-graph0" class="graph" transform="scale(1 1) rotate(0) translate(8.64 840.64)">
+<title>D</title>
+<!-- enrollments&#45;&gt;learner_plans -->
+<g id="p05-edge3" class="edge">
+<title>enrollments:e&#45;&gt;learner_plans:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M165.59,-405.29C173.54,-454.59 214.25,-707 214.25,-707 214.25,-707 231.96,-718.72 245.24,-727.51"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="160.19,-398.52 168.58,-397.16 168.85,-398.84 160.46,-400.19 160.19,-398.52"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="164.25,-397 164.93,-401.2"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="160.87,-402.71 169.26,-401.36 169.53,-403.04 161.14,-404.39 160.87,-402.71"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="164.93,-401.2 165.61,-405.39"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="252.08,-732.03 257.06,-739.91 256.04,-734.65 258.75,-736.45 258.75,-736.45 258.75,-736.45 256.04,-734.65 261.28,-733.53 252.08,-732.03"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="247.09" cy="-728.73" rx="3.4" ry="3.4"/>
+</g>
+<!-- enrollments&#45;&gt;signals -->
+<g id="p05-edge5" class="edge">
+<title>enrollments:e&#45;&gt;signals:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M166.53,-404.93C176.31,-438.97 214.25,-571 214.25,-571 214.25,-571 231.96,-582.72 245.24,-591.51"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="160.4,-398.99 168.57,-396.64 169.04,-398.28 160.87,-400.62 160.4,-398.99"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="164.25,-397 165.43,-401.08"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="161.58,-403.08 169.74,-400.73 170.21,-402.36 162.04,-404.71 161.58,-403.08"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="165.43,-401.08 166.6,-405.17"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="252.08,-596.03 257.06,-603.91 256.04,-598.65 258.75,-600.45 258.75,-600.45 258.75,-600.45 256.04,-598.65 261.28,-597.53 252.08,-596.03"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="247.09" cy="-592.73" rx="3.4" ry="3.4"/>
+</g>
+<!-- enrollments&#45;&gt;module_evidence -->
+<g id="p05-edge4" class="edge">
+<title>enrollments:e&#45;&gt;module_evidence:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M170.79,-401.97C184.34,-412.27 214.25,-435 214.25,-435 214.25,-435 231.96,-446.72 245.24,-455.51"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="162.36,-400.9 167.5,-394.13 168.85,-395.16 163.71,-401.93 162.36,-400.9"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="164.25,-397 167.64,-399.57"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="165.74,-403.47 170.88,-396.7 172.24,-397.73 167.09,-404.5 165.74,-403.47"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="167.64,-399.57 171.02,-402.14"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="252.08,-460.03 257.06,-467.91 256.04,-462.65 258.75,-464.45 258.75,-464.45 258.75,-464.45 256.04,-462.65 261.28,-461.53 252.08,-460.03"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="247.09" cy="-456.73" rx="3.4" ry="3.4"/>
+</g>
+<!-- enrollments&#45;&gt;adaptation_jobs -->
+<g id="p05-edge1" class="edge">
+<title>enrollments:e&#45;&gt;adaptation_jobs:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M171.11,-392.11C186.65,-381.02 224.81,-353.8 245.58,-338.99"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="167.41,-399.97 162.48,-393.05 163.86,-392.06 168.8,-398.98 167.41,-399.97"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="164.25,-397 167.71,-394.53"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="170.87,-397.5 165.94,-390.58 167.32,-389.59 172.26,-396.51 170.87,-397.5"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="167.71,-394.53 171.17,-392.06"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="252.26,-334.23 261.4,-332.41 256.13,-331.47 258.77,-329.58 258.77,-329.58 258.77,-329.58 256.13,-331.47 256.96,-326.18 252.26,-334.23"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="247.39" cy="-337.7" rx="3.4" ry="3.4"/>
+</g>
+<!-- enrollments&#45;&gt;adapted_content -->
+<g id="p05-edge2" class="edge">
+<title>enrollments:e&#45;&gt;adapted_content:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M167.64,-389.74C181.38,-360.35 233.02,-249.86 252.28,-208.63"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="168.46,-398.03 160.76,-394.43 161.48,-392.89 169.18,-396.49 168.46,-398.03"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="164.25,-397 166.05,-393.15"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="170.26,-394.18 162.56,-390.58 163.28,-389.04 170.98,-392.64 170.26,-394.18"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="166.05,-393.15 167.85,-389.3"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="255.78,-201.16 262.84,-195.07 257.79,-196.85 259.16,-193.91 259.16,-193.91 259.16,-193.91 257.79,-196.85 255.91,-191.84 255.78,-201.16"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="253.24" cy="-206.57" rx="3.4" ry="3.4"/>
+</g>
+<!-- enrollments&#45;&gt;step_progress -->
+<g id="p05-edge6" class="edge">
+<title>enrollments:e&#45;&gt;step_progress:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M165.97,-388.95C174.76,-347.8 214.25,-163 214.25,-163 214.25,-163 242.36,-128.25 258.39,-108.43"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="168.59,-397.06 160.27,-395.28 160.63,-393.62 168.94,-395.39 168.59,-397.06"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="164.25,-397 165.14,-392.84"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="169.47,-392.9 161.16,-391.12 161.52,-389.46 169.83,-391.24 169.47,-392.9"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="165.14,-392.84 166.03,-388.69"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="263.59,-102 271.91,-97.8 266.58,-98.3 268.62,-95.78 268.62,-95.78 268.62,-95.78 266.58,-98.3 265.96,-92.98 263.59,-102"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="259.83" cy="-106.65" rx="3.4" ry="3.4"/>
+</g>
+<!-- enrollments -->
+<g id="p05-node1" class="node">
+<title>enrollments</title>
+<polygon fill="#f1f5f9" stroke="none" points="0,-378 0,-462 164.25,-462 164.25,-378 0,-378"/>
+<polygon fill="#64748b" stroke="none" points="0,-416 0,-462 164.25,-462 164.25,-416 0,-416"/>
+<polygon fill="none" stroke="#cbd5e1" points="0,-416 0,-462 164.25,-462 164.25,-416 0,-416"/>
+<text xml:space="preserve" text-anchor="start" x="39.62" y="-439.5" font-family="Arial" font-weight="bold" font-size="15.00" fill="white">enrollments</text>
+<text xml:space="preserve" text-anchor="start" x="10" y="-428.1" font-family="Arial" font-size="11.00" fill="white">REFERENCE · SECTION 01</text>
+<polygon fill="none" stroke="#cbd5e1" points="0,-378 0,-416 84.62,-416 84.62,-378 0,-378"/>
+<text xml:space="preserve" text-anchor="start" x="10" y="-394.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#64748b">PK</text>
+<polygon fill="none" stroke="#cbd5e1" points="84.62,-378 84.62,-416 164.25,-416 164.25,-378 84.62,-378"/>
+<text xml:space="preserve" text-anchor="start" x="94.62" y="-391" font-family="Arial" font-size="15.00">id</text>
+</g>
+<!-- learner_plans -->
+<g id="p05-node2" class="node">
+<title>learner_plans</title>
+<polygon fill="#ffffff" stroke="none" points="223.92,-718 223.92,-832 370.64,-832 370.64,-718 223.92,-718"/>
+<polygon fill="#c2410c" stroke="none" points="223.92,-794 223.92,-832 370.64,-832 370.64,-794 223.92,-794"/>
+<polygon fill="none" stroke="#cbd5e1" points="223.92,-794 223.92,-832 370.64,-832 370.64,-794 223.92,-794"/>
+<text xml:space="preserve" text-anchor="start" x="248.5" y="-809.5" font-family="Arial" font-weight="bold" font-size="15.00" fill="white">learner_plans</text>
+<polygon fill="none" stroke="#cbd5e1" points="223.92,-756 223.92,-794 260.59,-794 260.59,-756 223.92,-756"/>
+<text xml:space="preserve" text-anchor="start" x="233.92" y="-772.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#c2410c">PK</text>
+<polygon fill="none" stroke="#cbd5e1" points="260.59,-756 260.59,-794 370.64,-794 370.64,-756 260.59,-756"/>
+<text xml:space="preserve" text-anchor="start" x="270.59" y="-769" font-family="Arial" font-size="15.00">id</text>
+<polygon fill="none" stroke="#cbd5e1" points="223.92,-718 223.92,-756 260.59,-756 260.59,-718 223.92,-718"/>
+<text xml:space="preserve" text-anchor="start" x="233.92" y="-734.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#c2410c">FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="260.59,-718 260.59,-756 370.64,-756 370.64,-718 260.59,-718"/>
+<text xml:space="preserve" text-anchor="start" x="270.59" y="-731" font-family="Arial" font-size="15.00">enrollment_id</text>
+</g>
+<!-- signals -->
+<g id="p05-node3" class="node">
+<title>signals</title>
+<polygon fill="#ffffff" stroke="none" points="223.92,-582 223.92,-696 370.64,-696 370.64,-582 223.92,-582"/>
+<polygon fill="#c2410c" stroke="none" points="223.92,-658 223.92,-696 370.64,-696 370.64,-658 223.92,-658"/>
+<polygon fill="none" stroke="#cbd5e1" points="223.92,-658 223.92,-696 370.64,-696 370.64,-658 223.92,-658"/>
+<text xml:space="preserve" text-anchor="start" x="271.43" y="-673.5" font-family="Arial" font-weight="bold" font-size="15.00" fill="white">signals</text>
+<polygon fill="none" stroke="#cbd5e1" points="223.92,-620 223.92,-658 260.59,-658 260.59,-620 223.92,-620"/>
+<text xml:space="preserve" text-anchor="start" x="233.92" y="-636.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#c2410c">PK</text>
+<polygon fill="none" stroke="#cbd5e1" points="260.59,-620 260.59,-658 370.64,-658 370.64,-620 260.59,-620"/>
+<text xml:space="preserve" text-anchor="start" x="270.59" y="-633" font-family="Arial" font-size="15.00">id</text>
+<polygon fill="none" stroke="#cbd5e1" points="223.92,-582 223.92,-620 260.59,-620 260.59,-582 223.92,-582"/>
+<text xml:space="preserve" text-anchor="start" x="233.92" y="-598.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#c2410c">FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="260.59,-582 260.59,-620 370.64,-620 370.64,-582 260.59,-582"/>
+<text xml:space="preserve" text-anchor="start" x="270.59" y="-595" font-family="Arial" font-size="15.00">enrollment_id</text>
+</g>
+<!-- module_evidence -->
+<g id="p05-node4" class="node">
+<title>module_evidence</title>
+<polygon fill="#ffffff" stroke="none" points="223.92,-446 223.92,-560 370.64,-560 370.64,-446 223.92,-446"/>
+<polygon fill="#c2410c" stroke="none" points="223.92,-522 223.92,-560 370.64,-560 370.64,-522 223.92,-522"/>
+<polygon fill="none" stroke="#cbd5e1" points="223.92,-522 223.92,-560 370.64,-560 370.64,-522 223.92,-522"/>
+<text xml:space="preserve" text-anchor="start" x="234.34" y="-537.5" font-family="Arial" font-weight="bold" font-size="15.00" fill="white">module_evidence</text>
+<polygon fill="none" stroke="#cbd5e1" points="223.92,-484 223.92,-522 260.59,-522 260.59,-484 223.92,-484"/>
+<text xml:space="preserve" text-anchor="start" x="233.92" y="-500.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#c2410c">PK</text>
+<polygon fill="none" stroke="#cbd5e1" points="260.59,-484 260.59,-522 370.64,-522 370.64,-484 260.59,-484"/>
+<text xml:space="preserve" text-anchor="start" x="270.59" y="-497" font-family="Arial" font-size="15.00">id</text>
+<polygon fill="none" stroke="#cbd5e1" points="223.92,-446 223.92,-484 260.59,-484 260.59,-446 223.92,-446"/>
+<text xml:space="preserve" text-anchor="start" x="233.92" y="-462.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#c2410c">FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="260.59,-446 260.59,-484 370.64,-484 370.64,-446 260.59,-446"/>
+<text xml:space="preserve" text-anchor="start" x="270.59" y="-459" font-family="Arial" font-size="15.00">enrollment_id</text>
+</g>
+<!-- adaptation_jobs -->
+<g id="p05-node5" class="node">
+<title>adaptation_jobs</title>
+<polygon fill="#ffffff" stroke="none" points="223.92,-310 223.92,-424 370.64,-424 370.64,-310 223.92,-310"/>
+<polygon fill="#c2410c" stroke="none" points="223.92,-386 223.92,-424 370.64,-424 370.64,-386 223.92,-386"/>
+<polygon fill="none" stroke="#cbd5e1" points="223.92,-386 223.92,-424 370.64,-424 370.64,-386 223.92,-386"/>
+<text xml:space="preserve" text-anchor="start" x="239.77" y="-401.5" font-family="Arial" font-weight="bold" font-size="15.00" fill="white">adaptation_jobs</text>
+<polygon fill="none" stroke="#cbd5e1" points="223.92,-348 223.92,-386 260.59,-386 260.59,-348 223.92,-348"/>
+<text xml:space="preserve" text-anchor="start" x="233.92" y="-364.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#c2410c">PK</text>
+<polygon fill="none" stroke="#cbd5e1" points="260.59,-348 260.59,-386 370.64,-386 370.64,-348 260.59,-348"/>
+<text xml:space="preserve" text-anchor="start" x="270.59" y="-361" font-family="Arial" font-size="15.00">id</text>
+<polygon fill="none" stroke="#cbd5e1" points="223.92,-310 223.92,-348 260.59,-348 260.59,-310 223.92,-310"/>
+<text xml:space="preserve" text-anchor="start" x="233.92" y="-326.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#c2410c">FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="260.59,-310 260.59,-348 370.64,-348 370.64,-310 260.59,-310"/>
+<text xml:space="preserve" text-anchor="start" x="270.59" y="-323" font-family="Arial" font-size="15.00">enrollment_id</text>
+</g>
+<!-- adapted_content -->
+<g id="p05-node6" class="node">
+<title>adapted_content</title>
+<polygon fill="#ffffff" stroke="none" points="223.92,-174 223.92,-288 370.64,-288 370.64,-174 223.92,-174"/>
+<polygon fill="#c2410c" stroke="none" points="223.92,-250 223.92,-288 370.64,-288 370.64,-250 223.92,-250"/>
+<polygon fill="none" stroke="#cbd5e1" points="223.92,-250 223.92,-288 370.64,-288 370.64,-250 223.92,-250"/>
+<text xml:space="preserve" text-anchor="start" x="237.27" y="-265.5" font-family="Arial" font-weight="bold" font-size="15.00" fill="white">adapted_content</text>
+<polygon fill="none" stroke="#cbd5e1" points="223.92,-212 223.92,-250 260.59,-250 260.59,-212 223.92,-212"/>
+<text xml:space="preserve" text-anchor="start" x="233.92" y="-228.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#c2410c">PK</text>
+<polygon fill="none" stroke="#cbd5e1" points="260.59,-212 260.59,-250 370.64,-250 370.64,-212 260.59,-212"/>
+<text xml:space="preserve" text-anchor="start" x="270.59" y="-225" font-family="Arial" font-size="15.00">id</text>
+<polygon fill="none" stroke="#cbd5e1" points="223.92,-174 223.92,-212 260.59,-212 260.59,-174 223.92,-174"/>
+<text xml:space="preserve" text-anchor="start" x="233.92" y="-190.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#c2410c">FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="260.59,-174 260.59,-212 370.64,-212 370.64,-174 260.59,-174"/>
+<text xml:space="preserve" text-anchor="start" x="270.59" y="-187" font-family="Arial" font-size="15.00">enrollment_id</text>
+</g>
+<!-- step_progress -->
+<g id="p05-node7" class="node">
+<title>step_progress</title>
+<polygon fill="#ffffff" stroke="none" points="214.25,0 214.25,-152 380.3,-152 380.3,0 214.25,0"/>
+<polygon fill="#c2410c" stroke="none" points="214.25,-114 214.25,-152 380.3,-152 380.3,-114 214.25,-114"/>
+<polygon fill="none" stroke="#cbd5e1" points="214.25,-114 214.25,-152 380.3,-152 380.3,-114 214.25,-114"/>
+<text xml:space="preserve" text-anchor="start" x="245.59" y="-129.5" font-family="Arial" font-weight="bold" font-size="15.00" fill="white">step_progress</text>
+<polygon fill="none" stroke="#cbd5e1" points="214.25,-76 214.25,-114 270.25,-114 270.25,-76 214.25,-76"/>
+<text xml:space="preserve" text-anchor="start" x="224.25" y="-92.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#c2410c">PK,FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="270.25,-76 270.25,-114 380.3,-114 380.3,-76 270.25,-76"/>
+<text xml:space="preserve" text-anchor="start" x="280.25" y="-89" font-family="Arial" font-size="15.00">enrollment_id</text>
+<polygon fill="none" stroke="#cbd5e1" points="214.25,-38 214.25,-76 270.25,-76 270.25,-38 214.25,-38"/>
+<text xml:space="preserve" text-anchor="start" x="224.25" y="-54.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#c2410c">PK</text>
+<polygon fill="none" stroke="#cbd5e1" points="270.25,-38 270.25,-76 380.3,-76 380.3,-38 270.25,-38"/>
+<text xml:space="preserve" text-anchor="start" x="280.25" y="-51" font-family="Arial" font-size="15.00">module_id</text>
+<polygon fill="none" stroke="#cbd5e1" points="214.25,0 214.25,-38 270.25,-38 270.25,0 214.25,0"/>
+<text xml:space="preserve" text-anchor="start" x="224.25" y="-16.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#c2410c">PK</text>
+<polygon fill="none" stroke="#cbd5e1" points="270.25,0 270.25,-38 380.3,-38 380.3,0 270.25,0"/>
+<text xml:space="preserve" text-anchor="start" x="280.25" y="-13" font-family="Arial" font-size="15.00">stage</text>
+</g>
+</g>
+</svg><rect x="2025" y="2196.7591059602646" width="1905" height="1459.6647350993376" rx="20" fill="white" stroke="#dbe3ee" stroke-width="2"/><rect x="2025" y="2196.7591059602646" width="8" height="1459.6647350993376" rx="4" fill="#be185d"/><text x="2060" y="2246.7591059602646" font-family="Arial" font-size="30" font-weight="700" fill="#be185d">06  Projects &amp; submissions</text><text x="2060" y="2278.7591059602646" font-family="Arial" font-size="20" fill="#64748b">6 main tables · 10 foreign-key relationships</text><svg x="2583.3091887417218" y="2350.620860927152" width="788.3816225165563" height="1231.9412251655629" viewBox="0 0 519 811">
+<g id="p06-graph0" class="graph" transform="scale(1 1) rotate(0) translate(8.64 802.64)">
+<title>D</title>
+<!-- enrollments&#45;&gt;project_work -->
+<g id="p06-edge9" class="edge">
+<title>enrollments:e&#45;&gt;project_work:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M189.81,-430.22C201.53,-476.95 259.24,-707 259.24,-707 259.24,-707 315.59,-725.13 340.68,-733.2"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="183.83,-423.86 192.08,-421.79 192.49,-423.44 184.25,-425.51 183.83,-423.86"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="187.75,-422 188.78,-426.12"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="184.87,-427.98 193.11,-425.91 193.52,-427.56 185.28,-429.63 184.87,-427.98"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="188.78,-426.12 189.82,-430.24"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="352.99,-732.69 350.38,-740.79 348.77,-740.26 351.37,-732.17 352.99,-732.69"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="352.49,-737 348.45,-735.7"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="344.5" cy="-734.43" rx="3.4" ry="3.4"/>
+</g>
+<!-- enrollments&#45;&gt;workflow_projects -->
+<g id="p06-edge10" class="edge">
+<title>enrollments:e&#45;&gt;workflow_projects:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M190.64,-429.56C204.01,-464.55 259.24,-609 259.24,-609 259.24,-609 315.59,-627.13 340.68,-635.2"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="184.08,-424.31 192.02,-421.28 192.63,-422.86 184.69,-425.9 184.08,-424.31"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="187.75,-422 189.27,-425.97"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="185.6,-428.28 193.54,-425.25 194.15,-426.83 186.21,-429.87 185.6,-428.28"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="189.27,-425.97 190.78,-429.94"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="352.99,-634.69 350.38,-642.79 348.77,-642.26 351.37,-634.17 352.99,-634.69"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="352.49,-639 348.45,-637.7"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="344.5" cy="-636.43" rx="3.4" ry="3.4"/>
+</g>
+<!-- enrollments&#45;&gt;authored_project_work -->
+<g id="p06-edge3" class="edge">
+<title>enrollments:e&#45;&gt;authored_project_work:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M194.41,-426.81C218.91,-444.51 304.35,-506.23 338.37,-530.8"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="185.95,-425.94 190.92,-419.05 192.3,-420.05 187.33,-426.94 185.95,-425.94"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="187.75,-422 191.19,-424.49"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="189.39,-428.43 194.37,-421.54 195.75,-422.54 190.77,-429.43 189.39,-428.43"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="191.19,-424.49 194.64,-426.98"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="345.2,-535.73 349.85,-543.81 349.05,-538.51 351.68,-540.41 351.68,-540.41 351.68,-540.41 349.05,-538.51 354.33,-537.61 345.2,-535.73"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="340.35" cy="-532.23" rx="3.4" ry="3.4"/>
+</g>
+<!-- enrollments&#45;&gt;authored_project_submissions -->
+<g id="p06-edge1" class="edge">
+<title>enrollments:e&#45;&gt;authored_project_submissions:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M195.65,-419.2C219.97,-410.57 294.02,-384.31 326.86,-372.67"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="189.97,-425.72 187.13,-417.71 188.73,-417.14 191.57,-425.15 189.97,-425.72"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="187.75,-422 191.75,-420.58"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="193.97,-424.3 191.13,-416.29 192.74,-415.72 195.58,-423.73 193.97,-424.3"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="191.75,-420.58 195.76,-419.16"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="334.35,-370.01 343.64,-370.77 338.82,-368.42 341.88,-367.34 341.88,-367.34 341.88,-367.34 338.82,-368.42 341.08,-363.56 334.35,-370.01"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="328.71" cy="-372.01" rx="3.4" ry="3.4"/>
+</g>
+<!-- enrollments&#45;&gt;guided_project_work -->
+<g id="p06-edge7" class="edge">
+<title>enrollments:e&#45;&gt;guided_project_work:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M192.01,-414.67C207.4,-388.19 259.24,-299 259.24,-299 259.24,-299 312.8,-259.95 338.73,-241.03"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="191.85,-423.4 184.5,-419.13 185.35,-417.66 192.7,-421.93 191.85,-423.4"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="187.75,-422 189.88,-418.33"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="193.98,-419.73 186.64,-415.45 187.49,-413.99 194.84,-418.26 193.98,-419.73"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="189.88,-418.33 192.02,-414.65"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="345.22,-236.3 354.34,-234.39 349.06,-233.5 351.68,-231.59 351.68,-231.59 351.68,-231.59 349.06,-233.5 349.84,-228.21 345.22,-236.3"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="340.39" cy="-239.83" rx="3.4" ry="3.4"/>
+</g>
+<!-- enrollments&#45;&gt;guided_project_submissions -->
+<g id="p06-edge5" class="edge">
+<title>enrollments:e&#45;&gt;guided_project_submissions:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M190.74,-414.21C196.64,-398.83 209.24,-366 209.24,-366 209.24,-366 259.24,-163 259.24,-163 259.24,-163 309.75,-98.95 332.24,-70.42"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="192.02,-422.73 184.08,-419.68 184.69,-418.1 192.63,-421.14 192.02,-422.73"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="187.75,-422 189.27,-418.03"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="193.54,-418.76 185.61,-415.72 186.22,-414.13 194.15,-417.17 193.54,-418.76"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="189.27,-418.03 190.79,-414.06"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="337.26,-64.07 345.52,-59.76 340.2,-60.34 342.21,-57.79 342.21,-57.79 342.21,-57.79 340.2,-60.34 339.52,-55.03 337.26,-64.07"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="333.55" cy="-68.76" rx="3.4" ry="3.4"/>
+</g>
+<!-- creator_authored_course_revisions&#45;&gt;authored_project_work -->
+<g id="p06-edge4" class="edge">
+<title>creator_authored_course_revisions:e&#45;&gt;authored_project_work:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M211.27,-282.53C220.62,-319.66 259.24,-473 259.24,-473 259.24,-473 309.53,-489.18 336.25,-497.77"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="205.33,-276.36 213.57,-274.29 213.99,-275.93 205.74,-278.01 205.33,-276.36"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="209.24,-274.5 210.28,-278.62"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="206.37,-280.48 214.61,-278.41 215.03,-280.06 206.78,-282.13 206.37,-280.48"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="210.28,-278.62 211.32,-282.74"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="343.93,-500.24 350.85,-506.49 348.45,-501.7 351.54,-502.69 351.54,-502.69 351.54,-502.69 348.45,-501.7 353.19,-499.21 343.93,-500.24"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="338.23" cy="-498.41" rx="3.4" ry="3.4"/>
+</g>
+<!-- creator_authored_course_revisions&#45;&gt;authored_project_submissions -->
+<g id="p06-edge2" class="edge">
+<title>creator_authored_course_revisions:e&#45;&gt;authored_project_submissions:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M216.62,-278.12C230.53,-284.93 259.24,-299 259.24,-299 259.24,-299 302.42,-314.5 326.71,-323.22"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="208.14,-278.69 211.88,-271.06 213.4,-271.81 209.66,-279.44 208.14,-278.69"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="209.24,-274.5 213.06,-276.37"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="211.95,-280.56 215.69,-272.93 217.22,-273.68 213.48,-281.31 211.95,-280.56"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="213.06,-276.37 216.88,-278.24"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="334.36,-325.96 341.06,-332.43 338.83,-327.56 341.88,-328.66 341.88,-328.66 341.88,-328.66 338.83,-327.56 343.65,-325.23 334.36,-325.96"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="328.73" cy="-323.94" rx="3.4" ry="3.4"/>
+</g>
+<!-- creator_authored_course_revisions&#45;&gt;guided_project_work -->
+<g id="p06-edge8" class="edge">
+<title>creator_authored_course_revisions:e&#45;&gt;guided_project_work:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M216.54,-270.35C239.01,-257.57 307.41,-218.65 337.74,-201.39"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="212.08,-277.77 207.88,-270.39 209.36,-269.54 213.56,-276.93 212.08,-277.77"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="209.24,-274.5 212.94,-272.4"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="215.78,-275.67 211.57,-268.28 213.05,-267.44 217.26,-274.83 215.78,-275.67"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="212.94,-272.4 216.63,-270.3"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="344.67,-197.45 353.95,-196.57 348.8,-195.1 351.62,-193.5 351.62,-193.5 351.62,-193.5 348.8,-195.1 350.17,-189.92 344.67,-197.45"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="339.47" cy="-200.41" rx="3.4" ry="3.4"/>
+</g>
+<!-- creator_authored_course_revisions&#45;&gt;guided_project_submissions -->
+<g id="p06-edge6" class="edge">
+<title>creator_authored_course_revisions:e&#45;&gt;guided_project_submissions:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M212.68,-266.84C223.98,-241.65 259.24,-163 259.24,-163 259.24,-163 312.84,-70.66 334.2,-33.87"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="213.47,-275.46 205.71,-271.99 206.41,-270.43 214.16,-273.91 213.47,-275.46"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="209.24,-274.5 210.98,-270.62"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="215.21,-271.59 207.45,-268.11 208.15,-266.56 215.9,-270.03 215.21,-271.59"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="210.98,-270.62 212.72,-266.74"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="338.31,-26.79 345.89,-21.35 340.7,-22.68 342.33,-19.87 342.33,-19.87 342.33,-19.87 340.7,-22.68 339.27,-17.51 338.31,-26.79"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="335.31" cy="-31.96" rx="3.4" ry="3.4"/>
+</g>
+<!-- enrollments -->
+<g id="p06-node1" class="node">
+<title>enrollments</title>
+<polygon fill="#f1f5f9" stroke="none" points="22.5,-403 22.5,-487 186.75,-487 186.75,-403 22.5,-403"/>
+<polygon fill="#64748b" stroke="none" points="22.5,-441 22.5,-487 186.75,-487 186.75,-441 22.5,-441"/>
+<polygon fill="none" stroke="#cbd5e1" points="22.5,-441 22.5,-487 186.75,-487 186.75,-441 22.5,-441"/>
+<text xml:space="preserve" text-anchor="start" x="62.11" y="-464.5" font-family="Arial" font-weight="bold" font-size="15.00" fill="white">enrollments</text>
+<text xml:space="preserve" text-anchor="start" x="32.5" y="-453.1" font-family="Arial" font-size="11.00" fill="white">REFERENCE · SECTION 01</text>
+<polygon fill="none" stroke="#cbd5e1" points="22.5,-403 22.5,-441 107.12,-441 107.12,-403 22.5,-403"/>
+<text xml:space="preserve" text-anchor="start" x="32.5" y="-419.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#64748b">PK</text>
+<polygon fill="none" stroke="#cbd5e1" points="107.12,-403 107.12,-441 186.75,-441 186.75,-403 107.12,-403"/>
+<text xml:space="preserve" text-anchor="start" x="117.12" y="-416" font-family="Arial" font-size="15.00">id</text>
+</g>
+<!-- creator_authored_course_revisions -->
+<g id="p06-node2" class="node">
+<title>creator_authored_course_revisions</title>
+<polygon fill="#f1f5f9" stroke="none" points="0,-255.5 0,-354.5 209.24,-354.5 209.24,-255.5 0,-255.5"/>
+<polygon fill="#64748b" stroke="none" points="0,-293.5 0,-354.5 209.24,-354.5 209.24,-293.5 0,-293.5"/>
+<polygon fill="none" stroke="#cbd5e1" points="0,-293.5 0,-354.5 209.24,-354.5 209.24,-293.5 0,-293.5"/>
+<text xml:space="preserve" text-anchor="start" x="10" y="-332" font-family="Arial" font-weight="bold" font-size="15.00" fill="white">creator_authored_course_</text>
+<text xml:space="preserve" text-anchor="start" x="71.69" y="-317" font-family="Arial" font-weight="bold" font-size="15.00" fill="white">revisions</text>
+<text xml:space="preserve" text-anchor="start" x="32.5" y="-305.6" font-family="Arial" font-size="11.00" fill="white">REFERENCE · SECTION 04</text>
+<polygon fill="none" stroke="#cbd5e1" points="0,-255.5 0,-293.5 107.12,-293.5 107.12,-255.5 0,-255.5"/>
+<text xml:space="preserve" text-anchor="start" x="10" y="-271.9" font-family="Arial" font-weight="bold" font-size="12.00" fill="#64748b">PK</text>
+<polygon fill="none" stroke="#cbd5e1" points="107.12,-255.5 107.12,-293.5 209.24,-293.5 209.24,-255.5 107.12,-255.5"/>
+<text xml:space="preserve" text-anchor="start" x="117.12" y="-268.5" font-family="Arial" font-size="15.00">id</text>
+</g>
+<!-- project_work -->
+<g id="p06-node3" class="node">
+<title>project_work</title>
+<polygon fill="#ffffff" stroke="none" points="297.49,-718 297.49,-794 463.55,-794 463.55,-718 297.49,-718"/>
+<polygon fill="#be185d" stroke="none" points="297.49,-756 297.49,-794 463.55,-794 463.55,-756 297.49,-756"/>
+<polygon fill="none" stroke="#cbd5e1" points="297.49,-756 297.49,-794 463.55,-794 463.55,-756 297.49,-756"/>
+<text xml:space="preserve" text-anchor="start" x="333.84" y="-771.5" font-family="Arial" font-weight="bold" font-size="15.00" fill="white">project_work</text>
+<polygon fill="none" stroke="#cbd5e1" points="297.49,-718 297.49,-756 353.49,-756 353.49,-718 297.49,-718"/>
+<text xml:space="preserve" text-anchor="start" x="307.49" y="-734.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#be185d">PK,FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="353.49,-718 353.49,-756 463.55,-756 463.55,-718 353.49,-718"/>
+<text xml:space="preserve" text-anchor="start" x="363.49" y="-731" font-family="Arial" font-size="15.00">enrollment_id</text>
+</g>
+<!-- workflow_projects -->
+<g id="p06-node4" class="node">
+<title>workflow_projects</title>
+<polygon fill="#ffffff" stroke="none" points="297.49,-620 297.49,-696 463.55,-696 463.55,-620 297.49,-620"/>
+<polygon fill="#be185d" stroke="none" points="297.49,-658 297.49,-696 463.55,-696 463.55,-658 297.49,-658"/>
+<polygon fill="none" stroke="#cbd5e1" points="297.49,-658 297.49,-696 463.55,-696 463.55,-658 297.49,-658"/>
+<text xml:space="preserve" text-anchor="start" x="314.67" y="-673.5" font-family="Arial" font-weight="bold" font-size="15.00" fill="white">workflow_projects</text>
+<polygon fill="none" stroke="#cbd5e1" points="297.49,-620 297.49,-658 353.49,-658 353.49,-620 297.49,-620"/>
+<text xml:space="preserve" text-anchor="start" x="307.49" y="-636.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#be185d">PK,FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="353.49,-620 353.49,-658 463.55,-658 463.55,-620 353.49,-620"/>
+<text xml:space="preserve" text-anchor="start" x="363.49" y="-633" font-family="Arial" font-size="15.00">enrollment_id</text>
+</g>
+<!-- authored_project_work -->
+<g id="p06-node5" class="node">
+<title>authored_project_work</title>
+<polygon fill="#ffffff" stroke="none" points="287.58,-484 287.58,-598 473.46,-598 473.46,-484 287.58,-484"/>
+<polygon fill="#be185d" stroke="none" points="287.58,-560 287.58,-598 473.46,-598 473.46,-560 287.58,-560"/>
+<polygon fill="none" stroke="#cbd5e1" points="287.58,-560 287.58,-598 473.46,-598 473.46,-560 287.58,-560"/>
+<text xml:space="preserve" text-anchor="start" x="297.58" y="-575.5" font-family="Arial" font-weight="bold" font-size="15.00" fill="white">authored_project_work</text>
+<polygon fill="none" stroke="#cbd5e1" points="287.58,-522 287.58,-560 353.49,-560 353.49,-522 287.58,-522"/>
+<text xml:space="preserve" text-anchor="start" x="297.58" y="-538.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#be185d">PK,FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="353.49,-522 353.49,-560 473.46,-560 473.46,-522 353.49,-522"/>
+<text xml:space="preserve" text-anchor="start" x="363.49" y="-535" font-family="Arial" font-size="15.00">enrollment_id</text>
+<polygon fill="none" stroke="#cbd5e1" points="287.58,-484 287.58,-522 353.49,-522 353.49,-484 287.58,-484"/>
+<text xml:space="preserve" text-anchor="start" x="297.58" y="-500.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#be185d">PK,FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="353.49,-484 353.49,-522 473.46,-522 473.46,-484 353.49,-484"/>
+<text xml:space="preserve" text-anchor="start" x="363.49" y="-497" font-family="Arial" font-size="15.00">revision_id</text>
+</g>
+<!-- authored_project_submissions -->
+<g id="p06-node6" class="node">
+<title>authored_project_submissions</title>
+<polygon fill="#ffffff" stroke="none" points="259.24,-310 259.24,-462 501.8,-462 501.8,-310 259.24,-310"/>
+<polygon fill="#be185d" stroke="none" points="259.24,-424 259.24,-462 501.8,-462 501.8,-424 259.24,-424"/>
+<polygon fill="none" stroke="#cbd5e1" points="259.24,-424 259.24,-462 501.8,-462 501.8,-424 259.24,-424"/>
+<text xml:space="preserve" text-anchor="start" x="269.24" y="-439.5" font-family="Arial" font-weight="bold" font-size="15.00" fill="white">authored_project_submissions</text>
+<polygon fill="none" stroke="#cbd5e1" points="259.24,-386 259.24,-424 343.83,-424 343.83,-386 259.24,-386"/>
+<text xml:space="preserve" text-anchor="start" x="269.24" y="-402.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#be185d">PK</text>
+<polygon fill="none" stroke="#cbd5e1" points="343.83,-386 343.83,-424 501.8,-424 501.8,-386 343.83,-386"/>
+<text xml:space="preserve" text-anchor="start" x="353.83" y="-399" font-family="Arial" font-size="15.00">id</text>
+<polygon fill="none" stroke="#cbd5e1" points="259.24,-348 259.24,-386 343.83,-386 343.83,-348 259.24,-348"/>
+<text xml:space="preserve" text-anchor="start" x="269.24" y="-364.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#be185d">FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="343.83,-348 343.83,-386 501.8,-386 501.8,-348 343.83,-348"/>
+<text xml:space="preserve" text-anchor="start" x="353.83" y="-361" font-family="Arial" font-size="15.00">enrollment_id</text>
+<polygon fill="none" stroke="#cbd5e1" points="259.24,-310 259.24,-348 343.83,-348 343.83,-310 259.24,-310"/>
+<text xml:space="preserve" text-anchor="start" x="269.24" y="-326.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#be185d">FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="343.83,-310 343.83,-348 501.8,-348 501.8,-310 343.83,-310"/>
+<text xml:space="preserve" text-anchor="start" x="353.83" y="-323" font-family="Arial" font-size="15.00">revision_id</text>
+</g>
+<!-- guided_project_work -->
+<g id="p06-node7" class="node">
+<title>guided_project_work</title>
+<polygon fill="#ffffff" stroke="none" points="295.09,-174 295.09,-288 465.95,-288 465.95,-174 295.09,-174"/>
+<polygon fill="#be185d" stroke="none" points="295.09,-250 295.09,-288 465.95,-288 465.95,-250 295.09,-250"/>
+<polygon fill="none" stroke="#cbd5e1" points="295.09,-250 295.09,-288 465.95,-288 465.95,-250 295.09,-250"/>
+<text xml:space="preserve" text-anchor="start" x="305.09" y="-265.5" font-family="Arial" font-weight="bold" font-size="15.00" fill="white">guided_project_work</text>
+<polygon fill="none" stroke="#cbd5e1" points="295.09,-212 295.09,-250 353.49,-250 353.49,-212 295.09,-212"/>
+<text xml:space="preserve" text-anchor="start" x="305.09" y="-228.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#be185d">PK,FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="353.49,-212 353.49,-250 465.95,-250 465.95,-212 353.49,-212"/>
+<text xml:space="preserve" text-anchor="start" x="363.49" y="-225" font-family="Arial" font-size="15.00">enrollment_id</text>
+<polygon fill="none" stroke="#cbd5e1" points="295.09,-174 295.09,-212 353.49,-212 353.49,-174 295.09,-174"/>
+<text xml:space="preserve" text-anchor="start" x="305.09" y="-190.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#be185d">PK,FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="353.49,-174 353.49,-212 465.95,-212 465.95,-174 353.49,-174"/>
+<text xml:space="preserve" text-anchor="start" x="363.49" y="-187" font-family="Arial" font-size="15.00">revision_id</text>
+</g>
+<!-- guided_project_submissions -->
+<g id="p06-node8" class="node">
+<title>guided_project_submissions</title>
+<polygon fill="#ffffff" stroke="none" points="266.75,0 266.75,-152 494.29,-152 494.29,0 266.75,0"/>
+<polygon fill="#be185d" stroke="none" points="266.75,-114 266.75,-152 494.29,-152 494.29,-114 266.75,-114"/>
+<polygon fill="none" stroke="#cbd5e1" points="266.75,-114 266.75,-152 494.29,-152 494.29,-114 266.75,-114"/>
+<text xml:space="preserve" text-anchor="start" x="276.75" y="-129.5" font-family="Arial" font-weight="bold" font-size="15.00" fill="white">guided_project_submissions</text>
+<polygon fill="none" stroke="#cbd5e1" points="266.75,-76 266.75,-114 343.83,-114 343.83,-76 266.75,-76"/>
+<text xml:space="preserve" text-anchor="start" x="276.75" y="-92.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#be185d">PK</text>
+<polygon fill="none" stroke="#cbd5e1" points="343.83,-76 343.83,-114 494.29,-114 494.29,-76 343.83,-76"/>
+<text xml:space="preserve" text-anchor="start" x="353.83" y="-89" font-family="Arial" font-size="15.00">id</text>
+<polygon fill="none" stroke="#cbd5e1" points="266.75,-38 266.75,-76 343.83,-76 343.83,-38 266.75,-38"/>
+<text xml:space="preserve" text-anchor="start" x="276.75" y="-54.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#be185d">FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="343.83,-38 343.83,-76 494.29,-76 494.29,-38 343.83,-38"/>
+<text xml:space="preserve" text-anchor="start" x="353.83" y="-51" font-family="Arial" font-size="15.00">enrollment_id</text>
+<polygon fill="none" stroke="#cbd5e1" points="266.75,0 266.75,-38 343.83,-38 343.83,0 266.75,0"/>
+<text xml:space="preserve" text-anchor="start" x="276.75" y="-16.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#be185d">FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="343.83,0 343.83,-38 494.29,-38 494.29,0 343.83,0"/>
+<text xml:space="preserve" text-anchor="start" x="353.83" y="-13" font-family="Arial" font-size="15.00">revision_id</text>
+</g>
+</g>
+</svg><rect x="70" y="3706.423841059602" width="1905" height="955.3435430463576" rx="20" fill="white" stroke="#dbe3ee" stroke-width="2"/><rect x="70" y="3706.423841059602" width="8" height="955.3435430463576" rx="4" fill="#4d7c0f"/><text x="105" y="3756.423841059602" font-family="Arial" font-size="30" font-weight="700" fill="#4d7c0f">07  SCORM integration</text><text x="105" y="3788.423841059602" font-family="Arial" font-size="20" fill="#64748b">4 main tables · 4 foreign-key relationships</text><svg x="523.4954470198676" y="3831.423841059602" width="998.0091059602648" height="785.3435430463576" viewBox="0 0 657 517">
+<g id="p07-graph0" class="graph" transform="scale(1 1) rotate(0) translate(8.64 508.64)">
+<title>D</title>
+<!-- users&#45;&gt;scorm_topic_imports -->
+<g id="p07-edge4" class="edge">
+<title>users:e&#45;&gt;scorm_topic_imports:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M172.06,-184.97C186.13,-190.31 214.25,-201 214.25,-201 214.25,-201 257.65,-216.5 282.07,-225.22"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="163.54,-186.27 166.56,-178.33 168.14,-178.93 165.13,-186.88 163.54,-186.27"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="164.25,-182 168.22,-183.51"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="167.51,-187.78 170.53,-179.84 172.12,-180.44 169.1,-188.39 167.51,-187.78"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="168.22,-183.51 172.2,-185.02"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="289.79,-227.97 296.51,-234.43 294.26,-229.57 297.32,-230.66 297.32,-230.66 297.32,-230.66 294.26,-229.57 299.08,-227.23 289.79,-227.97"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="284.16" cy="-225.96" rx="3.4" ry="3.4"/>
+</g>
+<!-- users&#45;&gt;imported_course_progress -->
+<g id="p07-edge1" class="edge">
+<title>users:e&#45;&gt;imported_course_progress:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M172.15,-179.23C194.29,-171.45 257.25,-149.34 287.35,-138.77"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="166.46,-185.73 163.65,-177.71 165.25,-177.15 168.07,-185.16 166.46,-185.73"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="164.25,-182 168.26,-180.59"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="170.47,-184.32 167.65,-176.3 169.26,-175.74 172.08,-183.76 170.47,-184.32"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="168.26,-180.59 172.27,-179.18"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="295.27,-135.98 304.55,-136.78 299.75,-134.41 302.81,-133.33 302.81,-133.33 302.81,-133.33 299.75,-134.41 302.02,-129.56 295.27,-135.98"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="289.63" cy="-137.96" rx="3.4" ry="3.4"/>
+</g>
+<!-- creator_courses&#45;&gt;scorm_connections -->
+<g id="p07-edge2" class="edge">
+<title>creator_courses:e&#45;&gt;scorm_connections:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M172.41,-367C189.97,-367 231.66,-367 255.44,-367"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="165.1,-371.25 165.1,-362.75 166.8,-362.75 166.8,-371.25 165.1,-371.25"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="164.25,-367 168.5,-367"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="169.35,-371.25 169.35,-362.75 171.05,-362.75 171.05,-371.25 169.35,-371.25"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="168.5,-367 172.75,-367"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="263.83,-367 272.33,-370.83 268.58,-367 271.83,-367 271.83,-367 271.83,-367 268.58,-367 272.33,-363.18 263.83,-367"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="257.85" cy="-367" rx="3.4" ry="3.4"/>
+</g>
+<!-- scorm_connections&#45;&gt;scorm_import_runs -->
+<g id="p07-edge3" class="edge">
+<title>scorm_connections:e&#45;&gt;scorm_import_runs:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M414.73,-405C433.11,-405 478.11,-405 502.9,-405"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="407.42,-409.25 407.42,-400.75 409.12,-400.75 409.12,-409.25 407.42,-409.25"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="406.57,-405 410.82,-405"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="411.67,-409.25 411.67,-400.75 413.37,-400.75 413.37,-409.25 411.67,-409.25"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="410.82,-405 415.07,-405"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="510.97,-405 519.47,-408.83 515.72,-405 518.97,-405 518.97,-405 518.97,-405 515.72,-405 519.47,-401.18 510.97,-405"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="504.99" cy="-405" rx="3.4" ry="3.4"/>
+</g>
+<!-- users -->
+<g id="p07-node1" class="node">
+<title>users</title>
+<polygon fill="#f1f5f9" stroke="none" points="0,-163 0,-247 164.25,-247 164.25,-163 0,-163"/>
+<polygon fill="#64748b" stroke="none" points="0,-201 0,-247 164.25,-247 164.25,-201 0,-201"/>
+<polygon fill="none" stroke="#cbd5e1" points="0,-201 0,-247 164.25,-247 164.25,-201 0,-201"/>
+<text xml:space="preserve" text-anchor="start" x="62.11" y="-224.5" font-family="Arial" font-weight="bold" font-size="15.00" fill="white">users</text>
+<text xml:space="preserve" text-anchor="start" x="10" y="-213.1" font-family="Arial" font-size="11.00" fill="white">REFERENCE · SECTION 01</text>
+<polygon fill="none" stroke="#cbd5e1" points="0,-163 0,-201 84.62,-201 84.62,-163 0,-163"/>
+<text xml:space="preserve" text-anchor="start" x="10" y="-179.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#64748b">PK</text>
+<polygon fill="none" stroke="#cbd5e1" points="84.62,-163 84.62,-201 164.25,-201 164.25,-163 84.62,-163"/>
+<text xml:space="preserve" text-anchor="start" x="94.62" y="-176" font-family="Arial" font-size="15.00">id</text>
+</g>
+<!-- creator_courses -->
+<g id="p07-node2" class="node">
+<title>creator_courses</title>
+<polygon fill="#f1f5f9" stroke="none" points="0,-348 0,-432 164.25,-432 164.25,-348 0,-348"/>
+<polygon fill="#64748b" stroke="none" points="0,-386 0,-432 164.25,-432 164.25,-386 0,-386"/>
+<polygon fill="none" stroke="#cbd5e1" points="0,-386 0,-432 164.25,-432 164.25,-386 0,-386"/>
+<text xml:space="preserve" text-anchor="start" x="23.76" y="-409.5" font-family="Arial" font-weight="bold" font-size="15.00" fill="white">creator_courses</text>
+<text xml:space="preserve" text-anchor="start" x="10" y="-398.1" font-family="Arial" font-size="11.00" fill="white">REFERENCE · SECTION 02</text>
+<polygon fill="none" stroke="#cbd5e1" points="0,-348 0,-386 84.62,-386 84.62,-348 0,-348"/>
+<text xml:space="preserve" text-anchor="start" x="10" y="-364.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#64748b">PK</text>
+<polygon fill="none" stroke="#cbd5e1" points="84.62,-348 84.62,-386 164.25,-386 164.25,-348 84.62,-348"/>
+<text xml:space="preserve" text-anchor="start" x="94.62" y="-361" font-family="Arial" font-size="15.00">id</text>
+</g>
+<!-- scorm_connections -->
+<g id="p07-node3" class="node">
+<title>scorm_connections</title>
+<polygon fill="#ffffff" stroke="none" points="237.16,-348 237.16,-462 405.57,-462 405.57,-348 237.16,-348"/>
+<polygon fill="#4d7c0f" stroke="none" points="237.16,-424 237.16,-462 405.57,-462 405.57,-424 237.16,-424"/>
+<polygon fill="none" stroke="#cbd5e1" points="237.16,-424 237.16,-462 405.57,-462 405.57,-424 237.16,-424"/>
+<text xml:space="preserve" text-anchor="start" x="250.51" y="-439.5" font-family="Arial" font-weight="bold" font-size="15.00" fill="white">scorm_connections</text>
+<polygon fill="none" stroke="#cbd5e1" points="237.16,-386 237.16,-424 273.83,-424 273.83,-386 237.16,-386"/>
+<text xml:space="preserve" text-anchor="start" x="247.16" y="-402.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#4d7c0f">PK</text>
+<polygon fill="none" stroke="#cbd5e1" points="273.83,-386 273.83,-424 405.57,-424 405.57,-386 273.83,-386"/>
+<text xml:space="preserve" text-anchor="start" x="283.83" y="-399" font-family="Arial" font-size="15.00">id</text>
+<polygon fill="none" stroke="#cbd5e1" points="237.16,-348 237.16,-386 273.83,-386 273.83,-348 237.16,-348"/>
+<text xml:space="preserve" text-anchor="start" x="247.16" y="-364.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#4d7c0f">FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="273.83,-348 273.83,-386 405.57,-386 405.57,-348 273.83,-348"/>
+<text xml:space="preserve" text-anchor="start" x="283.83" y="-361" font-family="Arial" font-size="15.00">target_course_id</text>
+</g>
+<!-- scorm_import_runs -->
+<g id="p07-node4" class="node">
+<title>scorm_import_runs</title>
+<polygon fill="#ffffff" stroke="none" points="478.48,-386 478.48,-500 639.36,-500 639.36,-386 478.48,-386"/>
+<polygon fill="#4d7c0f" stroke="none" points="478.48,-462 478.48,-500 639.36,-500 639.36,-462 478.48,-462"/>
+<polygon fill="none" stroke="#cbd5e1" points="478.48,-462 478.48,-500 639.36,-500 639.36,-462 478.48,-462"/>
+<text xml:space="preserve" text-anchor="start" x="488.48" y="-477.5" font-family="Arial" font-weight="bold" font-size="15.00" fill="white">scorm_import_runs</text>
+<polygon fill="none" stroke="#cbd5e1" points="478.48,-424 478.48,-462 520.97,-462 520.97,-424 478.48,-424"/>
+<text xml:space="preserve" text-anchor="start" x="488.48" y="-440.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#4d7c0f">PK</text>
+<polygon fill="none" stroke="#cbd5e1" points="520.97,-424 520.97,-462 639.36,-462 639.36,-424 520.97,-424"/>
+<text xml:space="preserve" text-anchor="start" x="530.97" y="-437" font-family="Arial" font-size="15.00">id</text>
+<polygon fill="none" stroke="#cbd5e1" points="478.48,-386 478.48,-424 520.97,-424 520.97,-386 478.48,-386"/>
+<text xml:space="preserve" text-anchor="start" x="488.48" y="-402.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#4d7c0f">FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="520.97,-386 520.97,-424 639.36,-424 639.36,-386 520.97,-386"/>
+<text xml:space="preserve" text-anchor="start" x="530.97" y="-399" font-family="Arial" font-size="15.00">connection_id</text>
+</g>
+<!-- scorm_topic_imports -->
+<g id="p07-node5" class="node">
+<title>scorm_topic_imports</title>
+<polygon fill="#ffffff" stroke="none" points="235.1,-212 235.1,-326 407.64,-326 407.64,-212 235.1,-212"/>
+<polygon fill="#4d7c0f" stroke="none" points="235.1,-288 235.1,-326 407.64,-326 407.64,-288 235.1,-288"/>
+<polygon fill="none" stroke="#cbd5e1" points="235.1,-288 235.1,-326 407.64,-326 407.64,-288 235.1,-288"/>
+<text xml:space="preserve" text-anchor="start" x="245.1" y="-303.5" font-family="Arial" font-weight="bold" font-size="15.00" fill="white">scorm_topic_imports</text>
+<polygon fill="none" stroke="#cbd5e1" points="235.1,-250 235.1,-288 299.27,-288 299.27,-250 235.1,-250"/>
+<text xml:space="preserve" text-anchor="start" x="245.1" y="-266.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#4d7c0f">PK</text>
+<polygon fill="none" stroke="#cbd5e1" points="299.27,-250 299.27,-288 407.64,-288 407.64,-250 299.27,-250"/>
+<text xml:space="preserve" text-anchor="start" x="309.27" y="-263" font-family="Arial" font-size="15.00">id</text>
+<polygon fill="none" stroke="#cbd5e1" points="235.1,-212 235.1,-250 299.27,-250 299.27,-212 235.1,-212"/>
+<text xml:space="preserve" text-anchor="start" x="245.1" y="-228.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#4d7c0f">FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="299.27,-212 299.27,-250 407.64,-250 407.64,-212 299.27,-212"/>
+<text xml:space="preserve" text-anchor="start" x="309.27" y="-225" font-family="Arial" font-size="15.00">owner_id</text>
+</g>
+<!-- imported_course_progress -->
+<g id="p07-node6" class="node">
+<title>imported_course_progress</title>
+<polygon fill="#ffffff" stroke="none" points="214.25,0 214.25,-190 428.48,-190 428.48,0 214.25,0"/>
+<polygon fill="#4d7c0f" stroke="none" points="214.25,-152 214.25,-190 428.48,-190 428.48,-152 214.25,-152"/>
+<polygon fill="none" stroke="#cbd5e1" points="214.25,-152 214.25,-190 428.48,-190 428.48,-152 214.25,-152"/>
+<text xml:space="preserve" text-anchor="start" x="224.25" y="-167.5" font-family="Arial" font-weight="bold" font-size="15.00" fill="white">imported_course_progress</text>
+<polygon fill="none" stroke="#cbd5e1" points="214.25,-114 214.25,-152 304.76,-152 304.76,-114 214.25,-114"/>
+<text xml:space="preserve" text-anchor="start" x="224.25" y="-130.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#4d7c0f">PK,FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="304.76,-114 304.76,-152 428.48,-152 428.48,-114 304.76,-114"/>
+<text xml:space="preserve" text-anchor="start" x="314.76" y="-127" font-family="Arial" font-size="15.00">user_id</text>
+<polygon fill="none" stroke="#cbd5e1" points="214.25,-76 214.25,-114 304.76,-114 304.76,-76 214.25,-76"/>
+<text xml:space="preserve" text-anchor="start" x="224.25" y="-92.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#4d7c0f">PK</text>
+<polygon fill="none" stroke="#cbd5e1" points="304.76,-76 304.76,-114 428.48,-114 428.48,-76 304.76,-76"/>
+<text xml:space="preserve" text-anchor="start" x="314.76" y="-89" font-family="Arial" font-size="15.00">course_id</text>
+<polygon fill="none" stroke="#cbd5e1" points="214.25,-38 214.25,-76 304.76,-76 304.76,-38 214.25,-38"/>
+<text xml:space="preserve" text-anchor="start" x="224.25" y="-54.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#4d7c0f">PK</text>
+<polygon fill="none" stroke="#cbd5e1" points="304.76,-38 304.76,-76 428.48,-76 428.48,-38 304.76,-38"/>
+<text xml:space="preserve" text-anchor="start" x="314.76" y="-51" font-family="Arial" font-size="15.00">module_id</text>
+<polygon fill="none" stroke="#cbd5e1" points="214.25,0 214.25,-38 304.76,-38 304.76,0 214.25,0"/>
+<text xml:space="preserve" text-anchor="start" x="224.25" y="-16.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#4d7c0f">PK</text>
+<polygon fill="none" stroke="#cbd5e1" points="304.76,0 304.76,-38 428.48,-38 428.48,0 304.76,0"/>
+<text xml:space="preserve" text-anchor="start" x="314.76" y="-13" font-family="Arial" font-size="15.00">revision</text>
+</g>
+</g>
+</svg><rect x="2025" y="3706.423841059602" width="1905" height="955.3435430463576" rx="20" fill="white" stroke="#dbe3ee" stroke-width="2"/><rect x="2025" y="3706.423841059602" width="8" height="955.3435430463576" rx="4" fill="#475569"/><text x="2060" y="3756.423841059602" font-family="Arial" font-size="30" font-weight="700" fill="#475569">08  MCP &amp; platform state</text><text x="2060" y="3788.423841059602" font-family="Arial" font-size="20" fill="#64748b">4 main tables · 5 foreign-key relationships</text><svg x="2647.108857615894" y="3843.576158940397" width="660.7822847682119" height="761.0389072847681" viewBox="0 0 435 501">
+<g id="p08-graph0" class="graph" transform="scale(1 1) rotate(0) translate(8.64 492.64)">
+<title>D</title>
+<!-- creator_courses&#45;&gt;creator_codex_grants -->
+<g id="p08-edge1" class="edge">
+<title>creator_courses:e&#45;&gt;creator_codex_grants:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M172.55,-389C193,-389 246.14,-389 273.68,-389"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="165.1,-393.25 165.1,-384.75 166.8,-384.75 166.8,-393.25 165.1,-393.25"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="164.25,-389 168.5,-389"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="169.35,-393.25 169.35,-384.75 171.05,-384.75 171.05,-393.25 169.35,-393.25"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="168.5,-389 172.75,-389"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="281.77,-389 290.27,-392.83 286.52,-389 289.77,-389 289.77,-389 289.77,-389 286.52,-389 290.27,-385.18 281.77,-389"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="275.79" cy="-389" rx="3.4" ry="3.4"/>
+</g>
+<!-- users&#45;&gt;creator_codex_grants -->
+<g id="p08-edge2" class="edge">
+<title>users:e&#45;&gt;creator_codex_grants:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M166.8,-173.9C176.99,-205.49 214.25,-321 214.25,-321 214.25,-321 252.08,-335.83 274.55,-344.64"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="160.47,-168.11 168.56,-165.5 169.08,-167.12 160.99,-169.73 160.47,-168.11"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="164.25,-166 165.56,-170.04"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="161.77,-172.16 169.86,-169.55 170.38,-171.17 162.29,-173.78 161.77,-172.16"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="165.56,-170.04 166.86,-174.09"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="282.39,-347.71 288.91,-354.38 286.82,-349.45 289.84,-350.63 289.84,-350.63 289.84,-350.63 286.82,-349.45 291.7,-347.26 282.39,-347.71"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="276.83" cy="-345.53" rx="3.4" ry="3.4"/>
+</g>
+<!-- users&#45;&gt;creator_mcp_grants -->
+<g id="p08-edge3" class="edge">
+<title>users:e&#45;&gt;creator_mcp_grants:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M171.91,-168.92C192.35,-176.71 248.53,-198.11 276.54,-208.78"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="163.53,-170.27 166.56,-162.33 168.15,-162.94 165.12,-170.88 163.53,-170.27"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="164.25,-166 168.22,-167.51"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="167.5,-171.79 170.53,-163.84 172.12,-164.45 169.09,-172.39 167.5,-171.79"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="168.22,-167.51 172.19,-169.03"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="284.45,-211.79 291.03,-218.4 288.89,-213.49 291.92,-214.64 291.92,-214.64 291.92,-214.64 288.89,-213.49 293.75,-211.25 284.45,-211.79"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="278.86" cy="-209.67" rx="3.4" ry="3.4"/>
+</g>
+<!-- users&#45;&gt;platform_engagement -->
+<g id="p08-edge4" class="edge">
+<title>users:e&#45;&gt;platform_engagement:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M172,-163.37C195.85,-155.26 268.28,-130.63 296.72,-120.96"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="166.42,-169.75 163.69,-161.7 165.3,-161.16 168.03,-169.2 166.42,-169.75"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="164.25,-166 168.28,-164.63"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="170.45,-168.38 167.71,-160.33 169.32,-159.79 172.06,-167.83 170.45,-168.38"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="168.28,-164.63 172.3,-163.26"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="306.19,-113.25 308.92,-121.3 307.31,-121.84 304.58,-113.8 306.19,-113.25"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="308.36,-117 304.34,-118.37"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="300.41" cy="-119.7" rx="3.4" ry="3.4"/>
+</g>
+<!-- users&#45;&gt;professional_workspaces -->
+<g id="p08-edge5" class="edge">
+<title>users:e&#45;&gt;professional_workspaces:w</title>
+<path fill="none" stroke="#94a3b8" stroke-width="1.5" d="M168.69,-158.99C180.93,-139.66 214.25,-87 214.25,-87 214.25,-87 274.01,-43.82 298.29,-26.28"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="168.3,-167.55 161.11,-163.01 162.02,-161.57 169.21,-166.12 168.3,-167.55"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="164.25,-166 166.52,-162.41"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="170.57,-163.96 163.39,-159.42 164.3,-157.98 171.48,-162.53 170.57,-163.96"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="166.52,-162.41 168.8,-158.82"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" stroke-width="1.5" points="305.18,-16.05 310.16,-22.94 308.78,-23.94 303.8,-17.05 305.18,-16.05"/>
+<polyline fill="none" stroke="#94a3b8" stroke-width="1.5" points="308.36,-19 304.91,-21.49"/>
+<ellipse fill="none" stroke="#94a3b8" stroke-width="1.5" cx="301.55" cy="-23.92" rx="3.4" ry="3.4"/>
+</g>
+<!-- creator_courses -->
+<g id="p08-node1" class="node">
+<title>creator_courses</title>
+<polygon fill="#f1f5f9" stroke="none" points="0,-370 0,-454 164.25,-454 164.25,-370 0,-370"/>
+<polygon fill="#64748b" stroke="none" points="0,-408 0,-454 164.25,-454 164.25,-408 0,-408"/>
+<polygon fill="none" stroke="#cbd5e1" points="0,-408 0,-454 164.25,-454 164.25,-408 0,-408"/>
+<text xml:space="preserve" text-anchor="start" x="23.76" y="-431.5" font-family="Arial" font-weight="bold" font-size="15.00" fill="white">creator_courses</text>
+<text xml:space="preserve" text-anchor="start" x="10" y="-420.1" font-family="Arial" font-size="11.00" fill="white">REFERENCE · SECTION 02</text>
+<polygon fill="none" stroke="#cbd5e1" points="0,-370 0,-408 84.62,-408 84.62,-370 0,-370"/>
+<text xml:space="preserve" text-anchor="start" x="10" y="-386.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#64748b">PK</text>
+<polygon fill="none" stroke="#cbd5e1" points="84.62,-370 84.62,-408 164.25,-408 164.25,-370 84.62,-370"/>
+<text xml:space="preserve" text-anchor="start" x="94.62" y="-383" font-family="Arial" font-size="15.00">id</text>
+</g>
+<!-- users -->
+<g id="p08-node2" class="node">
+<title>users</title>
+<polygon fill="#f1f5f9" stroke="none" points="0,-147 0,-231 164.25,-231 164.25,-147 0,-147"/>
+<polygon fill="#64748b" stroke="none" points="0,-185 0,-231 164.25,-231 164.25,-185 0,-185"/>
+<polygon fill="none" stroke="#cbd5e1" points="0,-185 0,-231 164.25,-231 164.25,-185 0,-185"/>
+<text xml:space="preserve" text-anchor="start" x="62.11" y="-208.5" font-family="Arial" font-weight="bold" font-size="15.00" fill="white">users</text>
+<text xml:space="preserve" text-anchor="start" x="10" y="-197.1" font-family="Arial" font-size="11.00" fill="white">REFERENCE · SECTION 01</text>
+<polygon fill="none" stroke="#cbd5e1" points="0,-147 0,-185 84.62,-185 84.62,-147 0,-147"/>
+<text xml:space="preserve" text-anchor="start" x="10" y="-163.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#64748b">PK</text>
+<polygon fill="none" stroke="#cbd5e1" points="84.62,-147 84.62,-185 164.25,-185 164.25,-147 84.62,-147"/>
+<text xml:space="preserve" text-anchor="start" x="94.62" y="-160" font-family="Arial" font-size="15.00">id</text>
+</g>
+<!-- creator_codex_grants -->
+<g id="p08-node3" class="node">
+<title>creator_codex_grants</title>
+<polygon fill="#ffffff" stroke="none" points="227.59,-332 227.59,-484 404.33,-484 404.33,-332 227.59,-332"/>
+<polygon fill="#475569" stroke="none" points="227.59,-446 227.59,-484 404.33,-484 404.33,-446 227.59,-446"/>
+<polygon fill="none" stroke="#cbd5e1" points="227.59,-446 227.59,-484 404.33,-484 404.33,-446 227.59,-446"/>
+<text xml:space="preserve" text-anchor="start" x="237.59" y="-461.5" font-family="Arial" font-weight="bold" font-size="15.00" fill="white">creator_codex_grants</text>
+<polygon fill="none" stroke="#cbd5e1" points="227.59,-408 227.59,-446 291.77,-446 291.77,-408 227.59,-408"/>
+<text xml:space="preserve" text-anchor="start" x="237.59" y="-424.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#475569">PK</text>
+<polygon fill="none" stroke="#cbd5e1" points="291.77,-408 291.77,-446 404.33,-446 404.33,-408 291.77,-408"/>
+<text xml:space="preserve" text-anchor="start" x="301.77" y="-421" font-family="Arial" font-size="15.00">id</text>
+<polygon fill="none" stroke="#cbd5e1" points="227.59,-370 227.59,-408 291.77,-408 291.77,-370 227.59,-370"/>
+<text xml:space="preserve" text-anchor="start" x="237.59" y="-386.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#475569">FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="291.77,-370 291.77,-408 404.33,-408 404.33,-370 291.77,-370"/>
+<text xml:space="preserve" text-anchor="start" x="301.77" y="-383" font-family="Arial" font-size="15.00">course_id</text>
+<polygon fill="none" stroke="#cbd5e1" points="227.59,-332 227.59,-370 291.77,-370 291.77,-332 227.59,-332"/>
+<text xml:space="preserve" text-anchor="start" x="237.59" y="-348.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#475569">FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="291.77,-332 291.77,-370 404.33,-370 404.33,-332 291.77,-332"/>
+<text xml:space="preserve" text-anchor="start" x="301.77" y="-345" font-family="Arial" font-size="15.00">owner_id</text>
+</g>
+<!-- creator_mcp_grants -->
+<g id="p08-node4" class="node">
+<title>creator_mcp_grants</title>
+<polygon fill="#ffffff" stroke="none" points="233.84,-196 233.84,-310 398.07,-310 398.07,-196 233.84,-196"/>
+<polygon fill="#475569" stroke="none" points="233.84,-272 233.84,-310 398.07,-310 398.07,-272 233.84,-272"/>
+<polygon fill="none" stroke="#cbd5e1" points="233.84,-272 233.84,-310 398.07,-310 398.07,-272 233.84,-272"/>
+<text xml:space="preserve" text-anchor="start" x="243.84" y="-287.5" font-family="Arial" font-weight="bold" font-size="15.00" fill="white">creator_mcp_grants</text>
+<polygon fill="none" stroke="#cbd5e1" points="233.84,-234 233.84,-272 293.86,-272 293.86,-234 233.84,-234"/>
+<text xml:space="preserve" text-anchor="start" x="243.84" y="-250.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#475569">PK</text>
+<polygon fill="none" stroke="#cbd5e1" points="293.86,-234 293.86,-272 398.07,-272 398.07,-234 293.86,-234"/>
+<text xml:space="preserve" text-anchor="start" x="303.86" y="-247" font-family="Arial" font-size="15.00">id</text>
+<polygon fill="none" stroke="#cbd5e1" points="233.84,-196 233.84,-234 293.86,-234 293.86,-196 233.84,-196"/>
+<text xml:space="preserve" text-anchor="start" x="243.84" y="-212.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#475569">FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="293.86,-196 293.86,-234 398.07,-234 398.07,-196 293.86,-196"/>
+<text xml:space="preserve" text-anchor="start" x="303.86" y="-209" font-family="Arial" font-size="15.00">owner_id</text>
+</g>
+<!-- platform_engagement -->
+<g id="p08-node5" class="node">
+<title>platform_engagement</title>
+<polygon fill="#ffffff" stroke="none" points="227.61,-98 227.61,-174 404.31,-174 404.31,-98 227.61,-98"/>
+<polygon fill="#475569" stroke="none" points="227.61,-136 227.61,-174 404.31,-174 404.31,-136 227.61,-136"/>
+<polygon fill="none" stroke="#cbd5e1" points="227.61,-136 227.61,-174 404.31,-174 404.31,-136 227.61,-136"/>
+<text xml:space="preserve" text-anchor="start" x="237.61" y="-151.5" font-family="Arial" font-weight="bold" font-size="15.00" fill="white">platform_engagement</text>
+<polygon fill="none" stroke="#cbd5e1" points="227.61,-98 227.61,-136 309.36,-136 309.36,-98 227.61,-98"/>
+<text xml:space="preserve" text-anchor="start" x="237.61" y="-114.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#475569">PK,FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="309.36,-98 309.36,-136 404.31,-136 404.31,-98 309.36,-98"/>
+<text xml:space="preserve" text-anchor="start" x="319.36" y="-111" font-family="Arial" font-size="15.00">user_id</text>
+</g>
+<!-- professional_workspaces -->
+<g id="p08-node6" class="node">
+<title>professional_workspaces</title>
+<polygon fill="#ffffff" stroke="none" points="214.25,0 214.25,-76 417.66,-76 417.66,0 214.25,0"/>
+<polygon fill="#475569" stroke="none" points="214.25,-38 214.25,-76 417.66,-76 417.66,-38 214.25,-38"/>
+<polygon fill="none" stroke="#cbd5e1" points="214.25,-38 214.25,-76 417.66,-76 417.66,-38 214.25,-38"/>
+<text xml:space="preserve" text-anchor="start" x="224.25" y="-53.5" font-family="Arial" font-weight="bold" font-size="15.00" fill="white">professional_workspaces</text>
+<polygon fill="none" stroke="#cbd5e1" points="214.25,0 214.25,-38 309.36,-38 309.36,0 214.25,0"/>
+<text xml:space="preserve" text-anchor="start" x="224.25" y="-16.4" font-family="Arial" font-weight="bold" font-size="12.00" fill="#475569">PK,FK</text>
+<polygon fill="none" stroke="#cbd5e1" points="309.36,0 309.36,-38 417.66,-38 417.66,0 309.36,0"/>
+<text xml:space="preserve" text-anchor="start" x="319.36" y="-13" font-family="Arial" font-size="15.00">user_id</text>
+</g>
+</g>
+</svg><text x="70" y="4757" font-family="Arial" font-size="22" fill="#64748b">Source: live nebula_knowlab PostgreSQL schema. This diagram contains schema metadata only, not learner or credential data.</text></svg>

@@ -1,0 +1,3463 @@
+{
+  "tables": [
+    "adaptation_jobs",
+    "adapted_content",
+    "authored_project_submissions",
+    "authored_project_work",
+    "course_editions",
+    "creator_authored_course_audio",
+    "creator_authored_course_reviews",
+    "creator_authored_course_revisions",
+    "creator_blueprints",
+    "creator_codex_grants",
+    "creator_courses",
+    "creator_mcp_grants",
+    "creator_production_audio",
+    "creator_production_jobs",
+    "creator_production_revisions",
+    "creator_script_reviews",
+    "creator_sme_reviews",
+    "enrollments",
+    "guided_project_submissions",
+    "guided_project_work",
+    "imported_course_progress",
+    "learner_plans",
+    "module_evidence",
+    "platform_engagement",
+    "professional_workspaces",
+    "profile_drafts",
+    "profiles",
+    "project_work",
+    "published_authored_courses",
+    "scorm_connections",
+    "scorm_import_runs",
+    "scorm_topic_imports",
+    "signals",
+    "step_progress",
+    "users",
+    "workflow_projects"
+  ],
+  "columns": [
+    {
+      "table": "adaptation_jobs",
+      "name": "id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 1
+    },
+    {
+      "table": "adaptation_jobs",
+      "name": "enrollment_id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 2
+    },
+    {
+      "table": "adaptation_jobs",
+      "name": "module_id",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 3
+    },
+    {
+      "table": "adaptation_jobs",
+      "name": "video_id",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 4
+    },
+    {
+      "table": "adaptation_jobs",
+      "name": "slide",
+      "type": "int4",
+      "nullable": false,
+      "ordinal_position": 5
+    },
+    {
+      "table": "adaptation_jobs",
+      "name": "fingerprint",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 6
+    },
+    {
+      "table": "adaptation_jobs",
+      "name": "trigger",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 7
+    },
+    {
+      "table": "adaptation_jobs",
+      "name": "status",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 8
+    },
+    {
+      "table": "adaptation_jobs",
+      "name": "priority",
+      "type": "int4",
+      "nullable": false,
+      "ordinal_position": 9
+    },
+    {
+      "table": "adaptation_jobs",
+      "name": "attempts",
+      "type": "int4",
+      "nullable": false,
+      "ordinal_position": 10
+    },
+    {
+      "table": "adaptation_jobs",
+      "name": "lease",
+      "type": "text",
+      "nullable": true,
+      "ordinal_position": 11
+    },
+    {
+      "table": "adaptation_jobs",
+      "name": "lease_until",
+      "type": "timestamptz",
+      "nullable": true,
+      "ordinal_position": 12
+    },
+    {
+      "table": "adaptation_jobs",
+      "name": "input",
+      "type": "jsonb",
+      "nullable": false,
+      "ordinal_position": 13
+    },
+    {
+      "table": "adaptation_jobs",
+      "name": "content",
+      "type": "jsonb",
+      "nullable": true,
+      "ordinal_position": 14
+    },
+    {
+      "table": "adaptation_jobs",
+      "name": "audio",
+      "type": "text",
+      "nullable": true,
+      "ordinal_position": 15
+    },
+    {
+      "table": "adaptation_jobs",
+      "name": "error",
+      "type": "text",
+      "nullable": true,
+      "ordinal_position": 16
+    },
+    {
+      "table": "adaptation_jobs",
+      "name": "model",
+      "type": "text",
+      "nullable": true,
+      "ordinal_position": 17
+    },
+    {
+      "table": "adaptation_jobs",
+      "name": "metrics",
+      "type": "jsonb",
+      "nullable": true,
+      "ordinal_position": 18
+    },
+    {
+      "table": "adaptation_jobs",
+      "name": "created_at",
+      "type": "timestamptz",
+      "nullable": false,
+      "ordinal_position": 19
+    },
+    {
+      "table": "adaptation_jobs",
+      "name": "updated_at",
+      "type": "timestamptz",
+      "nullable": false,
+      "ordinal_position": 20
+    },
+    {
+      "table": "adapted_content",
+      "name": "id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 1
+    },
+    {
+      "table": "adapted_content",
+      "name": "enrollment_id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 2
+    },
+    {
+      "table": "adapted_content",
+      "name": "module_id",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 3
+    },
+    {
+      "table": "adapted_content",
+      "name": "piece",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 4
+    },
+    {
+      "table": "adapted_content",
+      "name": "status",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 5
+    },
+    {
+      "table": "adapted_content",
+      "name": "inputs",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 6
+    },
+    {
+      "table": "adapted_content",
+      "name": "content",
+      "type": "jsonb",
+      "nullable": true,
+      "ordinal_position": 7
+    },
+    {
+      "table": "adapted_content",
+      "name": "audio",
+      "type": "jsonb",
+      "nullable": true,
+      "ordinal_position": 8
+    },
+    {
+      "table": "adapted_content",
+      "name": "model",
+      "type": "text",
+      "nullable": true,
+      "ordinal_position": 9
+    },
+    {
+      "table": "adapted_content",
+      "name": "error",
+      "type": "text",
+      "nullable": true,
+      "ordinal_position": 10
+    },
+    {
+      "table": "adapted_content",
+      "name": "created_at",
+      "type": "timestamptz",
+      "nullable": false,
+      "ordinal_position": 11
+    },
+    {
+      "table": "adapted_content",
+      "name": "updated_at",
+      "type": "timestamptz",
+      "nullable": false,
+      "ordinal_position": 12
+    },
+    {
+      "table": "authored_project_submissions",
+      "name": "id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 1
+    },
+    {
+      "table": "authored_project_submissions",
+      "name": "enrollment_id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 2
+    },
+    {
+      "table": "authored_project_submissions",
+      "name": "revision_id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 3
+    },
+    {
+      "table": "authored_project_submissions",
+      "name": "artifact",
+      "type": "jsonb",
+      "nullable": false,
+      "ordinal_position": 4
+    },
+    {
+      "table": "authored_project_submissions",
+      "name": "report",
+      "type": "jsonb",
+      "nullable": false,
+      "ordinal_position": 5
+    },
+    {
+      "table": "authored_project_submissions",
+      "name": "created_at",
+      "type": "timestamptz",
+      "nullable": false,
+      "ordinal_position": 6
+    },
+    {
+      "table": "authored_project_work",
+      "name": "enrollment_id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 1
+    },
+    {
+      "table": "authored_project_work",
+      "name": "revision_id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 2
+    },
+    {
+      "table": "authored_project_work",
+      "name": "artifact",
+      "type": "jsonb",
+      "nullable": false,
+      "ordinal_position": 3
+    },
+    {
+      "table": "authored_project_work",
+      "name": "version",
+      "type": "int4",
+      "nullable": false,
+      "ordinal_position": 4
+    },
+    {
+      "table": "authored_project_work",
+      "name": "report",
+      "type": "jsonb",
+      "nullable": true,
+      "ordinal_position": 5
+    },
+    {
+      "table": "authored_project_work",
+      "name": "submission_id",
+      "type": "uuid",
+      "nullable": true,
+      "ordinal_position": 6
+    },
+    {
+      "table": "authored_project_work",
+      "name": "submitted_at",
+      "type": "timestamptz",
+      "nullable": true,
+      "ordinal_position": 7
+    },
+    {
+      "table": "authored_project_work",
+      "name": "updated_at",
+      "type": "timestamptz",
+      "nullable": false,
+      "ordinal_position": 8
+    },
+    {
+      "table": "course_editions",
+      "name": "id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 1
+    },
+    {
+      "table": "course_editions",
+      "name": "course_id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 2
+    },
+    {
+      "table": "course_editions",
+      "name": "revision_id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 3
+    },
+    {
+      "table": "course_editions",
+      "name": "review_id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 4
+    },
+    {
+      "table": "course_editions",
+      "name": "published_at",
+      "type": "timestamptz",
+      "nullable": false,
+      "ordinal_position": 5
+    },
+    {
+      "table": "creator_authored_course_audio",
+      "name": "id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 1
+    },
+    {
+      "table": "creator_authored_course_audio",
+      "name": "course_id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 2
+    },
+    {
+      "table": "creator_authored_course_audio",
+      "name": "owner_id",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 3
+    },
+    {
+      "table": "creator_authored_course_audio",
+      "name": "revision_id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 4
+    },
+    {
+      "table": "creator_authored_course_audio",
+      "name": "voice_key",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 5
+    },
+    {
+      "table": "creator_authored_course_audio",
+      "name": "voice",
+      "type": "jsonb",
+      "nullable": false,
+      "ordinal_position": 6
+    },
+    {
+      "table": "creator_authored_course_audio",
+      "name": "status",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 7
+    },
+    {
+      "table": "creator_authored_course_audio",
+      "name": "clips",
+      "type": "jsonb",
+      "nullable": false,
+      "ordinal_position": 8
+    },
+    {
+      "table": "creator_authored_course_audio",
+      "name": "token",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 9
+    },
+    {
+      "table": "creator_authored_course_audio",
+      "name": "attempts",
+      "type": "int4",
+      "nullable": false,
+      "ordinal_position": 10
+    },
+    {
+      "table": "creator_authored_course_audio",
+      "name": "error",
+      "type": "text",
+      "nullable": true,
+      "ordinal_position": 11
+    },
+    {
+      "table": "creator_authored_course_audio",
+      "name": "lease_until",
+      "type": "timestamptz",
+      "nullable": false,
+      "ordinal_position": 12
+    },
+    {
+      "table": "creator_authored_course_audio",
+      "name": "created_at",
+      "type": "timestamptz",
+      "nullable": false,
+      "ordinal_position": 13
+    },
+    {
+      "table": "creator_authored_course_audio",
+      "name": "updated_at",
+      "type": "timestamptz",
+      "nullable": false,
+      "ordinal_position": 14
+    },
+    {
+      "table": "creator_authored_course_reviews",
+      "name": "id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 1
+    },
+    {
+      "table": "creator_authored_course_reviews",
+      "name": "course_id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 2
+    },
+    {
+      "table": "creator_authored_course_reviews",
+      "name": "revision_id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 3
+    },
+    {
+      "table": "creator_authored_course_reviews",
+      "name": "version",
+      "type": "int4",
+      "nullable": false,
+      "ordinal_position": 4
+    },
+    {
+      "table": "creator_authored_course_reviews",
+      "name": "verdict",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 5
+    },
+    {
+      "table": "creator_authored_course_reviews",
+      "name": "checklist",
+      "type": "jsonb",
+      "nullable": false,
+      "ordinal_position": 6
+    },
+    {
+      "table": "creator_authored_course_reviews",
+      "name": "feedback",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 7
+    },
+    {
+      "table": "creator_authored_course_reviews",
+      "name": "reviewer_id",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 8
+    },
+    {
+      "table": "creator_authored_course_reviews",
+      "name": "reviewer_name",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 9
+    },
+    {
+      "table": "creator_authored_course_reviews",
+      "name": "created_at",
+      "type": "timestamptz",
+      "nullable": false,
+      "ordinal_position": 10
+    },
+    {
+      "table": "creator_authored_course_revisions",
+      "name": "id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 1
+    },
+    {
+      "table": "creator_authored_course_revisions",
+      "name": "course_id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 2
+    },
+    {
+      "table": "creator_authored_course_revisions",
+      "name": "owner_id",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 3
+    },
+    {
+      "table": "creator_authored_course_revisions",
+      "name": "version",
+      "type": "int4",
+      "nullable": false,
+      "ordinal_position": 4
+    },
+    {
+      "table": "creator_authored_course_revisions",
+      "name": "brief_revision",
+      "type": "int4",
+      "nullable": false,
+      "ordinal_position": 5
+    },
+    {
+      "table": "creator_authored_course_revisions",
+      "name": "blueprint_run_id",
+      "type": "uuid",
+      "nullable": true,
+      "ordinal_position": 6
+    },
+    {
+      "table": "creator_authored_course_revisions",
+      "name": "content",
+      "type": "jsonb",
+      "nullable": false,
+      "ordinal_position": 7
+    },
+    {
+      "table": "creator_authored_course_revisions",
+      "name": "created_by",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 8
+    },
+    {
+      "table": "creator_authored_course_revisions",
+      "name": "created_at",
+      "type": "timestamptz",
+      "nullable": false,
+      "ordinal_position": 9
+    },
+    {
+      "table": "creator_blueprints",
+      "name": "id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 1
+    },
+    {
+      "table": "creator_blueprints",
+      "name": "course_id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 2
+    },
+    {
+      "table": "creator_blueprints",
+      "name": "input_revision",
+      "type": "int4",
+      "nullable": false,
+      "ordinal_position": 3
+    },
+    {
+      "table": "creator_blueprints",
+      "name": "prompt_version",
+      "type": "int4",
+      "nullable": false,
+      "ordinal_position": 4
+    },
+    {
+      "table": "creator_blueprints",
+      "name": "input",
+      "type": "jsonb",
+      "nullable": false,
+      "ordinal_position": 5
+    },
+    {
+      "table": "creator_blueprints",
+      "name": "output",
+      "type": "jsonb",
+      "nullable": true,
+      "ordinal_position": 6
+    },
+    {
+      "table": "creator_blueprints",
+      "name": "status",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 7
+    },
+    {
+      "table": "creator_blueprints",
+      "name": "attempts",
+      "type": "int4",
+      "nullable": false,
+      "ordinal_position": 8
+    },
+    {
+      "table": "creator_blueprints",
+      "name": "token",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 9
+    },
+    {
+      "table": "creator_blueprints",
+      "name": "lease_until",
+      "type": "timestamptz",
+      "nullable": false,
+      "ordinal_position": 10
+    },
+    {
+      "table": "creator_blueprints",
+      "name": "model",
+      "type": "text",
+      "nullable": true,
+      "ordinal_position": 11
+    },
+    {
+      "table": "creator_blueprints",
+      "name": "error",
+      "type": "text",
+      "nullable": true,
+      "ordinal_position": 12
+    },
+    {
+      "table": "creator_blueprints",
+      "name": "usage",
+      "type": "jsonb",
+      "nullable": true,
+      "ordinal_position": 13
+    },
+    {
+      "table": "creator_blueprints",
+      "name": "created_at",
+      "type": "timestamptz",
+      "nullable": false,
+      "ordinal_position": 14
+    },
+    {
+      "table": "creator_blueprints",
+      "name": "updated_at",
+      "type": "timestamptz",
+      "nullable": false,
+      "ordinal_position": 15
+    },
+    {
+      "table": "creator_codex_grants",
+      "name": "id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 1
+    },
+    {
+      "table": "creator_codex_grants",
+      "name": "course_id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 2
+    },
+    {
+      "table": "creator_codex_grants",
+      "name": "owner_id",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 3
+    },
+    {
+      "table": "creator_codex_grants",
+      "name": "token_hash",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 4
+    },
+    {
+      "table": "creator_codex_grants",
+      "name": "expires_at",
+      "type": "timestamptz",
+      "nullable": false,
+      "ordinal_position": 5
+    },
+    {
+      "table": "creator_codex_grants",
+      "name": "revoked_at",
+      "type": "timestamptz",
+      "nullable": true,
+      "ordinal_position": 6
+    },
+    {
+      "table": "creator_codex_grants",
+      "name": "created_at",
+      "type": "timestamptz",
+      "nullable": false,
+      "ordinal_position": 7
+    },
+    {
+      "table": "creator_courses",
+      "name": "id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 1
+    },
+    {
+      "table": "creator_courses",
+      "name": "owner_id",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 2
+    },
+    {
+      "table": "creator_courses",
+      "name": "brief",
+      "type": "jsonb",
+      "nullable": false,
+      "ordinal_position": 3
+    },
+    {
+      "table": "creator_courses",
+      "name": "revision",
+      "type": "int4",
+      "nullable": false,
+      "ordinal_position": 4
+    },
+    {
+      "table": "creator_courses",
+      "name": "created_at",
+      "type": "timestamptz",
+      "nullable": false,
+      "ordinal_position": 5
+    },
+    {
+      "table": "creator_courses",
+      "name": "updated_at",
+      "type": "timestamptz",
+      "nullable": false,
+      "ordinal_position": 6
+    },
+    {
+      "table": "creator_courses",
+      "name": "production_format",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 7
+    },
+    {
+      "table": "creator_courses",
+      "name": "delivery_structure",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 8
+    },
+    {
+      "table": "creator_mcp_grants",
+      "name": "id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 1
+    },
+    {
+      "table": "creator_mcp_grants",
+      "name": "owner_id",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 2
+    },
+    {
+      "table": "creator_mcp_grants",
+      "name": "token_hash",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 3
+    },
+    {
+      "table": "creator_mcp_grants",
+      "name": "allow_publication",
+      "type": "bool",
+      "nullable": false,
+      "ordinal_position": 4
+    },
+    {
+      "table": "creator_mcp_grants",
+      "name": "expires_at",
+      "type": "timestamptz",
+      "nullable": false,
+      "ordinal_position": 5
+    },
+    {
+      "table": "creator_mcp_grants",
+      "name": "revoked_at",
+      "type": "timestamptz",
+      "nullable": true,
+      "ordinal_position": 6
+    },
+    {
+      "table": "creator_mcp_grants",
+      "name": "created_at",
+      "type": "timestamptz",
+      "nullable": false,
+      "ordinal_position": 7
+    },
+    {
+      "table": "creator_production_audio",
+      "name": "id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 1
+    },
+    {
+      "table": "creator_production_audio",
+      "name": "job_id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 2
+    },
+    {
+      "table": "creator_production_audio",
+      "name": "revision_id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 3
+    },
+    {
+      "table": "creator_production_audio",
+      "name": "review_id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 4
+    },
+    {
+      "table": "creator_production_audio",
+      "name": "voice_key",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 5
+    },
+    {
+      "table": "creator_production_audio",
+      "name": "voice",
+      "type": "jsonb",
+      "nullable": false,
+      "ordinal_position": 6
+    },
+    {
+      "table": "creator_production_audio",
+      "name": "status",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 7
+    },
+    {
+      "table": "creator_production_audio",
+      "name": "clips",
+      "type": "jsonb",
+      "nullable": false,
+      "ordinal_position": 8
+    },
+    {
+      "table": "creator_production_audio",
+      "name": "token",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 9
+    },
+    {
+      "table": "creator_production_audio",
+      "name": "attempts",
+      "type": "int4",
+      "nullable": false,
+      "ordinal_position": 10
+    },
+    {
+      "table": "creator_production_audio",
+      "name": "error",
+      "type": "text",
+      "nullable": true,
+      "ordinal_position": 11
+    },
+    {
+      "table": "creator_production_audio",
+      "name": "lease_until",
+      "type": "timestamptz",
+      "nullable": false,
+      "ordinal_position": 12
+    },
+    {
+      "table": "creator_production_audio",
+      "name": "created_at",
+      "type": "timestamptz",
+      "nullable": false,
+      "ordinal_position": 13
+    },
+    {
+      "table": "creator_production_audio",
+      "name": "updated_at",
+      "type": "timestamptz",
+      "nullable": false,
+      "ordinal_position": 14
+    },
+    {
+      "table": "creator_production_jobs",
+      "name": "id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 1
+    },
+    {
+      "table": "creator_production_jobs",
+      "name": "course_id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 2
+    },
+    {
+      "table": "creator_production_jobs",
+      "name": "run_id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 3
+    },
+    {
+      "table": "creator_production_jobs",
+      "name": "module_id",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 4
+    },
+    {
+      "table": "creator_production_jobs",
+      "name": "approval_id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 5
+    },
+    {
+      "table": "creator_production_jobs",
+      "name": "prompt_version",
+      "type": "int4",
+      "nullable": false,
+      "ordinal_position": 6
+    },
+    {
+      "table": "creator_production_jobs",
+      "name": "input",
+      "type": "jsonb",
+      "nullable": false,
+      "ordinal_position": 7
+    },
+    {
+      "table": "creator_production_jobs",
+      "name": "status",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 8
+    },
+    {
+      "table": "creator_production_jobs",
+      "name": "current_revision",
+      "type": "int4",
+      "nullable": false,
+      "ordinal_position": 9
+    },
+    {
+      "table": "creator_production_jobs",
+      "name": "attempts",
+      "type": "int4",
+      "nullable": false,
+      "ordinal_position": 10
+    },
+    {
+      "table": "creator_production_jobs",
+      "name": "token",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 11
+    },
+    {
+      "table": "creator_production_jobs",
+      "name": "lease_until",
+      "type": "timestamptz",
+      "nullable": false,
+      "ordinal_position": 12
+    },
+    {
+      "table": "creator_production_jobs",
+      "name": "model",
+      "type": "text",
+      "nullable": true,
+      "ordinal_position": 13
+    },
+    {
+      "table": "creator_production_jobs",
+      "name": "error",
+      "type": "text",
+      "nullable": true,
+      "ordinal_position": 14
+    },
+    {
+      "table": "creator_production_jobs",
+      "name": "usage",
+      "type": "jsonb",
+      "nullable": true,
+      "ordinal_position": 15
+    },
+    {
+      "table": "creator_production_jobs",
+      "name": "created_at",
+      "type": "timestamptz",
+      "nullable": false,
+      "ordinal_position": 16
+    },
+    {
+      "table": "creator_production_jobs",
+      "name": "updated_at",
+      "type": "timestamptz",
+      "nullable": false,
+      "ordinal_position": 17
+    },
+    {
+      "table": "creator_production_jobs",
+      "name": "unit_key",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 18
+    },
+    {
+      "table": "creator_production_jobs",
+      "name": "partial_slides",
+      "type": "jsonb",
+      "nullable": false,
+      "ordinal_position": 19
+    },
+    {
+      "table": "creator_production_revisions",
+      "name": "id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 1
+    },
+    {
+      "table": "creator_production_revisions",
+      "name": "job_id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 2
+    },
+    {
+      "table": "creator_production_revisions",
+      "name": "version",
+      "type": "int4",
+      "nullable": false,
+      "ordinal_position": 3
+    },
+    {
+      "table": "creator_production_revisions",
+      "name": "content",
+      "type": "jsonb",
+      "nullable": false,
+      "ordinal_position": 4
+    },
+    {
+      "table": "creator_production_revisions",
+      "name": "narration_hashes",
+      "type": "jsonb",
+      "nullable": false,
+      "ordinal_position": 5
+    },
+    {
+      "table": "creator_production_revisions",
+      "name": "created_by",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 6
+    },
+    {
+      "table": "creator_production_revisions",
+      "name": "created_at",
+      "type": "timestamptz",
+      "nullable": false,
+      "ordinal_position": 7
+    },
+    {
+      "table": "creator_script_reviews",
+      "name": "id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 1
+    },
+    {
+      "table": "creator_script_reviews",
+      "name": "job_id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 2
+    },
+    {
+      "table": "creator_script_reviews",
+      "name": "revision_id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 3
+    },
+    {
+      "table": "creator_script_reviews",
+      "name": "version",
+      "type": "int4",
+      "nullable": false,
+      "ordinal_position": 4
+    },
+    {
+      "table": "creator_script_reviews",
+      "name": "verdict",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 5
+    },
+    {
+      "table": "creator_script_reviews",
+      "name": "checklist",
+      "type": "jsonb",
+      "nullable": false,
+      "ordinal_position": 6
+    },
+    {
+      "table": "creator_script_reviews",
+      "name": "feedback",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 7
+    },
+    {
+      "table": "creator_script_reviews",
+      "name": "reviewer_id",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 8
+    },
+    {
+      "table": "creator_script_reviews",
+      "name": "reviewer_name",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 9
+    },
+    {
+      "table": "creator_script_reviews",
+      "name": "created_at",
+      "type": "timestamptz",
+      "nullable": false,
+      "ordinal_position": 10
+    },
+    {
+      "table": "creator_sme_reviews",
+      "name": "id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 1
+    },
+    {
+      "table": "creator_sme_reviews",
+      "name": "run_id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 2
+    },
+    {
+      "table": "creator_sme_reviews",
+      "name": "module_id",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 3
+    },
+    {
+      "table": "creator_sme_reviews",
+      "name": "version",
+      "type": "int4",
+      "nullable": false,
+      "ordinal_position": 4
+    },
+    {
+      "table": "creator_sme_reviews",
+      "name": "verdict",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 5
+    },
+    {
+      "table": "creator_sme_reviews",
+      "name": "checklist",
+      "type": "jsonb",
+      "nullable": false,
+      "ordinal_position": 6
+    },
+    {
+      "table": "creator_sme_reviews",
+      "name": "feedback",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 7
+    },
+    {
+      "table": "creator_sme_reviews",
+      "name": "priority",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 8
+    },
+    {
+      "table": "creator_sme_reviews",
+      "name": "reviewer_id",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 9
+    },
+    {
+      "table": "creator_sme_reviews",
+      "name": "reviewer_name",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 10
+    },
+    {
+      "table": "creator_sme_reviews",
+      "name": "created_at",
+      "type": "timestamptz",
+      "nullable": false,
+      "ordinal_position": 11
+    },
+    {
+      "table": "enrollments",
+      "name": "id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 1
+    },
+    {
+      "table": "enrollments",
+      "name": "user_id",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 2
+    },
+    {
+      "table": "enrollments",
+      "name": "course_id",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 3
+    },
+    {
+      "table": "enrollments",
+      "name": "answers",
+      "type": "jsonb",
+      "nullable": false,
+      "ordinal_position": 4
+    },
+    {
+      "table": "enrollments",
+      "name": "support_override",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 5
+    },
+    {
+      "table": "enrollments",
+      "name": "pace",
+      "type": "jsonb",
+      "nullable": true,
+      "ordinal_position": 6
+    },
+    {
+      "table": "enrollments",
+      "name": "precheck",
+      "type": "jsonb",
+      "nullable": true,
+      "ordinal_position": 7
+    },
+    {
+      "table": "enrollments",
+      "name": "enrolled_at",
+      "type": "timestamptz",
+      "nullable": false,
+      "ordinal_position": 8
+    },
+    {
+      "table": "enrollments",
+      "name": "updated_at",
+      "type": "timestamptz",
+      "nullable": false,
+      "ordinal_position": 9
+    },
+    {
+      "table": "enrollments",
+      "name": "edition_id",
+      "type": "uuid",
+      "nullable": true,
+      "ordinal_position": 10
+    },
+    {
+      "table": "enrollments",
+      "name": "archived_at",
+      "type": "timestamptz",
+      "nullable": true,
+      "ordinal_position": 11
+    },
+    {
+      "table": "guided_project_submissions",
+      "name": "id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 1
+    },
+    {
+      "table": "guided_project_submissions",
+      "name": "enrollment_id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 2
+    },
+    {
+      "table": "guided_project_submissions",
+      "name": "revision_id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 3
+    },
+    {
+      "table": "guided_project_submissions",
+      "name": "answers",
+      "type": "jsonb",
+      "nullable": false,
+      "ordinal_position": 4
+    },
+    {
+      "table": "guided_project_submissions",
+      "name": "run_case_ids",
+      "type": "jsonb",
+      "nullable": false,
+      "ordinal_position": 5
+    },
+    {
+      "table": "guided_project_submissions",
+      "name": "report",
+      "type": "jsonb",
+      "nullable": false,
+      "ordinal_position": 6
+    },
+    {
+      "table": "guided_project_submissions",
+      "name": "created_at",
+      "type": "timestamptz",
+      "nullable": false,
+      "ordinal_position": 7
+    },
+    {
+      "table": "guided_project_work",
+      "name": "enrollment_id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 1
+    },
+    {
+      "table": "guided_project_work",
+      "name": "revision_id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 2
+    },
+    {
+      "table": "guided_project_work",
+      "name": "answers",
+      "type": "jsonb",
+      "nullable": false,
+      "ordinal_position": 3
+    },
+    {
+      "table": "guided_project_work",
+      "name": "run_case_ids",
+      "type": "jsonb",
+      "nullable": false,
+      "ordinal_position": 4
+    },
+    {
+      "table": "guided_project_work",
+      "name": "stage_id",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 5
+    },
+    {
+      "table": "guided_project_work",
+      "name": "version",
+      "type": "int4",
+      "nullable": false,
+      "ordinal_position": 6
+    },
+    {
+      "table": "guided_project_work",
+      "name": "report",
+      "type": "jsonb",
+      "nullable": true,
+      "ordinal_position": 7
+    },
+    {
+      "table": "guided_project_work",
+      "name": "submission_id",
+      "type": "uuid",
+      "nullable": true,
+      "ordinal_position": 8
+    },
+    {
+      "table": "guided_project_work",
+      "name": "submitted_at",
+      "type": "timestamptz",
+      "nullable": true,
+      "ordinal_position": 9
+    },
+    {
+      "table": "guided_project_work",
+      "name": "updated_at",
+      "type": "timestamptz",
+      "nullable": false,
+      "ordinal_position": 10
+    },
+    {
+      "table": "imported_course_progress",
+      "name": "user_id",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 1
+    },
+    {
+      "table": "imported_course_progress",
+      "name": "course_id",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 2
+    },
+    {
+      "table": "imported_course_progress",
+      "name": "module_id",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 3
+    },
+    {
+      "table": "imported_course_progress",
+      "name": "revision",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 4
+    },
+    {
+      "table": "imported_course_progress",
+      "name": "state",
+      "type": "jsonb",
+      "nullable": false,
+      "ordinal_position": 5
+    },
+    {
+      "table": "imported_course_progress",
+      "name": "updated_at",
+      "type": "timestamptz",
+      "nullable": false,
+      "ordinal_position": 6
+    },
+    {
+      "table": "learner_plans",
+      "name": "id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 1
+    },
+    {
+      "table": "learner_plans",
+      "name": "enrollment_id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 2
+    },
+    {
+      "table": "learner_plans",
+      "name": "version",
+      "type": "int4",
+      "nullable": false,
+      "ordinal_position": 3
+    },
+    {
+      "table": "learner_plans",
+      "name": "status",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 4
+    },
+    {
+      "table": "learner_plans",
+      "name": "source",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 5
+    },
+    {
+      "table": "learner_plans",
+      "name": "trigger",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 6
+    },
+    {
+      "table": "learner_plans",
+      "name": "model",
+      "type": "text",
+      "nullable": true,
+      "ordinal_position": 7
+    },
+    {
+      "table": "learner_plans",
+      "name": "plan",
+      "type": "jsonb",
+      "nullable": true,
+      "ordinal_position": 8
+    },
+    {
+      "table": "learner_plans",
+      "name": "changes",
+      "type": "jsonb",
+      "nullable": false,
+      "ordinal_position": 9
+    },
+    {
+      "table": "learner_plans",
+      "name": "usage",
+      "type": "jsonb",
+      "nullable": true,
+      "ordinal_position": 10
+    },
+    {
+      "table": "learner_plans",
+      "name": "error",
+      "type": "text",
+      "nullable": true,
+      "ordinal_position": 11
+    },
+    {
+      "table": "learner_plans",
+      "name": "created_at",
+      "type": "timestamptz",
+      "nullable": false,
+      "ordinal_position": 12
+    },
+    {
+      "table": "learner_plans",
+      "name": "completed_at",
+      "type": "timestamptz",
+      "nullable": true,
+      "ordinal_position": 13
+    },
+    {
+      "table": "module_evidence",
+      "name": "id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 1
+    },
+    {
+      "table": "module_evidence",
+      "name": "enrollment_id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 2
+    },
+    {
+      "table": "module_evidence",
+      "name": "module_id",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 3
+    },
+    {
+      "table": "module_evidence",
+      "name": "version",
+      "type": "int4",
+      "nullable": false,
+      "ordinal_position": 4
+    },
+    {
+      "table": "module_evidence",
+      "name": "fingerprint",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 5
+    },
+    {
+      "table": "module_evidence",
+      "name": "summary",
+      "type": "jsonb",
+      "nullable": false,
+      "ordinal_position": 6
+    },
+    {
+      "table": "module_evidence",
+      "name": "created_at",
+      "type": "timestamptz",
+      "nullable": false,
+      "ordinal_position": 7
+    },
+    {
+      "table": "platform_engagement",
+      "name": "user_id",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 1
+    },
+    {
+      "table": "platform_engagement",
+      "name": "state",
+      "type": "jsonb",
+      "nullable": false,
+      "ordinal_position": 2
+    },
+    {
+      "table": "platform_engagement",
+      "name": "updated_at",
+      "type": "timestamptz",
+      "nullable": false,
+      "ordinal_position": 3
+    },
+    {
+      "table": "professional_workspaces",
+      "name": "user_id",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 1
+    },
+    {
+      "table": "professional_workspaces",
+      "name": "state",
+      "type": "jsonb",
+      "nullable": false,
+      "ordinal_position": 2
+    },
+    {
+      "table": "professional_workspaces",
+      "name": "updated_at",
+      "type": "timestamptz",
+      "nullable": false,
+      "ordinal_position": 3
+    },
+    {
+      "table": "profile_drafts",
+      "name": "user_id",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 1
+    },
+    {
+      "table": "profile_drafts",
+      "name": "answers",
+      "type": "jsonb",
+      "nullable": false,
+      "ordinal_position": 2
+    },
+    {
+      "table": "profile_drafts",
+      "name": "needs",
+      "type": "jsonb",
+      "nullable": false,
+      "ordinal_position": 3
+    },
+    {
+      "table": "profile_drafts",
+      "name": "derived",
+      "type": "jsonb",
+      "nullable": true,
+      "ordinal_position": 4
+    },
+    {
+      "table": "profile_drafts",
+      "name": "updated_at",
+      "type": "timestamptz",
+      "nullable": false,
+      "ordinal_position": 5
+    },
+    {
+      "table": "profiles",
+      "name": "user_id",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 1
+    },
+    {
+      "table": "profiles",
+      "name": "answers",
+      "type": "jsonb",
+      "nullable": false,
+      "ordinal_position": 2
+    },
+    {
+      "table": "profiles",
+      "name": "needs",
+      "type": "jsonb",
+      "nullable": false,
+      "ordinal_position": 3
+    },
+    {
+      "table": "profiles",
+      "name": "updated_at",
+      "type": "timestamptz",
+      "nullable": false,
+      "ordinal_position": 4
+    },
+    {
+      "table": "profiles",
+      "name": "derived",
+      "type": "jsonb",
+      "nullable": true,
+      "ordinal_position": 5
+    },
+    {
+      "table": "project_work",
+      "name": "enrollment_id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 1
+    },
+    {
+      "table": "project_work",
+      "name": "files",
+      "type": "jsonb",
+      "nullable": false,
+      "ordinal_position": 2
+    },
+    {
+      "table": "project_work",
+      "name": "report",
+      "type": "jsonb",
+      "nullable": true,
+      "ordinal_position": 3
+    },
+    {
+      "table": "project_work",
+      "name": "updated_at",
+      "type": "timestamptz",
+      "nullable": false,
+      "ordinal_position": 4
+    },
+    {
+      "table": "published_authored_courses",
+      "name": "course_id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 1
+    },
+    {
+      "table": "published_authored_courses",
+      "name": "revision_id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 2
+    },
+    {
+      "table": "published_authored_courses",
+      "name": "review_id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 3
+    },
+    {
+      "table": "published_authored_courses",
+      "name": "published_by",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 4
+    },
+    {
+      "table": "published_authored_courses",
+      "name": "published_at",
+      "type": "timestamptz",
+      "nullable": false,
+      "ordinal_position": 5
+    },
+    {
+      "table": "scorm_connections",
+      "name": "id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 1
+    },
+    {
+      "table": "scorm_connections",
+      "name": "owner_id",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 2
+    },
+    {
+      "table": "scorm_connections",
+      "name": "source_course_id",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 3
+    },
+    {
+      "table": "scorm_connections",
+      "name": "source_course_name",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 4
+    },
+    {
+      "table": "scorm_connections",
+      "name": "target_course_id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 5
+    },
+    {
+      "table": "scorm_connections",
+      "name": "mapping",
+      "type": "jsonb",
+      "nullable": false,
+      "ordinal_position": 6
+    },
+    {
+      "table": "scorm_connections",
+      "name": "baseline",
+      "type": "jsonb",
+      "nullable": false,
+      "ordinal_position": 7
+    },
+    {
+      "table": "scorm_connections",
+      "name": "created_at",
+      "type": "timestamptz",
+      "nullable": false,
+      "ordinal_position": 8
+    },
+    {
+      "table": "scorm_import_runs",
+      "name": "id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 1
+    },
+    {
+      "table": "scorm_import_runs",
+      "name": "connection_id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 2
+    },
+    {
+      "table": "scorm_import_runs",
+      "name": "owner_id",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 3
+    },
+    {
+      "table": "scorm_import_runs",
+      "name": "fingerprint",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 4
+    },
+    {
+      "table": "scorm_import_runs",
+      "name": "status",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 5
+    },
+    {
+      "table": "scorm_import_runs",
+      "name": "input",
+      "type": "jsonb",
+      "nullable": false,
+      "ordinal_position": 6
+    },
+    {
+      "table": "scorm_import_runs",
+      "name": "output",
+      "type": "jsonb",
+      "nullable": false,
+      "ordinal_position": 7
+    },
+    {
+      "table": "scorm_import_runs",
+      "name": "error",
+      "type": "text",
+      "nullable": true,
+      "ordinal_position": 8
+    },
+    {
+      "table": "scorm_import_runs",
+      "name": "lease",
+      "type": "uuid",
+      "nullable": true,
+      "ordinal_position": 9
+    },
+    {
+      "table": "scorm_import_runs",
+      "name": "lease_until",
+      "type": "timestamptz",
+      "nullable": true,
+      "ordinal_position": 10
+    },
+    {
+      "table": "scorm_import_runs",
+      "name": "updated_at",
+      "type": "timestamptz",
+      "nullable": false,
+      "ordinal_position": 11
+    },
+    {
+      "table": "scorm_topic_imports",
+      "name": "id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 1
+    },
+    {
+      "table": "scorm_topic_imports",
+      "name": "owner_id",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 2
+    },
+    {
+      "table": "scorm_topic_imports",
+      "name": "course_id",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 3
+    },
+    {
+      "table": "scorm_topic_imports",
+      "name": "topic_id",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 4
+    },
+    {
+      "table": "scorm_topic_imports",
+      "name": "fingerprint",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 5
+    },
+    {
+      "table": "scorm_topic_imports",
+      "name": "source",
+      "type": "jsonb",
+      "nullable": false,
+      "ordinal_position": 6
+    },
+    {
+      "table": "scorm_topic_imports",
+      "name": "hierarchy",
+      "type": "jsonb",
+      "nullable": false,
+      "ordinal_position": 7
+    },
+    {
+      "table": "scorm_topic_imports",
+      "name": "active",
+      "type": "bool",
+      "nullable": false,
+      "ordinal_position": 8
+    },
+    {
+      "table": "scorm_topic_imports",
+      "name": "imported_at",
+      "type": "timestamptz",
+      "nullable": false,
+      "ordinal_position": 9
+    },
+    {
+      "table": "signals",
+      "name": "id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 1
+    },
+    {
+      "table": "signals",
+      "name": "enrollment_id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 2
+    },
+    {
+      "table": "signals",
+      "name": "kind",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 3
+    },
+    {
+      "table": "signals",
+      "name": "module_id",
+      "type": "text",
+      "nullable": true,
+      "ordinal_position": 4
+    },
+    {
+      "table": "signals",
+      "name": "lesson",
+      "type": "text",
+      "nullable": true,
+      "ordinal_position": 5
+    },
+    {
+      "table": "signals",
+      "name": "payload",
+      "type": "jsonb",
+      "nullable": false,
+      "ordinal_position": 6
+    },
+    {
+      "table": "signals",
+      "name": "idempotency_key",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 7
+    },
+    {
+      "table": "signals",
+      "name": "used_in_plan_version",
+      "type": "int4",
+      "nullable": true,
+      "ordinal_position": 8
+    },
+    {
+      "table": "signals",
+      "name": "created_at",
+      "type": "timestamptz",
+      "nullable": false,
+      "ordinal_position": 9
+    },
+    {
+      "table": "step_progress",
+      "name": "enrollment_id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 1
+    },
+    {
+      "table": "step_progress",
+      "name": "module_id",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 2
+    },
+    {
+      "table": "step_progress",
+      "name": "stage",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 3
+    },
+    {
+      "table": "step_progress",
+      "name": "completed_at",
+      "type": "timestamptz",
+      "nullable": false,
+      "ordinal_position": 4
+    },
+    {
+      "table": "users",
+      "name": "id",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 1
+    },
+    {
+      "table": "users",
+      "name": "name",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 2
+    },
+    {
+      "table": "users",
+      "name": "email",
+      "type": "text",
+      "nullable": false,
+      "ordinal_position": 3
+    },
+    {
+      "table": "users",
+      "name": "created_at",
+      "type": "timestamptz",
+      "nullable": false,
+      "ordinal_position": 4
+    },
+    {
+      "table": "workflow_projects",
+      "name": "enrollment_id",
+      "type": "uuid",
+      "nullable": false,
+      "ordinal_position": 1
+    },
+    {
+      "table": "workflow_projects",
+      "name": "diagram",
+      "type": "jsonb",
+      "nullable": false,
+      "ordinal_position": 2
+    },
+    {
+      "table": "workflow_projects",
+      "name": "report",
+      "type": "jsonb",
+      "nullable": true,
+      "ordinal_position": 3
+    },
+    {
+      "table": "workflow_projects",
+      "name": "revision",
+      "type": "int4",
+      "nullable": false,
+      "ordinal_position": 4
+    },
+    {
+      "table": "workflow_projects",
+      "name": "updated_at",
+      "type": "timestamptz",
+      "nullable": false,
+      "ordinal_position": 5
+    }
+  ],
+  "foreignKeys": [
+    {
+      "child": "adaptation_jobs",
+      "type": "f",
+      "name": "adaptation_jobs_enrollment_id_enrollments_id_fk",
+      "parent": "enrollments",
+      "child_columns": [
+        "enrollment_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "c"
+    },
+    {
+      "child": "adapted_content",
+      "type": "f",
+      "name": "adapted_content_enrollment_id_enrollments_id_fk",
+      "parent": "enrollments",
+      "child_columns": [
+        "enrollment_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "c"
+    },
+    {
+      "child": "authored_project_submissions",
+      "type": "f",
+      "name": "authored_project_submissions_enrollment_id_enrollments_id_fk",
+      "parent": "enrollments",
+      "child_columns": [
+        "enrollment_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "c"
+    },
+    {
+      "child": "authored_project_submissions",
+      "type": "f",
+      "name": "authored_project_submissions_revision_id_creator_authored_cours",
+      "parent": "creator_authored_course_revisions",
+      "child_columns": [
+        "revision_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "a"
+    },
+    {
+      "child": "authored_project_work",
+      "type": "f",
+      "name": "authored_project_work_enrollment_id_enrollments_id_fk",
+      "parent": "enrollments",
+      "child_columns": [
+        "enrollment_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "c"
+    },
+    {
+      "child": "authored_project_work",
+      "type": "f",
+      "name": "authored_project_work_revision_id_creator_authored_course_revis",
+      "parent": "creator_authored_course_revisions",
+      "child_columns": [
+        "revision_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "a"
+    },
+    {
+      "child": "course_editions",
+      "type": "f",
+      "name": "course_editions_course_id_fkey",
+      "parent": "creator_courses",
+      "child_columns": [
+        "course_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "a"
+    },
+    {
+      "child": "course_editions",
+      "type": "f",
+      "name": "course_editions_review_id_fkey",
+      "parent": "creator_authored_course_reviews",
+      "child_columns": [
+        "review_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "a"
+    },
+    {
+      "child": "course_editions",
+      "type": "f",
+      "name": "course_editions_revision_id_fkey",
+      "parent": "creator_authored_course_revisions",
+      "child_columns": [
+        "revision_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "a"
+    },
+    {
+      "child": "creator_authored_course_audio",
+      "type": "f",
+      "name": "creator_authored_course_audio_course_id_creator_courses_id_fk",
+      "parent": "creator_courses",
+      "child_columns": [
+        "course_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "c"
+    },
+    {
+      "child": "creator_authored_course_audio",
+      "type": "f",
+      "name": "creator_authored_course_audio_owner_id_users_id_fk",
+      "parent": "users",
+      "child_columns": [
+        "owner_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "c"
+    },
+    {
+      "child": "creator_authored_course_audio",
+      "type": "f",
+      "name": "creator_authored_course_audio_revision_id_creator_authored_cour",
+      "parent": "creator_authored_course_revisions",
+      "child_columns": [
+        "revision_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "c"
+    },
+    {
+      "child": "creator_authored_course_reviews",
+      "type": "f",
+      "name": "creator_authored_course_reviews_course_id_creator_courses_id_fk",
+      "parent": "creator_courses",
+      "child_columns": [
+        "course_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "c"
+    },
+    {
+      "child": "creator_authored_course_reviews",
+      "type": "f",
+      "name": "creator_authored_course_reviews_reviewer_id_users_id_fk",
+      "parent": "users",
+      "child_columns": [
+        "reviewer_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "a"
+    },
+    {
+      "child": "creator_authored_course_reviews",
+      "type": "f",
+      "name": "creator_authored_course_reviews_revision_id_creator_authored_co",
+      "parent": "creator_authored_course_revisions",
+      "child_columns": [
+        "revision_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "c"
+    },
+    {
+      "child": "creator_authored_course_revisions",
+      "type": "f",
+      "name": "creator_authored_course_revisions_blueprint_run_id_creator_blue",
+      "parent": "creator_blueprints",
+      "child_columns": [
+        "blueprint_run_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "a"
+    },
+    {
+      "child": "creator_authored_course_revisions",
+      "type": "f",
+      "name": "creator_authored_course_revisions_course_id_creator_courses_id_",
+      "parent": "creator_courses",
+      "child_columns": [
+        "course_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "c"
+    },
+    {
+      "child": "creator_authored_course_revisions",
+      "type": "f",
+      "name": "creator_authored_course_revisions_created_by_users_id_fk",
+      "parent": "users",
+      "child_columns": [
+        "created_by"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "a"
+    },
+    {
+      "child": "creator_authored_course_revisions",
+      "type": "f",
+      "name": "creator_authored_course_revisions_owner_id_users_id_fk",
+      "parent": "users",
+      "child_columns": [
+        "owner_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "c"
+    },
+    {
+      "child": "creator_blueprints",
+      "type": "f",
+      "name": "creator_blueprints_course_id_creator_courses_id_fk",
+      "parent": "creator_courses",
+      "child_columns": [
+        "course_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "c"
+    },
+    {
+      "child": "creator_codex_grants",
+      "type": "f",
+      "name": "creator_codex_grants_course_id_creator_courses_id_fk",
+      "parent": "creator_courses",
+      "child_columns": [
+        "course_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "c"
+    },
+    {
+      "child": "creator_codex_grants",
+      "type": "f",
+      "name": "creator_codex_grants_owner_id_users_id_fk",
+      "parent": "users",
+      "child_columns": [
+        "owner_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "c"
+    },
+    {
+      "child": "creator_courses",
+      "type": "f",
+      "name": "creator_courses_owner_id_users_id_fk",
+      "parent": "users",
+      "child_columns": [
+        "owner_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "c"
+    },
+    {
+      "child": "creator_mcp_grants",
+      "type": "f",
+      "name": "creator_mcp_grants_owner_id_fkey",
+      "parent": "users",
+      "child_columns": [
+        "owner_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "c"
+    },
+    {
+      "child": "creator_production_audio",
+      "type": "f",
+      "name": "creator_production_audio_job_id_creator_production_jobs_id_fk",
+      "parent": "creator_production_jobs",
+      "child_columns": [
+        "job_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "c"
+    },
+    {
+      "child": "creator_production_audio",
+      "type": "f",
+      "name": "creator_production_audio_review_id_creator_script_reviews_id_fk",
+      "parent": "creator_script_reviews",
+      "child_columns": [
+        "review_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "a"
+    },
+    {
+      "child": "creator_production_audio",
+      "type": "f",
+      "name": "creator_production_audio_revision_id_creator_production_revisio",
+      "parent": "creator_production_revisions",
+      "child_columns": [
+        "revision_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "c"
+    },
+    {
+      "child": "creator_production_jobs",
+      "type": "f",
+      "name": "creator_production_jobs_approval_id_creator_sme_reviews_id_fk",
+      "parent": "creator_sme_reviews",
+      "child_columns": [
+        "approval_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "a"
+    },
+    {
+      "child": "creator_production_jobs",
+      "type": "f",
+      "name": "creator_production_jobs_course_id_creator_courses_id_fk",
+      "parent": "creator_courses",
+      "child_columns": [
+        "course_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "c"
+    },
+    {
+      "child": "creator_production_jobs",
+      "type": "f",
+      "name": "creator_production_jobs_run_id_creator_blueprints_id_fk",
+      "parent": "creator_blueprints",
+      "child_columns": [
+        "run_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "c"
+    },
+    {
+      "child": "creator_production_revisions",
+      "type": "f",
+      "name": "creator_production_revisions_created_by_users_id_fk",
+      "parent": "users",
+      "child_columns": [
+        "created_by"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "a"
+    },
+    {
+      "child": "creator_production_revisions",
+      "type": "f",
+      "name": "creator_production_revisions_job_id_creator_production_jobs_id_",
+      "parent": "creator_production_jobs",
+      "child_columns": [
+        "job_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "c"
+    },
+    {
+      "child": "creator_script_reviews",
+      "type": "f",
+      "name": "creator_script_reviews_job_id_creator_production_jobs_id_fk",
+      "parent": "creator_production_jobs",
+      "child_columns": [
+        "job_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "c"
+    },
+    {
+      "child": "creator_script_reviews",
+      "type": "f",
+      "name": "creator_script_reviews_reviewer_id_users_id_fk",
+      "parent": "users",
+      "child_columns": [
+        "reviewer_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "a"
+    },
+    {
+      "child": "creator_script_reviews",
+      "type": "f",
+      "name": "creator_script_reviews_revision_id_creator_production_revisions",
+      "parent": "creator_production_revisions",
+      "child_columns": [
+        "revision_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "c"
+    },
+    {
+      "child": "creator_sme_reviews",
+      "type": "f",
+      "name": "creator_sme_reviews_reviewer_id_users_id_fk",
+      "parent": "users",
+      "child_columns": [
+        "reviewer_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "a"
+    },
+    {
+      "child": "creator_sme_reviews",
+      "type": "f",
+      "name": "creator_sme_reviews_run_id_creator_blueprints_id_fk",
+      "parent": "creator_blueprints",
+      "child_columns": [
+        "run_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "c"
+    },
+    {
+      "child": "enrollments",
+      "type": "f",
+      "name": "enrollments_edition_id_fkey",
+      "parent": "course_editions",
+      "child_columns": [
+        "edition_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "a"
+    },
+    {
+      "child": "enrollments",
+      "type": "f",
+      "name": "enrollments_user_id_users_id_fk",
+      "parent": "users",
+      "child_columns": [
+        "user_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "c"
+    },
+    {
+      "child": "guided_project_submissions",
+      "type": "f",
+      "name": "guided_project_submissions_enrollment_id_fkey",
+      "parent": "enrollments",
+      "child_columns": [
+        "enrollment_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "c"
+    },
+    {
+      "child": "guided_project_submissions",
+      "type": "f",
+      "name": "guided_project_submissions_revision_id_fkey",
+      "parent": "creator_authored_course_revisions",
+      "child_columns": [
+        "revision_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "a"
+    },
+    {
+      "child": "guided_project_work",
+      "type": "f",
+      "name": "guided_project_work_enrollment_id_fkey",
+      "parent": "enrollments",
+      "child_columns": [
+        "enrollment_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "c"
+    },
+    {
+      "child": "guided_project_work",
+      "type": "f",
+      "name": "guided_project_work_revision_id_fkey",
+      "parent": "creator_authored_course_revisions",
+      "child_columns": [
+        "revision_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "a"
+    },
+    {
+      "child": "imported_course_progress",
+      "type": "f",
+      "name": "imported_course_progress_user_id_fkey",
+      "parent": "users",
+      "child_columns": [
+        "user_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "c"
+    },
+    {
+      "child": "learner_plans",
+      "type": "f",
+      "name": "learner_plans_enrollment_id_enrollments_id_fk",
+      "parent": "enrollments",
+      "child_columns": [
+        "enrollment_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "c"
+    },
+    {
+      "child": "module_evidence",
+      "type": "f",
+      "name": "module_evidence_enrollment_id_enrollments_id_fk",
+      "parent": "enrollments",
+      "child_columns": [
+        "enrollment_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "c"
+    },
+    {
+      "child": "platform_engagement",
+      "type": "f",
+      "name": "platform_engagement_user_id_users_id_fk",
+      "parent": "users",
+      "child_columns": [
+        "user_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "c"
+    },
+    {
+      "child": "professional_workspaces",
+      "type": "f",
+      "name": "professional_workspaces_user_id_users_id_fk",
+      "parent": "users",
+      "child_columns": [
+        "user_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "c"
+    },
+    {
+      "child": "profile_drafts",
+      "type": "f",
+      "name": "profile_drafts_user_id_users_id_fk",
+      "parent": "users",
+      "child_columns": [
+        "user_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "c"
+    },
+    {
+      "child": "profiles",
+      "type": "f",
+      "name": "profiles_user_id_users_id_fk",
+      "parent": "users",
+      "child_columns": [
+        "user_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "c"
+    },
+    {
+      "child": "project_work",
+      "type": "f",
+      "name": "project_work_enrollment_id_enrollments_id_fk",
+      "parent": "enrollments",
+      "child_columns": [
+        "enrollment_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "c"
+    },
+    {
+      "child": "published_authored_courses",
+      "type": "f",
+      "name": "published_authored_courses_course_id_creator_courses_id_fk",
+      "parent": "creator_courses",
+      "child_columns": [
+        "course_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "a"
+    },
+    {
+      "child": "published_authored_courses",
+      "type": "f",
+      "name": "published_authored_courses_published_by_users_id_fk",
+      "parent": "users",
+      "child_columns": [
+        "published_by"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "a"
+    },
+    {
+      "child": "published_authored_courses",
+      "type": "f",
+      "name": "published_authored_courses_review_id_creator_authored_course_re",
+      "parent": "creator_authored_course_reviews",
+      "child_columns": [
+        "review_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "a"
+    },
+    {
+      "child": "published_authored_courses",
+      "type": "f",
+      "name": "published_authored_courses_revision_id_creator_authored_course_",
+      "parent": "creator_authored_course_revisions",
+      "child_columns": [
+        "revision_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "a"
+    },
+    {
+      "child": "scorm_connections",
+      "type": "f",
+      "name": "scorm_connections_target_course_id_fkey",
+      "parent": "creator_courses",
+      "child_columns": [
+        "target_course_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "a"
+    },
+    {
+      "child": "scorm_import_runs",
+      "type": "f",
+      "name": "scorm_import_runs_connection_id_fkey",
+      "parent": "scorm_connections",
+      "child_columns": [
+        "connection_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "a"
+    },
+    {
+      "child": "scorm_topic_imports",
+      "type": "f",
+      "name": "scorm_topic_imports_owner_id_fkey",
+      "parent": "users",
+      "child_columns": [
+        "owner_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "c"
+    },
+    {
+      "child": "signals",
+      "type": "f",
+      "name": "signals_enrollment_id_enrollments_id_fk",
+      "parent": "enrollments",
+      "child_columns": [
+        "enrollment_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "c"
+    },
+    {
+      "child": "step_progress",
+      "type": "f",
+      "name": "step_progress_enrollment_id_enrollments_id_fk",
+      "parent": "enrollments",
+      "child_columns": [
+        "enrollment_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "c"
+    },
+    {
+      "child": "workflow_projects",
+      "type": "f",
+      "name": "workflow_projects_enrollment_id_enrollments_id_fk",
+      "parent": "enrollments",
+      "child_columns": [
+        "enrollment_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "on_delete": "c"
+    }
+  ],
+  "uniqueConstraints": [
+    {
+      "child": "adaptation_jobs",
+      "type": "u",
+      "name": "adaptation_jobs_fingerprint_unique",
+      "parent": null,
+      "child_columns": [
+        "fingerprint"
+      ],
+      "parent_columns": null,
+      "on_delete": " "
+    },
+    {
+      "child": "adaptation_jobs",
+      "type": "p",
+      "name": "adaptation_jobs_pkey",
+      "parent": null,
+      "child_columns": [
+        "id"
+      ],
+      "parent_columns": null,
+      "on_delete": " "
+    },
+    {
+      "child": "adapted_content",
+      "type": "p",
+      "name": "adapted_content_pkey",
+      "parent": null,
+      "child_columns": [
+        "id"
+      ],
+      "parent_columns": null,
+      "on_delete": " "
+    },
+    {
+      "child": "authored_project_submissions",
+      "type": "p",
+      "name": "authored_project_submissions_pkey",
+      "parent": null,
+      "child_columns": [
+        "id"
+      ],
+      "parent_columns": null,
+      "on_delete": " "
+    },
+    {
+      "child": "authored_project_work",
+      "type": "p",
+      "name": "authored_project_work_enrollment_id_revision_id_pk",
+      "parent": null,
+      "child_columns": [
+        "enrollment_id",
+        "revision_id"
+      ],
+      "parent_columns": null,
+      "on_delete": " "
+    },
+    {
+      "child": "course_editions",
+      "type": "p",
+      "name": "course_editions_pkey",
+      "parent": null,
+      "child_columns": [
+        "id"
+      ],
+      "parent_columns": null,
+      "on_delete": " "
+    },
+    {
+      "child": "creator_authored_course_audio",
+      "type": "p",
+      "name": "creator_authored_course_audio_pkey",
+      "parent": null,
+      "child_columns": [
+        "id"
+      ],
+      "parent_columns": null,
+      "on_delete": " "
+    },
+    {
+      "child": "creator_authored_course_reviews",
+      "type": "p",
+      "name": "creator_authored_course_reviews_pkey",
+      "parent": null,
+      "child_columns": [
+        "id"
+      ],
+      "parent_columns": null,
+      "on_delete": " "
+    },
+    {
+      "child": "creator_authored_course_revisions",
+      "type": "p",
+      "name": "creator_authored_course_revisions_pkey",
+      "parent": null,
+      "child_columns": [
+        "id"
+      ],
+      "parent_columns": null,
+      "on_delete": " "
+    },
+    {
+      "child": "creator_blueprints",
+      "type": "p",
+      "name": "creator_blueprints_pkey",
+      "parent": null,
+      "child_columns": [
+        "id"
+      ],
+      "parent_columns": null,
+      "on_delete": " "
+    },
+    {
+      "child": "creator_codex_grants",
+      "type": "p",
+      "name": "creator_codex_grants_pkey",
+      "parent": null,
+      "child_columns": [
+        "id"
+      ],
+      "parent_columns": null,
+      "on_delete": " "
+    },
+    {
+      "child": "creator_codex_grants",
+      "type": "u",
+      "name": "creator_codex_grants_token_hash_unique",
+      "parent": null,
+      "child_columns": [
+        "token_hash"
+      ],
+      "parent_columns": null,
+      "on_delete": " "
+    },
+    {
+      "child": "creator_courses",
+      "type": "p",
+      "name": "creator_courses_pkey",
+      "parent": null,
+      "child_columns": [
+        "id"
+      ],
+      "parent_columns": null,
+      "on_delete": " "
+    },
+    {
+      "child": "creator_mcp_grants",
+      "type": "p",
+      "name": "creator_mcp_grants_pkey",
+      "parent": null,
+      "child_columns": [
+        "id"
+      ],
+      "parent_columns": null,
+      "on_delete": " "
+    },
+    {
+      "child": "creator_mcp_grants",
+      "type": "u",
+      "name": "creator_mcp_grants_token_hash_key",
+      "parent": null,
+      "child_columns": [
+        "token_hash"
+      ],
+      "parent_columns": null,
+      "on_delete": " "
+    },
+    {
+      "child": "creator_production_audio",
+      "type": "p",
+      "name": "creator_production_audio_pkey",
+      "parent": null,
+      "child_columns": [
+        "id"
+      ],
+      "parent_columns": null,
+      "on_delete": " "
+    },
+    {
+      "child": "creator_production_jobs",
+      "type": "p",
+      "name": "creator_production_jobs_pkey",
+      "parent": null,
+      "child_columns": [
+        "id"
+      ],
+      "parent_columns": null,
+      "on_delete": " "
+    },
+    {
+      "child": "creator_production_revisions",
+      "type": "p",
+      "name": "creator_production_revisions_pkey",
+      "parent": null,
+      "child_columns": [
+        "id"
+      ],
+      "parent_columns": null,
+      "on_delete": " "
+    },
+    {
+      "child": "creator_script_reviews",
+      "type": "p",
+      "name": "creator_script_reviews_pkey",
+      "parent": null,
+      "child_columns": [
+        "id"
+      ],
+      "parent_columns": null,
+      "on_delete": " "
+    },
+    {
+      "child": "creator_sme_reviews",
+      "type": "p",
+      "name": "creator_sme_reviews_pkey",
+      "parent": null,
+      "child_columns": [
+        "id"
+      ],
+      "parent_columns": null,
+      "on_delete": " "
+    },
+    {
+      "child": "enrollments",
+      "type": "p",
+      "name": "enrollments_pkey",
+      "parent": null,
+      "child_columns": [
+        "id"
+      ],
+      "parent_columns": null,
+      "on_delete": " "
+    },
+    {
+      "child": "guided_project_submissions",
+      "type": "p",
+      "name": "guided_project_submissions_pkey",
+      "parent": null,
+      "child_columns": [
+        "id"
+      ],
+      "parent_columns": null,
+      "on_delete": " "
+    },
+    {
+      "child": "guided_project_work",
+      "type": "p",
+      "name": "guided_project_work_pkey",
+      "parent": null,
+      "child_columns": [
+        "enrollment_id",
+        "revision_id"
+      ],
+      "parent_columns": null,
+      "on_delete": " "
+    },
+    {
+      "child": "imported_course_progress",
+      "type": "p",
+      "name": "imported_course_progress_pkey",
+      "parent": null,
+      "child_columns": [
+        "user_id",
+        "course_id",
+        "module_id",
+        "revision"
+      ],
+      "parent_columns": null,
+      "on_delete": " "
+    },
+    {
+      "child": "learner_plans",
+      "type": "p",
+      "name": "learner_plans_pkey",
+      "parent": null,
+      "child_columns": [
+        "id"
+      ],
+      "parent_columns": null,
+      "on_delete": " "
+    },
+    {
+      "child": "module_evidence",
+      "type": "p",
+      "name": "module_evidence_pkey",
+      "parent": null,
+      "child_columns": [
+        "id"
+      ],
+      "parent_columns": null,
+      "on_delete": " "
+    },
+    {
+      "child": "platform_engagement",
+      "type": "p",
+      "name": "platform_engagement_pkey",
+      "parent": null,
+      "child_columns": [
+        "user_id"
+      ],
+      "parent_columns": null,
+      "on_delete": " "
+    },
+    {
+      "child": "professional_workspaces",
+      "type": "p",
+      "name": "professional_workspaces_pkey",
+      "parent": null,
+      "child_columns": [
+        "user_id"
+      ],
+      "parent_columns": null,
+      "on_delete": " "
+    },
+    {
+      "child": "profile_drafts",
+      "type": "p",
+      "name": "profile_drafts_pkey",
+      "parent": null,
+      "child_columns": [
+        "user_id"
+      ],
+      "parent_columns": null,
+      "on_delete": " "
+    },
+    {
+      "child": "profiles",
+      "type": "p",
+      "name": "profiles_pkey",
+      "parent": null,
+      "child_columns": [
+        "user_id"
+      ],
+      "parent_columns": null,
+      "on_delete": " "
+    },
+    {
+      "child": "project_work",
+      "type": "p",
+      "name": "project_work_pkey",
+      "parent": null,
+      "child_columns": [
+        "enrollment_id"
+      ],
+      "parent_columns": null,
+      "on_delete": " "
+    },
+    {
+      "child": "published_authored_courses",
+      "type": "p",
+      "name": "published_authored_courses_pkey",
+      "parent": null,
+      "child_columns": [
+        "course_id"
+      ],
+      "parent_columns": null,
+      "on_delete": " "
+    },
+    {
+      "child": "scorm_connections",
+      "type": "p",
+      "name": "scorm_connections_pkey",
+      "parent": null,
+      "child_columns": [
+        "id"
+      ],
+      "parent_columns": null,
+      "on_delete": " "
+    },
+    {
+      "child": "scorm_import_runs",
+      "type": "p",
+      "name": "scorm_import_runs_pkey",
+      "parent": null,
+      "child_columns": [
+        "id"
+      ],
+      "parent_columns": null,
+      "on_delete": " "
+    },
+    {
+      "child": "scorm_topic_imports",
+      "type": "p",
+      "name": "scorm_topic_imports_pkey",
+      "parent": null,
+      "child_columns": [
+        "id"
+      ],
+      "parent_columns": null,
+      "on_delete": " "
+    },
+    {
+      "child": "signals",
+      "type": "u",
+      "name": "signals_idempotency_key_unique",
+      "parent": null,
+      "child_columns": [
+        "idempotency_key"
+      ],
+      "parent_columns": null,
+      "on_delete": " "
+    },
+    {
+      "child": "signals",
+      "type": "p",
+      "name": "signals_pkey",
+      "parent": null,
+      "child_columns": [
+        "id"
+      ],
+      "parent_columns": null,
+      "on_delete": " "
+    },
+    {
+      "child": "step_progress",
+      "type": "p",
+      "name": "step_progress_enrollment_id_module_id_stage_pk",
+      "parent": null,
+      "child_columns": [
+        "enrollment_id",
+        "module_id",
+        "stage"
+      ],
+      "parent_columns": null,
+      "on_delete": " "
+    },
+    {
+      "child": "users",
+      "type": "p",
+      "name": "users_pkey",
+      "parent": null,
+      "child_columns": [
+        "id"
+      ],
+      "parent_columns": null,
+      "on_delete": " "
+    },
+    {
+      "child": "workflow_projects",
+      "type": "p",
+      "name": "workflow_projects_pkey",
+      "parent": null,
+      "child_columns": [
+        "enrollment_id"
+      ],
+      "parent_columns": null,
+      "on_delete": " "
+    }
+  ]
+}

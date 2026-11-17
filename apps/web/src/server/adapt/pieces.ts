@@ -5,6 +5,9 @@ import type { AdaptedPiece } from "@/server/db/schema";
 import type { Clip } from "./tts";
 import { hookScenes } from '@/lib/video-first-hook';
 import { conceptTemplate, conceptNarration, type PersonalizedConcept } from '@/lib/personalized-concept';
+import { healthcareAutomationConcept } from '@/lib/healthcare-automation-concept';
+import { automationAiLesson } from '@/lib/automation-ai-lesson';
+import { profileProductionHook } from '@/lib/profile-production-hook';
 
 /**
  * The pieces of a module that are rewritten for each learner, in the order
@@ -21,8 +24,10 @@ export type PieceDef = {
   clips: (content: unknown) => Clip[];
 };
 
-export function conceptPiece(video: ConceptVideo): PieceDef {
-  return { piece: `concept:${video.id}`, label: 'a personalized illustrated concept lesson from a reviewed source transcript, preserving its checkpoint boundary', authored: conceptTemplate(video),
+export function conceptPiece(video: ConceptVideo, courseId = '', context?: unknown): PieceDef {
+  const source = conceptTemplate(video);
+  const authored = automationAiLesson(source, courseId, video.title, context) ?? healthcareAutomationConcept(source, courseId, video.title, context) ?? source;
+  return { piece: `concept:${video.id}`, label: 'a personalized illustrated concept lesson from a reviewed source transcript, preserving its checkpoint boundary', authored,
     clips: content => (content as PersonalizedConcept).scenes.map((s, i) => ({ key: `scene${i}`, text: conceptNarration(s) })) };
 }
 
@@ -47,13 +52,13 @@ const hookClips = (c: unknown): Clip[] => {
 
 const videoClips = (c: unknown): Clip[] => (c as ConceptVideo).slides.map((s, i) => ({ key: `s${i}`, text: s.narration }));
 
-export function piecesOf(mod: ModuleContent): PieceDef[] {
+export function piecesOf(mod: ModuleContent, courseId = '', context?: unknown): PieceDef[] {
   if (mod.videoFirstActivities) {
     const a = mod.videoFirstActivities;
     // Keep each activity small enough to prepare independently. Narration must
     // not disclose model answers before the learner attempts the practice.
     return ([
-      ['hook', { problemHook: a.problemHook }],
+      ['hook', { problemHook: profileProductionHook(a.problemHook, courseId, context) }],
       ['worked', { workedExamples: a.workedExamples }],
       ['guided', { guidedPractice: a.guidedPractice }],
       ['lab', { scenarioLab: a.scenarioLab }],

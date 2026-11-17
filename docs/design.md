@@ -1,5 +1,35 @@
 # Learning experience UI
 
+The AI Agent enrollment opens with a Starting point step for LLMs and chatbots.
+Each topic has a labelled familiarity radio group; a claimed familiarity reveals
+a brief ungraded concept question. Results distinguish the learner's answer from
+the concept check, focus the result heading, explain the recommendation and show
+matching published introductions. A missing course is stated explicitly; optional
+local primer disclosures remain available. Continuing is a separate, clearly
+labelled choice and does not enroll until Start learning is chosen later. Existing
+Surface/Button tokens, radio focus states and contrast adapt to both themes;
+no motion is required. Existing enrolled learners still open their setup normally.
+
+The Healthcare Automation vs AI derivative uses a labelled clinic-reception SVG
+instead of the factory illustration. Its sequence shows appointment requests,
+fixed rules and a reception queue before the checkpoint, then queue history,
+pattern finding and staff review afterwards. Text and an accessible diagram
+description communicate the sequence without motion or color alone; reduced
+motion freezes the emphasis. Original recording remains a separate video mode.
+
+The course-brief form has a labelled optional System prompt textarea with existing
+theme/focus tokens and the normal saved/unsaved draft behavior. Its hint separates
+creator instructions from SME evidence and identifies the generation stages that
+consume it.
+
+The video-first course brief separates module instructions from SME evidence.
+Each outline module has a labelled, keyboard-accessible instructions disclosure
+with objective/dependency checkboxes and scope, exclusions, prerequisites and
+teaching-note text fields. The generation panel uses a Module workspace selector,
+shows only that module's readiness gaps and preview, and keeps generation disabled
+until input is saved. Existing theme tokens and focus styles apply; no new motion
+is introduced. Draft creation remains visibly distinct from human approval.
+
 The authored capstone now embeds a practical project workspace when configured: numbered instructions and deliverable, editable artifact fields, ordered step cards with operation/output/expression controls, sample inputs and test cases, rubric weights, and Run/Test/Save/Submit actions. Output traces and criterion-level feedback are readable in place. Test feedback is labelled practice; only a passing recorded submission enables Continue. Edits clear stale results; reset/reload use explicit replacement dialogs and unsaved-navigation protection. Controls use existing semantic labels, fieldsets, focus styles and tokens; no motion is added. A full in-course workspace route is also available. Legacy projects keep their current UI.
 
 Authored modules with a moduleQuiz show a final Quiz part after Scenario Lab in the existing course outline. The quiz shows its authored title/instructions and configured or inherited pass threshold. Questions explicitly say Select one answer or Select all correct answers; multi-answer choices use the existing accessible checkbox list. Multiple-answer midpoint overlays require an explicit Check answers action, retain selections until retry, and show hints on failure. Exact-set scoring is explained before summative quizzes. Creator previews show module question counts, select-all counts and pass percentages; exported decks include module quizzes and selection instructions. Existing courses without quizzes keep their previous presentation.
@@ -213,3 +243,38 @@ Uploaded concept lessons offer Personalised video / Original recording. The pers
 
 
 The connected importer presents source selection, coverage, import, preparation, review and publication as distinct steps. Original objectives appear alongside editable proposed outcomes, with an explicit review checkbox. Source conflicts require per-field creator decisions. Learners see an edition-upgrade notice only when a newer course edition is available; its explanation makes the fresh enrollment and preserved earlier history explicit.
+
+Global learner profiling ends with a personal thank-you and a single finite constellation/check animation. Three quiet annotations explain how answers inform examples, explanations and support; the screen never claims that course generation has completed. Answer details remain available in a collapsed "Review my answers" disclosure. The existing save/Continue and confirmed restart flows remain intact, as does the separate course-enrollment summary. The completion uses field-accent/theme tokens, responsive sizing and the existing focused heading. Animations are disabled for system reduced motion, saved comfort preferences and a motion preference chosen during the current interview, before that preference is finally saved.
+
+The profile-completion action now says "See my course suggestions" and saves before opening a dedicated recommendation page. Suggestions use a ranked list with course-specific explanations, actual course duration/module metadata, an existing-enrollment label where applicable and an Explore course link. General catalog options are labelled honestly when no subject-specific match is available. There are no match percentages, inferred learner levels, automatic enrollments or forced course choices. Browse all courses, return to the original destination and Update my profile remain visible. The list uses the shared light/dark and field-accent tokens and stacks its actions on narrow screens.
+
+Personalized concept playback now paginates each section's unchanged narration into readable teaching slides, followed by its learner-context explanation. Slides advance from the audio clock in both scene and continuous players, including seek/replay; pauses and speed changes require no separate timers. Timing is estimated by word count over the measured clip duration (not forced word alignment). Existing narration, original recordings, checkpoint/completion rules and saved revisions remain unchanged. Reduced motion disables transitions while retaining teaching progression.
+
+# Animated teaching diagrams
+
+Video-first personalized concepts and cases now have a Chalkboard MP4 path.
+Concise labels accompany animated document routing, conditions, learned trends,
+token flow and evidence checks. Narration paragraphs remain in optional captions
+and transcripts, rather than filling the visual canvas. The player has a single
+timeline and explicit play/pause, speed, mute, captions and fullscreen controls;
+it never autoplays. Original recordings/cases remain accessible while rendering
+or on failure. A prerequisite panel links to an unresolved foundation without
+claiming proficiency from profile answers. See `docs/chalkboard-video.md`.
+
+Directed visual delivery uses persistent compositions with one meaningful
+reveal at a time, source-anchored timing and stable reading holds. The fictional
+finance illustration is used only to establish context; it is never evidence.
+The final learner question stays neutral. Both captions and original recordings
+remain available. Visual quality and renderer research are documented in
+`docs/chalkboard-visual-quality.md`.
+
+Hybrid lesson visuals use Remotion document, spreadsheet, prompt and retrieval
+scenes alongside Manim physical diagrams. Explicit cues reveal at spoken anchors
+with 1.2-second Remotion transitions; the finished composition holds for reading.
+Uncued structural diagram layers appear together, avoiding disconnected arrows.
+Neutral questions, captions, original-recording access and player controls remain.
+See `docs/hybrid-video-rendering.md` for the inspected Module 1 outputs.
+
+Automation vs AI uses distinct rule-routing, intent interpretation, same-input comparison, machine condition, reviewed workflow and recap compositions. Profile-matched examples share one narrative; visual reveals follow locally aligned speech and hold for reading. The full-course edition also depicts the oversized-part exception and threshold-versus-prediction contrast. See [Automation/AI explainer](automation-ai-explainer.md).
+
+Generated topic videos follow the creator's narrative demonstration reference: source-supported fictional workspaces, readable annotations and state changes matched to speech. The shared dark/rose art direction retains different mechanism, conversation, document and comparison treatments. Original recordings remain separately selectable. See [video rollout](reference-style-videos.md).

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>My Evidence — Proofcraft</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body data-bot-page="evidence" data-bot-topic="Learning evidence">
+<div id="topbar"></div>
+
+<div class="container">
+  <div class="page-head">
+    <div class="eyebrow">Learning evidence</div>
+    <div class="head-row">
+      <h1 id="headline">Your evidence</h1>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="chip" id="view-label">My view · includes gaps</span>
+        <button class="btn btn-ghost btn-sm" id="btn-proof">Switch to proof view</button>
+      </div>
+    </div>
+    <p class="lede" id="sub"></p>
+  </div>
+
+  <div id="content"></div>
+  <div style="height:90px"></div>
+</div>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+<script>
+topbar("evidence");
+const lm = lmGet();
+const p = pgGet();
+const content = document.getElementById("content");
+
+if (!lm && gatesPassedCount() === 0 && !finalPassed()) {
+  content.innerHTML = `
+    <div class="card" style="text-align:center;padding:50px 24px">
+      <h2>Nothing to prove yet — and that's fine.</h2>
+      <p class="lede" style="max-width:420px;margin:12px auto 20px">
+        Evidence appears here as you demonstrate abilities: passed gates, handled scenarios, submitted projects.
+        It's not a certificate you receive — it's a record you earn.
+      </p>
+      <a class="btn btn-primary" href="course.html">Start the course →</a>
+    </div>`;
+} else {
+  renderEvidence(false);
+}
+
+function confidence() {
+  const gates = COURSE.modules.map((m) => gateScore(m.n)).filter(Boolean);
+  const conceptual = gates.length ? gates.reduce((s, g) => s + g.score / g.total, 0) / COURSE.modules.length : 0;
+  const p = pgGet();
+  const application = (p.scenarios ? p.scenarios.length : 0) / COURSE.modules.length;
+  const solving = Object.keys(p.projects || {}).length / COURSE.modules.length;
+  const independent = p.final ? p.final.score / p.final.total : 0;
+  const lvl = (v) => v >= 0.75 ? ["Strong", "strong"] : v >= 0.4 ? ["Developing", "developing"] : v > 0 ? ["Emerging", "emerging"] : ["Not yet shown", "emerging"];
+  return [
+    { name: "Conceptual understanding", v: conceptual, note: "from mastery gates" },
+    { name: "Application", v: application, note: "from adaptive scenarios" },
+    { name: "Problem solving", v: solving, note: "from mini projects" },
+    { name: "Independent execution", v: independent, note: "from the final build" },
+  ].map((d) => ({ ...d, level: lvl(d.v) }));
+}
+
+function renderEvidence(proofView) {
+  const p = pgGet();
+  const gatesN = gatesPassedCount();
+  const scen = p.scenarios ? p.scenarios.length : 0;
+  const proj = Object.keys(p.projects || {}).length;
+  const dims = confidence();
+
+  // recent evidence feed
+  const feed = [];
+  COURSE.modules.forEach((m) => {
+    const g = gateScore(m.n);
+    if (g) feed.push(g.passed
+      ? `Passed the Module ${m.n} mastery gate — ${g.score}/${g.total}`
+      : `Attempted Module ${m.n} gate — ${g.score}/${g.total} (gap flagged)`);
+    if ((p.scenarios || []).includes(m.n)) feed.push(`Handled the "${m.scenario.title}" scenario`);
+    if (p.projects && p.projects[m.n]) feed.push(`Submitted mini project: ${m.project.title}`);
+    (p.interventions || []).filter((iv) => iv.n === m.n).forEach((iv) => {
+      feed.push(iv.correct
+        ? `Explained a concept at the 2-minute checkpoint without help`
+        : `Needed a correction at a checkpoint — revisited later`);
+    });
+  });
+  if (p.final) feed.push(p.final.passed
+    ? `Completed the independent build: ${COURSE.evidence.independentTask.title}`
+    : `Attempted the independent build — ${p.final.score}/${p.final.total}`);
+
+  const abilities = COURSE.evidence.abilities.map((a) => ({
+    ...a,
+    verified: a.needs.every((n) => gatePassed(n)),
+  }));
+  const headline = proofView
+    ? (finalPassed() ? "Capability proven." : "Capability in progress.")
+    : "Your evidence";
+
+  document.getElementById("headline").textContent = headline;
+  document.getElementById("sub").innerHTML = proofView
+    ? `A shareable record of demonstrated ability — only verified items shown.`
+    : `${COURSE.title} — what you've demonstrated so far, what's still open, and what the numbers mean.`;
+  document.getElementById("view-label").textContent = proofView ? "Proof view · verified only" : "My view · includes gaps";
+  document.getElementById("btn-proof").textContent = proofView ? "Back to my view" : "Switch to proof view";
+
+  const gapItems = COURSE.evidence.abilities.length - abilities.filter((a) => a.verified).length;
+
+  content.innerHTML = `
+    <div class="ev-grid">
+      <div>
+        <div class="card">
+          <span class="chip accent">${COURSE.title}</span>
+          <h2 style="margin-top:14px">${lm && lm.intended_use ? `Your goal: "${lm.intended_use}"` : COURSE.goal}</h2>
+          <hr class="divider" />
+          <div class="eyebrow">You demonstrated your ability to</div>
+          ${abilities.map((a) => `
+            <div class="ev-ability">
+              <span class="ev-check ${a.verified ? "on" : ""}">${a.verified ? "✓" : ""}</span>
+              <div>
+                <div style="font-weight:500">${a.text}</div>
+                ${!proofView && !a.verified ? `<div style="font-size:.8rem;color:var(--faint)">Not yet demonstrated — needs Module ${a.needs.find((n) => !gatePassed(n))}'s gate</div>` : ""}
+              </div>
+            </div>`).join("")}
+        </div>
+
+        <div class="card">
+          <div class="eyebrow">Application</div>
+          <div class="stat-row"><span>Scenario challenges</span><strong>${scen}/${COURSE.modules.length}</strong></div>
+          <div class="stat-row"><span>Mini projects</span><strong>${proj}/${COURSE.modules.length}</strong></div>
+          <div class="stat-row"><span>Mastery gates</span><strong>${gatesN}/${COURSE.modules.length}</strong></div>
+        </div>
+
+        <div class="card">
+          <div class="eyebrow">Independent task</div>
+          ${finalPassed() ? `
+            <h3>${COURSE.evidence.independentTask.title}</h3>
+            <p class="lede" style="font-size:.9rem;margin-top:6px">${COURSE.evidence.independentTask.note} Score: ${p.final.score}/${p.final.total}.</p>`
+          : `<p class="empty-note">Unlocks after all 5 mastery gates — a stakeholder brief, no hints, no guided steps.</p>`}
+        </div>
+
+        ${p.final && p.final.reflection ? `
+        <div class="card">
+          <div class="eyebrow">Your reflection</div>
+          <p class="reflection">"${p.final.reflection}"</p>
+        </div>` : ""}
+      </div>
+
+      <div>
+        <div class="card">
+          <div class="eyebrow">Confidence by dimension</div>
+          ${dims.map((d) => `
+            <div class="dim">
+              <div class="dim-head"><span>${d.name}</span><span class="dim-level ${d.level[1]}">${d.level[0]}</span></div>
+              <div class="meter"><div style="width:${Math.round(d.v * 100)}%;background:${d.v >= 0.75 ? "var(--good)" : d.v >= 0.4 ? "var(--gold)" : "var(--faint)"}"></div></div>
+              <div style="font-size:.74rem;color:var(--faint);margin-top:3px">${d.note}</div>
+            </div>`).join("")}
+        </div>
+
+        <div class="card">
+          <div class="eyebrow">Recent evidence</div>
+          <ul class="ev-feed">${feed.slice(-7).reverse().map((f) =>
+            `<li class="${f.includes("gap") || f.includes("correction") || f.includes("Attempted") ? "partial" : ""}">${f}</li>`).join("") ||
+            `<li class="partial">Nothing logged yet — start with Module 1</li>`}</ul>
+          ${!proofView && gapItems > 0 ? `<div class="chip warn" style="margin-top:12px">${gapItems} abilit${gapItems === 1 ? "y" : "ies"} still open</div>` : ""}
+        </div>
+
+        <p class="proof-note">${
+          proofView
+            ? "Proof view shows only verified abilities — this is the version a mentor or employer sees."
+            : "This page is not a certificate. Certificates say you sat through something; this says what you can do."
+        }</p>
+      </div>
+    </div>`;
+
+  document.getElementById("btn-proof").onclick = () => renderEvidence(!proofView);
+}
+</script>
+<script src="bot.js"></script>
+</body>
+</html>

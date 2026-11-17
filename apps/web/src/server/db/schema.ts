@@ -196,6 +196,17 @@ export const creatorCodexGrants = pgTable('creator_codex_grants', {
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 });
 
+/** Short-lived creator-workspace MCP grants never expand existing course grants. */
+export const creatorMcpGrants = pgTable('creator_mcp_grants', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  ownerId: text('owner_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  tokenHash: text('token_hash').notNull().unique(),
+  allowPublication: boolean('allow_publication').notNull().default(false),
+  expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+  revokedAt: timestamp('revoked_at', { withTimezone: true }),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
 /** Locally rendered narration belongs to an immutable course package revision. */
 export const creatorAuthoredCourseAudio = pgTable('creator_authored_course_audio', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -398,19 +409,6 @@ export const adaptedContent = pgTable(
   (t) => [uniqueIndex("adapted_content_piece").on(t.enrollmentId, t.moduleId, t.piece)],
 );
 
-/**
- * The retired Python mini project ("Code and run"): learners' files and last
- * test report, kept so nothing they wrote is lost. Nothing writes to it now.
- */
-export const projectWork = pgTable("project_work", {
-  enrollmentId: uuid("enrollment_id")
-    .primaryKey()
-    .references(() => enrollments.id, { onDelete: "cascade" }),
-  files: jsonb("files").$type<Record<string, string>>().notNull(),
-  report: jsonb("report").$type<Record<string, unknown>>(),
-  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
-});
-
 /** The mini project: the agent's workflow, as the learner drew it. */
 export const workflowProjects = pgTable("workflow_projects", {
   enrollmentId: uuid("enrollment_id").primaryKey().references(() => enrollments.id, { onDelete: "cascade" }),
@@ -469,3 +467,27 @@ export const professionalWorkspaces = pgTable("professional_workspaces", {
   state: jsonb("state").$type<Workspace>().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
+
+/** Edition-bound pilot evidence. Correct answers stay in the server policy. */
+export const knowledgeAttempts = pgTable('knowledge_attempts', {
+  id: uuid('id').primaryKey().defaultRandom(), enrollmentId: uuid('enrollment_id').notNull().references(() => enrollments.id, { onDelete: 'cascade' }),
+  policyKey: text('policy_key').notNull(), topicId: text('topic_id').notNull(), kind: text('kind').notNull(),
+  questionIds: jsonb('question_ids').$type<string[]>().notNull(), responses: jsonb('responses').$type<Record<string, number[]>>(),
+  passed: boolean('passed'), createdAt: created(), submittedAt: timestamp('submitted_at', { withTimezone: true }),
+}, t => [uniqueIndex('knowledge_one_diagnostic').on(t.enrollmentId, t.policyKey, t.topicId).where(sql`${t.kind} = 'diagnostic'`)]);
+export const topicProgress = pgTable('topic_progress', {
+  enrollmentId: uuid('enrollment_id').notNull().references(() => enrollments.id, { onDelete: 'cascade' }),
+  policyKey: text('policy_key').notNull(), topicId: text('topic_id').notNull(), disposition: text('disposition').notNull(),
+  attemptId: uuid('attempt_id').references(() => knowledgeAttempts.id), updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+}, t => [primaryKey({ columns: [t.enrollmentId, t.policyKey, t.topicId] })]);
+export const learningReviews = pgTable('learning_reviews', {
+  enrollmentId: uuid('enrollment_id').notNull().references(() => enrollments.id, { onDelete: 'cascade' }),
+  policyKey: text('policy_key').notNull(), topicId: text('topic_id').notNull(), reason: text('reason').notNull(),
+  completedAt: timestamp('completed_at', { withTimezone: true }), updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+}, t => [primaryKey({ columns: [t.enrollmentId, t.policyKey, t.topicId] })]);
+export const learningTutorSessions = pgTable('learning_tutor_sessions', {
+  id: uuid('id').primaryKey().defaultRandom(), enrollmentId: uuid('enrollment_id').notNull().references(() => enrollments.id, { onDelete: 'cascade' }),
+  policyKey: text('policy_key').notNull(), topicId: text('topic_id').notNull(),
+  messages: jsonb('messages').$type<{ role: 'user' | 'assistant'; text: string; source?: {title: string; href: string}; mode?: string }[]>().notNull().default([]),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+}, t => [uniqueIndex('learning_tutor_topic').on(t.enrollmentId, t.policyKey, t.topicId)]);

@@ -1,0 +1,12 @@
+# Optional native video renderer; no extra model or TTS provider is needed.
+-r requirements.txt
+manim==0.21.0
+numpy==2.2.6
+scipy==1.15.3
+faster-whisper==1.2.1
+ctranslate2==4.6.0
+tokenizers==0.21.4
+huggingface-hub==0.36.0
+onnxruntime==1.22.1
+setuptools==75.8.0
+pillow==11.3.0

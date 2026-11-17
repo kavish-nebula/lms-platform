@@ -1,5 +1,98 @@
 # Current learning experience extension
 
+New enrollments can run an advisory prerequisite step before quick setup. The
+AI Agent course explicitly checks LLM and chatbot familiarity; other courses can
+declare `Course.prerequisiteTopics`, and an empty declaration disables the default.
+Pure `course-prerequisites` functions separate self-reported familiarity from a
+short observed concept response, then match only learner-visible course/module
+metadata. No profile, enrollment, score, progress or external AI write occurs
+during this step. Missing catalog coverage is disclosed with a short local primer.
+Learners may study a suggested introduction or explicitly continue to setup.
+Only actual enrollment retains a bounded, course-local interview summary through
+the existing versioned enrollment path; the global profile is unchanged. Existing
+enrollments keep their setup/progress and do not acquire a new gate. No schema
+migration, final-assessment change or automatic enrollment is introduced. Run
+`node tests/backend/run.mjs course-prerequisites` from `apps/web` for regressions.
+
+The requested Healthcare Automation vs AI derivative is selected from the saved
+learner field within the concept-piece template for Production Module 1 only.
+Its seven source/phase-mapped clinic-administration scripts and healthcare visuals
+replace the derivative's manufacturing narrative, without editing the release or
+original media. Queueing and result validation select the identical scoped
+template; its changed content naturally invalidates the existing adaptation
+fingerprint. The usual learner/release/voice checks and complete matching-audio
+gate remain required. Other profile fields and lesson templates are unchanged.
+
+SME briefs accept optional `systemPrompt` authoring guidance in their existing
+JSON storage. Blueprint and video-first module generators compose it with their
+shared instructions; module fingerprints include nonblank guidance. No database
+migration, source-evidence substitution or approval bypass is introduced.
+
+Video-first authoring now generates one module at a time from a shared versioned
+system prompt (`lib/module-authoring.ts`), saved module-specific instructions and
+separate course/module/topic evidence. Only the selected module's videos and
+reviewed transcripts are checked and sent, with the full ordered outline for
+sequencing. Immutable module fragments carry prompt/instruction/source provenance
+and a scoped input hash. Unrelated module source edits preserve valid drafts;
+whole-course validation and human publication gates remain unchanged. The optional
+instructions field extends the JSON brief; no database migration is required.
+
+AI for Production personalized concepts use one cached WAV and a measured global
+timeline to drive continuous HTML/CSS visuals. The concept API adds optional
+playback metadata only for that course; other players remain scene-based.
+Checkpoint and end checks, watched evidence and enrollment-scoped resume remain
+enforced. Existing narration is reused without model or speech regeneration.
+See [continuous personalized lessons](continuous-personalized-lessons.md).
+
+Migration 0025 retires only the empty, runtime-unused `project_work` table.
+It refuses removal if historical learner files exist. The active public schema
+then has 35 tables; current project, adaptation and progress stores remain.
+See [database schema cleanup](database-schema-cleanup.md).
+
+Creator-workspace MCP is available at `/api/mcp/course-authoring`, configured
+through `/content/mcp`. Migration 0024 adds hashed eight-hour owner grants with
+an explicit optional approved-publication permission. Existing single-course
+MCP remains unchanged. Workspace tools reuse course brief/package validation,
+focused fragment merging, optimistic versions, human review and immutable
+edition publication; agents cannot grant human approval. Schemas and workflow
+prompts are discoverable through MCP. See [creator MCP workflow](creator-mcp-workflow.md).
+
+Personalization prepares the first playable module on enrollment. Once that
+module is opened, its adapted-module request schedules all remaining playable
+modules after the response, in course order. Each module includes source-backed
+personalized concepts as well as its supported teaching activities. Later
+modules use negative queue priorities; Module 1 and explicit learner requests
+take precedence. Opening a queued concept promotes its existing job into the
+interactive lane without duplicating it. Durable jobs resume after restart;
+profile/edition/prompt changes produce new scoped work. Background preparation
+does not mark future modules complete or infer knowledge before it is observed.
+Text and matching audio must both validate before a derivative becomes ready.
+
+Learner navigation no longer assembles the entire course library for the
+assistant. Its client provider loads only the current course through the private
+`companion-context` endpoint after navigation. Published delivery and catalog
+reads are deduplicated with React's request-scoped cache during server renders;
+they are never shared across learners or retained across requests. Development
+mode still compiles routes on demand; use a production build for learner demos.
+
+Video-first problem hooks present the case without an initial-thinking response
+field. Storyboard hooks allow continuation after all scenes have been explored;
+the text fallback also requires no written prediction. Guided practice and
+scenario response requirements remain unchanged.
+
+Imported-course personalization defaults to Vertex, with an explicit
+`IMPORTED_ADAPTIVE_PROVIDER=configured` alternative for the configured LLM and
+speech stack. This permits Gemini API-key teaching with Kokoro narration when
+Google ADC is unavailable. Source facts, checkpoints, edition isolation and
+complete text/audio publication remain unchanged; cached speech uses each job's
+saved voice configuration. See [Connected SCORM courses](connected-scorm-courses.md).
+
+PGlite-to-PostgreSQL migration is available through `scripts/migrate-postgres.mjs`.
+It creates a new local database and dedicated role, preserves the original PGlite
+files, validates all copied tables before switching `DATABASE_URL`, and retains
+physical/logical backups. Both database drivers support graceful shutdown. Media
+remains in its existing folders. See [PostgreSQL migration](postgresql-migration.md).
+
 Local PGlite startup acquires a process ownership lock beside the data directory to prevent competing web processes. Failed startup stays failed until restart rather than repeatedly creating aborted WASM clients. The adaptive launcher handles Ctrl+C by stopping Python writers, calling its authenticated internal shutdown action to close PGlite, then terminating Next. Force-killing the launcher bypasses this graceful close; preserve database files before any recovery.
 
 The root `npm run dev` loads the web environment and starts the web app, Python adaptive service and worker together when `ADAPTIVE_PYTHON_ENABLED=true`. Its default web port remains 3000 (overridable through `ADAPTIVE_WEB_PORT`). This prevents a web-only server from leaving personalization jobs queued without a worker. Use one app process per local PGlite data directory.
@@ -285,9 +378,18 @@ Video-first authoring supports owner-scoped concept recordings and immutable tim
 
 Teaching-only specialist handoffs can be saved through the owner-scoped `lesson-activities` course endpoint and opened at `/content/courses/[id]/activities/[activityId]`. They contain only the problem hook, worked examples and guided practice, with source/asset snapshots and an expected brief revision. These immutable files live in `.data/lesson-activities`, always have `needs_review` status and become outdated when the brief changes. They are creator previews, do not satisfy source-review or publication gates, and never write learner progress, grades or complete course packages.
 
+Adaptive model requests retry temporary overloads with bounded backoff before
+schema repair or fallback. Concept bridge repair identifies the failing scene
+path and word count. Worker heartbeats continue while a result receipt waits for
+queued local speech, with a thirty-minute receipt ceiling; completed derivatives
+still require the existing source, profile, structure and audio validation gates.
+See [adaptive recovery](adaptive-teaching.md#recovery-during-concept-preparation).
+
 Blueprint generation reconciles course-wide L4 assessment placement to the final declared module when a provider associates it with a known earlier teaching module. Unknown IDs and all source/objective/sequence checks remain validated; provider snapshots are not mutated. Prompts and bounded repair instructions identify `assessment.moduleId` explicitly. Exhausted structural validation returns the concrete contract failure, while provider/authentication failures retain a generic safe message. This does not approve or publish a blueprint.
 
 Published authored-course delivery derives its subject, skills, guided-practice phases and completion labels from the assembled package. Generic player presentation must not substitute another course's task-handoff content; existing stage IDs and progress contracts remain unchanged.
+
+After global profiling is saved successfully, WelcomeFlow opens `/learn/recommended`, preserving the original learner destination as an optional return link. A request-scoped server service reads that user's saved profile, enrollments and learner-visible catalog. The pure `course-recommendations` function ranks metadata by explicitly stated field/interests and coding comfort, favors an applicable introductory starting point, deduplicates title aliases and returns up to three suggestions with honest matching/fallback reasons. Ranking values are internal, not learner proficiency scores. Draft courses and assessment content do not enter suggestion output; no external model call, recommendation record, enrollment, grade or profile mutation is added. Profile edits affect the next request. Catalog navigation retains access to all courses and a link back to suggestions. Test with `node tests/backend/run.mjs course-recommendations` from `apps/web`.
 
 Video-first publications use four enrollment-scoped adaptive activity jobs per module (`activity:hook`, `activity:worked`, `activity:guided`, `activity:lab`). These reuse the existing durable Python generation and matching-audio pipeline, with profile/release fingerprints, stale-result rejection and immutable objective/source IDs. Uploaded concept recordings, quizzes, final assessment and project criteria remain authored. Separate on-demand `concept:<videoId>` revisions personalise reviewed transcript teaching and narration without overwriting recordings. Each activity becomes available only with matching narration; narration introduces the task without reading hidden practice evidence. The player adopts ready content before interaction and holds it steady once a learner starts; the original activity remains available during preparation or failure. This path needs the existing adaptive service/worker, not a new course-specific setting.
 
@@ -297,3 +399,33 @@ Uploaded concept personalisation reuses enrollment-scoped adaptation jobs and th
 
 
 Connected SCORM course imports now have durable source snapshots/runs, whole-course selection, proposed objective mappings and incremental course preparation. Published editions pin enrollments; explicit upgrades archive earlier enrollments without transferring completion. See [connected SCORM courses](connected-scorm-courses.md).
+
+The retired single-module `ai-for-production` import is omitted from learner dashboard/catalog/search listings and recommendations. Its direct course/package routes and existing progress records remain available; the published seven-module course keeps its separate identity. The raw imported-course registry remains intact, while listing components use its filtered view.
+
+# Chalkboard animated delivery
+
+Personalized video-first concepts and problem hooks can render locally to MP4
+with the pinned nicglazkov/Chalkboard runtime and Manim. Approved source teaching
+and matching narration are compiled into bounded animated diagrams, cached per
+enrollment/source/audio revision and streamed through an authorized range route.
+The existing continuous player retains checkpoints, resume and watched coverage.
+Module 1 foundation recommendations use recorded knowledge/completion evidence.
+See [Chalkboard video delivery](chalkboard-video.md) for setup, provenance, timing
+limitations and verification.
+
+Directed video refinement: personalized Chalkboard rendering now uses reviewed,
+source-specific chapter storyboards and local audio-word alignment instead of
+keyword diagrams/proportional sentence cues. It adds distinct compositions,
+reading holds, a fictional generated illustration, source/unit/layer guards
+and text-layout checks. See `docs/chalkboard-visual-quality.md` for the audit,
+research into Chalkboard/Remotion, measured verification and limitations.
+
+The local hybrid renderer now routes mechanisms to Manim and document/language
+illustrations to Remotion, using the same aligned narration timeline. Motion-only
+frame capture and FFmpeg holds avoid re-rendering static narration intervals.
+Enrollment-scoped authenticated delivery is unchanged. See
+`docs/hybrid-video-rendering.md` for recovery, setup and current verification.
+
+Automation vs AI creator revision: the scoped derivative in automation-ai-lesson.ts combines the creator's supplemental source with edition-specific checkpoint teaching. Source recordings and questions remain immutable. The updated authored text invalidates adaptation fingerprints; deterministic storyboards use exact narration anchors. See [Automation/AI explainer](automation-ai-explainer.md).
+
+Reference-style video delivery uses source-anchored demonstration compositions, reusable reviewed storyboards for unchanged teaching, and a renderer source fingerprint in each private derivative key. A local resumable regeneration runner rebuilds prepared narration derivatives without publishing or changing grades. See [video rollout](reference-style-videos.md).

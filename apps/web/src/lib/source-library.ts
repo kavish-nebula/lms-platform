@@ -2,9 +2,16 @@ import { z } from 'zod/v4';
 import { UploadedConceptVideo } from './concept-video-source';
 
 const id = z.string().regex(/^[A-Za-z][A-Za-z0-9_-]{0,29}$/);
+export const ModuleInstructions = z.object({
+  version: z.literal(1),
+  objectiveIds: z.array(id).max(60),
+  scope: z.string().max(12000), exclusions: z.string().max(12000),
+  prerequisites: z.string().max(12000), dependsOn: z.array(id).max(12),
+  teachingNotes: z.string().max(12000),
+}).strict();
 export const SourceLibrary = z.object({
   version: z.literal(1),
-  modules: z.array(z.object({ id, title: z.string().max(200), topics: z.array(z.object({ id, title: z.string().max(200) }).strict()).max(40) }).strict()).max(12),
+  modules: z.array(z.object({ id, title: z.string().max(200), instructions: ModuleInstructions.optional(), topics: z.array(z.object({ id, title: z.string().max(200) }).strict()).max(40) }).strict()).max(12),
   sources: z.array(z.object({
     id, revision: z.number().int().positive(), title: z.string().max(200),
     scope: z.enum(['course', 'module', 'topic']), moduleId: z.string().max(30), topicId: z.string().max(30),
@@ -33,14 +40,21 @@ export function migrateSourceLibrary(brief: Brief): SourceLibraryData {
 }
 
 /** Mapping checks establish declared coverage, never factual sufficiency or SME approval. */
-export function sourceCoverage(brief: Brief) {
+export function sourceCoverage(brief: Brief, moduleId?: string) {
   if (!brief.sourceLibrary) return [];
-  const { modules, sources } = brief.sourceLibrary;
+  const modules = brief.sourceLibrary.modules.filter(m => !moduleId || m.id === moduleId);
+  const sources = brief.sourceLibrary.sources.filter(s => !moduleId || s.scope === 'course' || s.moduleId === moduleId);
   const issues: string[] = [];
   const objectives = new Set(brief.objectives.flatMap((o, i) => o.text.trim() ? [`O${i + 1}`] : []));
+  const targetObjectives = moduleId ? new Set(modules[0]?.instructions?.objectiveIds.length ? modules[0].instructions.objectiveIds : sources.filter(s => s.scope !== 'course').flatMap(s => s.objectiveIds)) : objectives;
+  if (moduleId && !modules.length) issues.push('Select an existing module.');
+  if (moduleId && !targetObjectives.size) issues.push(`${moduleId}: map module objectives to its teaching sources.`);
   const evidence = sources.filter(s => s.title.trim() && hasEvidence(s.text));
   if (!sources.length) issues.push('Add at least one source containing evidence, not only a URL.');
   for (const m of modules) {
+    for (const o of m.instructions?.objectiveIds ?? []) if (!objectives.has(o)) issues.push(`${m.id}: unknown objective ${o}; remap module instructions.`);
+    const index = brief.sourceLibrary.modules.findIndex(unit => unit.id === m.id);
+    for (const dependency of m.instructions?.dependsOn ?? []) if (!brief.sourceLibrary.modules.slice(0, index).some(unit => unit.id === dependency)) issues.push(`${m.id}: prerequisite ${dependency} must be an earlier module in the outline.`);
     if (!m.title.trim()) issues.push(`${m.id}: add a module title.`);
     if (!evidence.some(s => s.moduleId === m.id && s.scope !== 'course')) issues.push(`${m.id}: add a module or topic source.`);
     for (const t of m.topics) {
@@ -61,8 +75,8 @@ export function sourceCoverage(brief: Brief) {
     if (s.scope === 'module' && s.topicId) issues.push(`${s.id}: module sources cannot target a topic.`);
     if (s.scope === 'topic' && !m?.topics.some(t => t.id === s.topicId)) issues.push(`${s.id}: select a topic in its module.`);
   }
-  for (const o of objectives) if (!evidence.some(s => s.objectiveIds.includes(o))) issues.push(`${o}: no source evidence mapped to this objective.`);
-  if (modules.length && modules.every(m => sources.some(s => s.moduleId === m.id && s.video))) for (const o of objectives) {
+  for (const o of targetObjectives) if (!evidence.some(s => s.objectiveIds.includes(o))) issues.push(`${o}: no source evidence mapped to this objective.`);
+  if (modules.length && modules.every(m => sources.some(s => s.moduleId === m.id && s.video))) for (const o of targetObjectives) {
     if (!evidence.some(s => s.video?.transcriptId && s.objectiveIds.includes(o))) issues.push(`${o}: no reviewed concept video mapped to this video-first course objective.`);
   }
   return issues;

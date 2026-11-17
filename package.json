@@ -9,6 +9,9 @@
     "fixtures"
   ],
   "scripts": {
+    "db:postgres:check": "node scripts/migrate-postgres.mjs --check",
+    "db:postgres:migrate": "node scripts/migrate-postgres.mjs --migrate",
+    "test:db-migration": "node --test scripts/tests/database-transfer.test.mjs",
     "dev:adaptive": "node scripts/adaptive-dev.mjs",
     "start:adaptive": "node scripts/adaptive-dev.mjs --production",
     "dev": "node scripts/dev.mjs",

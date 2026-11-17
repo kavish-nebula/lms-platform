@@ -17,9 +17,13 @@ import { SourceRecordingLesson, SourceReviewNotes } from './source-recording-les
 import { UploadedVideoLesson } from './uploaded-video-lesson';
 import { QuizOverlay } from './video-lesson';
 import { PersonalizedConceptStory } from './personalized-concept-story';
+import { ContinuousConceptPlayer } from './continuous-concept-player';
+import { continuousConceptEnabled, type ContinuousPlayback } from '@/lib/continuous-concept';
+import type { ChalkboardView, TopicRoute } from '@/lib/chalkboard';
+import Link from 'next/link';
 
 type ReadyScene = ConceptScene & { audio: string };
-type View = { id: string; status: string; scenes?: ReadyScene[] };
+type View = { id: string; status: string; scenes?: ReadyScene[]; playback?:ContinuousPlayback; chalkboard?: ChalkboardView; route?: TopicRoute };
 type Props = { video: ConceptVideo; onComplete?: () => void; onNext?: () => void; nextLabel?: string };
 const fetcher = (url: string) => api<{ concept: View }>(url).then(r => r.concept);
 
@@ -33,19 +37,21 @@ export function PersonalizedConceptLesson(props: Props) {
   const [mode, setMode] = useState<'personalized' | 'original'>('personalized');
   const [retryError, setRetryError] = useState('');
   const url = `/api/v1/enrollments/${context?.courseId}/modules/${context?.moduleId}/concepts/${video.id}`;
-  const { data, error, mutate } = useSWR(enabled && mode === 'personalized' ? url : null, fetcher, { refreshInterval: data => data?.status === 'ready' || data?.status === 'failed' ? 0 : 4000, revalidateOnFocus: true });
+  const { data, error, mutate } = useSWR(enabled && mode === 'personalized' ? url : null, fetcher, { refreshInterval: data => data?.status === 'failed' || data?.chalkboard?.status === 'failed' || data?.status === 'ready' && (!data.chalkboard || data.chalkboard.status === 'ready') ? 0 : 4000, revalidateOnFocus: true });
   // Hold a complete text/audio pair steady once it is ready. A new profile or
   // release takes effect when the learner next opens this topic.
   const [held, setHeld] = useState<View | undefined>();
-  if (!held && data?.status === 'ready') setHeld(data);
+  const playable = data?.status === 'ready' && (data.chalkboard ? data.chalkboard.status === 'ready' && !!data.playback?.video : !continuousConceptEnabled(context?.courseId??'') || !!data.playback) ? data : undefined;
+  if (!held && playable) setHeld(playable);
   const Original = video.uploadedVideo ? UploadedVideoLesson : SourceRecordingLesson;
   if (!enabled) return <Original {...props} />;
-  const ready = held ?? (data?.status === 'ready' ? data : undefined);
-  const failed = !!error || data?.status === 'failed';
+  const ready = held ?? playable;
+  const failed = !!error || data?.status === 'failed' || data?.chalkboard?.status === 'failed';
   return <section className="space-y-4" aria-label={`Concept video: ${video.title}`}>
     {mode==='personalized'&&<SourceReviewNotes video={video}/>}
+    {mode === 'personalized' && data?.route && <aside className="rounded-xl border border-line bg-panel-2 p-4" aria-label="Lesson prerequisites"><p className="font-medium">{data.route.status === 'recommended' ? 'A useful foundation before this lesson' : 'Your lesson starting point'}</p><p className="mt-1 text-sm text-ink-muted">{data.route.reason}</p>{data.route.prerequisites.filter(p => !p.demonstrated).map(p => <Link key={p.href} className="mt-2 inline-block text-sm text-brand-ink underline" href={p.href}>Review {p.title}</Link>)}</aside>}
     <div className="flex flex-wrap items-center gap-2" role="group" aria-label="Concept video version"><Button variant={mode === 'personalized' ? 'brand' : 'outline'} size="sm" aria-pressed={mode === 'personalized'} onClick={() => setMode('personalized')}><Sparkles aria-hidden />Personalised video</Button><Button variant={mode === 'original' ? 'brand' : 'outline'} size="sm" aria-pressed={mode === 'original'} onClick={() => setMode('original')}>{video.uploadedVideo || video.sourceMedia?.video ? 'Original recording' : 'Original lesson'}</Button></div>
-    {mode === 'original' ? <Original {...props} /> : ready?.scenes ? <PersonalizedConceptPlayer key={ready.id} {...props} revisionId={ready.id} scenes={ready.scenes} /> : <div className="space-y-4 rounded-xl border border-line bg-panel-2 p-6"><p role="status" className="font-medium">{failed ? 'Your personalised video could not be prepared.' : 'Preparing your personalised concept video and narration…'}</p><p className="text-sm leading-relaxed text-ink-muted">{failed ? 'You can retry or watch the source recording.' : 'The lesson keeps the reviewed concepts and knowledge check, with examples and explanations shaped around your profile. You can watch the original while it prepares.'}</p><div className="flex flex-wrap gap-2">{failed && <Button size="sm" onClick={async () => { setRetryError(''); try { await api(url, { method: 'POST' }); await mutate(); } catch { setRetryError('Retry could not start. Please try again.'); } }}>Retry personalised video</Button>}<Button size="sm" variant="outline" onClick={() => setMode('original')}>Watch original recording</Button></div></div>}
+    {mode === 'original' ? <Original {...props} /> : ready?.scenes ? (ready.playback ? <ContinuousConceptPlayer key={ready.id} {...props} revisionId={ready.id} scenes={ready.scenes} playback={ready.playback} /> : <PersonalizedConceptPlayer key={ready.id} {...props} revisionId={ready.id} scenes={ready.scenes} />) : <div className="space-y-4 rounded-xl border border-line bg-panel-2 p-6"><p role="status" className="font-medium">{failed ? 'Your personalised video could not be prepared.' : data?.chalkboard ? 'Preparing your narrated video…' : 'Preparing your personalised concept video and narration…'}</p><p className="text-sm leading-relaxed text-ink-muted">{failed ? (data?.chalkboard?.message ?? 'You can retry or watch the source recording.') : 'We are preparing visuals to match your narration. This can take a few minutes the first time. You can watch the original while your personalised lesson prepares.'}</p><div className="flex flex-wrap gap-2">{failed && <Button size="sm" onClick={async () => { setRetryError(''); try { await api(url, { method: 'POST' }); await mutate(); } catch { setRetryError('Retry could not start. Please try again.'); } }}>Retry personalised video</Button>}<Button size="sm" variant="outline" onClick={() => setMode('original')}>Watch original recording</Button></div></div>}
     {retryError && <p role="alert" className="text-sm text-ink-muted">{retryError}</p>}
   </section>;
 }
@@ -81,7 +87,7 @@ function PersonalizedConceptPlayer({ video, scenes, revisionId, onComplete, onNe
   return <div className="space-y-4">
     <p className="text-sm text-ink-muted">Personalised teaching and narration from the reviewed concept video. The knowledge-check questions keep the course standard.</p>
     <div ref={screen} className="hook-film relative">
-      <PersonalizedConceptStory scene={scene} seconds={elapsed} reducedMotion={reducedMotion} />
+      <PersonalizedConceptStory scene={scene} seconds={elapsed} duration={duration} reducedMotion={reducedMotion} />
       <div className="hook-film-controls"><Button size="sm" variant="ghost" aria-label={playing ? 'Pause personalised concept' : 'Play personalised concept'} onClick={() => { setMessage(''); if (checking) return; if (playing) { setPlaying(false); media.current?.pause(); } else { if (media.current?.ended) media.current.currentTime = 0; setPlaying(true); } }}>{playing ? <Pause aria-hidden /> : <Play aria-hidden />}{playing ? 'Pause' : 'Play'}</Button><Button size="icon" variant="ghost" aria-label="Restart personalised concept" onClick={() => select(0)}><RotateCcw /></Button><span className="mr-auto text-xs tabular-nums text-ink-muted">Scene {index + 1}/{scenes.length} · {Math.floor(elapsed)}s / {duration ? `${Math.ceil(duration)}s` : '—'}</span><label><span className="sr-only">Concept playback speed</span><select aria-label="Concept playback speed" value={rate} onChange={e => { setRate(Number(e.target.value)); if (media.current) media.current.playbackRate = Number(e.target.value); }}>{[.75, 1, 1.25, 1.5].map(r => <option key={r} value={r}>{r}×</option>)}</select></label><Button size="icon" variant="ghost" disabled={index === 0} aria-label="Previous concept scene" onClick={() => select(index - 1)}><ChevronLeft /></Button><Button size="icon" variant="ghost" disabled={!conceptCanSeek(scenes, index + 1, checkpointDone)} aria-label="Next concept scene" onClick={() => select(index + 1)}><ChevronRight /></Button><Button size="icon" variant="ghost" aria-label="Mute concept narration" aria-pressed={muted} onClick={() => setMuted(v => !v)}>{muted ? <VolumeX /> : <Volume2 />}</Button><Button size="icon" variant="ghost" aria-label="Show concept captions" aria-pressed={captions} onClick={() => setCaptions(v => !v)}><Captions /></Button><Button size="icon" variant="ghost" aria-label="Concept fullscreen" onClick={() => { const action = document.fullscreenElement ? document.exitFullscreen() : screen.current?.requestFullscreen(); void action?.catch(() => setMessage('Fullscreen is unavailable in this browser.')); }}><Maximize /></Button></div>
       <label className="sr-only" htmlFor={`concept-seek-${video.id}`}>Seek within concept scene</label><input className="block w-full accent-[var(--ok)]" id={`concept-seek-${video.id}`} type="range" min={0} max={duration || 1} step={.1} value={Math.min(elapsed, duration || 1)} disabled={!duration || checking} onChange={e => { if (media.current) media.current.currentTime = Number(e.target.value); }} />
       {captions && <p className="hook-film-captions" aria-label="Concept narration captions">{conceptNarration(scene)}</p>}

@@ -1,4 +1,5 @@
 import "server-only";
+import { courseAuthoringSystem } from '@/lib/course-authoring-prompt';
 import { BLUEPRINT_STEPS, InstructionalBlueprint, validateBlueprint, type Blueprint, type BlueprintInput } from "@/lib/instructional-blueprint";
 import { llmHttp, llmModels, llmReasoning, LlmError, type LlmTransport, type LlmMessage } from "./ai/llm";
 import { BLOOM_LEVELS } from "@/lib/content-creator";
@@ -59,7 +60,7 @@ export function blueprintShape(input: BlueprintInput): Blueprint {
   return InstructionalBlueprint.parse(shape);
 }
 
-export function blueprintSystem(input: BlueprintInput) {
+function baseBlueprintSystem(input: BlueprintInput) {
   const finalModuleId = input.brief.sourceLibrary?.modules.at(-1)?.id ?? input.existingModules?.at(-1)?.id;
   const masteryPlacement = ` Every L4 assessment must set its moduleId to ${finalModuleId ? JSON.stringify(finalModuleId) : 'the final module ID'}. This field places the course-wide assessment; mentioning the final module only in timing is insufficient. L4 may assess objectives taught in earlier modules while remaining assigned to the final module.`;
   if (input.deliveryStructure === 'codex-ild-v2') return BLUEPRINT_SYSTEM
@@ -69,6 +70,10 @@ export function blueprintSystem(input: BlueprintInput) {
     + '\nCODEX ILD DELIVERY V2: Recommend module count, video count, slides per video, narration time and activity time from the SME objectives and course-duration budget. These lengths are recommendations and the creator may edit them. Every concept video contains exactly two formative questions after its midpoint; these do not award mastery. After the final module, deliver exactly one cross-course Mini Project, then an objective-aligned Mastery Gate with a creator-set pass rule, then Reflection. No Spaced Review. Include external research as cited sources with title, publisher and URL, but flag citations and claims for human verification; source URLs are not fetched by this service. L4 specifications collectively assess all objectives after the final module. L1 checks include embedded midpoint checks AND one module-end quiz per module covering its objectives. Return courseEnd kinds mini_project, mastery_gate, reflection in order, all after the final module. finalDeliverable is the single course-wide Mini Project. Preserve existing module IDs and order when supplied.' + masteryPlacement;
   if (input.deliveryStructure !== 'six-stage-v1') return BLUEPRINT_SYSTEM;
   return BLUEPRINT_SYSTEM.replace(/4\. SUBMODULE STRUCTURE:[\s\S]*?\n5\. TASK DESIGN:/, '4. SUBMODULE STRUCTURE: each module has EXACTLY six steps in order: hook, concept, worked_example, guided_practice, scenario, quiz. No mini-project, project_contribution, mastery_gate, reflection or spaced_review inside a module. Keep module timing sums accurate. Add courseEnd with exactly mastery_gate, reflection, spaced_review, all afterModuleId equal to the final module ID. The Mastery Gate covers ALL modules.\n5. TASK DESIGN:') + '\nDELIVERY STRUCTURE v1 OVERRIDES LEGACY PROJECT WORDING: Practice/Application/Extension are short learning exercises, not mandatory mini-projects. Do not use T8. Keep finalDeliverable only as a compatibility field with minutes:0 and a statement that no mini-project is required. L4 assessment specifications belong to the course end, associated with the last module, and collectively cover every course objective; earlier modules have local quizzes and practice feedback. T5/T6/T7 and all spaced-review schedules occur after the last module. Return courseEnd in the supplied output shape. Preserve existingModules IDs and order when supplied; retain their topics and objective coverage while restructuring their stages. No learner completion is claimed.';
+}
+
+export function blueprintSystem(input: BlueprintInput) {
+  return courseAuthoringSystem(baseBlueprintSystem(input), input.brief);
 }
 
 export async function generateBlueprint(input: BlueprintInput, transport: LlmTransport = llmHttp({ timeoutMs: 180_000, retries: 0, backoffMs: 1000 })) {

@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { FIXTURE_TODAY, getAuthoredModuleIds, getCourse, getLearner } from "@/data";
+import { FIXTURE_TODAY, getAuthoredModuleIds, getCourse, getCourses, getLearner } from "@/data";
 import { EnrollFlow, type EnrollPhase } from "@/components/enroll/enroll-flow";
+import { prerequisiteSuggestions, prerequisitesFor } from '@/lib/course-prerequisites';
+import { getSessionUser } from '@/server/auth';
 
 type Params = { courseId: string };
 type Search = { step?: string };
@@ -16,7 +18,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
 
 /**
  * Enrolling: /learn/courses/[courseId]/enroll (focused layout, no sidebar).
- * Two optional questions -> build; extra customisation remains optional. "About you" comes before this, right
+ * Configured prerequisites -> two optional questions -> build; extra customisation remains optional. "About you" comes before this, right
  * after signing in (/learn/welcome). `?step=` opens one step, e.g. from
  * "Edit setup".
  */
@@ -24,12 +26,15 @@ export default async function EnrollPage({ params, searchParams }: { params: Pro
   const [{ courseId }, { step }] = await Promise.all([params, searchParams]);
   const [course, learner, authored] = await Promise.all([getCourse(courseId), getLearner(), getAuthoredModuleIds(courseId)]);
   if (!course) notFound();
+  const topics = prerequisitesFor(course);
+  const suggestions = topics.length ? prerequisiteSuggestions(await getCourses(true, (await getSessionUser()).id), courseId, topics) : [];
   return (
     <EnrollFlow
       course={course}
       name={learner.user.name.split(" ")[0] ?? learner.user.name}
       today={FIXTURE_TODAY}
       authoredModules={authored}
+      prerequisiteSuggestions={suggestions}
       initialPhase={STEPS.includes(step as EnrollPhase) ? (step as EnrollPhase) : undefined}
     />
   );

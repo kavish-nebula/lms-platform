@@ -19,12 +19,15 @@ import { mergeShape } from "./shape";
 import { audioRoot, defaultVoicer, type Voicer } from "./tts";
 import { piecesOf, conceptPiece } from "./pieces";
 import { validatePersonalizedConcept, type PersonalizedConcept } from '@/lib/personalized-concept';
+import { validateProfileProductionHook } from '@/lib/profile-production-hook';
+import type { VideoHook } from '@/lib/video-first-hook';
 import { wavSeconds } from '@/server/production-audio';
+import { llmConfig } from '@/server/ai/llm';
 
 // Every enrolled course uses the adaptive lane. Enrollment and module access
 // are checked before jobs are queued; no per-course configuration is needed.
 export const liveEnabled = (courseId: string) => process.env.ADAPTIVE_PYTHON_ENABLED === "true" && courseId.trim().length > 0;
-export const ADAPTIVE_PROMPT_VERSION = 4;
+export const ADAPTIVE_PROMPT_VERSION = 5;
 const hash = (x: unknown) => createHash("sha256").update(JSON.stringify(x)).digest("hex");
 // Keep the full evidence snapshot for audit, but do not rewrite a module every
 // time its prerequisite's playback timer advances. Only teaching inputs matter.
@@ -34,8 +37,17 @@ function teachingContext(context: Awaited<ReturnType<typeof contextOf>>["context
     insufficientEvidence: r.summary.insufficientEvidence, supportRequests: r.summary.supportRequests,
   } })) };
 }
-const voiceSettings = () => ({ speechPolicy: 2, provider: process.env.AUDIO_PROVIDER, model: process.env.AUDIO_MODEL, voice: process.env.AUDIO_VOICE, style: process.env.AUDIO_STYLE, kokoroVoice: process.env.KOKORO_VOICE });
+const voiceSettings = () => ({ speechPolicy: 3, provider: process.env.AUDIO_PROVIDER, model: process.env.AUDIO_MODEL, voice: process.env.AUDIO_VOICE, style: process.env.AUDIO_STYLE, kokoroVoice: process.env.KOKORO_VOICE, kokoroModel: process.env.KOKORO_MODEL, kokoroDtype: process.env.KOKORO_DTYPE });
 const clipKey = (text: string, voice = voiceSettings()) => hash({ text, voice });
+
+function providerSettings(importedCourse: boolean) {
+  const policy = process.env.IMPORTED_ADAPTIVE_PROVIDER?.trim() || 'vertex';
+  if (importedCourse && policy !== 'vertex' && policy !== 'configured') throw new ApiError(500, 'provider_configuration', 'IMPORTED_ADAPTIVE_PROVIDER must be vertex or configured.');
+  const useVertex = importedCourse && policy === 'vertex';
+  const configured = llmConfig();
+  const voice = { ...voiceSettings(), provider: useVertex ? 'vertex' : process.env.AUDIO_PROVIDER || (process.env.AUDIO_API_KEY ? 'gemini' : 'kokoro') };
+  return { llmProvider: importedCourse ? useVertex ? 'vertex' : configured.provider : undefined, llmModel: configured.model, voice };
+}
 type Job = typeof adaptationJobs.$inferSelect;
 export type Trigger = "initial" | "simplify" | "example" | "wrong_answer";
 
@@ -164,7 +176,10 @@ async function contextOf(user: SessionUser, courseId: string, moduleId: string) 
       if (weak.includes(v.lesson)) prerequisiteTeaching.push({ lessonId: v.lesson, title: v.title, keyIdeas: v.notes });
     }
   }
-  return { e, context: { profile: profile?.answers, derived: profile?.derived, answers: e.answers, precheck: e.precheck?.lessons, supportOverride: e.supportOverride, plan: plan?.plan, planVersion: plan?.version ?? 0, courseVersion: course?.version, llmProvider: (course?.importedRevisionId || course?.vertexAdaptive) ? 'vertex' : undefined, importedCourse: !!(course?.importedRevisionId || course?.vertexAdaptive), voice: (course?.importedRevisionId || course?.vertexAdaptive) ? { ...voiceSettings(), provider: 'vertex' } : voiceSettings(), evidence: evidence.map((r) => ({ moduleId: r.moduleId, version: r.version, summary: r.summary })), prerequisiteReminders: weak, prerequisiteTeaching, promptVersion: ADAPTIVE_PROMPT_VERSION, authoredCourse: !!(course?.authoredRevisionId || course?.importedRevisionId), courseTitle: course?.title, world: course?.authoredRevisionId || course?.importedRevisionId ? "Preserve the source course facts and teach using the learner's field without introducing unsupported claims." : "Harbour Works is the fictional organisation; adapt its activities to the learner's field. Retain the agent name Scout." } };
+  const importedCourse = !!(course?.importedRevisionId || course?.vertexAdaptive);
+  // Vertex remains the default. An explicit operator setting allows imported
+  // teaching to use the configured Gemini/API-key + local-speech stack instead.
+  return { e, context: { profile: profile?.answers, derived: profile?.derived, answers: e.answers, precheck: e.precheck?.lessons, supportOverride: e.supportOverride, plan: plan?.plan, planVersion: plan?.version ?? 0, courseVersion: course?.version, ...providerSettings(importedCourse), importedCourse, evidence: evidence.map((r) => ({ moduleId: r.moduleId, version: r.version, summary: r.summary })), prerequisiteReminders: weak, prerequisiteTeaching, promptVersion: ADAPTIVE_PROMPT_VERSION, authoredCourse: !!(course?.authoredRevisionId || course?.importedRevisionId), courseTitle: course?.title, world: course?.authoredRevisionId || course?.importedRevisionId ? "Preserve the source course facts and teach using the learner's field without introducing unsupported claims." : "Harbour Works is the fictional organisation; adapt its activities to the learner's field. Retain the agent name Scout." } };
 }
 
 type ProfileContext = { profile?: unknown; derived?: unknown; answers?: unknown; courseVersion?: string };
@@ -184,7 +199,7 @@ export async function currentLearnerContextKey(userId: string, courseId: string)
 }
 export const matchesLearnerContext = (context: unknown, current: string) => learnerContextKey((context ?? {}) as ProfileContext) === current;
 
-export async function queueSlide(user: SessionUser, courseId: string, moduleId: string, videoId: string, slide: number, trigger: Trigger, requestId?: string, baseRevision?: string) {
+export async function queueSlide(user: SessionUser, courseId: string, moduleId: string, videoId: string, slide: number, trigger: Trigger, requestId?: string, baseRevision?: string, preparationPriority = 0) {
   if (!liveEnabled(courseId)) throw new ApiError(409, "disabled", "Live adaptation is disabled.");
   const { videos } = await videosOf(courseId, moduleId, user.id);
   const video = videos.find((v) => v.id === videoId);
@@ -200,9 +215,10 @@ export async function queueSlide(user: SessionUser, courseId: string, moduleId: 
     source = base.content as VideoSlide;
   }
   const fingerprint = trigger === "initial"
-    ? hash({ enrollment: e.id, moduleId, videoId, slide, authored, context: teachingContext(context), trigger })
+    ? hash({ enrollment: e.id, moduleId, videoId, slide, authored, context: teachingContext(context), trigger, titleBridgeVersion: context.prerequisiteTeaching.length && authored.kind === 'title' ? 1 : undefined })
     : hash({ enrollment: e.id, requestId });
-  const inserted = await d.insert(adaptationJobs).values({ enrollmentId: e.id, moduleId, videoId, slide, fingerprint, trigger, priority: trigger === "initial" ? 0 : 10, input: { authored, source, context, courseId, lesson: video!.lesson, trigger, baseRevision, requestId } }).onConflictDoNothing().returning();
+  const inserted = await d.insert(adaptationJobs).values({ enrollmentId: e.id, moduleId, videoId, slide, fingerprint, trigger, priority: trigger === "initial" ? preparationPriority : 10, input: { authored, source, context, courseId, lesson: video!.lesson, trigger, baseRevision, requestId } }).onConflictDoNothing().returning();
+  if (trigger === 'initial') await d.update(adaptationJobs).set({ priority: preparationPriority }).where(and(eq(adaptationJobs.fingerprint, fingerprint), eq(adaptationJobs.status, 'queued'), lt(adaptationJobs.priority, preparationPriority)));
   if (inserted.length && trigger === "initial") {
     await d.update(adaptationJobs).set({ status: "superseded", updatedAt: new Date() }).where(and(eq(adaptationJobs.enrollmentId, e.id), eq(adaptationJobs.moduleId, moduleId), eq(adaptationJobs.videoId, videoId), eq(adaptationJobs.slide, slide), eq(adaptationJobs.trigger, "initial"), or(eq(adaptationJobs.status, "queued"), eq(adaptationJobs.status, "running")), ne(adaptationJobs.fingerprint, fingerprint), lt(adaptationJobs.createdAt, inserted[0]!.createdAt)));
   }
@@ -212,16 +228,18 @@ export async function queueSlide(user: SessionUser, courseId: string, moduleId: 
   return (await d.select().from(adaptationJobs).where(eq(adaptationJobs.fingerprint, fingerprint)))[0]!;
 }
 
-export async function queueModule(user: SessionUser, courseId: string, moduleId: string, openPiece?: "hook" | "worked") {
+export async function queueModule(user: SessionUser, courseId: string, moduleId: string, openPiece?: "hook" | "worked", preparationPriority = 0) {
   const { videos, mod } = await videosOf(courseId, moduleId, user.id);
   const { e, context } = await contextOf(user, courseId, moduleId);
   const d = await db();
   const queuePiece = async (piece: "hook" | "worked") => {
     const def = piecesOf(mod).find((p) => p.piece === piece);
     if (!def) return null;
-    const textMapVersion = piece === "hook" ? 7 : undefined;
+    const textMapVersion = piece === "hook" ? 10 : undefined;
     const fingerprint = hash({ enrollment: e.id, moduleId, piece, textMapVersion, authored: def.authored, context: teachingContext(context) });
-    const inserted = await d.insert(adaptationJobs).values({ enrollmentId: e.id, moduleId, videoId: piece, slide: 0, fingerprint, trigger: "initial", priority: piece === "hook" ? 1 : 0, input: { authored: def.authored, source: def.authored, context, trigger: "initial", piece, courseId, textMapVersion } }).onConflictDoNothing().returning();
+    const priority = preparationPriority < 0 ? preparationPriority : piece === 'hook' ? 1 : 0;
+    const inserted = await d.insert(adaptationJobs).values({ enrollmentId: e.id, moduleId, videoId: piece, slide: 0, fingerprint, trigger: "initial", priority, input: { authored: def.authored, source: def.authored, context, trigger: "initial", piece, courseId, textMapVersion } }).onConflictDoNothing().returning();
+    await d.update(adaptationJobs).set({ priority }).where(and(eq(adaptationJobs.fingerprint, fingerprint), eq(adaptationJobs.status, 'queued'), lt(adaptationJobs.priority, priority)));
     if (inserted.length) await d.update(adaptationJobs).set({ status: "superseded", updatedAt: new Date() }).where(and(eq(adaptationJobs.enrollmentId, e.id), eq(adaptationJobs.moduleId, moduleId), eq(adaptationJobs.videoId, piece), or(eq(adaptationJobs.status, "queued"), eq(adaptationJobs.status, "running")), ne(adaptationJobs.fingerprint, fingerprint), lt(adaptationJobs.createdAt, inserted[0]!.createdAt)));
     if (openPiece === piece) await d.update(adaptationJobs).set({ priority: 3 }).where(and(eq(adaptationJobs.fingerprint, fingerprint), eq(adaptationJobs.status, "queued")));
     return (await d.select().from(adaptationJobs).where(eq(adaptationJobs.fingerprint, fingerprint)))[0] ?? null;
@@ -230,30 +248,36 @@ export async function queueModule(user: SessionUser, courseId: string, moduleId:
   const released = !!(sourceCourse?.authoredRevisionId || sourceCourse?.importedRevisionId);
   const hook = released ? null : await queuePiece("hook");
   // The DB preserves playback order for equal priorities. No model runs in this request.
-  for (const v of sourceCourse?.importedRevisionId ? videos.slice(0, 2) : videos.filter(v => !v.uploadedVideo)) for (let i = 0; i < v.slides.length; i++) await queueSlide(user, courseId, moduleId, v.id, i, "initial");
+  for (const v of videos) {
+    if (v.personalizationSource) await queueConcept(user, courseId, moduleId, v.id, false, preparationPriority);
+    else if (!v.uploadedVideo) for (let i = 0; i < v.slides.length; i++) await queueSlide(user, courseId, moduleId, v.id, i, 'initial', undefined, undefined, preparationPriority);
+  }
   const worked = released ? null : await queuePiece("worked");
   const activities: Job[] = [];
-  for (const def of piecesOf(mod).filter(p => p.piece.startsWith('activity:'))) {
-    const fingerprint = hash({ enrollment: e.id, moduleId, piece: def.piece, narrationVersion: def.piece === 'activity:hook' ? 3 : undefined, authored: def.authored, context: teachingContext(context) });
-    await d.insert(adaptationJobs).values({ enrollmentId: e.id, moduleId, videoId: def.piece, slide: 0, fingerprint, trigger: 'initial', priority: def.piece === 'activity:hook' ? 2 : 0, input: { authored: def.authored, source: def.authored, context, trigger: 'initial', piece: def.piece, courseId } }).onConflictDoNothing();
+  for (const def of piecesOf(mod, courseId, context).filter(p => p.piece.startsWith('activity:'))) {
+    const fingerprint = hash({ enrollment: e.id, moduleId, piece: def.piece, narrationVersion: def.piece === 'activity:hook' ? 7 : undefined, authored: def.authored, context: teachingContext(context) });
+    const priority = preparationPriority < 0 ? preparationPriority : def.piece === 'activity:hook' ? 2 : 0;
+    await d.insert(adaptationJobs).values({ enrollmentId: e.id, moduleId, videoId: def.piece, slide: 0, fingerprint, trigger: 'initial', priority, input: { authored: def.authored, source: def.authored, context, trigger: 'initial', piece: def.piece, courseId } }).onConflictDoNothing();
+    await d.update(adaptationJobs).set({ priority }).where(and(eq(adaptationJobs.fingerprint, fingerprint), eq(adaptationJobs.status, 'queued'), lt(adaptationJobs.priority, priority)));
     await d.update(adaptationJobs).set({ status: 'superseded', updatedAt: new Date() }).where(and(eq(adaptationJobs.enrollmentId, e.id), eq(adaptationJobs.moduleId, moduleId), eq(adaptationJobs.videoId, def.piece), or(eq(adaptationJobs.status, 'queued'), eq(adaptationJobs.status, 'running')), ne(adaptationJobs.fingerprint, fingerprint)));
     activities.push((await d.select().from(adaptationJobs).where(eq(adaptationJobs.fingerprint, fingerprint)))[0]!);
   }
   return { hook, worked, activities };
 }
 
-/** Only the requested concept is prepared; opening a course does not enqueue
- * every recording. Explicit lesson requests use the reserved interactive lane. */
-export async function queueConcept(user: SessionUser, courseId: string, moduleId: string, videoId: string, retry = false) {
+/** Explicit concept requests reserve the interactive lane; module preparation
+ * supplies a lower priority and reuses the same validated text/audio job. */
+export async function queueConcept(user: SessionUser, courseId: string, moduleId: string, videoId: string, retry = false, priority = 10) {
   if (!liveEnabled(courseId)) throw new ApiError(409, 'disabled', 'Live adaptation is disabled.');
   const { videos } = await videosOf(courseId, moduleId, user.id);
   const video = videos.find(v => v.id === videoId);
   if (!video?.personalizationSource) throw new ApiError(422, 'reviewed_source_required', 'This concept needs a reviewed source transcript.');
   const { e, context } = await contextOf(user, courseId, moduleId);
-  const def = conceptPiece(video);
+  const def = conceptPiece(video, courseId, context);
   const fingerprint = hash({ enrollment: e.id, moduleId, piece: def.piece, conceptVersion: 3, authored: def.authored, context: teachingContext(context) });
   const d = await db();
-  const inserted = await d.insert(adaptationJobs).values({ enrollmentId: e.id, moduleId, videoId: def.piece, slide: 0, fingerprint, trigger: 'initial', priority: 10, input: { authored: def.authored, source: def.authored, context, trigger: 'initial', piece: def.piece, courseId, sourceVideoId: video.id, transcriptId: video.personalizationSource.transcriptId } }).onConflictDoNothing().returning();
+  const inserted = await d.insert(adaptationJobs).values({ enrollmentId: e.id, moduleId, videoId: def.piece, slide: 0, fingerprint, trigger: 'initial', priority, input: { authored: def.authored, source: def.authored, context, trigger: 'initial', piece: def.piece, courseId, sourceVideoId: video.id, transcriptId: video.personalizationSource.transcriptId } }).onConflictDoNothing().returning();
+  await d.update(adaptationJobs).set({ priority }).where(and(eq(adaptationJobs.fingerprint, fingerprint), eq(adaptationJobs.status, 'queued'), lt(adaptationJobs.priority, priority)));
   if (inserted.length) await d.update(adaptationJobs).set({ status: 'superseded', updatedAt: new Date() }).where(and(eq(adaptationJobs.enrollmentId, e.id), eq(adaptationJobs.moduleId, moduleId), eq(adaptationJobs.videoId, def.piece), ne(adaptationJobs.fingerprint, fingerprint), or(eq(adaptationJobs.status, 'queued'), eq(adaptationJobs.status, 'running'))));
   let row = (await d.select().from(adaptationJobs).where(eq(adaptationJobs.fingerprint, fingerprint)))[0]!;
   if (row.status === 'superseded' || (retry && row.status === 'failed')) {
@@ -276,7 +300,10 @@ export async function claimJob(lane: "all" | "interactive" | "background" = "all
   for (const r of candidates) {
     const predicate = and(eq(adaptationJobs.id, r.id), eq(adaptationJobs.attempts, r.attempts), or(eq(adaptationJobs.status, "queued"), and(eq(adaptationJobs.status, "running"), lt(adaptationJobs.leaseUntil, now))));
     // A prompt deployment must never generate old snapshots with new instructions.
-    if ((r.input.context as { promptVersion?: number } | undefined)?.promptVersion !== ADAPTIVE_PROMPT_VERSION) {
+    const context = r.input.context as { promptVersion?: number; importedCourse?: boolean; llmProvider?: string; llmModel?: string; voice?: ReturnType<typeof voiceSettings> } | undefined;
+    const expected = context?.importedCourse ? providerSettings(true) : undefined;
+    const staleProvider = expected && (context?.llmProvider !== expected.llmProvider || context?.llmModel !== expected.llmModel || JSON.stringify(canonical(context?.voice)) !== JSON.stringify(canonical(expected.voice)));
+    if (context?.promptVersion !== ADAPTIVE_PROMPT_VERSION || staleProvider) {
       await d.update(adaptationJobs).set({ status: "superseded", updatedAt: now }).where(predicate);
       continue;
     }
@@ -300,8 +327,8 @@ export async function heartbeat(id: string, lease: string) {
 
 export async function finishJob(id: string, lease: string, generated: unknown, model: string, metrics: Record<string, number>, voice: Voicer | null | undefined = undefined) {
   const row = await leasedJob(id, lease);
-  const context = row.input.context as { authoredCourse?: boolean; importedCourse?: boolean; courseVersion?: string };
-  if (voice === undefined) voice = defaultVoicer(context?.importedCourse ? 'vertex' : undefined);
+  const context = row.input.context as { authoredCourse?: boolean; importedCourse?: boolean; courseVersion?: string; voice?: ReturnType<typeof voiceSettings> };
+  if (voice === undefined) voice = defaultVoicer(context?.voice?.provider ?? (context?.importedCourse ? 'vertex' : undefined));
   const checkRelease = async () => {
     if (!context?.authoredCourse) return;
     const [enrollment] = await (await db()).select().from(enrollments).where(eq(enrollments.id, row.enrollmentId)).limit(1);
@@ -315,17 +342,21 @@ export async function finishJob(id: string, lease: string, generated: unknown, m
     const { mod } = await videosOf(String(row.input.courseId), row.moduleId, jobEnrollment.userId);
     const isConcept = String(row.input.piece).startsWith('concept:');
     const video = isConcept ? getBlock(mod, 'explainer')?.videos?.find(v => v.id === row.input.sourceVideoId) : undefined;
-    const def = isConcept && video ? conceptPiece(video) : piecesOf(mod).find((p) => p.piece === row.input.piece);
+    const def = isConcept && video ? conceptPiece(video, String(row.input.courseId), row.input.context) : piecesOf(mod, String(row.input.courseId), row.input.context).find((p) => p.piece === row.input.piece);
     if (!def) throw new ApiError(422, "invalid_content", "Unknown lesson piece.");
     const merged = mergeShape(def.authored, generated, row.input.piece === "hook" ? { banned: /\b(?:Orbit|ORB-\d+)\b/i } : {});
     if (merged.problems.length) throw new ApiError(422, "invalid_content", "Lesson structure changed.");
     const content = merged.value as Record<string, unknown>;
+    if (row.input.piece === 'activity:hook') {
+      try { validateProfileProductionHook((def.authored as { problemHook: VideoHook }).problemHook, content.problemHook as VideoHook); }
+      catch (error) { throw new ApiError(422, 'invalid_content', error instanceof Error ? error.message : 'Invalid profile hook.'); }
+    }
     if (isConcept) {
       try { validatePersonalizedConcept(def.authored as PersonalizedConcept, content as PersonalizedConcept); }
       catch (error) { throw new ApiError(422, 'invalid_content', error instanceof Error ? error.message : 'Invalid concept lesson.'); }
     }
     const clips = def.clips(content).filter((c) => c.text.trim());
-    const keys = clips.map((c) => ({ original: c.key, key: clipKey(c.text), text: c.text }));
+    const keys = clips.map((c) => ({ original: c.key, key: clipKey(c.text, context.voice), text: c.text }));
     const dir = path.join(audioRoot(), row.enrollmentId, row.moduleId, "clips");
     const started = Date.now();
     const cached = new Set(keys.filter((c) => fs.existsSync(path.join(dir, `${c.key}.wav`))).map((c) => c.key));

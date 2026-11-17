@@ -65,6 +65,24 @@ assert(ready.every(rows => rows[0]!.status === 'ready'));
 assert.notEqual(ready[0]![0]!.audio, ready[1]![0]!.audio);
 assert.notEqual(ready[0]![0]!.content!.narration, ready[1]![0]!.content!.narration);
 assert.equal(JSON.stringify((await scormCourseDelivery('ai-for-production'))!.modules), JSON.stringify(delivery.modules), 'Personalization does not rewrite the imported master');
+// An explicit fallback policy changes provider-scoped jobs without weakening
+// imported-source validation or mutating the original course.
+const obsoleteVertexJob = await queueSlide({ id: learnerIds[0]!, name: '', email: '' }, 'ai-for-production', 'M1', video.id, 0, 'example', randomUUID());
+process.env.IMPORTED_ADAPTIVE_PROVIDER = 'configured';
+process.env.LLM_PROVIDER = 'openai';
+process.env.AUDIO_PROVIDER = 'kokoro';
+const fallbackJob = await queueSlide({ id: learnerIds[0]!, name: '', email: '' }, 'ai-for-production', 'M1', video.id, 0, 'initial');
+const fallbackContext = fallbackJob.input.context as { llmProvider: string; importedCourse: boolean; voice: { provider: string } };
+assert.equal(fallbackContext.llmProvider, 'openai');
+assert.equal(fallbackContext.voice.provider, 'kokoro');
+assert.equal(fallbackContext.importedCourse, true, 'Imported teaching retains its stronger source checks.');
+assert.notEqual(fallbackJob.fingerprint, jobs[0]!.job.fingerprint, 'Provider changes cannot reuse a Vertex job.');
+assert.equal(await claimJob('interactive'), null, 'Old Vertex jobs must not consume retries after switching providers.');
+assert.equal((await jobsFor(jobs[0]!.enrollment.id, 'M1')).find(j => j.id === obsoleteVertexJob.id)!.status, 'superseded');
+process.env.IMPORTED_ADAPTIVE_PROVIDER = 'invalid';
+await assert.rejects(queueSlide({ id: learnerIds[0]!, name: '', email: '' }, 'ai-for-production', 'M1', video.id, 0, 'initial'), { code: 'provider_configuration' });
+delete process.env.IMPORTED_ADAPTIVE_PROVIDER;
+delete process.env.AUDIO_PROVIDER;
 const changed = await queueSlide({ id: learnerIds[0]!, name: '', email: '' }, 'ai-for-production', 'M1', video.id, 0, 'example', randomUUID());
 const claimed = (await claimJob('interactive'))!;
 await repo.saveProfile(learnerIds[0]!, { domain: 'finance' }, []);

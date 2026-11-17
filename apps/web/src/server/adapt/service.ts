@@ -13,7 +13,7 @@ import { aiConfigured, type LlmTransport } from "../ai/llm";
 import { authoredWorld, pieceDir, piecesOf, type PieceDef } from "./pieces";
 import { audioRoot, defaultVoicer, type Voicer } from "./tts";
 import { ADAPT_PROMPT_VERSION, AdaptError, writePiece, type World } from "./write";
-import { liveEnabled, queueModule } from "./live";
+import { liveEnabled, queueModule, currentLearnerContextKey, ADAPTIVE_PROMPT_VERSION } from "./live";
 
 /**
  * Lessons rewritten for each learner. From their profile and their answers
@@ -21,8 +21,8 @@ import { liveEnabled, queueModule } from "./live";
  * problem hook, the concept videos, the worked examples) as a new story in
  * their own world, in the authored shape; Kokoro then voices its narration.
  *
- * When: module 1 right after enrolling; every other module when the learner
- * finishes the one before it, or first opens it. Pieces are written in the
+ * When: module 1 right after enrolling; opening module 1 schedules all later
+ * modules in the background. Explicitly opened lessons take priority. Pieces are written in the
  * order they are met, and each goes live on its own once its text and voice
  * are both ready, so the opening is personal within minutes while later
  * videos follow. Until then, or if writing fails, the authored piece plays.
@@ -115,6 +115,31 @@ export async function adaptNextModule(user: SessionUser, courseId: string, modul
   return next ? ensureModule(user, courseId, next.module_id, schedule, deps) : false;
 }
 
+// Only suppress duplicate queue assembly, never cache learner delivery. Jobs
+// themselves are durable and idempotent; restart safely reassembles their queue.
+const preparedCourses = new Map<string, Promise<void>>();
+export async function prepareFollowingModules(user: SessionUser, courseId: string, moduleId: string, schedule: Schedule, deps: AdaptDeps = {}) {
+  if (process.env.ADAPTIVE_BACKGROUND_ENABLED === 'false') return;
+  const course = await getCourse(courseId, user.id);
+  const modules = course?.modules.filter(m => m.authored?.length) ?? [];
+  if (modules[0]?.module_id !== moduleId || modules.length < 2) return;
+  const enrollment = await repo.findEnrollment(user.id, courseId);
+  if (!enrollment) return;
+  const key = `${enrollment.id}:${ADAPTIVE_PROMPT_VERSION}:${await currentLearnerContextKey(user.id, courseId)}`;
+  schedule(async () => {
+    if (preparedCourses.has(key)) return preparedCourses.get(key);
+    const task = (async () => {
+      for (const [index, mod] of modules.slice(1).entries()) {
+        if (liveEnabled(courseId)) await queueModule(user, courseId, mod.module_id, undefined, -(index + 1));
+        else await ensureModule(user, courseId, mod.module_id, schedule, deps);
+      }
+    })();
+    preparedCourses.set(key, task);
+    if (preparedCourses.size > 1000) preparedCourses.delete(preparedCourses.keys().next().value!);
+    try { await task; } catch (error) { preparedCourses.delete(key); throw error; }
+  });
+}
+
 async function worldOf(enrollmentId: string, hash: string): Promise<World | null> {
   const row = (await repo.adaptedFor(enrollmentId, "*")).find((r) => r.piece === WORLD && r.status === "ready" && r.inputs === hash);
   return (row?.content as World | null) ?? null;
@@ -202,6 +227,7 @@ export async function adaptedModule(user: SessionUser, courseId: string, moduleI
   const empty: AdaptedModuleView = { pieces: {}, hook: null, videos: {}, worked: null, world: null };
   const e = await repo.findEnrollment(user.id, courseId);
   if (!e) return empty;
+  await prepareFollowingModules(user, courseId, moduleId, schedule, deps);
   if (liveEnabled(courseId)) {
     const current = await queueModule(user, courseId, moduleId, openPiece);
     const hook = current.hook?.status === "ready" ? current.hook : null;

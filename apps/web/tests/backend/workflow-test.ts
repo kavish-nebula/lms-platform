@@ -4,7 +4,7 @@ import { WORKFLOW_KINDS,WorkflowSchema,WorkflowSaveSchema,checkWorkflow,type Wor
 import { workflowOf,saveWorkflow } from "../../src/server/workflow-project";
 import { getSessionUser } from "../../src/server/auth";
 import { db } from "../../src/server/db/client";
-import { users,enrollments,projectWork,stepProgress,signals } from "../../src/server/db/schema";
+import { users,enrollments,stepProgress,signals } from "../../src/server/db/schema";
 import { eq } from "drizzle-orm";
 import { GET,PUT } from "../../src/app/api/v1/enrollments/[courseId]/workflow-project/route";
 import { POST } from "../../src/app/api/v1/enrollments/[courseId]/workflow-project/check/route";
@@ -33,7 +33,6 @@ assert.equal(WorkflowSchema.safeParse({ ...graph,nodes: nodes.map((n) => ({ ...n
 
 const user = await getSessionUser(); const d = await db();
 const [e] = await d.insert(enrollments).values({ userId:user.id,courseId:"ai-agent",answers:{} }).returning();
-await d.insert(projectWork).values({ enrollmentId:e.id,files:{ "prompt_engine.py":"keep existing Python" } });
 const initial = await workflowOf(user,"ai-agent"); assert.equal(initial.revision,0);
 const saved = await saveWorkflow(user,"ai-agent",graph,0,true);
 assert.equal(saved.report!.passed,true);
@@ -41,7 +40,6 @@ assert.equal((await workflowOf(user,"ai-agent")).revision,1);
 const writes = await Promise.allSettled([saveWorkflow(user,"ai-agent",graph,1),saveWorkflow(user,"ai-agent",graph,1)]);
 assert.equal(writes.filter((x) => x.status === "fulfilled").length,1,"Concurrent stale saves cannot overwrite");
 assert.equal((await workflowOf(user,"ai-agent")).report,null,"New save clears obsolete check report");
-assert.equal((await d.query.projectWork.findFirst({ where:eq(projectWork.enrollmentId,e.id) }))!.files["prompt_engine.py"],"keep existing Python");
 assert.equal((await d.select().from(stepProgress)).length,0,"Diagram checks never mark course stages complete");
 assert.equal((await d.select().from(signals)).length,0,"Diagram checks never change adaptation");
 const stranger = { ...user,id:"other-user" }; await d.insert(users).values({ id:stranger.id,name:"Other",email:"other@example.test" });
@@ -55,5 +53,5 @@ assert.equal((await PUT(req({ diagram:graph,revision:2,points:50 }),ctx)).status
 assert.equal((await POST(req({ diagram:graph,revision:2 }),ctx)).status,200);
 await d.delete(enrollments).where(eq(enrollments.id,e.id));
 assert.equal((await d.query.workflowProjects.findMany()).length,0,"Enrollment/reset deletion cascades to drawing projects");
-console.log("Workflow tests passed: architecture paths, safety, ordering, validation, persistence, isolation, concurrency, Python preservation and reset.");
+console.log("Workflow tests passed: architecture paths, safety, ordering, validation, persistence, isolation, concurrency and reset.");
 process.exit(0);

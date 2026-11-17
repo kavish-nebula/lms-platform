@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "title": "AI for Production — Module 1: Introduction to LLMs",
+  "sourceCourseId": "8ca3fb95-df60-4e79-ac4b-f63f2d2f0eb2",
+  "courseId": "dd1fec93-8c51-4f2d-9e0c-943823062c76",
+  "briefRevision": 2,
+  "packageVersion": 1,
+  "revisionId": "2f676c65-2849-42f9-ab75-2d503142d5e1",
+  "blueprintRunId": "dbfb7317-3241-4e43-82e9-df34303f41b9",
+  "publishedLocally": true,
+  "publicationDate": "2026-11-14",
+  "finalPassPercent": 80,
+  "media": [
+    {
+      "sourceId": "M1S1",
+      "title": "Automation vs AI",
+      "assetId": "09e7b528-beca-40ac-b759-93c8e0751edc",
+      "transcriptId": "10c1b422-c0f3-42c7-a039-584524922d88",
+      "sourceUrl": "https://scorm-builder-gcs.b-cdn.net/topics/default/AIforProduction-M1-T1/videos/ibmm_bf1fbdda.mp4",
+      "sha256": "f6a5caac4fcc64e06c3024d2f8010ff251aece96c4726283b9fb2fc0ca2a2fee",
+      "bytes": 74127856,
+      "mime": "video/mp4",
+      "durationSeconds": 241.05,
+      "checkpointSeconds": 123.76,
+      "captions": "M1S1.vtt"
+    },
+    {
+      "sourceId": "M1S2",
+      "title": "What are Large Language Models",
+      "assetId": "df737fd4-db66-400f-a95d-65d75e2c68da",
+      "transcriptId": "c557c345-ea14-4a9e-b1e1-33df13842f99",
+      "sourceUrl": "https://scorm-builder-gcs.b-cdn.net/topics/default/AIforProduction-M1-T1/videos/ibmm2_0c832157.mp4",
+      "sha256": "66f2abdf9704127f6449c60809b479570e22679287e59db569d1cc558fc0b475",
+      "bytes": 100394321,
+      "mime": "video/mp4",
+      "durationSeconds": 282.3,
+      "checkpointSeconds": 138.32,
+      "captions": "M1S2.vtt"
+    }
+  ]
+}

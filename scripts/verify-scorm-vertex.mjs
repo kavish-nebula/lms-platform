@@ -13,5 +13,5 @@ const empty = path.join(out, 'empty.mjs'); await fs.writeFile(empty, 'export {};
 const nextServer = path.join(out, 'next-server.mjs'); await fs.writeFile(nextServer, 'export const NextResponse = { json: (data, init) => Response.json(data, init) };\n');
 const entry = path.join(out, 'verify.mjs');
 await build({ entryPoints: [path.join(root, 'apps/web/tests/backend/scorm-vertex-live.ts')], outfile: entry, bundle: true, platform: 'node', format: 'esm', target: 'node22', tsconfig: path.join(root, 'apps/web/tsconfig.json'), alias: { 'server-only': empty, 'next/server': nextServer }, external: ['@electric-sql/pglite', 'pg', 'drizzle-orm', 'zod', 'google-auth-library'], logLevel: 'warning' });
-const child = spawn(process.execPath, [entry], { cwd: root, stdio: 'inherit', windowsHide: true, env: { ...process.env, PGLITE_DIR: 'memory://', LLM_PROVIDER: 'vertex', AUDIO_PROVIDER: 'vertex', AUDIO: 'on', SCORM_VERIFY_OUTPUT: out } });
+const child = spawn(process.execPath, [entry], { cwd: root, stdio: 'inherit', windowsHide: true, env: { ...process.env, DATABASE_URL: '', PGLITE_DIR: 'memory://', LLM_PROVIDER: 'vertex', AUDIO_PROVIDER: 'vertex', AUDIO: 'on', SCORM_VERIFY_OUTPUT: out } });
 child.on('exit', code => { process.exitCode = code ?? 1; });

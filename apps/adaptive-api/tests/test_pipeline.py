@@ -5,7 +5,7 @@ from unittest.mock import patch
 import httpx
 from fastapi.testclient import TestClient
 from adaptive_api.api import app
-from adaptive_api.pipeline import PROMPT_VERSION, SYSTEM, generate, output_constraints, validate, hook_text_map, apply_hook_text_map, normalize_hook_edits, validate_concept
+from adaptive_api.pipeline import PROMPT_VERSION, SYSTEM, generate, output_constraints, validate, hook_text_map, apply_hook_text_map, normalize_hook_edits, validate_concept, call_model
 from adaptive_api.worker import run_once
 
 SLIDE = {"kind": "title", "title": "Agents", "icon": "bot", "cue": 0,
@@ -14,6 +14,66 @@ JOB = {"id": "job", "lease": "lease", "input": {"authored": SLIDE, "source": SLI
 
 
 class PipelineTests(unittest.TestCase):
+    def test_prerequisite_bridge_targets_existing_title_subtitle_without_note(self):
+        import copy
+        slide = {**SLIDE, "sub": "How models predict text"}
+        job = copy.deepcopy(JOB)
+        job["input"].update(authored=slide, source=slide, trigger="initial")
+        job["input"]["context"]["prerequisiteTeaching"] = [{"lessonId": "1.1", "keyIdeas": ["Agents use models to choose steps."]}]
+        calls = []
+        def model(req):
+            calls.append(json.loads(req.content))
+            result = {**slide, "sub": "Quick reminder: agents choose steps. Models predict text.", "sentences": ["Quick reminder: agents use models to choose steps."]}
+            return httpx.Response(200, json={"choices": [{"message": {"content": json.dumps(result)}}]})
+        with httpx.Client(transport=httpx.MockTransport(model)) as client:
+            result = generate(job, client)["content"]
+        supplied = json.loads(calls[0]["messages"][1]["content"])
+        self.assertEqual(supplied["PREREQUISITE_BRIDGE_PLACEMENT"]["visiblePath"], "$.sub")
+        self.assertEqual(supplied["PREREQUISITE_BRIDGE_PLACEMENT"]["narrationPath"], "$.sentences[0]")
+        self.assertNotIn('note', result)
+        self.assertEqual(len(result['sentences']), len(slide['sentences']))
+
+    def test_healthcare_hook_repair_includes_retail_details_and_url(self):
+        import copy
+        hook = {"title": "Orbit bot", "narration": "Orbit cannot access records.", "film": {"shots": [{"say": "Orbit cannot find an order.", "url": "orbitoutdoor.com/help", "asks": ["Has my tent shipped?"], "count": 400}]}, "correct": "h1"}
+        job = copy.deepcopy(JOB)
+        job["input"].update(authored=hook, source=hook, piece="hook", trigger="initial", textMapVersion=10, courseId="ai-agent")
+        calls = []
+        def model(req):
+            calls.append(json.loads(req.content))
+            edits = {"$.title": "Healthcare record requests", "$.narration": "Harbour Works healthcare handles record requests.", "$.film.shots[0].say": "The healthcare bot cannot find the record."} if len(calls) == 1 else {"$.film.shots[0].url": "harbourworks.example/help", "$.film.shots[0].asks[0]": "Is my record ready?"}
+            return httpx.Response(200, json={"choices": [{"message": {"content": json.dumps(edits)}}]})
+        with httpx.Client(transport=httpx.MockTransport(model)) as client:
+            content = generate(job, client)["content"]
+        placement = json.loads(calls[0]["messages"][1]["content"])["HOOK_CONTEXT_PLACEMENT"]
+        self.assertIn("$.film.shots[0].url", placement["rewritePaths"])
+        self.assertIn("$.film.shots[0].asks[0]", calls[1]["messages"][-1]["content"])
+        self.assertIn("$.film.shots[0].url", calls[1]["messages"][-1]["content"])
+        self.assertEqual(content["film"]["shots"][0]["count"], 400)
+        self.assertEqual(content["correct"], "h1")
+
+    def test_hook_context_repair_reports_every_missing_anchor_together(self):
+        import copy
+        hook = {"title": "Orbit bot", "narration": "Orbit cannot access records.", "film": {"shots": [{"say": "Orbit cannot find the record.", "label": "Orbit inbox"}]}, "correct": "h1"}
+        job = copy.deepcopy(JOB)
+        job["input"].update(authored=hook, source=hook, piece="hook", trigger="initial", textMapVersion=9, courseId="ai-agent")
+        calls = []
+        def model(req):
+            calls.append(json.loads(req.content))
+            edits = {"$.narration": "Harbour Works cannot access clinic records.", "$.film.shots[0].say": "The clinic bot cannot find the record."} if len(calls) == 1 else {"$.title": "Healthcare record requests", "$.narration": "Harbour Works handles healthcare record requests.", "$.film.shots[0].say": "The healthcare bot cannot find the record.", "$.film.shots[0].label": "Harbour inbox"}
+            return httpx.Response(200, json={"choices": [{"message": {"content": json.dumps(edits)}}]})
+        with httpx.Client(transport=httpx.MockTransport(model)) as client:
+            content = generate(job, client)["content"]
+        self.assertEqual(len(calls), 2)
+        first = json.loads(calls[0]["messages"][1]["content"])
+        self.assertEqual(first["HOOK_CONTEXT_PLACEMENT"]["filmPath"], "$.film.shots[0].say")
+        repair = calls[1]["messages"][-1]["content"]
+        for path in ["$.title", "$.narration", "$.film.shots[0].say", "$.film.shots[0].label"]:
+            self.assertIn(path, repair)
+        self.assertNotIn("Keep the supplied production incident", calls[0]["messages"][0]["content"])
+        self.assertEqual(content["correct"], "h1")
+        self.assertEqual(len(content["film"]["shots"]), 1)
+
     def test_personalized_concept_keeps_phase_and_source_structure(self):
         import copy
         job = copy.deepcopy(JOB)
@@ -41,6 +101,23 @@ class PipelineTests(unittest.TestCase):
         candidate['scenes'][0]['title'] = 'Healthcare drafts'
         with self.assertRaisesRegex(ValueError, 'Personalise contextual bridge'):
             validate_concept(source, candidate)
+
+    def test_healthcare_concept_preserves_locally_authored_administrative_narration(self):
+        import copy
+        job = copy.deepcopy(JOB)
+        source = {'scenes': [{'id': 'clinic-before', 'phase': 'before', 'visual': 'healthcare', 'title': 'Clinic reception rule', 'points': ['Check the form.', 'Review exceptions.'], 'narration': 'A fictional clinic reception rule routes complete appointment requests to a staff queue.', 'bridge': 'Connect this idea to a familiar task before selecting the tool you would use.', 'sourceIds': ['M1S1'], 'objectiveIds': ['O1']}]}
+        job['input'].update(authored=source, source=source, piece='concept:clinic', trigger='initial')
+        job['input']['context'].update(authoredCourse=True)
+        calls = []
+        def model(req):
+            calls.append(json.loads(req.content))
+            return httpx.Response(200, json={'choices': [{'message': {'content': json.dumps({'$.scenes[0].bridge': 'In healthcare administration, staff review appointment requests that do not match the fixed rule.'})}}]})
+        with httpx.Client(transport=httpx.MockTransport(model)) as client:
+            result = generate(job, client)['content']['scenes'][0]
+        self.assertEqual(result['narration'], source['scenes'][0]['narration'])
+        self.assertEqual(result['visual'], 'healthcare')
+        self.assertIn('HEALTHCARE AUTOMATION DERIVATIVE', calls[0]['messages'][0]['content'])
+        self.assertIn('never turn a machine threshold into a patient threshold', calls[0]['messages'][0]['content'].lower())
 
     def test_video_activity_preserves_evidence_links_and_uses_course_prompt(self):
         import copy
@@ -143,7 +220,7 @@ class PipelineTests(unittest.TestCase):
         import copy
         hook = {"title": "Orbit chatbot", "narration": "Orbit cannot look up data.", "film": {"say": "Where is my order?", "product": "Trailhead 2P Tent"}, "correct": "h1"}
         job = copy.deepcopy(JOB)
-        job["input"].update(authored=hook, source=hook, piece="hook", textMapVersion=7, courseId="ai-agent")
+        job["input"].update(authored=hook, source=hook, piece="hook", textMapVersion=8, courseId="ai-agent")
         job["input"]["context"]["answers"] = {"domain": "student", "studyFieldOther": "mechanical engineering"}
         calls = []
         def model(req):
@@ -248,6 +325,47 @@ class PipelineTests(unittest.TestCase):
         self.assertNotIn("Orbit", result["narration"])
         self.assertEqual(result["correct"], "h1")
 
+    def test_plain_language_hook_rules_reach_both_hook_formats_only(self):
+        import copy
+        for piece in ["hook", "activity:hook", "worked"]:
+            for authored_course in [False, True]:
+                with self.subTest(piece=piece, authored_course=authored_course):
+                    job = copy.deepcopy(JOB)
+                    job["input"].update(piece=piece, trigger="initial")
+                    job["input"]["context"]["authoredCourse"] = authored_course
+                    calls = []
+                    def model(req):
+                        calls.append(json.loads(req.content))
+                        return httpx.Response(200, json={"choices": [{"message": {"content": json.dumps(SLIDE)}}]})
+                    with httpx.Client(transport=httpx.MockTransport(model)) as client:
+                        generate(job, client)
+                    system = calls[0]["messages"][0]["content"]
+                    self.assertEqual("PROBLEM HOOK: PLAIN LANGUAGE FIRST" in system, piece != "worked")
+                    if piece != "worked":
+                        self.assertIn("one familiar situation, one clear difficulty", system)
+                        self.assertIn("without teaching the whole solution", system)
+                    if piece == "activity:hook":
+                        self.assertIn("Only actual quoted evidence stays verbatim", system)
+                        self.assertIn("Do not label the production incident a healthcare case", system)
+
+    def test_profile_hook_transfer_case_keeps_source_comparison_separate(self):
+        import copy
+        job = copy.deepcopy(JOB)
+        authored = copy.deepcopy(SLIDE)
+        authored['title'] = 'Fictional payables analogy for the supplied production lesson'
+        job['input'].update(piece='activity:hook', trigger='initial', authored=authored, source=authored)
+        calls = []
+        def model(req):
+            calls.append(json.loads(req.content))
+            return httpx.Response(200, json={'choices': [{'message': {'content': json.dumps(authored)}}]})
+        with httpx.Client(transport=httpx.MockTransport(model)) as client:
+            generate(job, client)
+        system = calls[0]['messages'][0]['content']
+        self.assertIn('PROFILE TRANSFER CASE', system)
+        self.assertIn('Do not restore the factory as the main story', system)
+        self.assertIn('Never convert the equipment threshold', system)
+        self.assertNotIn('Preserve the supplied production incident', system)
+
     def test_complete_ild_prompt_and_experience_for_all_triggers(self):
         import copy
         headings = ["AUTHORITY AND INPUTS", "INSTRUCTIONAL DESIGN PROCESS", "MODULE 1: PROFILE AND ENROLLMENT PERSONALISATION", "LATER MODULES: PERFORMANCE-DRIVEN ADAPTATION", "TRIGGER-SPECIFIC BEHAVIOUR", "SLIDES, NARRATION, AND ACCESSIBILITY", "STRUCTURAL AND TECHNICAL CONSTRAINTS", "QUALITY GATES AND FALLBACK"]
@@ -340,10 +458,71 @@ class PipelineTests(unittest.TestCase):
         def failure(req):
             calls.append(req)
             return httpx.Response(429, json={"error": "busy"})
-        with httpx.Client(transport=httpx.MockTransport(failure)) as client:
+        with patch('adaptive_api.pipeline.time.sleep'), httpx.Client(transport=httpx.MockTransport(failure)) as client:
             with self.assertRaises(httpx.HTTPStatusError):
                 generate(JOB, client)
-        self.assertEqual(len(calls), 2)
+        self.assertEqual(len(calls), 3)
+
+    def test_provider_overload_retries_same_model_before_schema_repair(self):
+        calls = []
+        def model(req):
+            calls.append(json.loads(req.content)['model'])
+            if len(calls) == 1:
+                return httpx.Response(503, headers={'retry-after': '3'}, json={'error': 'busy'})
+            return httpx.Response(200, json={'choices': [{'message': {'content': json.dumps(SLIDE)}}]})
+        with patch('adaptive_api.pipeline.time.sleep') as sleep, httpx.Client(transport=httpx.MockTransport(model)) as client:
+            result = generate(JOB, client)
+        self.assertEqual(calls, ['test-model', 'test-model'])
+        sleep.assert_called_once_with(3)
+        self.assertEqual(result['content']['narration'], SLIDE['narration'])
+
+    def test_daily_quota_uses_fallback_without_retrying_exhausted_model(self):
+        for wrap in (lambda e: e, lambda e: [e]):
+            calls = []
+            def model(req):
+                name = json.loads(req.content)['model']
+                calls.append(name)
+                if name == 'test-model':
+                    return httpx.Response(429, json=wrap({'error': {'message': 'Generate content requests per day limit exceeded', 'details': [{'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier'}]}}))
+                return httpx.Response(200, json={'choices': [{'message': {'content': json.dumps(SLIDE)}}]})
+            with patch.dict(os.environ, {'LLM_FALLBACK_MODEL': 'fallback-model'}), patch('adaptive_api.pipeline.time.sleep') as sleep, httpx.Client(transport=httpx.MockTransport(model)) as client:
+                result = generate(JOB, client)
+            self.assertEqual(calls, ['test-model', 'fallback-model'])
+            sleep.assert_not_called()
+            self.assertEqual(result['model'], 'fallback-model')
+
+    def test_provider_fallback_retains_content_repair_round(self):
+        calls = []
+        def model(req):
+            name = json.loads(req.content)['model']
+            calls.append(name)
+            if name == 'test-model':
+                return httpx.Response(429, json=[{'error': {'message': 'Daily quota exhausted'}}])
+            content = {**SLIDE, 'sentences': []} if len(calls) == 2 else SLIDE
+            return httpx.Response(200, json={'choices': [{'message': {'content': json.dumps(content)}}]})
+        with patch.dict(os.environ, {'LLM_FALLBACK_MODEL': 'fallback-model'}), patch('adaptive_api.pipeline.time.sleep') as sleep, httpx.Client(transport=httpx.MockTransport(model)) as client:
+            result = generate(JOB, client)
+        self.assertEqual(calls, ['test-model', 'fallback-model', 'fallback-model'])
+        sleep.assert_not_called()
+        self.assertEqual(result['content']['sentences'], SLIDE['sentences'])
+
+    def test_rejected_credentials_are_not_retried(self):
+        with patch('adaptive_api.pipeline.time.sleep') as sleep, httpx.Client(transport=httpx.MockTransport(lambda req: httpx.Response(401))) as client:
+            with self.assertRaises(httpx.HTTPStatusError):
+                call_model(client, {'provider': 'openai', 'key': 'test', 'base': 'https://model.test'}, 'test-model', [{'role': 'system', 'content': 'test'}, {'role': 'user', 'content': 'test'}])
+        sleep.assert_not_called()
+
+    def test_concept_bridge_repair_identifies_exact_scene_and_word_count(self):
+        source = {'scenes': [{'narration': 'Source teaching.', 'bridge': 'A short bridge.', 'points': ['A', 'B']}]}
+        with self.assertRaisesRegex(ValueError, r'\$\.scenes\[0\]\.bridge has 3 words'):
+            validate_concept(source, source)
+
+    def test_concept_repair_reports_all_invalid_bridges_together(self):
+        source = {'scenes': [{'narration': 'Source teaching.', 'bridge': 'A short bridge.', 'points': ['A', 'B']}] * 2}
+        with self.assertRaises(ValueError) as raised:
+            validate_concept(source, source)
+        self.assertIn('$.scenes[0].bridge has 3 words', str(raised.exception))
+        self.assertIn('$.scenes[1].bridge has 3 words', str(raised.exception))
 
     def test_example_requires_the_learners_field(self):
         import copy

@@ -1,5 +1,15 @@
 # Adaptive teaching pilot
 
+Daily provider quota failures (including Google's array-shaped error responses) hand over to `LLM_FALLBACK_MODEL` immediately; brief overloads retain bounded backoff. Transport retries and model failover do not spend the content-validation repair round. The fallback can return an initial candidate and one corrected candidate, with all hook structure, field-context and answer-key checks still enforced. Configure a model with available quota on the same provider; a successful readiness response alone does not check provider quota. The local Module 2 recovery uses Gemini 3.1 Flash Lite as the fallback for exhausted Gemini 3.5 quotas, followed by matching cached/local narration synthesis.
+
+AI Agent hook contract 10 supplies concrete title, opening-narration and film-narration paths for the learner's explicit field marker. It also lists original retail-language paths that must change for a Healthcare scenario, including URL text, questions, replies, products, captions and replay. The validator reports missing anchors and story remnants together, so the bounded second call can repair them in one response. It retains the existing field, structure and assessment checks. Healthcare illustrations use fictional administrative work rather than clinical decisions. Production-incident preservation is scoped to video-first source activities; it does not constrain the AI Agent scenario rewrite. Contract 10 creates new hook fingerprints through normal preparation without deleting previous revisions or changing learner answers or progress.
+
+Prerequisite bridges on title slides without a note use an existing subtitle, title or kicker and the first narration entry. The editor receives explicit placement instructions instead of repeatedly failing the visible-and-spoken reminder gate. A targeted title-bridge fingerprint requests corrected later-module title slides; existing content, sentence counts and evidence requirements remain protected.
+
+Personalized hook artwork shows a document for healthcare record requests. Decorative inbox messages use neutral request/status text for personalized stories, so the original jacket and parcel examples do not leak into the rendered film. The original unpersonalized demo retains its authored artwork and inbox context.
+
+Problem-hook clarity: both the Python editor and fallback editor ask for everyday language, short sentences, one familiar situation, one difficulty and one clear consequence. Required jargon is explained using the supplied teaching. Hooks build curiosity without revealing prediction or assessment answers, and preserve source facts and visual/narration alignment. Python applies these rules only to `hook` and `activity:hook`, including authored courses. Hook text-map contract 10, video-first hook narration fingerprint 6 and fallback prompt version 3 request fresh derivatives on normal preparation; published masters, learner history and existing audio files are retained. Restart deployed services to load the updated prompts. This prompt change is not a claim that existing recordings were regenerated or that live readability was verified.
+
 This pilot adds a Python teaching service to the existing Next.js LMS. It covers the `ai-agent` course: profile and enrollment answers personalise Module 1; verified learning evidence shapes subsequent modules, with explicit prerequisite reminders from Module 1 into Module 2. Required objectives, assessment standards and saved stage keys remain authored.
 
 The adaptive editor uses prompt version **4**, the complete eight-section ILD teaching prompt: authority/inputs, instructional design, Module 1 personalisation, later-module evidence, trigger behaviour, multimedia/accessibility, structural constraints, and quality/fallback checks. Course experience is included in `LEARNER_FOCUS`. These instructions support the ILD process; they do not certify factual accuracy, accessibility or SME approval. The existing validators and matching-audio publication checks remain enforced. Profiling and enrollment interview prompts are separate and unchanged by this update.
@@ -167,3 +177,24 @@ revision changes. Audio uses bounded sentence chunks, with a separate cache poli
 ## Uploaded concept revisions
 
 Reviewed transcripts support separate learner-specific illustrated concept videos. `queueConcept` deduplicates one interactive job on topic opening. Profile, source/release and prompt versions scope cache identity; stale results are rejected before adoption and after speech. Every scene requires matching audio and total measured narration must stay below 420 seconds. Assessment keys never enter generation; existing midpoint questions and grading remain authored. See [video-first-authoring.md](video-first-authoring.md#personalised-concept-delivery).
+
+### Recovery during concept preparation
+
+Temporary model overloads and rate limits (429/500/502/503/504), and request
+timeouts, retry the same request up to three times before consuming the existing
+schema repair or using the configured fallback model. Backoff respects numeric
+`Retry-After` headers, with a 30-second ceiling. Authentication errors do not
+retry within a model request. Schema repair remains bounded, and a bridge-length
+failure identifies all invalid scene paths and word counts in one repair without relaxing the
+8–18-word requirement or changing source narration.
+
+The worker allows ten minutes for model generation and thirty minutes for a
+result receipt, because the receipt includes queued local Kokoro synthesis.
+Its heartbeat continues every fifteen seconds throughout generation and speech;
+expired leases and stale profile/source results remain rejected. A long speech
+queue therefore does not, by itself, cause a new model rewrite and discard the
+previous validated text. These are timeout ceilings, not preparation-time promises.
+Failed concepts can be explicitly retried through their existing topic endpoint;
+ready topics keep their existing revision and cached audio.
+
+Video-first problem hooks share the audio-clock-driven teaching slide renderer with personalized concepts. Each scene paginates its exact narration, with no additional unspoken bridge; segmented and single-track audio both provide section-local times. Existing final-decision pauses and manual completion remain intact. AI for Production M1 supplies a separate fictional finance/payables or healthcare-administration transfer case for matching saved profiles, retaining a labelled original-recording comparison, M1S1/O1 provenance and untouched source recordings/assessments. Hook narration cache version 7 prevents older case/audio reuse. Unsupported fields keep the existing general adaptation path.

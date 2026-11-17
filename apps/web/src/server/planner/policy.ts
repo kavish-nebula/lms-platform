@@ -12,7 +12,7 @@ export const AI_COOLDOWN_MS = 10 * 60_000;
 const missed = (s: SignalRow) => (s.kind === "video_check" || s.kind === "recall_answer" || s.kind === "scenario_answer") && s.payload.correct === false;
 
 /** A failed module check, final check or mini project run, with the lessons (or, for a whole module, its number) it found weak. */
-const failedCheck = (s: SignalRow) => (s.kind === "module_check" || s.kind === "final_check" || s.kind === "capstone_check") && s.payload.passed === false;
+const failedCheck = (s: SignalRow) => (s.kind === "module_check" || s.kind === "final_check" || s.kind === "capstone_check" || s.kind === 'knowledge_check') && s.payload.passed === false;
 const missedIn = (s: SignalRow) => (Array.isArray(s.payload.missedLessons) ? (s.payload.missedLessons as string[]) : []);
 /** "2.3" names a lesson; "2" names every lesson of module 2. */
 const covers = (key: string, lessonId: string) => key === lessonId || (!key.includes(".") && lessonId.startsWith(`${key}.`));
@@ -49,7 +49,7 @@ export function ruleRevision(plan: LearnerPlan, evidence: SignalRow[]): LearnerP
       const n = misses.get(l.lessonId) ?? 0;
       const check = n < 2 ? checkMiss(l.lessonId) : undefined;
       if (l.support === "extra" || (n < 2 && !check)) return l;
-      const which = check?.kind === "module_check" ? "module check" : check?.kind === "capstone_check" ? "mini project" : "final check";
+      const which = check?.kind === "module_check" ? "module check" : check?.kind === "capstone_check" ? "mini project" : check?.kind === 'knowledge_check' ? 'topic knowledge check' : "final check";
       const reason = n >= 2 ? `You missed ${n} checks in lesson ${l.lessonId}, so it now gives more help.` : `The ${which} showed lesson ${l.lessonId} needs another look, so it now gives more help.`;
       changes.push({ target: `lesson ${l.lessonId} help`, from: l.support, to: "extra", reason });
       return { ...l, support: "extra" as const, why: reason };

@@ -56,9 +56,16 @@ async function open(): Promise<DB> {
     const { Pool } = await import("pg");
     const { drizzle } = await import("drizzle-orm/node-postgres");
     const { migrate } = await import("drizzle-orm/node-postgres/migrator");
-    const pg = drizzle(new Pool({ connectionString: process.env.DATABASE_URL }), { schema });
-    await migrate(pg, { migrationsFolder });
-    database = pg as unknown as DB;
+    const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+    store.__lmsCloseDb = async () => { await pool.end(); };
+    try {
+      const pg = drizzle(pool, { schema });
+      await migrate(pg, { migrationsFolder });
+      database = pg as unknown as DB;
+    } catch (error) {
+      await pool.end();
+      throw error;
+    }
   } else {
     const { PGlite } = await import("@electric-sql/pglite");
     const { drizzle } = await import("drizzle-orm/pglite");

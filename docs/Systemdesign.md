@@ -1,5 +1,34 @@
 # Adaptive teaching system design
 
+Master course authoring uses separate prompt layers for video-first modules:
+versioned shared system rules, saved structured module instructions and bounded
+SME evidence with reviewed transcripts. A selected module can be generated before
+later modules are ready. Saved fragments include an input fingerprint and source,
+model and prompt provenance; final course assembly retains existing blueprint,
+review and publication checks. This does not change learner personalization or
+the approved original recordings.
+
+AI for Production's continuous concept player derives one measured audio timeline
+from existing personalized clips. Combined assets are enrollment/revision scoped,
+cached by ordered content hashes and streamed through authenticated range access.
+Visual segments remain source-linked; quiz gates and completion are independent
+of seeking. This presentation change adds no database tables or generation jobs.
+See [continuous personalized lessons](continuous-personalized-lessons.md).
+
+Migration 0025 removes the unused, empty `project_work` storage for the retired
+Python mini project. It locks and checks the table first, refusing to delete
+historical learner files. The 35 remaining active tables support current or
+compatible workflows. See [database schema cleanup](database-schema-cleanup.md).
+
+Prompt-driven creator operations use a separate owner-workspace MCP endpoint,
+`/api/mcp/course-authoring`. Eight-hour hashed grants default to draft authoring;
+publication is an explicit optional scope. MCP exposes current schemas, planning
+and review prompts, owner-scoped brief/package operations and validated focused
+lesson/quiz edits. Final human approval remains in the creator workspace, and
+publication reuses exact-revision locks and immutable learner editions. The
+legacy three-tool single-course endpoint is unchanged. See
+[creator MCP workflow](creator-mcp-workflow.md) for setup and boundaries.
+
 The practical sandbox separates content, learner state and authoritative grading. miniProject.sandbox declares bounded data-workflow fields/steps/input cases and criterion predicates. Package validation checks rubric/objective/video coverage and valid test references; instructional semantics remain human reviewed. The existing session scopes the project-sandbox API to an enrollment and published revision. Save/Submit lock release/enrollment and check optimistic versions, preventing stale tab/release writes. Run can execute locally; Test and Submit use published server predicates. Submission artifacts and reports are append-only. Migration 0019 adds release-scoped drafts/submissions; earlier revisions and reference-course workflows remain intact. Supported tasks are structured artifact/data-flow simulations, not arbitrary code execution or live tools.
 
 Authored module quizzes and multiple-answer questions now use the existing delivery and grading boundaries. Optional moduleQuiz fields preserve old JSON packages; strict single/multiple question variants reject ambiguous keys. The released assessment endpoint accepts optional moduleId and scalar/array responses, rejects stale releases and cross-scope or invalid selections, and uses exact-set grading. Keys for module and final quizzes remain server-side; explanatory feedback is withheld on failed attempts. Video midpoint checks remain formative and can also use multiple selections. Telemetry verification calls the shared authored grader directly on the server. Existing progress and publication approval records are retained.
@@ -52,3 +81,26 @@ Video-first authoring supports owner-scoped concept recordings and immutable tim
 
 
 Connected SCORM imports now use immutable source snapshots, resumable import/preparation runs and explicit LMS review. Published editions pin enrollments; upgrading archives the prior enrollment and creates a fresh identity for progress, plans, grades and adaptation. Original source media is cached separately from personalised audio. See [connected SCORM courses](connected-scorm-courses.md).
+
+## Local Chalkboard video derivatives
+
+The persistent Next.js host can schedule local Manim render subprocesses using
+the pinned nicglazkov/Chalkboard scene runtime. Validated personalized teaching
+and its matching audio are compiled to a constrained animated diagram plan;
+rendering receives no model credentials or generated executable code. Cached
+MP4s, status and layout reports are scoped to enrollment and source/audio hash.
+The enrolled-learner media route enforces ownership and byte ranges. Existing
+quiz grading, progress and source recordings remain authoritative. Module 1
+foundation recommendations use recorded evidence, never inferred profession.
+See `docs/chalkboard-video.md` for setup and measured verification. A serverless
+host needs a durable rendering worker before using this native subprocess path.
+
+Chalkboard's directed refinement adds a source-grounded visual director, an
+independent model critique, deterministic source/unit/layer checks and local
+Whisper word alignment. The native process renders persistent chapter
+compositions and releases an MP4 only after sync and text-layout checks. The
+existing narration/checkpoint/grading path remains authoritative. The renderer
+contract now supports a local Remotion/Manim compositor, with motion-window
+rendering and full-file decode checks. This is a process-local queue with stale
+lease recovery, not a distributed render service or scale benchmark. See
+`docs/hybrid-video-rendering.md` for the current implementation and limitations.

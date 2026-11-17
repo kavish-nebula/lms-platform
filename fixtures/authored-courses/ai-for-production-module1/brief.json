@@ -1,0 +1,98 @@
+{
+  "title": "AI for Production — Module 1: Introduction to LLMs",
+  "subject": "Automation and language models in production work: two original concept recordings.",
+  "audience": "Production engineers, supervisors, operations analysts, maintenance teams and manufacturing professionals who are new to AI. Learners understand basic production processes and can read simple tables and reports. Programming experience is not required. Use clear language, manufacturing examples and guided demonstrations.",
+  "contexts": "",
+  "delivery": "Self-paced",
+  "duration": "",
+  "outcomes": "Distinguish fixed automation from AI assistance and explain why factory-specific language-model answers need supporting evidence and verification. This standalone release covers only the two original Module 1 recordings, not the full seven-module course.",
+  "objectives": [
+    {
+      "text": "Distinguish fixed automation from AI assistance using production-work examples.",
+      "bloom": "Understand"
+    },
+    {
+      "text": "Explain how language models generate text and why their outputs require verification.",
+      "bloom": "Understand"
+    }
+  ],
+  "references": "",
+  "sourceText": "",
+  "dependencies": "One standalone module. Watch Automation vs AI before What are Large Language Models. Then complete worked examples, guided practice, Scenario Lab and module quiz, followed by one guided evidence-review project, 80% final assessment and reflection.",
+  "difficulties": "",
+  "systemPrompt": "Create this standalone Module 1 course from ONLY the two original SCORM Builder recordings and their locally reviewed transcripts. Preserve the two exact objectives and the recordings. Keep all source content local; do not call external AI/transcription services. Generate simple source-linked learning activities and exactly two pre-checkpoint questions per video. Include a module quiz and one guided ready-made in-course project learners run and explain without editing. Finish with an objective-aligned 80% final assessment and reflection. Qualify the recording’s absolute RAG accuracy and local-security claims in visible review notes; no diagnostic or equipment-control instructions. Do not claim this is the seven-module AI for Production course.",
+  "physicalNotes": "",
+  "prerequisites": "Basic understanding of manufacturing operations, production reports and workplace procedures. Familiarity with spreadsheets is helpful. No prior AI or programming knowledge is required.",
+  "sourceLibrary": {
+    "modules": [
+      {
+        "id": "M1",
+        "title": "Introduction to LLMs",
+        "topics": [
+          {
+            "id": "M1T1",
+            "title": "Automation versus AI in production"
+          },
+          {
+            "id": "M1T2",
+            "title": "LLM capabilities, limits and factory grounding"
+          }
+        ],
+        "instructions": {
+          "scope": "Use only the two supplied original recordings. Teach fixed-rule automation, deterministic responses, changed operating conditions, AI pattern-based adaptation, and the respective roles of machinery, AI and humans. Explain LLM parameters and text-based assistance, basic prompting examples, limitations without factory/current data, and the demonstrated use of retrieved SOPs and live telemetry in a local deployment example. Preserve the two original videos and locally reviewed transcripts.",
+          "version": 1,
+          "dependsOn": [],
+          "exclusions": "Do not add recordings or illustrated replacement videos. Do not teach detailed next-token prediction, transformer mechanics, a comprehensive local-versus-cloud comparison or a structured-prompt method: these are not supplied by these two recordings. Course objectives O3 and O4 require later reviewed teaching. No external tools, machine operation, repairs, separate module project or course final assessment.",
+          "objectiveIds": [
+            "O1",
+            "O2"
+          ],
+          "prerequisites": "Basic production-process and report awareness; no AI or programming background required.",
+          "teachingNotes": "Generate a simple fictional problem hook, worked reasoning, guided evidence-review practice, transfer scenarios, exactly two first-half-supported midpoint questions per video, and one module quiz covering O1/O2. Keep all work inside the course and distinguish supplied evidence from unsupported conclusions. The second source overstates RAG accuracy and local security; flag those statements for human SME review, never turn them into guaranteed facts or correct-answer claims. Use clear language, plausible similar-length options and explicit Select one answer / Select all correct answers labels. Original recordings remain unchanged; local transcript review is AI-assisted, not final human source approval."
+        }
+      }
+    ],
+    "sources": [
+      {
+        "id": "M1S1",
+        "text": "Step onto the floor of a modern manufacturing plant,\n\nand you'll immediately notice the perfect synchronization.\n\nEvery movement is timed down to the millisecond.\n\nFor decades, we've built these systems to solve one specific problem,\n\neliminating repetitive physical labor.\n\nThis relies on an environment of known knowns.\n\nIf the size, weight, and speed of the materials on the line never fluctuate, the output remains entirely predictable.\n\nYou program a programmable logic controller, or PLC, with a set ladder logic sequence, and the machinery executes those exact steps millions of times without deviation.\n\nThe result is a consistent execution engine that is completely blind to its surrounding context. The trouble is, a factory floor is a physical space, and physical spaces change.\n\nBearings wear down, ambient room temperature fluctuates, and supply chains deliver materials\n\nwith slightly different dimensions.\n\nThis diagram shows what happens to hard-coded logic when an irregular variable enters the\n\nsequence.\n\nThe rules don't adapt to the new shape.\n\nThe pathway stops and the line halts.\n\nTo keep the line moving, engineers must monitor operations, find the new variable,\n\nand manually rewrite the code to account for the change.\n\nWe eliminated the physical repetition, but humans are still performing the repetitive\n\nthinking required to manage the machines.\n\nTo scale operations efficiently, a facility needs a way to hand off\n\nthat cognitive repetition.\n\nIt requires artificial intelligence.\n\nLet's look at a specific industrial process,\n\nmanaging the internal temperature of a single machine.\n\nThis chart shows how traditional automation\n\nhandles the cooling cycle.\n\nThe rule is simple.\n\nIf the temperature crosses a hard 70 degrees,\n\nthe cooler turns on.\n\nThis logic is deterministic.\n\nThe machine checks the temperature, returning a strict binary yes or no.\n\nOver a month of operation, the coolant fluid inside the machine ages, losing its\n\nthermal efficiency.\n\nA 70 degree trigger is no longer the most efficient threshold, yet the system will continue waiting for that exact number before activating.\n\nThe execution is restricted by the initial parameters set by a human programmer,\n\nwhich prevents the system from optimizing for real-time wear and tear.\n\nNow, let's apply an artificial intelligence model to that exact same cooling problem.\n\nAI plots thousands of past temperature readings against cooler events\n\nto discover relationships and identify optimal cooling zones.\n\nBy recognizing patterns, it manages unknown knowns.\n\nAs coolant degrades, the AI adapts, triggering coolers earlier.\n\nThis probabilistic approach generates variable confidence scores for actions\n\nbased on current conditions rather than binary commands.\n\nProbabilistic systems rely on operational history to weigh options and make informed\n\ndecisions on the fly. Zooming out to the entire factory floor, we can see how these two technologies interact.\n\nAI and traditional automation are not competitors.\n\nThey occupy different layers in a production hierarchy.\n\nOn the floor, the conveyor belts and robotic arms remain in place, handling the heavy,\n\nrepetitive physical execution.\n\nAbove them, the AI acts as a coordinating layer.\n\nIt monitors the entire flow,\n\npredicting when a motor might fail,\n\nor adjusting conveyor speeds to prevent a bottleneck.\n\nA modern facility maximizes its throughput\n\nwhen adaptive digital intelligence is layered\n\ndirectly over consistent physical machinery.\n\nThis division of labor shifts the daily responsibilities\n\nof the human workforce.\n\nBy offloading micro-decisions like when to trigger a valve or how fast a belt should turn\n\nto the AI, technicians are no longer required to spend their shifts manually troubleshooting basic\n\nlogic failures. Instead of fixing a single machine's code, a worker now manages the performance\n\ntargets for the entire line, adjusting the system's objectives based on production deadlines or material quality.\n\nIn modern manufacturing, the roles are distinct.\n\nAutomation executes the physical tasks, AI decides how to optimize those tasks, and humans\n\nset the goals that the entire system works toward.",
+        "scope": "topic",
+        "title": "Automation vs AI",
+        "video": {
+          "assetId": "09e7b528-beca-40ac-b759-93c8e0751edc",
+          "transcriptId": "10c1b422-c0f3-42c7-a039-584524922d88",
+          "durationSeconds": 241.05,
+          "checkpointSeconds": 123.76
+        },
+        "topicId": "M1T1",
+        "moduleId": "M1",
+        "revision": 2,
+        "reference": "SCORM Builder AIforProduction-M1-T1 v173, sub-concept-1-1; original recording https://scorm-builder-gcs.b-cdn.net/topics/default/AIforProduction-M1-T1/videos/ibmm_bf1fbdda.mp4. Transcript checked locally with Whisper base.en, audio passage rechecks and video frames; final human SME accuracy/sign-off pending.",
+        "objectiveIds": [
+          "O1"
+        ]
+      },
+      {
+        "id": "M1S2",
+        "text": "Modern manufacturing relies heavily on constant momentum,\n\nright up until a critical piece of machinery suddenly grinds to a halt.\n\nTo get the line moving again, technicians face an immediate bottleneck.\n\nThey have to manually dig through mountains of unstructured text,\n\nflipping through hundreds of pages of maintenance manuals\n\nand dense standard operating procedures just to find a starting point.\n\nThis search quickly turns into a maze.\n\nAn obscure error code on one screen rarely matches the disconnected sensor descriptions\n\nburied deep in a PDF from five years ago.\n\nThe actual physical repair often takes minutes.\n\nThe true financial bleed of machine downtime comes from the hours wasted simply searching\n\nfor the exact information needed to act. This massive data bottleneck is exactly the problem large language models or LLMs\n\nare engineered to solve.\n\nThey instantly process and synthesize massive volumes of unstructured human text.\n\nThink of an LLM as an AI trained by reading vast oceans of existing information, everything\n\nfrom heavy technical manuals to complex\n\ncode bases and millions of web pages.\n\nWe call them large because of their parameters.\n\nThese are billions of mathematical knobs storing patterns and logic the model learned\n\nduring training.\n\nThis parameter-heavy architecture powers systems dominating the current landscape, including\n\nOpenAI's GPT-4, Anthropic's Claude, Google's Gemini, and local\n\nalternatives like Meta's Llama 3.\n\nBy leveraging these billions of parameters, LLMs act as universal translators, taking a\n\nfactory's overwhelming pile of static documentation and turning it into accessible,\n\ninteractive knowledge.\n\nOut of the box, an LLM offers immediate industrial utility.\n\nIt inherently understands dense technical jargon,\n\ncomplex error codes, and niche sensor descriptions,\n\nwithout requiring you to retrain the software\n\nfor every new task.\n\nYou interact with it through prompting.\n\nYou simply type plain language instructions,\n\nasking the system to summarize a manual,\n\nexplain a process, or compare technical data,\n\nand it responds in context.\n\nHowever, these models arrive with a significant structural flaw.\n\nA standard LLM possesses absolutely zero knowledge of your facility's specific proprietary data.\n\nIf you ask an ungrounded LLM about a specific, localized machine, it will experience a hallucination, generating a highly plausible sounding, but entirely false answer.\n\nFurthermore, generalized LLMs have no concept of time.\n\nThey are completely blind to real-time events, live telemetry, and current machine\n\nstatuses.\n\nDeploying a raw, generalized LLM on a factory floor creates a dangerous gap between broad\n\nassumptions and specific real-world truths.\n\nIt quickly becomes a profound operational liability.\n\nSafely deploying these models in manufacturing requires a specialized architectural process,\n\nknown as retrieval augmented generation, or RAG, combined with live data integration.\n\nThe RAG workflow begins when a technician submits a query.\n\nThe system first extracts the exact proprietary SOP document\n\nfrom your secure local database.\n\nSimultaneously, it pulls real time telemetry,\n\nmerging it with the SOP into a single context package.\n\nThis forces the LLM to answer strictly using local data.\n\nThis specific workflow neutralizes the threat\n\nof hallucinations.\n\nIt forces the AI to strictly read your proprietary manual and check your live sensors before it is allowed to speak.\n\nBack on the factory floor, our technician is now standing beside the halted machine, actively attempting a diagnosis.\n\nThey encounter a highly obscure, completely undocumented error code and input it straight into the tablet's interface. Because this facility runs a local model like Llama 3 via\n\nOllama, the entire query processes completely on\n\npremises.\n\nThe factories telemetry and intellectual property never\n\nleave the building.\n\nNothing touches the external internet, keeping the\n\nproprietary information perfectly secure.\n\nThis secure local processing instantly synthesizes the relevant manual and the live machine status,\n\ndelivering a verified step-by-step repair guide directly into the technician's hands.\n\nLarge language models arrive with no inherent understanding of a specific business or its unique workflows.\n\nThey function as specialized reasoning engines, using mathematical patterns to organize and navigate complex technical text.\n\nThis reasoning capability delivers its highest industrial utility when the engine is securely\n\nanchored to a facility's specific proprietary truth.\n\nMastering this connection makes once scattered factory data a facility's single most accessible\n\nand actionable asset.",
+        "scope": "topic",
+        "title": "What are Large Language Models",
+        "video": {
+          "assetId": "df737fd4-db66-400f-a95d-65d75e2c68da",
+          "transcriptId": "c557c345-ea14-4a9e-b1e1-33df13842f99",
+          "durationSeconds": 282.3,
+          "checkpointSeconds": 138.32
+        },
+        "topicId": "M1T2",
+        "moduleId": "M1",
+        "revision": 2,
+        "reference": "SCORM Builder AIforProduction-M1-T1 v173, sub-concept-1-2; original recording https://scorm-builder-gcs.b-cdn.net/topics/default/AIforProduction-M1-T1/videos/ibmm2_0c832157.mp4. Transcript checked locally with Whisper base.en, audio passage rechecks and video frames; final human SME accuracy/sign-off pending. SME caveat: RAG and local deployment are not assumed to guarantee accuracy or security.",
+        "objectiveIds": [
+          "O2"
+        ]
+      }
+    ],
+    "version": 1
+  },
+  "physicalSkills": false
+}

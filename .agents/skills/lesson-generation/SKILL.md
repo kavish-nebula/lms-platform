@@ -35,6 +35,8 @@ For video-first sources, use the human-reviewed timestamped transcripts and uplo
 
 ### Clear, engaging video experience
 
+For generated topic videos, apply the creator's [reference-video production standard](references/demonstration-video-standard.md). Use a narrative demonstration with meaningful object/state changes, source-supported example artifacts and synchronized annotations. Choose visuals for the actual topic and learner context; a shared art direction does not mean repeating the same composition in every video. This governs generated derivatives, not replacements for uploaded source recordings.
+
 - Give each video one clear learning outcome, a short relevant problem, a logically sequenced explanation and a concise recap. Use plain language, define unfamiliar terms and connect abstract ideas to concrete audience-relevant examples.
 - Create a purposeful visual progression using concise slides, step-by-step reveals, annotated examples, comparisons or process walkthroughs as appropriate to the subject. Explain what changes and why; avoid dense text, reading bullets verbatim or decorative motion that distracts from the concept.
 - Apply that progression to the Hook, Worked Examples, Guided Practice and Scenario Lab too. A title card with narration is not a complete teaching sequence. Choose enough distinct scenes to show the situation, reasoning/action and result or feedback; two to four scenes is often useful, but each scene must add meaning. A short opening card can introduce a sequence, not substitute for it.

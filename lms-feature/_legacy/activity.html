@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Activity — Proofcraft</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body data-bot-page="course" data-bot-topic="REST API Engineering">
+<div id="topbar"></div>
+
+<div class="container activity-wrap" id="root" style="max-width:820px"></div>
+<div style="height:90px"></div>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+<script>
+const params = new URLSearchParams(location.search);
+const TYPE = params.get("type") || "worked";           // worked | scenario | project
+const MOD = Number(params.get("module") || 1);
+const mod = COURSE.modules.find((m) => m.n === MOD);
+const root = document.getElementById("root");
+document.body.dataset.botModule = MOD;
+
+const KINDS = {
+  worked:  { tag: "Worked example · guided practice", chip: "concept" },
+  scenario:{ tag: "Scenario · adaptive", chip: "apply" },
+  project: { tag: "Mini project · independent", chip: "create" },
+};
+
+topbar("courses");
+
+if (!mod || !moduleUnlocked(MOD)) {
+  root.innerHTML = `<div class="page-head"><h1>🔒 Locked</h1>
+    <p class="lede">Pass Module ${MOD - 1}'s mastery gate first.</p>
+    <a class="btn btn-ghost btn-sm" href="course.html" style="margin-top:14px">← Back to the course</a></div>`;
+} else {
+  root.innerHTML = `
+    <div class="page-head">
+      <div class="breadcrumb"><a href="course.html">${COURSE.title}</a> › Module ${MOD}: ${mod.title}</div>
+      <span class="chip accent">${KINDS[TYPE].tag}</span>
+      <h1 id="a-title" style="margin-top:12px"></h1>
+      <div id="a-sub"></div>
+    </div>
+    <div id="a-body"></div>
+    <div style="display:flex;justify-content:space-between;margin-top:26px">
+      <a class="btn btn-ghost btn-sm" href="course.html">← Back to Module ${MOD}</a>
+      <div id="a-foot"></div>
+    </div>`;
+
+  if (TYPE === "worked") renderWorked();
+  if (TYPE === "scenario") renderScenario();
+  if (TYPE === "project") renderProject();
+}
+
+/* ============ WORKED EXAMPLE — course-style card grid + mock screenshots ============ */
+function renderWorked() {
+  const we = mod.workedExample;
+  document.getElementById("a-title").textContent = we.title;
+  document.getElementById("a-sub").innerHTML = `<p class="lede" style="margin-top:8px">Watch the decision, not just the result. Each card is one decision — the highlighted line is the rule behind it, and every card carries a screenshot of what it looks like in practice.</p>`;
+
+  document.getElementById("a-body").innerHTML = `<div class="activity-grid">${we.steps.map((st, i) => `
+    <div class="card act-card">
+      <div class="act-card-head"><span class="act-num">${i + 1}</span><h3>${st.s}</h3></div>
+      <p class="lede" style="font-size:.93rem;margin-top:10px">${st.d}</p>
+      <div class="step-note">↳ ${st.note}</div>
+      ${st.shot ? shotHTML(st.shot) : ""}
+    </div>`).join("")}</div>`;
+
+  document.getElementById("a-foot").innerHTML = `<a class="btn btn-primary btn-sm" href="activity.html?type=scenario&module=${MOD}">Next: the scenario →</a>`;
+}
+
+/* ---- mock UI screenshot builders ---- */
+function shotHTML(shot) {
+  if (shot.kind === "browser") {
+    return `<div class="shot">
+      <div class="shot-chrome"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <div class="shot-url">🔒 ${shot.url}</div></div>
+      <div class="shot-body center"><div class="shot-cap">${shot.label || ""}</div></div>
+    </div>`;
+  }
+  if (shot.kind === "network") {
+    return `<div class="shot">
+      <div class="shot-chrome"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <div class="shot-url">Network</div></div>
+      <table class="net-table">
+        <tr><th>Method</th><th>Request</th><th>Status</th><th>Time</th></tr>
+        ${shot.rows.map((r) => `
+          <tr><td class="m">${r[0]}</td><td class="mono">${r[1]}</td>
+          <td><span class="status s${String(r[2])[0]}">${r[2]}</span></td><td class="mono">${r[3]}</td></tr>`).join("")}
+      </table>
+    </div>`;
+  }
+  if (shot.kind === "json") {
+    return `<div class="shot">
+      <div class="shot-chrome"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <div class="shot-url">${shot.title || "Response"}</div></div>
+      <pre class="json-view">${escapeHtml(shot.code)}</pre>
+    </div>`;
+  }
+  if (shot.kind === "terminal") {
+    return `<div class="shot dark">
+      <div class="shot-chrome dark"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <div class="shot-url">terminal</div></div>
+      <pre class="term-view">${shot.lines.map((l) => escapeHtml(l)).join("\n")}</pre>
+    </div>`;
+  }
+  return "";
+}
+function escapeHtml(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+
+/* ============ SCENARIO — adaptive, full page ============ */
+function scenarioCalibration() {
+  const lm = lmGet();
+  const expMap = { complete_beginner: 0, beginner: 1, intermediate: 2, advanced: 3, expert: 4 };
+  let idx = lm && expMap[lm.experience_level] !== undefined ? expMap[lm.experience_level] : 0;
+  if (lm && lm.confidence_level >= 4) idx = Math.min(4, idx + 1);
+  if (lm && lm.confidence_level <= 2) idx = Math.max(0, idx - 1);
+  return [
+    "calibrated for first contact — take your time",
+    "calibrated for early practice — hints removed",
+    "workplace pressure — no hints, justify fast",
+    "senior-level — a teammate will challenge your call",
+    "expert table — defend it in one paragraph",
+  ][idx];
+}
+
+function renderScenario() {
+  const s = mod.scenario;
+  document.getElementById("a-title").textContent = s.title;
+  document.getElementById("a-sub").innerHTML =
+    `<div class="meta-row" style="margin-top:12px">
+       <span class="chip gold">Adaptive difficulty: ${scenarioCalibration()}</span>
+       <span class="chip">Bloom: ${s.bloom}</span>
+     </div>`;
+  renderScenarioChoices(s);
+}
+function renderScenarioChoices(s) {
+  document.getElementById("a-body").innerHTML = `
+    <div class="card hero-card">
+      <div class="eyebrow">The situation</div>
+      <p style="font-family:var(--font-display);font-size:1.08rem;line-height:1.6">${s.situation}</p>
+    </div>
+    <div class="eyebrow" style="margin:24px 0 2px">What do you do?</div>
+    <div class="activity-grid" id="sc-choices">${s.choices.map((c, i) => `
+      <button class="choice-card" onclick="pickChoice(${i})">
+        <span class="choice-key">${String.fromCharCode(65 + i)}</span>
+        <span>${c.t}</span>
+      </button>`).join("")}</div>
+    <div id="sc-fb"></div><div id="sc-next"></div>`;
+}
+function pickChoice(i) {
+  const s = mod.scenario;
+  const c = s.choices[i];
+  document.querySelectorAll("#sc-choices .choice-card").forEach((b, bi) => {
+    b.disabled = true;
+    if (bi === i) b.classList.add(c.verdict === "best" ? "best" : c.verdict === "ok" ? "ok" : "poor");
+  });
+  const fb = document.getElementById("sc-fb");
+  fb.innerHTML = `<div class="card choice-feedback-block ${c.verdict}">
+    <span class="bloom-tag">${c.verdict === "best" ? "Strong reasoning" : c.verdict === "ok" ? "Partially there" : "Reasoning gap"}</span>
+    <p style="margin-top:8px">${c.fb}</p></div>`;
+  const wasDone = (pgGet().scenarios || []).includes(MOD);
+  recordScenario(MOD);
+  document.getElementById("sc-next").innerHTML = `
+    ${c.verdict === "best"
+      ? `<button class="btn btn-primary" onclick="closeScenario(${wasDone})">Done — back to Module ${MOD}</button>`
+      : `<button class="btn btn-ghost" onclick="renderScenarioChoices(mod.scenario)">Try another angle</button>`}`;
+  if (c.verdict !== "best") document.getElementById("sc-fb").scrollIntoView({ behavior: "smooth", block: "center" });
+}
+function closeScenario(already) {
+  location.href = "course.html";
+  if (!already) toast("Scenario logged to your evidence.");
+}
+
+/* ============ MINI PROJECT — brief, submit, rubric (course-style cards) ============ */
+function renderProject() {
+  const p = pgGet();
+  const done = p.projects && p.projects[MOD];
+  const saved = p.projectTexts && p.projectTexts[MOD] ? p.projectTexts[MOD] : "";
+  document.getElementById("a-title").textContent = mod.project.title;
+  document.getElementById("a-sub").innerHTML = `<p class="lede" style="margin-top:8px">${mod.project.brief}</p>`;
+  document.getElementById("a-body").innerHTML = `
+    <div class="activity-grid">
+      ${mod.project.requirements.map((r) => `
+        <div class="card act-card req-card">
+          <span class="ev-check ${done ? "on" : ""}" style="width:30px;height:30px;font-size:.95rem">${done ? "✓" : ""}</span>
+          <p style="font-weight:500;margin-top:10px">${r}</p>
+        </div>`).join("")}
+    </div>
+    <div class="card" style="margin-top:18px">
+      <div class="eyebrow">Your submission</div>
+      <textarea class="text-input" id="proj-text" rows="9" placeholder="Design it here — bullet points are fine, thinking out loud is better…">${saved}</textarea>
+      <div style="display:flex;justify-content:space-between;margin-top:14px;align-items:center;gap:12px;flex-wrap:wrap">
+        <span class="hint" style="margin:0">You'll self-check against the rubric after submitting.</span>
+        <button class="btn btn-primary" id="btn-project" onclick="submitProject()">${done ? "Update submission" : "Submit"}</button>
+      </div>
+    </div>
+    <div id="rubric-zone"></div>`;
+  if (done) renderRubric(true);
+}
+function submitProject() {
+  const text = document.getElementById("proj-text").value.trim();
+  if (!text) { toast("Write your design first — even rough is fine."); return; }
+  const p = pgGet();
+  p.projectTexts = p.projectTexts || {}; p.projectTexts[MOD] = text;
+  pgSet(p);
+  recordProject(MOD);
+  document.getElementById("btn-project").textContent = "Update submission";
+  renderRubric(false);
+}
+function renderRubric(quiet) {
+  document.getElementById("rubric-zone").innerHTML = `
+    <div class="card" style="margin-top:18px;border-left:4px solid var(--accent)">
+      <div class="eyebrow">Self-check rubric</div>
+      <p class="lede" style="font-size:.92rem;margin-bottom:12px">Grade yourself honestly — the rubric trains the judgment you'll need at the final build.</p>
+      ${mod.project.rubric.map((r) => `
+        <label class="opt"><input type="checkbox" onchange="this.closest('.opt').classList.toggle('selected', this.checked)">
+        <span class="opt-label" style="font-weight:400">${r}</span></label>`).join("")}
+      <div style="margin-top:16px;text-align:right">
+        <a class="btn btn-primary btn-sm" href="course.html">Rubric done — back to Module ${MOD}</a>
+      </div>
+    </div>`;
+  if (!quiet) { toast("Mini project logged to your evidence."); document.getElementById("rubric-zone").scrollIntoView({ behavior: "smooth" }); }
+}
+</script>
+<script src="bot.js"></script>
+</body>
+</html>

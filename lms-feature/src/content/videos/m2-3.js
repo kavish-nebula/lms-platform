@@ -1,0 +1,195 @@
+import { video } from './prep.js'
+
+/* Concept video — lesson 2.3: cleaning real data, in order. */
+export default video({
+  id: 'm2-3',
+  title: 'Cleaning real data',
+  slides: [
+    {
+      kind: 'title', icon: 'filter', kicker: 'Module 2 · Video 3', title: 'Cleaning real data',
+      sub: 'Normalise, guard, guard, write — and count what was stopped',
+      lines: [
+        'This lesson brings Module 2 together.',
+        'You will take a messy export and turn it into data another system will accept.',
+        'And you will be able to explain every single row that did not make it.',
+      ],
+    },
+    {
+      kind: 'table', title: 'What a real export looks like',
+      columns: ['Email', 'Plan', 'Signed up'],
+      rows: [
+        { cells: ['priya@x.com', 'pro', '2024-03-01'], cue: 1 },
+        { cells: [' Priya@X.com', 'PRO', '01/03/2024'], tone: 'bad', cue: 2 },
+        { cells: ['(blank)', 'free', 'March 1'], tone: 'bad', cue: 3 },
+        { cells: ['tom@y.com', '(blank)', '2024-03-02'], cue: 4 },
+      ],
+      note: { text: 'Four rows, three different problems.', cue: 5 },
+      lines: [
+        'Here are four rows from a real export.',
+        'The first row is fine.',
+        'The second is the same person again, typed with a space and capital letters, and with the date written differently.',
+        'The third has no email at all.',
+        'The fourth is a real customer with a blank plan.',
+        'Four rows, and three different kinds of problem.',
+      ],
+    },
+    {
+      kind: 'bullets', title: 'Three kinds of dirt',
+      lead: 'Almost every messy dataset has the same three problems.',
+      bullets: [
+        { icon: 'pencil', text: 'Inconsistent: the same value written differently', cue: 1 },
+        { icon: 'x-circle', text: 'Missing: a field that should be filled is blank', cue: 2 },
+        { icon: 'copy', text: 'Duplicated: the same person more than once', cue: 3 },
+      ],
+      aside: { icon: 'boxes', label: 'Good news', text: 'Each kind has its own node, and they go in a fixed order.', cue: 4 },
+      lines: [
+        'Almost every messy dataset has the same three problems.',
+        'Inconsistent means the same value is written in different ways.',
+        'Missing means a field that should be filled is blank.',
+        'Duplicated means the same person appears more than once.',
+        'The good news is that each kind has its own node, and they go in a fixed order.',
+      ],
+    },
+    {
+      kind: 'flow', title: 'The cleaning chain',
+      nodes: [
+        { kind: 'trigger', icon: 'table', label: 'Sheet Trigger', sub: 'rows arrive', cue: 1 },
+        { kind: 'data', icon: 'pencil', label: 'Edit Fields', sub: 'normalise', cue: 2 },
+        { kind: 'logic', icon: 'filter', label: 'Filter', sub: 'has an email', cue: 3 },
+        { kind: 'logic', icon: 'copy', label: 'Remove Duplicates', sub: 'one per email', cue: 4 },
+        { kind: 'action', icon: 'database', label: 'CRM', sub: 'write', cue: 5 },
+      ],
+      note: { text: 'Normalise → guard → guard → write.', cue: 6 },
+      lines: [
+        'Here is that order as a workflow.',
+        'The trigger brings the rows in.',
+        'Edit Fields normalises every value.',
+        'A Filter stops rows with no email.',
+        'Remove Duplicates keeps one row for each email.',
+        'And only then does the last node write to the CRM.',
+        'Normalise, guard, guard, write.',
+      ],
+    },
+    {
+      kind: 'define', title: 'What does “normalise” mean?', term: 'Normalise',
+      definition: 'Make every value follow one format, so that equal things look equal.',
+      parts: [{ text: 'Trim the spaces', cue: 1 }, { text: 'One letter case', cue: 2 }, { text: 'One date format', cue: 3 }],
+      analogy: { label: 'Think of it as', text: 'Sorting coins before counting them: you cannot count what you have not sorted.' },
+      lines: [
+        'The first step has a name, which is normalise.',
+        'It means trimming the spaces.',
+        'It means choosing one letter case.',
+        'And it means using one date format.',
+        'It is like sorting coins before counting them, because you cannot count what you have not sorted.',
+      ],
+    },
+    {
+      kind: 'compare', title: 'Why normalise before removing duplicates',
+      left: { label: 'Remove duplicates first', tone: 'bad', cue: 1, points: ['“priya@x.com” and “ Priya@X.com”', 'Compared exactly as written', 'Not identical, so both are kept'] },
+      right: { label: 'Normalise first', tone: 'ok', cue: 3, points: ['Both become “priya@x.com”', 'Compared after cleaning', 'Identical, so one is removed'] },
+      lines: [
+        'Why must normalising come first?',
+        'Remove Duplicates compares values exactly as they are written.',
+        'With a space and capital letters, the two emails are not identical, so both are kept.',
+        'Normalise first, and both become the same clean value.',
+        'Now they are identical, and one is removed.',
+      ],
+    },
+    {
+      kind: 'flow', title: 'Run it: 500 rows', run: true,
+      nodes: [
+        { kind: 'trigger', icon: 'table', label: 'Sheet Trigger', sub: '500 items', cue: 1 },
+        { kind: 'data', icon: 'pencil', label: 'Edit Fields', sub: '500 → 500', cue: 2 },
+        { kind: 'logic', icon: 'filter', label: 'Filter', sub: '500 → 462', cue: 3 },
+        { kind: 'logic', icon: 'copy', label: 'Remove Duplicates', sub: '462 → 376', cue: 4 },
+        { kind: 'action', icon: 'database', label: 'CRM', sub: '376 written', cue: 5 },
+      ],
+      note: { text: '38 had no email, 86 were duplicates, 376 clean rows were written.', cue: 6 },
+      lines: [
+        'Now run the chain on the full export.',
+        'Five hundred items come in.',
+        'Edit Fields normalises all five hundred.',
+        'The Filter stops thirty-eight rows with no email.',
+        'Remove Duplicates stops eighty-six repeats.',
+        'And three hundred and seventy-six clean rows are written.',
+        'Thirty-eight, eighty-six and three hundred and seventy-six add up to five hundred.',
+      ],
+    },
+    {
+      kind: 'bullets', title: 'Count every rejection',
+      lead: 'A clean result is one you can explain.',
+      bullets: [
+        { icon: 'table', text: '500 rows came in', cue: 1 },
+        { icon: 'filter', text: '38 stopped: no email', cue: 2 },
+        { icon: 'copy', text: '86 stopped: duplicates', cue: 3 },
+        { icon: 'database', text: '376 written to the CRM', cue: 4 },
+      ],
+      aside: { icon: 'eye', label: 'The test', text: '500 = 38 + 86 + 376. If the numbers do not add up, something was lost silently.', cue: 5 },
+      lines: [
+        'That last sum is the real lesson, because a clean result is one you can explain.',
+        'Five hundred rows came in.',
+        'Thirty-eight were stopped for having no email.',
+        'Eighty-six were stopped as duplicates.',
+        'Three hundred and seventy-six were written.',
+        'If those numbers do not add up, something was lost silently.',
+      ],
+    },
+    {
+      kind: 'example', title: 'In practice: “where did my customer go?”',
+      scenario: 'A week later, sales asks why Tom is not in the CRM.',
+      steps: [
+        { time: 'Look', icon: 'eye', text: 'Open the run and read the counts at each node', cue: 1 },
+        { time: 'Find', icon: 'filter', text: 'Tom’s row stopped at the first Filter', cue: 2 },
+        { time: 'Why', icon: 'mail', text: 'His email field was blank in the export', cue: 3 },
+        { time: 'Answer', icon: 'send', text: 'Not lost: stopped by a named guard, for a known reason', cue: 4 },
+      ],
+      result: { text: 'Because every stop was counted, the answer takes one minute.', cue: 5 },
+      lines: [
+        'Here is why counting pays off.',
+        'A week later, sales asks why Tom is not in the CRM, so you open the run and read the counts.',
+        'You find that Tom’s row stopped at the first Filter.',
+        'The reason is that his email field was blank in the export.',
+        'So he was not lost, he was stopped by a named guard for a known reason.',
+        'Because every stop was counted, the answer takes one minute.',
+      ],
+    },
+    {
+      kind: 'cards', title: 'The same chain, elsewhere',
+      cards: [
+        { icon: 'factory', title: 'Factory', flow: ['Sensor readings arrive', 'One unit, no blanks, no repeats', 'Store the reading'], cue: 1 },
+        { icon: 'shop', title: 'Shop', flow: ['A product list is imported', 'One price format, no repeated codes', 'Update the catalogue'], cue: 2 },
+        { icon: 'calendar', title: 'Clinic', flow: ['Appointment forms arrive', 'One date format, no double bookings', 'Add to the calendar'], cue: 3 },
+      ],
+      lines: [
+        'The same chain cleans data in any field.',
+        'In a factory, sensor readings are put into one unit, with no blanks and no repeats, before they are stored.',
+        'In a shop, an imported product list gets one price format and no repeated codes.',
+        'In a clinic, appointment forms get one date format and no double bookings.',
+      ],
+    },
+    {
+      kind: 'recap', title: 'What to take away',
+      points: [
+        { text: 'The order: normalise, guard, guard, write', cue: 0 },
+        { text: 'Duplicates are compared exactly, so normalise first', cue: 1 },
+        { text: 'Count what each guard stopped', cue: 2 },
+        { text: 'If the numbers add up, nothing was lost silently', cue: 3 },
+      ],
+      lines: [
+        'To sum up, the order is normalise, guard, guard, write.',
+        'Duplicates are compared exactly, so normalise first.',
+        'Count what each guard stopped.',
+        'And if the numbers add up, nothing was lost silently.',
+      ],
+    },
+  ],
+  quizAfter: 4,
+  midQuiz: [
+    { q: 'What is the right order for cleaning data?', options: ['Write, then guard, then normalise', 'Normalise, guard, guard, write', 'Guard, write, normalise'], correct: 1, explain: 'Clean the values, stop what is bad or repeated, and only then write.', hint: 'Writing to the other system is the last thing that happens.' },
+    { q: 'What does “normalise” mean?', options: ['Delete rows that look wrong', 'Make every value follow one format', 'Sort the rows by date'], correct: 1, explain: 'Normalising makes equal things look equal: one case, one date format, no stray spaces.', hint: 'Think of sorting coins before counting them.' },
+  ],
+  endQuiz: [
+    { q: 'Why must normalising come before removing duplicates?', options: ['It makes the workflow faster', 'Duplicates are compared exactly as written', 'Remove Duplicates only works on dates'], correct: 1, explain: '“ Priya@X.com” and “priya@x.com” only match once both are cleaned.', hint: 'How does the computer decide two emails are the same?' },
+    { q: '500 rows in: 38 stopped for no email, 86 as duplicates. How many are written?', options: ['462', '414', '376'], correct: 2, explain: '500 − 38 − 86 = 376.', hint: 'Subtract both groups of stopped rows from 500.' },
+  ],
+})

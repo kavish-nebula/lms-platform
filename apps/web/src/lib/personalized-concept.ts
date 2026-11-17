@@ -1,7 +1,7 @@
 import type { ConceptVideo } from '@/data/types';
 
 export type ConceptSource = { transcriptId: string; parts: { id: string; narration: string; sourceIds: string[]; objectiveIds: string[] }[]; checkpointAfterPart: number };
-export type ConceptScene = { id: string; phase: 'before' | 'after'; visual: 'automation' | 'language' | 'retrieval' | 'prompt' | 'deployment'; title: string; points: string[]; narration: string; bridge: string; sourceIds: string[]; objectiveIds: string[] };
+export type ConceptScene = { id: string; phase: 'before' | 'after'; visual: 'automation' | 'healthcare' | 'language' | 'retrieval' | 'prompt' | 'deployment'; title: string; points: string[]; narration: string; bridge: string; sourceIds: string[]; objectiveIds: string[] };
 export type PersonalizedConcept = { scenes: ConceptScene[] };
 
 const family = (title: string): ConceptScene['visual'] => /automation/i.test(title) ? 'automation' : /local|cloud|privacy/i.test(title) ? 'deployment' : /RAG|retriev|index|citation/i.test(title) ? 'retrieval' : /prompt|refine/i.test(title) ? 'prompt' : 'language';

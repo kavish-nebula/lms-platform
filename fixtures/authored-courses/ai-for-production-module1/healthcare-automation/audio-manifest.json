@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "provider": "kokoro",
+  "voice": "am_michael",
+  "sampleRate": 24000,
+  "format": "PCM WAV",
+  "measuredDurationSeconds": 406.95,
+  "spokenText": "Each clip speaks its scene.narration followed by scene.bridge.",
+  "clips": [
+    {
+      "file": "audio/section-1.wav",
+      "sceneId": "SL8f0b7aadcdce49b881680-concept-0",
+      "sha256": "4d0eb182499660e92eeac6e59bba1d17174a450feb124070d9d4939c91f9abcb",
+      "bytes": 2679644,
+      "durationSeconds": 55.825
+    },
+    {
+      "file": "audio/section-2.wav",
+      "sceneId": "SL8f0b7aadcdce49b881680-concept-1",
+      "sha256": "c0fba51ef7c4ebc0ed677997ce12cd12d26d48aa263c8956f26173533ebd56e9",
+      "bytes": 2478044,
+      "durationSeconds": 51.625
+    },
+    {
+      "file": "audio/section-3.wav",
+      "sceneId": "SL8f0b7aadcdce49b881680-concept-2",
+      "sha256": "84d718f9cf655a0274602d68da7440d48dc9cdc63ac63766241335d747c49369",
+      "bytes": 2574044,
+      "durationSeconds": 53.625
+    },
+    {
+      "file": "audio/section-4.wav",
+      "sceneId": "SL8f0b7aadcdce49b881680-concept-3",
+      "sha256": "e8d4ce529a8e6ce30fbaafc21816181e1dfcc515c639401b3fbb23978188a398",
+      "bytes": 2833244,
+      "durationSeconds": 59.025
+    },
+    {
+      "file": "audio/section-5.wav",
+      "sceneId": "SL8f0b7aadcdce49b881681-concept-0",
+      "sha256": "af7bce9633d7de7fece41c0b5e0a3f6ae5b29309f98b37bb956c3e2457a01bd6",
+      "bytes": 2947244,
+      "durationSeconds": 61.4
+    },
+    {
+      "file": "audio/section-6.wav",
+      "sceneId": "SL8f0b7aadcdce49b881681-concept-1",
+      "sha256": "da9f3b1bbb2eb46ae205920cf66d0fd9573de560415233bae30dbc5f05adc434",
+      "bytes": 2851244,
+      "durationSeconds": 59.4
+    },
+    {
+      "file": "audio/section-7.wav",
+      "sceneId": "SL8f0b7aadcdce49b881681-concept-2",
+      "sha256": "0def5e24ad805ee30bbe47e2c1b0382d8b4fe911470d7839a15c0cf030b76cab",
+      "bytes": 3170444,
+      "durationSeconds": 66.05
+    }
+  ]
+}

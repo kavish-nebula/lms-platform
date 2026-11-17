@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
@@ -11,6 +12,10 @@ import { db, closeDb } from '@/server/db/client';
 import { users, enrollments, profiles, stepProgress } from '@/server/db/schema';
 import { uploadConceptVideo, reviewVideoTranscript, assertVideoSources, serveConceptVideo, transcribeConceptVideo } from '@/server/concept-videos';
 import { generateVideoModule, videoModuleDrafts } from '@/server/video-first-authoring';
+import { MODULE_CORE_PROMPT, MODULE_CORE_VERSION, moduleReadiness } from '@/lib/module-authoring';
+import { sourceCoverage } from '@/lib/source-library';
+import { courseAuthoringSystem } from '@/lib/course-authoring-prompt';
+import { moduleInputHash } from '@/server/video-first-authoring';
 import { authoredDelivery } from '@/lib/authored-delivery';
 import { saveAuthoredCourse, reviewAuthoredCourse, getCodexCourseContext } from '@/server/authored-course';
 import { publishAuthoredCourse } from '@/server/authored-publication';
@@ -28,6 +33,37 @@ import { hookScenes, hookSceneAt, hookNarration } from '@/lib/video-first-hook';
 import { prepareVideoHookAudio, videoHookAudio } from '@/server/video-hook-audio';
 import { GET as hookAudioGet } from '@/app/api/v1/courses/[courseId]/hook-audio/[moduleId]/route';
 import { conceptTemplate, conceptCanSeek, validatePersonalizedConcept } from '@/lib/personalized-concept';
+import { healthcareAutomationConcept, healthcareAutomationBridges } from '@/lib/healthcare-automation-concept';
+
+// A full learner-context derivative remains separate from its original recording.
+const productionSnapshot = JSON.parse(await fs.readFile(path.resolve('../../fixtures/authored-courses/ai-for-production-module1/course.json'), 'utf8')) as AuthoredCoursePackageData;
+const productionVideo = authoredDelivery({ courseId: 'dd1fec93-8c51-4f2d-9e0c-943823062c76', revisionId: crypto.randomUUID(), content: productionSnapshot }).modules[0].blocks.find(b => b.stage === 'explainer')!;
+assert(productionVideo.stage === 'explainer');
+const fixedVideo = productionVideo.videos![0];
+const sourceTemplate = conceptTemplate(fixedVideo), sourceBefore = structuredClone(sourceTemplate);
+const healthcare = healthcareAutomationConcept(sourceTemplate, 'dd1fec93-8c51-4f2d-9e0c-943823062c76', fixedVideo.title, { answers: { field: 'healthcare' } })!;
+assert(healthcare && healthcare.scenes.every(s => s.visual === 'healthcare' && /clinic|reception/i.test(s.narration)));
+assert.deepEqual(sourceTemplate, sourceBefore, 'Original transcript/template is never edited.');
+assert.deepEqual(healthcare.scenes.map(s => [s.id, s.phase, s.sourceIds, s.objectiveIds]), sourceTemplate.scenes.map(s => [s.id, s.phase, s.sourceIds, s.objectiveIds]));
+assert(healthcare.scenes.filter(s => s.phase === 'before').some(s => /PLC/.test(s.narration)));
+assert(healthcare.scenes.filter(s => s.phase === 'before').some(s => /70 degrees/.test(s.narration)));
+assert(!healthcareAutomationConcept(sourceTemplate, 'unrelated-course', fixedVideo.title, { answers: { field: 'healthcare' } }));
+assert(!healthcareAutomationConcept(sourceTemplate, 'dd1fec93-8c51-4f2d-9e0c-943823062c76', fixedVideo.title, { answers: { field: 'finance' } }));
+assert(!healthcareAutomationConcept(sourceTemplate, 'dd1fec93-8c51-4f2d-9e0c-943823062c76', 'Another lesson', { answers: { field: 'healthcare' } }));
+const revisedHealthcare = structuredClone(healthcare); revisedHealthcare.scenes.forEach((s,i) => { s.bridge = healthcareAutomationBridges[i]; });
+validatePersonalizedConcept(healthcare, revisedHealthcare);
+const healthcareRoot = path.resolve('../../fixtures/authored-courses/ai-for-production-module1/healthcare-automation');
+const savedHealthcare = JSON.parse(await fs.readFile(path.join(healthcareRoot, 'lesson.json'), 'utf8'));
+assert.deepEqual(savedHealthcare.scenes.map((s: { narration: string; bridge: string }) => [s.narration, s.bridge]), revisedHealthcare.scenes.map(s => [s.narration, s.bridge]));
+const healthcareAudio = JSON.parse(await fs.readFile(path.join(healthcareRoot, 'audio-manifest.json'), 'utf8'));
+assert.equal(healthcareAudio.clips.length, revisedHealthcare.scenes.length);
+assert(healthcareAudio.measuredDurationSeconds > 60 && healthcareAudio.measuredDurationSeconds <= 420);
+for (const clip of healthcareAudio.clips) {
+  const bytes = await fs.readFile(path.join(healthcareRoot, clip.file));
+  assert.equal(bytes.toString('ascii', 0, 4), 'RIFF');
+  assert.equal(bytes.length, clip.bytes);
+  assert.equal(createHash('sha256').update(bytes).digest('hex'), clip.sha256);
+}
 
 const testRoot = path.join(process.cwd(), '.data', 'video-first-test', crypto.randomUUID());
 process.env.LMS_VIDEO_DIR = testRoot;
@@ -65,6 +101,7 @@ assert((await captions.text()).startsWith('WEBVTT'));
 process.env.TRANSCRIPTION_PROVIDER = 'gemini'; process.env.AUDIO_API_KEY = 'test-only';
 const draftTranscript = await transcribeConceptVideo(owner.id, draft.id, asset.id, async (_url, init) => {
   const body = JSON.parse(String(init?.body)); assert.equal(body.contents[0].parts[0].inlineData.mimeType, 'audio/mp3');
+  assert.equal('audioTimestamp' in body.generationConfig, false, 'Gemini API must not receive the Vertex-only timestamp option');
   return Response.json({ candidates: [{ content: { parts: [{ text: JSON.stringify({ cues: transcript.cues }) }] } }] });
 });
 assert.equal(draftTranscript.status, 'needs_review');
@@ -148,7 +185,7 @@ await repo.saveProfile(learner.id, { domain: 'healthcare', role: 'admin' }, []);
 const queued = await queueModule(learner, draft.id, 'M1');
 assert.equal(queued.activities.length, 4);
 assert.equal(queued.hook, null);
-assert((await jobsFor((await repo.findEnrollment(learner.id, draft.id))!.id, 'M1')).every(j => j.videoId.startsWith('activity:')), 'Uploaded recordings are never regenerated.');
+assert((await jobsFor((await repo.findEnrollment(learner.id, draft.id))!.id, 'M1')).every(j => j.videoId.startsWith('activity:') || j.videoId.startsWith('concept:')), 'Original recordings are retained; reviewed transcripts may prepare separate personalized concepts.');
 await assert.rejects(queueSlide(learner, draft.id, 'M1', lesson!.videos![0].id, 0, 'initial'), { code: 'fixed_video' });
 const hookJob = (await claimJob())!;
 const personalized = structuredClone(hookJob.input.authored) as { problemHook: typeof generated.content.problemHook };
@@ -186,7 +223,13 @@ const changedNumbers = structuredClone(template); changedNumbers.scenes[0].narra
 assert.throws(() => validatePersonalizedConcept(template, changedNumbers));
 const originalRecording = structuredClone(conceptVideo.uploadedVideo);
 const originalQuiz = structuredClone(conceptVideo.midQuiz);
+await queueModule(learner, draft.id, 'M1');
+const prefetchedConcept = (await jobsFor((await repo.findEnrollment(learner.id, draft.id))!.id, 'M1')).find(j => j.videoId === `concept:${conceptVideo.id}`)!;
+assert(prefetchedConcept, 'Module preparation includes personalized concepts and their narration.');
+assert(prefetchedConcept.priority < 10, 'Prefetch does not consume the interactive lane.');
 const conceptA = await queueConcept(learner, draft.id, 'M1', conceptVideo.id);
+assert.equal(conceptA.id, prefetchedConcept.id);
+assert.equal(conceptA.priority, 10, 'Opening the concept promotes its existing preparation.');
 assert.equal((await queueConcept(learner, draft.id, 'M1', conceptVideo.id)).id, conceptA.id);
 const conceptB = await queueConcept({ ...owner, id: 'video-learner-two' }, draft.id, 'M1', conceptVideo.id);
 assert.notEqual(conceptA.fingerprint, conceptB.fingerprint);
@@ -216,6 +259,23 @@ const secondText = structuredClone(tailored);
 await assert.rejects(finishJob(conceptB.id, secondClaim.lease!, secondText, 'test', {}, longVoice), { code: 'duration_exceeded' });
 await repo.saveProfile('video-learner-two', { domain: 'student', studyFieldOther: 'mechanical engineering' }, []);
 await assert.rejects(finishJob(conceptB.id, secondClaim.lease!, secondText, 'test', {}, null), { code: 'profile_changed' });
+// Connected recordings need the same hook speech path as uploaded recordings.
+const connectedDraft = await createCreatorDraft(owner.id, { brief: { ...draft.brief, sourceLibrary: undefined, sourceText: 'Use AI to draft from supplied notes. Review the draft against the notes before sharing it.' } });
+const connectedPackage = JSON.parse(JSON.stringify(pkg).replaceAll('Svideo', 'S1')) as AuthoredCoursePackageData;
+connectedPackage.briefRevision = connectedDraft.revision;
+delete connectedPackage.blueprintRunId;
+connectedPackage.sources = [{ id: 'S1', kind: 'sme', title: 'Connected source fixture', reference: 'Synthetic source evidence.' }];
+for (const video of connectedPackage.modules[0].conceptExplainer.videos) {
+  delete video.uploadedVideo;
+  video.sourceMedia = { audio: '/source-fixture.wav', transcript: video.slides.map(s => s.narration).join(' ') };
+}
+const connectedHead = await saveAuthoredCourse(owner.id, connectedDraft.id, { expectedBriefRevision: connectedDraft.revision, expectedVersion: 0, content: connectedPackage });
+const connectedReview = await reviewAuthoredCourse(owner.id, owner, connectedDraft.id, { revisionId: connectedHead.id, expectedReviewVersion: 0, verdict: 'approved', checklist: Object.fromEntries(COURSE_REVIEW_CHECKS.map(k => [k, true])) as Parameters<typeof reviewAuthoredCourse>[3]['checklist'], feedback: 'Synthetic connected-media regression fixture.' });
+await publishAuthoredCourse(owner.id, connectedDraft.id, { revisionId: connectedHead.id, reviewId: connectedReview.id });
+await prepareVideoHookAudio(owner.id, connectedDraft.id, 'M1', hookVoice);
+await repo.upsertEnrollment('video-learner', connectedDraft.id, { answers: {}, supportOverride: 'auto', pace: null, precheck: null });
+assert((await videoHookAudio('video-learner', connectedDraft.id, 'M1')).length > 0, 'Connected source media supports enrolled-learner hook narration.');
+await assert.rejects(videoHookAudio('stranger', connectedDraft.id, 'M1'), { status: 404 });
 if (process.env.VIDEO_FIRST_UI_SEED === '1') {
   await database.insert(profiles).values({ userId: owner.id, answers: {}, needs: [] }).onConflictDoNothing();
   await database.insert(enrollments).values({ userId: owner.id, courseId: draft.id, answers: {} });
@@ -229,5 +289,84 @@ if (process.env.VIDEO_FIRST_UI_SEED === '1') {
   await updateCreatorDraft(owner.id, draft.id, { brief: changed, revision: draft.revision + 1 });
   assert.equal((await videoModuleDrafts(owner.id, draft.id))[0].outdated, true);
 }
+// A prepared module must not wait for videos, transcripts or SME input for later modules.
+let partial = await createCreatorDraft(owner.id, { brief: { ...brief, sourceLibrary: undefined } });
+const partialAsset = await uploadConceptVideo(owner.id, partial.id, new File([await fs.readFile(clip)], 'module-one.mp4', { type: 'video/mp4' }));
+const partialTranscript = await reviewVideoTranscript(owner.id, partial.id, partialAsset.id, vtt);
+const partialBrief: CourseBriefData = { ...brief, objectives: [...brief.objectives, { text: 'Evaluate a later topic.', bloom: 'Evaluate' }], sourceLibrary: {
+  version: 1, modules: [
+    { ...brief.sourceLibrary!.modules[0], instructions: { version: 1, objectiveIds: ['O1'], scope: 'Review drafts only', exclusions: 'Later topic', prerequisites: 'None', dependsOn: [], teachingNotes: 'Use short examples.' } },
+    { id: 'M2', title: 'Later topic', topics: [{ id: 'T2', title: 'Later concept' }] },
+  ], sources: [
+    { ...brief.sourceLibrary!.sources[0], text: partialTranscript.text, video: { assetId: partialAsset.id, durationSeconds: 6, transcriptId: partialTranscript.id, checkpointSeconds: 3 } },
+    { id: 'Slater', revision: 1, title: 'Later module evidence', scope: 'topic', moduleId: 'M2', topicId: 'T2', objectiveIds: ['O2'], text: 'PRIVATE_LATER_MODULE_EVIDENCE', reference: '', video: { assetId: crypto.randomUUID(), durationSeconds: 6 } },
+  ],
+} };
+partial = await updateCreatorDraft(owner.id, partial.id, { brief: partialBrief, revision: partial.revision });
+assert(sourceCoverage(partial.brief).length > 0);
+assert.deepEqual(moduleReadiness(partial.brief, 'M1'), []);
+assert(moduleReadiness(partial.brief, 'M2').length > 0);
+const partialContext = await getCodexCourseContext(owner.id, partial.id);
+assert.equal(partialContext.moduleAuthoring!.corePromptVersion, MODULE_CORE_VERSION);
+assert.deepEqual(partialContext.moduleAuthoring!.modules[0].gaps, []);
+assert(partialContext.moduleAuthoring!.modules[1].gaps.length > 0);
+await assert.rejects(generateVideoModule('video-learner', partial.id, 'M1', partial.revision), { status: 404 });
+const moduleTransport: Parameters<typeof generateVideoModule>[4] = async request => {
+  assert.equal(request.messages[0].content, MODULE_CORE_PROMPT);
+  assert(!request.messages[1].content.includes('PRIVATE_LATER_MODULE_EVIDENCE'));
+  const input = JSON.parse(request.messages[1].content);
+  assert.equal(input.courseContext.outline.length, 2);
+  assert.equal(input.moduleInstructions.scope, 'Review drafts only');
+  assert.deepEqual(input.objectives.map((o: { id: string }) => o.id), ['O1']);
+  assert.deepEqual(input.sources.map((s: { id: string }) => s.id), ['Svideo']);
+  return { choices: [{ message: { content: JSON.stringify({ ...generated.content, conceptExplainer: { videos: input.fixedVideos.map((video: Record<string, unknown>) => ({ ...video, midpointQuiz: { ...(video.midpointQuiz as object), questions: [question('M1Q1'), question('M1Q2')] } })) } }) } }] };
+};
+const partialModule = await generateVideoModule(owner.id, partial.id, 'M1', partial.revision, moduleTransport);
+assert.equal(partialModule.status, 'needs_review');
+assert.equal(partialModule.provenance!.corePromptVersion, MODULE_CORE_VERSION);
+assert.equal(partialModule.provenance!.sourceRevisions[0].transcriptId, partialTranscript.id);
+assert.equal((await videoModuleDrafts(owner.id, partial.id))[0].outdated, false);
+const nextModuleBrief = structuredClone(partial.brief);
+nextModuleBrief.sourceLibrary!.sources[1].text += ' Updated later evidence.';
+nextModuleBrief.sourceLibrary!.modules[1].instructions = { version: 1, objectiveIds: ['O2'], scope: 'Only later topic', exclusions: '', prerequisites: '', dependsOn: [], teachingNotes: 'Use an analogy in Module 2.' };
+partial = await updateCreatorDraft(owner.id, partial.id, { brief: nextModuleBrief, revision: partial.revision });
+assert.equal((await videoModuleDrafts(owner.id, partial.id))[0].outdated, false, 'Unrelated module evidence does not invalidate the ready fragment.');
+const ownModuleBrief = structuredClone(partial.brief);
+ownModuleBrief.sourceLibrary!.modules[0].instructions!.scope = 'Changed scope';
+partial = await updateCreatorDraft(owner.id, partial.id, { brief: ownModuleBrief, revision: partial.revision });
+assert.equal((await videoModuleDrafts(owner.id, partial.id))[0].outdated, true, 'Changed module instructions require regeneration.');
+assert.equal((await videoModuleDrafts(owner.id, partial.id)).length, 1, 'Edits retain immutable generation history.');
+await assert.rejects(generateVideoModule(owner.id, partial.id, 'M1', partial.revision - 1, moduleTransport), { code: 'brief_changed' });
+const invalidDependency = structuredClone(partial.brief);
+invalidDependency.sourceLibrary!.modules[0].instructions!.dependsOn = ['M2'];
+assert(moduleReadiness(invalidDependency, 'M1').some(issue => issue.includes('earlier module')));
+const remappedBrief = structuredClone(partial.brief);
+remappedBrief.sourceLibrary!.modules[0].instructions!.scope = 'Review drafts only';
+partial = await updateCreatorDraft(owner.id, partial.id, { brief: remappedBrief, revision: partial.revision });
+let rejectedAttempts = 0;
+await assert.rejects(generateVideoModule(owner.id, partial.id, 'M1', partial.revision, async request => {
+  rejectedAttempts++;
+  const reply = await moduleTransport(request);
+  const value = JSON.parse(reply.choices![0].message!.content!);
+  value.workedExamples[0].sourceIds = ['Slater'];
+  return { choices: [{ message: { content: JSON.stringify(value) } }] };
+}), { code: 'generation_validation' });
+assert.equal(rejectedAttempts, 2, 'Invalid cross-module evidence gets one bounded repair, never a saved draft.');
+assert.equal((await videoModuleDrafts(owner.id, partial.id)).length, 1);
+const promptBrief = { ...partial.brief, systemPrompt: 'Use short sentences and practical production examples.' };
+assert.notEqual(moduleInputHash(promptBrief, 'M1'), moduleInputHash(partial.brief, 'M1'), 'Changed course instructions invalidate generated module input.');
+assert.equal(moduleInputHash({ ...partial.brief, systemPrompt: '' }, 'M1'), moduleInputHash(partial.brief, 'M1'), 'Blank optional guidance preserves legacy module hashes.');
+assert(courseAuthoringSystem(MODULE_CORE_PROMPT, promptBrief).includes(promptBrief.systemPrompt));
+assert.equal(courseAuthoringSystem(MODULE_CORE_PROMPT, partial.brief), MODULE_CORE_PROMPT);
+partial = await updateCreatorDraft(owner.id, partial.id, { brief: promptBrief, revision: partial.revision });
+assert.equal((await getCodexCourseContext(owner.id, partial.id)).brief.systemPrompt, promptBrief.systemPrompt);
+assert.equal((await videoModuleDrafts(owner.id, partial.id))[0].outdated, true);
+const withPrompt = await generateVideoModule(owner.id, partial.id, 'M1', partial.revision, async request => {
+  assert(request.messages[0].content.includes(promptBrief.systemPrompt));
+  assert(request.messages[0].content.includes('CREATOR COURSE SYSTEM PROMPT'));
+  assert.equal(JSON.parse(request.messages[1].content).courseContext.systemPrompt, promptBrief.systemPrompt);
+  return moduleTransport({ ...request, messages: [{ ...request.messages[0], content: MODULE_CORE_PROMPT }, ...request.messages.slice(1)] });
+});
+assert.equal((await videoModuleDrafts(owner.id, partial.id)).find(m => m.id === withPrompt.id)!.outdated, false);
 await closeDb();
-console.log('PASS video-first: real upload/probe/audio extraction, reviewed captions, source binding, generated activities, unchanged original recording, owner/learner access, range/seek streaming, approval/publication, stale drafts and unchanged learner records');
+console.log('PASS video-first: upload/transcripts, module-scoped generation, separate instructions/evidence, prompt provenance, unrelated-edit preservation, stale/concurrent writes, cross-module rejection, bounded repair, learner streaming and review/publication');

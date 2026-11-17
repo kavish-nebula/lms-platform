@@ -1,0 +1,446 @@
+erDiagram
+    direction LR
+    adaptation_jobs {
+        uuid id PK
+        uuid enrollment_id FK
+        text module_id
+        text video_id
+        int4 slide
+        text fingerprint UK
+        text trigger
+        text status
+        int4 priority
+        int4 attempts
+        text lease "nullable"
+        timestamptz lease_until "nullable"
+        jsonb input
+        jsonb content "nullable"
+        text audio "nullable"
+        text error "nullable"
+        text model "nullable"
+        jsonb metrics "nullable"
+        timestamptz created_at
+        timestamptz updated_at
+    }
+    adapted_content {
+        uuid id PK
+        uuid enrollment_id FK
+        text module_id
+        text piece
+        text status
+        text inputs
+        jsonb content "nullable"
+        jsonb audio "nullable"
+        text model "nullable"
+        text error "nullable"
+        timestamptz created_at
+        timestamptz updated_at
+    }
+    authored_project_submissions {
+        uuid id PK
+        uuid enrollment_id FK
+        uuid revision_id FK
+        jsonb artifact
+        jsonb report
+        timestamptz created_at
+    }
+    authored_project_work {
+        uuid enrollment_id PK,FK
+        uuid revision_id PK,FK
+        jsonb artifact
+        int4 version
+        jsonb report "nullable"
+        uuid submission_id "nullable"
+        timestamptz submitted_at "nullable"
+        timestamptz updated_at
+    }
+    course_editions {
+        uuid id PK
+        uuid course_id FK
+        uuid revision_id FK
+        uuid review_id FK
+        timestamptz published_at
+    }
+    creator_authored_course_audio {
+        uuid id PK
+        uuid course_id FK
+        text owner_id FK
+        uuid revision_id FK
+        text voice_key
+        jsonb voice
+        text status
+        jsonb clips
+        uuid token
+        int4 attempts
+        text error "nullable"
+        timestamptz lease_until
+        timestamptz created_at
+        timestamptz updated_at
+    }
+    creator_authored_course_reviews {
+        uuid id PK
+        uuid course_id FK
+        uuid revision_id FK
+        int4 version
+        text verdict
+        jsonb checklist
+        text feedback
+        text reviewer_id FK
+        text reviewer_name
+        timestamptz created_at
+    }
+    creator_authored_course_revisions {
+        uuid id PK
+        uuid course_id FK
+        text owner_id FK
+        int4 version
+        int4 brief_revision
+        uuid blueprint_run_id FK "nullable"
+        jsonb content
+        text created_by FK
+        timestamptz created_at
+    }
+    creator_blueprints {
+        uuid id PK
+        uuid course_id FK
+        int4 input_revision
+        int4 prompt_version
+        jsonb input
+        jsonb output "nullable"
+        text status
+        int4 attempts
+        uuid token
+        timestamptz lease_until
+        text model "nullable"
+        text error "nullable"
+        jsonb usage "nullable"
+        timestamptz created_at
+        timestamptz updated_at
+    }
+    creator_codex_grants {
+        uuid id PK
+        uuid course_id FK
+        text owner_id FK
+        text token_hash UK
+        timestamptz expires_at
+        timestamptz revoked_at "nullable"
+        timestamptz created_at
+    }
+    creator_courses {
+        uuid id PK
+        text owner_id FK
+        jsonb brief
+        int4 revision
+        timestamptz created_at
+        timestamptz updated_at
+        text production_format
+        text delivery_structure
+    }
+    creator_mcp_grants {
+        uuid id PK
+        text owner_id FK
+        text token_hash UK
+        bool allow_publication
+        timestamptz expires_at
+        timestamptz revoked_at "nullable"
+        timestamptz created_at
+    }
+    creator_production_audio {
+        uuid id PK
+        uuid job_id FK
+        uuid revision_id FK
+        uuid review_id FK
+        text voice_key
+        jsonb voice
+        text status
+        jsonb clips
+        uuid token
+        int4 attempts
+        text error "nullable"
+        timestamptz lease_until
+        timestamptz created_at
+        timestamptz updated_at
+    }
+    creator_production_jobs {
+        uuid id PK
+        uuid course_id FK
+        uuid run_id FK
+        text module_id
+        uuid approval_id FK
+        int4 prompt_version
+        jsonb input
+        text status
+        int4 current_revision
+        int4 attempts
+        uuid token
+        timestamptz lease_until
+        text model "nullable"
+        text error "nullable"
+        jsonb usage "nullable"
+        timestamptz created_at
+        timestamptz updated_at
+        text unit_key
+        jsonb partial_slides
+    }
+    creator_production_revisions {
+        uuid id PK
+        uuid job_id FK
+        int4 version
+        jsonb content
+        jsonb narration_hashes
+        text created_by FK
+        timestamptz created_at
+    }
+    creator_script_reviews {
+        uuid id PK
+        uuid job_id FK
+        uuid revision_id FK
+        int4 version
+        text verdict
+        jsonb checklist
+        text feedback
+        text reviewer_id FK
+        text reviewer_name
+        timestamptz created_at
+    }
+    creator_sme_reviews {
+        uuid id PK
+        uuid run_id FK
+        text module_id
+        int4 version
+        text verdict
+        jsonb checklist
+        text feedback
+        text priority
+        text reviewer_id FK
+        text reviewer_name
+        timestamptz created_at
+    }
+    enrollments {
+        uuid id PK
+        text user_id FK
+        text course_id
+        jsonb answers
+        text support_override
+        jsonb pace "nullable"
+        jsonb precheck "nullable"
+        timestamptz enrolled_at
+        timestamptz updated_at
+        uuid edition_id FK "nullable"
+        timestamptz archived_at "nullable"
+    }
+    guided_project_submissions {
+        uuid id PK
+        uuid enrollment_id FK
+        uuid revision_id FK
+        jsonb answers
+        jsonb run_case_ids
+        jsonb report
+        timestamptz created_at
+    }
+    guided_project_work {
+        uuid enrollment_id PK,FK
+        uuid revision_id PK,FK
+        jsonb answers
+        jsonb run_case_ids
+        text stage_id
+        int4 version
+        jsonb report "nullable"
+        uuid submission_id "nullable"
+        timestamptz submitted_at "nullable"
+        timestamptz updated_at
+    }
+    imported_course_progress {
+        text user_id PK,FK
+        text course_id PK
+        text module_id PK
+        text revision PK
+        jsonb state
+        timestamptz updated_at
+    }
+    learner_plans {
+        uuid id PK
+        uuid enrollment_id FK
+        int4 version
+        text status
+        text source
+        text trigger
+        text model "nullable"
+        jsonb plan "nullable"
+        jsonb changes
+        jsonb usage "nullable"
+        text error "nullable"
+        timestamptz created_at
+        timestamptz completed_at "nullable"
+    }
+    module_evidence {
+        uuid id PK
+        uuid enrollment_id FK
+        text module_id
+        int4 version
+        text fingerprint
+        jsonb summary
+        timestamptz created_at
+    }
+    platform_engagement {
+        text user_id PK,FK
+        jsonb state
+        timestamptz updated_at
+    }
+    professional_workspaces {
+        text user_id PK,FK
+        jsonb state
+        timestamptz updated_at
+    }
+    profile_drafts {
+        text user_id PK,FK
+        jsonb answers
+        jsonb needs
+        jsonb derived "nullable"
+        timestamptz updated_at
+    }
+    profiles {
+        text user_id PK,FK
+        jsonb answers
+        jsonb needs
+        timestamptz updated_at
+        jsonb derived "nullable"
+    }
+    project_work {
+        uuid enrollment_id PK,FK
+        jsonb files
+        jsonb report "nullable"
+        timestamptz updated_at
+    }
+    published_authored_courses {
+        uuid course_id PK,FK
+        uuid revision_id FK
+        uuid review_id FK
+        text published_by FK
+        timestamptz published_at
+    }
+    scorm_connections {
+        uuid id PK
+        text owner_id
+        text source_course_id
+        text source_course_name
+        uuid target_course_id FK
+        jsonb mapping
+        jsonb baseline
+        timestamptz created_at
+    }
+    scorm_import_runs {
+        uuid id PK
+        uuid connection_id FK
+        text owner_id
+        text fingerprint
+        text status
+        jsonb input
+        jsonb output
+        text error "nullable"
+        uuid lease "nullable"
+        timestamptz lease_until "nullable"
+        timestamptz updated_at
+    }
+    scorm_topic_imports {
+        uuid id PK
+        text owner_id FK
+        text course_id
+        text topic_id
+        text fingerprint
+        jsonb source
+        jsonb hierarchy
+        bool active
+        timestamptz imported_at
+    }
+    signals {
+        uuid id PK
+        uuid enrollment_id FK
+        text kind
+        text module_id "nullable"
+        text lesson "nullable"
+        jsonb payload
+        text idempotency_key UK
+        int4 used_in_plan_version "nullable"
+        timestamptz created_at
+    }
+    step_progress {
+        uuid enrollment_id PK,FK
+        text module_id PK
+        text stage PK
+        timestamptz completed_at
+    }
+    users {
+        text id PK
+        text name
+        text email
+        timestamptz created_at
+    }
+    workflow_projects {
+        uuid enrollment_id PK,FK
+        jsonb diagram
+        jsonb report "nullable"
+        int4 revision
+        timestamptz updated_at
+    }
+    enrollments ||--o{ adaptation_jobs : "enrollment_id"
+    enrollments ||--o{ adapted_content : "enrollment_id"
+    enrollments ||--o{ authored_project_submissions : "enrollment_id"
+    creator_authored_course_revisions ||--o{ authored_project_submissions : "revision_id"
+    enrollments ||--o{ authored_project_work : "enrollment_id"
+    creator_authored_course_revisions ||--o{ authored_project_work : "revision_id"
+    creator_courses ||--o{ course_editions : "course_id"
+    creator_authored_course_reviews ||--o{ course_editions : "review_id"
+    creator_authored_course_revisions ||--o{ course_editions : "revision_id"
+    creator_courses ||--o{ creator_authored_course_audio : "course_id"
+    users ||--o{ creator_authored_course_audio : "owner_id"
+    creator_authored_course_revisions ||--o{ creator_authored_course_audio : "revision_id"
+    creator_courses ||--o{ creator_authored_course_reviews : "course_id"
+    users ||--o{ creator_authored_course_reviews : "reviewer_id"
+    creator_authored_course_revisions ||--o{ creator_authored_course_reviews : "revision_id"
+    creator_blueprints |o--o{ creator_authored_course_revisions : "blueprint_run_id"
+    creator_courses ||--o{ creator_authored_course_revisions : "course_id"
+    users ||--o{ creator_authored_course_revisions : "created_by"
+    users ||--o{ creator_authored_course_revisions : "owner_id"
+    creator_courses ||--o{ creator_blueprints : "course_id"
+    creator_courses ||--o{ creator_codex_grants : "course_id"
+    users ||--o{ creator_codex_grants : "owner_id"
+    users ||--o{ creator_courses : "owner_id"
+    users ||--o{ creator_mcp_grants : "owner_id"
+    creator_production_jobs ||--o{ creator_production_audio : "job_id"
+    creator_script_reviews ||--o{ creator_production_audio : "review_id"
+    creator_production_revisions ||--o{ creator_production_audio : "revision_id"
+    creator_sme_reviews ||--o{ creator_production_jobs : "approval_id"
+    creator_courses ||--o{ creator_production_jobs : "course_id"
+    creator_blueprints ||--o{ creator_production_jobs : "run_id"
+    users ||--o{ creator_production_revisions : "created_by"
+    creator_production_jobs ||--o{ creator_production_revisions : "job_id"
+    creator_production_jobs ||--o{ creator_script_reviews : "job_id"
+    users ||--o{ creator_script_reviews : "reviewer_id"
+    creator_production_revisions ||--o{ creator_script_reviews : "revision_id"
+    users ||--o{ creator_sme_reviews : "reviewer_id"
+    creator_blueprints ||--o{ creator_sme_reviews : "run_id"
+    course_editions |o--o{ enrollments : "edition_id"
+    users ||--o{ enrollments : "user_id"
+    enrollments ||--o{ guided_project_submissions : "enrollment_id"
+    creator_authored_course_revisions ||--o{ guided_project_submissions : "revision_id"
+    enrollments ||--o{ guided_project_work : "enrollment_id"
+    creator_authored_course_revisions ||--o{ guided_project_work : "revision_id"
+    users ||--o{ imported_course_progress : "user_id"
+    enrollments ||--o{ learner_plans : "enrollment_id"
+    enrollments ||--o{ module_evidence : "enrollment_id"
+    users ||--o| platform_engagement : "user_id"
+    users ||--o| professional_workspaces : "user_id"
+    users ||--o| profile_drafts : "user_id"
+    users ||--o| profiles : "user_id"
+    enrollments ||--o| project_work : "enrollment_id"
+    creator_courses ||--o| published_authored_courses : "course_id"
+    users ||--o{ published_authored_courses : "published_by"
+    creator_authored_course_reviews ||--o{ published_authored_courses : "review_id"
+    creator_authored_course_revisions ||--o{ published_authored_courses : "revision_id"
+    creator_courses ||--o{ scorm_connections : "target_course_id"
+    scorm_connections ||--o{ scorm_import_runs : "connection_id"
+    users ||--o{ scorm_topic_imports : "owner_id"
+    enrollments ||--o{ signals : "enrollment_id"
+    enrollments ||--o{ step_progress : "enrollment_id"
+    enrollments ||--o| workflow_projects : "enrollment_id"

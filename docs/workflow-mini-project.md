@@ -10,7 +10,7 @@ Architecture checks verify reachability, required branches, safety before tools,
 
 ## Persistence and compatibility
 
-Migration `0003_wealthy_oracle.sql` adds `workflow_projects`, one independent record per enrollment with a version-1 diagram, last check report and revision. It uses the existing session user and cascades when an enrollment or learner is reset. Existing Python files and reports remain in `project_work`; no fixture, progress identifier or existing grading behavior changes. Diagram checks do not mark the capstone complete or send adaptation/reward events.
+Migration `0003_wealthy_oracle.sql` adds `workflow_projects`, one independent record per enrollment with a version-1 diagram, last check report and revision. It uses the existing session user and cascades when an enrollment or learner is reset. Migration 0025 later retires `project_work` only when empty, and blocks removal if historical Python files exist; no fixture, progress identifier or existing grading behavior changes. Diagram checks do not mark the capstone complete or send adaptation/reward events.
 
 `GET/PUT /api/v1/enrollments/[courseId]/workflow-project` reads/saves a diagram; `POST .../workflow-project/check` saves and computes a report server-side. Strict schemas reject unknown fields, duplicate IDs, nonexistent endpoints, repeated branch outputs and oversized input. Limits: 40 steps, 80 connections, names of 100 characters and notes of 500. Saves lock the enrollment and require the expected revision; stale concurrent requests receive HTTP 409.
 
@@ -20,6 +20,6 @@ Edits retain a browser draft under `lms-workflow:v1:{courseId}`. Server save is 
 
 Run `npm run lint`, `npm run typecheck`, `npm run build`, and from `apps/web`, `node tests/backend/run.mjs` and `node tests/backend/run.mjs workflow`.
 
-The targeted suite verifies correct and incorrect paths, safety bypass, missing branches, cycles, step ordering, schema limits, persistence, concurrent revisions, session ownership, reset cascade, unchanged Python files and absence of progress/adaptation writes. Browser testing uses the separate persistent test preview on port 3002; it leaves the port-3001 server holding the learner's existing Python work running.
+The targeted suite verifies correct and incorrect paths, safety bypass, missing branches, cycles, step ordering, schema limits, persistence, concurrent revisions, session ownership, reset cascade and absence of progress/adaptation writes. Browser testing uses the separate persistent test preview on port 3002; it leaves the port-3001 server holding the learner's existing Python work running.
 
 The canvas uses the already-installed React Flow library and existing theme tokens. Interaction and accessibility behavior follow the official [React Flow interaction](https://reactflow.dev/learn/concepts/adding-interactivity) and [accessibility](https://reactflow.dev/learn/advanced-use/accessibility) documentation.

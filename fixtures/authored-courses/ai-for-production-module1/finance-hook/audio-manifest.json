@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "provider": "kokoro",
+  "voice": "am_michael",
+  "format": "PCM WAV",
+  "measuredDurationSeconds": 76.025,
+  "spokenText": "Each clip speaks its matching scene.text exactly.",
+  "clips": [
+    {
+      "file": "audio/section-1.wav",
+      "sceneId": "scene-0",
+      "sha256": "46b139604582bb50bc336d46aebbccd9ce140e691c9e9a5eac339082b6837b61",
+      "bytes": 850844,
+      "durationSeconds": 17.725
+    },
+    {
+      "file": "audio/section-2.wav",
+      "sceneId": "scene-1",
+      "sha256": "0079d9dfffe3734fd563e53243c1d6e9dbd22a4e383e3e8b7fb2c16eeab09927",
+      "bytes": 1003244,
+      "durationSeconds": 20.9
+    },
+    {
+      "file": "audio/section-3.wav",
+      "sceneId": "scene-2",
+      "sha256": "b89cc9f63c19e776c7f06aa047535c1051e03ab69fb3ba365c0d17f61fe11ae7",
+      "bytes": 943244,
+      "durationSeconds": 19.65
+    },
+    {
+      "file": "audio/section-4.wav",
+      "sceneId": "scene-3",
+      "sha256": "5dfc22a066228ebda9a4faabb19c5242ff7361a556d46613cc0fa87471ae3ad4",
+      "bytes": 406844,
+      "durationSeconds": 8.475
+    },
+    {
+      "file": "audio/section-5.wav",
+      "sceneId": "scene-4",
+      "sha256": "dbb68f611ffd1ecd3a4715046c6d43dccfd8fba8f8976fa576667dc32f699a76",
+      "bytes": 445244,
+      "durationSeconds": 9.275
+    }
+  ]
+}

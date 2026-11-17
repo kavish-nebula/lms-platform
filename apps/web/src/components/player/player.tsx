@@ -82,6 +82,7 @@ export function Player({ module, moduleIndex, stage, video, courseHref, initialD
   const latestAdapted = useAdaptedModule(module.course_id, module.module_id, enrolled, stage);
   const adapted = useSteadyAdapted(latestAdapted, topicKey, module.videoFirstActivities ? startedActivity !== topicKey : stage === "hook");
   const content = React.useMemo(() => withAdapted(module, adapted), [module, adapted]);
+  const profileHookTitle = content.videoFirstActivities?.problemHook.title;
   const [railOpen, setRailOpen] = React.useState(false);
   const outlineKey = `lms-outline:v1:${module.course_id}`;
   const outlineHidden = useLocalString(outlineKey) === "hidden";
@@ -93,8 +94,9 @@ export function Player({ module, moduleIndex, stage, video, courseHref, initialD
   const sections = React.useMemo(() => {
     const all = topics.length ? topics.map((x) => x.stage) : module.stages_included;
     const planOrder = planTopicOrder(adaptation.plan,module.module_id,all);
-    return moduleOutline(module, topics, planOrder?.length ? planOrder : orderStages(all, adaptation.order[0] === "example"));
-  }, [module, topics, adaptation.order,adaptation.plan]);
+    const outline = moduleOutline(module, topics, planOrder?.length ? planOrder : orderStages(all, adaptation.order[0] === "example"));
+    return profileHookTitle ? outline.map(section => ({ ...section, parts: section.parts.map(part => part.stage === 'hook' ? { ...part, title: profileHookTitle } : part) })) : outline;
+  }, [module, topics, adaptation.order,adaptation.plan,profileHookTitle]);
   const parts = flatParts(sections);
   const part = currentPart(parts, stage, video);
   const at = part ? parts.indexOf(part) : -1;

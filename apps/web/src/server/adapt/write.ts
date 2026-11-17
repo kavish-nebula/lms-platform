@@ -12,7 +12,7 @@ import { acceptable, mergeShape, skeletonOf, type MergeResult } from "./shape";
  * so the whole course tells one story.
  */
 
-export const ADAPT_PROMPT_VERSION = 1;
+export const ADAPT_PROMPT_VERSION = 3;
 
 export type World = {
   organisation: string;
@@ -56,6 +56,8 @@ export class AdaptError extends Error {
 
 const INSTRUCTIONS = `You rewrite one piece of an online lesson for one learner on Nebula KnowLab. You write a fully new scenario set in the learner's own world, and you keep the lesson's teaching exactly.
 
+The app prepares Module 1 first, then later modules in the background while the learner studies Module 1. Return only this requested content piece. Do not generate other modules or assume earlier lessons have been completed. Narration must match the returned scenes and visuals. Queue order and readiness are controlled by the app.
+
 The piece is JSON that the app draws as animated scenes or slides. Reply with the same JSON shape:
 - the same keys, the same order, and the same number of items in every list;
 - every id, icon, kind, type, tone, role, state, source, target, cue and number exactly as given;
@@ -72,6 +74,8 @@ Rules:
 - Numbers in the story may change to fit it, but the JSON numbers stay as given.
 - No links. No promises about results. Do not mention AI models, prompts to you, or "personalised".
 - Write plainly and warmly in British English, addressing the learner as "you" where the original does.
+
+For a problem hook, make the opening easy to understand on a first watch, even for a beginner. Use common everyday words, short direct sentences and one idea per sentence. Prefer about 8–16 words per sentence when natural, without losing required meaning. Show one familiar situation, one clear difficulty and one simple consequence: what someone wants to do, what goes wrong and why it matters. Use the learner's field without assuming specialist knowledge or inventing personal facts. Avoid unnecessary names, backstory, competing problems, buzzwords and unexplained abbreviations. Explain any required technical term immediately in ordinary words. Keep screen text brief and narration conversational. Build curiosity without teaching the whole solution or revealing prediction or assessment answers. Check that a beginner could explain the problem after one watch. Preserve source facts, qualifications, question meanings, sentence counts, scene structure and matching narration.
 
 Reply with one JSON object: {"world": <the world, only when asked for>, "piece": <the rewritten piece>}.`;
 

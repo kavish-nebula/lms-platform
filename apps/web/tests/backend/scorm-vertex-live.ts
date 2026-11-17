@@ -14,6 +14,7 @@ import { audioRoot } from '@/server/adapt/tts';
 
 const out = process.env.SCORM_VERIFY_OUTPUT!;
 assert.equal(process.env.PGLITE_DIR, 'memory://', 'Never run synthetic profiles against the learner database.');
+assert(!process.env.DATABASE_URL, 'Live verification must never connect to the application PostgreSQL database.');
 await fs.mkdir(out, { recursive: true });
 try {
   await vertexAccessToken();

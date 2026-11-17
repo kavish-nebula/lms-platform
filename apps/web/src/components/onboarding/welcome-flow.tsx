@@ -39,7 +39,7 @@ export function WelcomeFlow({ name, returnTo }: { name: string; returnTo: string
   }, []);
 
   const next = returnTo ?? "/learn";
-  const continueLabel = returnTo && returnTo !== "/learn" ? t("welcomeBack") : t("welcomeToDashboard");
+  const continueLabel = t("profileSeeRecommendations");
 
   async function done(s: Pick<InterviewState, "answers" | "needs">) {
     try {
@@ -50,7 +50,7 @@ export function WelcomeFlow({ name, returnTo }: { name: string; returnTo: string
       return;
     }
     applyComfort(s.needs.includes("none") ? [] : s.needs);
-    router.push(next);
+    router.push(`/learn/recommended${next === '/learn/recommended' ? '' : `?return=${encodeURIComponent(next)}`}`);
   }
 
   return (
