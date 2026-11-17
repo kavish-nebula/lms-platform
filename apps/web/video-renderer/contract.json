@@ -1,0 +1,7 @@
+{
+  "version": "remotion-manim-1",
+  "remotionKinds": ["spreadsheet", "claim-evidence", "token-stream", "retrieval-map", "source-inspection", "data-boundary", "parameter-network", "document-dialogue", "prompt-workspace", "knowledge-hub", "decision"],
+  "fps": 24,
+  "width": 1280,
+  "height": 720
+}

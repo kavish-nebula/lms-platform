@@ -9,12 +9,36 @@ import { StageShell } from '../stage-shell';
 import { hookSceneAt, hookScenes, type VideoHook } from '@/lib/video-first-hook';
 import { PersonalizedConceptStory } from '../video/personalized-concept-story';
 import { hookTeachingScene, hookTeachingClock } from '@/lib/video-first-hook';
+import useSWR from 'swr';
+import { api } from '@/lib/api';
+import { useLearningContext } from '@/components/learning/course-companion';
+import { ContinuousConceptPlayer } from '../video/continuous-concept-player';
+import type { ContinuousPlayback } from '@/lib/continuous-concept';
+import type { ConceptScene } from '@/lib/personalized-concept';
 
 type Props = { hook: VideoHook; audio?: string; sceneAudio?: string[]; fallbackAudioUrl: string; personalized?: boolean; preparing?: boolean; onInteract?: () => void; onPrev?: () => void; onComplete?: () => void; done?: boolean };
 const clock = (time: number) => `${Math.floor(time / 60)}:${String(Math.floor(time % 60)).padStart(2, '0')}`;
 
-/** Scene clips are the clock: the next illustration starts at actual audio end. */
-export function VideoFirstHook({ hook, audio, sceneAudio, fallbackAudioUrl, personalized, preparing, onInteract, onPrev, onComplete, done }: Props) {
+/** Ready personalized video-first hooks use the same native renderer as concepts. */
+export function VideoFirstHook(props: Props) {
+  const context = useLearningContext();
+  const [readCase, setReadCase] = useState(false), [finished, setFinished] = useState(false);
+  const [retryError, setRetryError] = useState('');
+  const url = `/api/v1/enrollments/${context?.courseId}/modules/${context?.moduleId}/chalkboard-hook`;
+  type Board = { enabled: boolean; status: string; id: string; hook: VideoHook; scenes: ConceptScene[]; playback: ContinuousPlayback };
+  const { data: latest, error, mutate } = useSWR(props.personalized && context ? url : null, (u: string) => api<Board>(u), { refreshInterval: data => data?.status === 'ready' || data?.status === 'failed' || data?.enabled === false ? 0 : 4000 });
+  const [held, setHeld] = useState<Board>();
+  if (!held && latest?.status === 'ready' && latest.playback?.video) setHeld(latest);
+  const data = held ?? latest;
+  if (!props.personalized || readCase || data?.enabled === false) return <SceneHook {...props} />;
+  return <StageShell stage="hook" title={data?.hook?.title ?? props.hook.title} bloom="understand" onPrev={props.onPrev} onComplete={props.onComplete} done={props.done} canComplete={!!props.done || finished} completeHint="Watch the narrated case to continue.">
+    {data?.status === 'ready' && data.playback?.video ? <ContinuousConceptPlayer key={data.id} video={{ id: `${context?.moduleId}-hook`, module: context?.moduleId ?? '', lesson: 'hook', midQuiz: [], endQuiz: [] }} revisionId={data.id} scenes={data.scenes} playback={data.playback} onComplete={() => setFinished(true)} /> : <div className="space-y-3 rounded-xl border border-line bg-panel-2 p-5"><p role="status">{error || data?.status === 'failed' ? 'The animated case could not render.' : 'Drawing your personalized case with Chalkboard…'}</p><p className="text-sm text-ink-muted">Your existing narration will accompany an animated diagram. You can use the narrated case while the render prepares.</p>{(error || data?.status === 'failed') && <Button variant="outline" onClick={async () => { setRetryError(''); try { await api(url, { method: 'POST' }); await mutate(); } catch { setRetryError('The retry could not start. You can use the narrated case.'); } }}>Retry animation</Button>}{retryError && <p role="alert">{retryError}</p>}</div>}
+    <Button variant="ghost" onClick={() => { props.onInteract?.(); setReadCase(true); }}>Use the narrated case instead</Button>
+  </StageShell>;
+}
+
+/** Fallback keeps the existing narrated case available during rendering. */
+function SceneHook({ hook, audio, sceneAudio, fallbackAudioUrl, personalized, preparing, onInteract, onPrev, onComplete, done }: Props) {
   const scenes = useMemo(() => hookScenes(hook), [hook]);
   const media = useRef<HTMLAudioElement>(null);
   const screen = useRef<HTMLElement>(null);

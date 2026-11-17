@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { PersonalizedConceptStory } from './personalized-concept-story';
 import { QuizOverlay } from './video-lesson';
 
-type Props = { video:ConceptVideo; scenes:ConceptScene[]; revisionId:string; playback:ContinuousPlayback; onComplete?:()=>void; onNext?:()=>void; nextLabel?:string };
+type Props = { video:Pick<ConceptVideo, 'id' | 'module' | 'lesson' | 'midQuiz' | 'endQuiz'>; scenes:ConceptScene[]; revisionId:string; playback:ContinuousPlayback; onComplete?:()=>void; onNext?:()=>void; nextLabel?:string };
 export function ContinuousConceptPlayer({video,scenes,revisionId,playback,onComplete,onNext,nextLabel}:Props) {
   const context=useLearningContext(), signal=useSignal(), hydrated=useHydrated();
   const key=`lms-personalized-concept:v2:${context?.courseId}:${video.id}:${revisionId}`;
@@ -23,8 +23,9 @@ export function ContinuousConceptPlayer({video,scenes,revisionId,playback,onComp
   const [restored,setRestored]=useState(false), [seconds,setSeconds]=useState(0), [playing,setPlaying]=useState(false);
   const [checkpointDone,setCheckpointDone]=useState(!hasCheckpoint),[checking,setChecking]=useState(false),[endChecking,setEndChecking]=useState(false);
   const [ranges,setRanges]=useState<PlayedRange[]>([]),[done,setDone]=useState(false),[muted,setMuted]=useState(false),[captions,setCaptions]=useState(true),[rate,setRate]=useState(1),[message,setMessage]=useState('');
-  const media=useRef<HTMLAudioElement>(null),screen=useRef<HTMLDivElement>(null),quiz=useRef<HTMLDivElement>(null);
+  const media=useRef<HTMLVideoElement & HTMLAudioElement>(null),screen=useRef<HTMLDivElement>(null),quiz=useRef<HTMLDivElement>(null);
   const position=useRef(0),coverage=useRef<PlayedRange[]>([]),lastTime=useRef<number|null>(null),completed=useRef(false),checkpoint=useRef(!hasCheckpoint);
+  const notified = useRef(false);
   const reducedMotion=!!useReducedMotionConfig();
   if(hydrated&&!restored){
     const state=restoreContinuousResume(saved,legacy,playback,hasCheckpoint);
@@ -32,6 +33,7 @@ export function ContinuousConceptPlayer({video,scenes,revisionId,playback,onComp
     setRanges(state.ranges);setDone(state.endCheckDone);setRestored(true);
   }
   useEffect(()=>{position.current=seconds;coverage.current=ranges;checkpoint.current=checkpointDone;completed.current=done;},[seconds,ranges,checkpointDone,done]);
+  useEffect(() => { if (restored && done && !notified.current) { notified.current = true; onComplete?.(); } }, [restored, done, onComplete]);
   useEffect(()=>{if(restored)writeLocal(key,JSON.stringify({version:2,seconds,checkpointDone,ranges,endCheckDone:done} satisfies ContinuousResume));},[restored,key,seconds,checkpointDone,ranges,done]);
   useEffect(()=>{if(checking||endChecking)quiz.current?.querySelector<HTMLElement>('input, button')?.focus();},[checking,endChecking]);
   // Every section shares this audio element and clock; visual changes never
@@ -55,16 +57,16 @@ export function ContinuousConceptPlayer({video,scenes,revisionId,playback,onComp
     if(audio.error)audio.load();if(audio.ended)seek(0);
     try{await audio.play();lastTime.current=audio.currentTime;setPlaying(true);}catch{setPlaying(false);setMessage('Press play to retry narration, or choose the original lesson.');}
   };
-  const recordPlayed=(audio:HTMLAudioElement)=>{
+  const recordPlayed=(audio:HTMLMediaElement)=>{
     const target=allowedConceptTime(playback,audio.currentTime,checkpoint.current),previous=lastTime.current;
     if(!audio.seeking&&previous!==null&&target>previous&&target-previous<=2.5*audio.playbackRate){coverage.current=addPlayedRange(coverage.current,previous,target);setRanges(coverage.current);}
     lastTime.current=audio.seeking?null:target;updatePosition(target);
   };
-  const track=(audio:HTMLAudioElement)=>{
+  const track=(audio:HTMLMediaElement)=>{
     recordPlayed(audio);
     if(hasCheckpoint&&!checkpoint.current&&audio.currentTime>=playback.checkpointSeconds!){audio.currentTime=playback.checkpointSeconds!;openCheckpoint();}
   };
-  const complete=()=>{if(!completed.current){completed.current=true;setDone(true);onComplete?.();}};
+  const complete=()=>{if(!completed.current){completed.current=true;notified.current=true;setDone(true);onComplete?.();}};
   const ended=()=>{
     pause();updatePosition(playback.durationSeconds);
     if(!checkpoint.current||!allConceptSectionsPlayed(playback,coverage.current)){setMessage('Some teaching was skipped. Replay the lesson to complete it.');return;}
@@ -72,10 +74,19 @@ export function ContinuousConceptPlayer({video,scenes,revisionId,playback,onComp
   };
   const index=continuousSection(playback,Math.max(0,checking?seconds-.001:seconds)),scene=scenes[index];
   const localSeconds=Math.max(0,seconds-playback.segments[index].startSeconds);
+  const Media = playback.video ? 'video' : 'audio';
+  const renderedMedia = (<Media ref={media} src={playback.video ?? playback.audio} preload="metadata" muted={muted} playsInline className={playback.video ? "aspect-video w-full bg-panel" : undefined} aria-label={playback.video ? "Chalkboard animated personalised video" : "Continuous personalised narration"}
+        onLoadedMetadata={e=>{e.currentTarget.playbackRate=rate;e.currentTarget.currentTime=seconds;}}
+        onPlay={()=>{lastTime.current=media.current?.currentTime??null;setPlaying(true);}}
+        onPause={e=>{recordPlayed(e.currentTarget);lastTime.current=null;setPlaying(false);persist();}}
+        onSeeking={()=>{lastTime.current=null;}}
+        onSeeked={e=>{const allowed=allowedConceptTime(playback,e.currentTarget.currentTime,checkpoint.current);if(e.currentTarget.currentTime>allowed+.001){e.currentTarget.currentTime=allowed;openCheckpoint();}else if(!e.currentTarget.paused)lastTime.current=allowed;updatePosition(allowed);}}
+        onTimeUpdate={e=>track(e.currentTarget)} onEnded={ended}
+        onError={()=>{pause();setMessage('Narration could not load. Retry playback or choose the original lesson.');}}/>);
   return <div className="space-y-4">
-    <p className="text-sm text-ink-muted">One continuous personalised lesson. Visuals follow the narration; playback pauses for the knowledge check.</p>
+    <p className="text-sm text-ink-muted">{playback.video ? `Chalkboard animated lesson · Diagrams show the process as it is narrated.${hasCheckpoint ? ' Playback pauses for the knowledge check.' : ''}` : 'One continuous personalised lesson. Visuals follow the narration; playback pauses for the knowledge check.'}</p>
     <div ref={screen} className="hook-film relative" aria-label="Continuous personalised lesson">
-      <PersonalizedConceptStory scene={scene} seconds={localSeconds} duration={playback.segments[index].endSeconds-playback.segments[index].startSeconds} reducedMotion={reducedMotion}/>
+      {playback.video ? renderedMedia : <PersonalizedConceptStory scene={scene} seconds={localSeconds} duration={playback.segments[index].endSeconds-playback.segments[index].startSeconds} reducedMotion={reducedMotion}/>}
       <div className="hook-film-controls">
         <Button size="sm" variant="ghost" aria-label={playing?'Pause personalised lesson':'Play personalised lesson'} disabled={!restored||checking||endChecking} onClick={()=>playing?pause():void play()}>{playing?<Pause aria-hidden/>:<Play aria-hidden/>}{playing?'Pause':'Play'}</Button>
         <Button size="icon" variant="ghost" aria-label="Restart personalised lesson" disabled={checking||endChecking} onClick={()=>{pause();seek(0);}}><RotateCcw/></Button>
@@ -87,15 +98,9 @@ export function ContinuousConceptPlayer({video,scenes,revisionId,playback,onComp
       </div>
       <label className="sr-only" htmlFor={`continuous-seek-${video.id}`}>Seek within personalised lesson</label>
       <input id={`continuous-seek-${video.id}`} className="block w-full accent-[var(--ok)]" type="range" min={0} max={playback.durationSeconds} step={.01} value={seconds} disabled={!restored||checking||endChecking} onChange={e=>seek(Number(e.target.value))}/>
-      {captions&&<p className="hook-film-captions" aria-label="Lesson narration captions">{conceptNarration(scene)}</p>}
-      <audio ref={media} src={playback.audio} preload="metadata" muted={muted} aria-label="Continuous personalised narration"
-        onLoadedMetadata={e=>{e.currentTarget.playbackRate=rate;e.currentTarget.currentTime=seconds;}}
-        onPlay={()=>{lastTime.current=media.current?.currentTime??null;setPlaying(true);}}
-        onPause={e=>{recordPlayed(e.currentTarget);lastTime.current=null;setPlaying(false);persist();}}
-        onSeeking={()=>{lastTime.current=null;}}
-        onSeeked={e=>{const allowed=allowedConceptTime(playback,e.currentTarget.currentTime,checkpoint.current);if(e.currentTarget.currentTime>allowed+.001){e.currentTarget.currentTime=allowed;openCheckpoint();}else if(!e.currentTarget.paused)lastTime.current=allowed;updatePosition(allowed);}}
-        onTimeUpdate={e=>track(e.currentTarget)} onEnded={ended}
-        onError={()=>{pause();setMessage('Narration could not load. Retry playback or choose the original lesson.');}}/>
+      {!playback.video && renderedMedia}
+      {captions&&<p className="hook-film-captions" aria-label="Lesson narration captions">{playback.captions?.find(c => seconds >= c.start && seconds < c.end)?.caption ?? conceptNarration(scene)}</p>}
+
       {checking&&<div ref={quiz}><QuizOverlay questions={video.midQuiz} doneLabel="Continue personalised lesson" onDone={()=>{checkpoint.current=true;setCheckpointDone(true);setChecking(false);if(media.current){media.current.currentTime=playback.checkpointSeconds!;lastTime.current=playback.checkpointSeconds!;void media.current.play().catch(()=>setMessage('Press play to continue narration.'));}}} onAnswer={(question,response)=>signal({kind:'video_check',moduleId:video.module,lesson:video.lesson,payload:{videoId:video.id,section:'mid',question,response}})}/></div>}
       {endChecking&&<div ref={quiz}><QuizOverlay questions={video.endQuiz} doneLabel="Complete source check" onDone={()=>{setEndChecking(false);complete();}} onAnswer={(question,response)=>signal({kind:'video_check',moduleId:video.module,lesson:video.lesson,payload:{videoId:video.id,section:'end',question,response}})}/></div>}
     </div>

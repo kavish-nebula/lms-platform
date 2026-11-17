@@ -81,3 +81,26 @@ Video-first authoring supports owner-scoped concept recordings and immutable tim
 
 
 Connected SCORM imports now use immutable source snapshots, resumable import/preparation runs and explicit LMS review. Published editions pin enrollments; upgrading archives the prior enrollment and creates a fresh identity for progress, plans, grades and adaptation. Original source media is cached separately from personalised audio. See [connected SCORM courses](connected-scorm-courses.md).
+
+## Local Chalkboard video derivatives
+
+The persistent Next.js host can schedule local Manim render subprocesses using
+the pinned nicglazkov/Chalkboard scene runtime. Validated personalized teaching
+and its matching audio are compiled to a constrained animated diagram plan;
+rendering receives no model credentials or generated executable code. Cached
+MP4s, status and layout reports are scoped to enrollment and source/audio hash.
+The enrolled-learner media route enforces ownership and byte ranges. Existing
+quiz grading, progress and source recordings remain authoritative. Module 1
+foundation recommendations use recorded evidence, never inferred profession.
+See `docs/chalkboard-video.md` for setup and measured verification. A serverless
+host needs a durable rendering worker before using this native subprocess path.
+
+Chalkboard's directed refinement adds a source-grounded visual director, an
+independent model critique, deterministic source/unit/layer checks and local
+Whisper word alignment. The native process renders persistent chapter
+compositions and releases an MP4 only after sync and text-layout checks. The
+existing narration/checkpoint/grading path remains authoritative. The renderer
+contract now supports a local Remotion/Manim compositor, with motion-window
+rendering and full-file decode checks. This is a process-local queue with stale
+lease recovery, not a distributed render service or scale benchmark. See
+`docs/hybrid-video-rendering.md` for the current implementation and limitations.

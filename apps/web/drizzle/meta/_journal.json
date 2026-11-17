@@ -183,6 +183,13 @@
       "when": 1794465000000,
       "tag": "0025_remove_empty_retired_project_work",
       "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1794800000000,
+      "tag": "0026_personalized_learning_pilot",
+      "breakpoints": true
     }
   ]
 }

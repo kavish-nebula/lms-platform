@@ -401,14 +401,19 @@ def apply_hook_text_map(authored, edits, sparse=False):
 def validate_concept(authored, content):
     """Reject cosmetic adaptation before requesting matching narration."""
     changed = 0
-    for before, after in zip(authored['scenes'], content['scenes']):
+    errors = []
+    for index, (before, after) in enumerate(zip(authored['scenes'], content['scenes'])):
         if before['narration'] != after['narration']:
             raise ValueError('Reviewed concept narration is protected. Rewrite only title, points and bridge paths.')
         if not 8 <= len(after.get('bridge', '').split()) <= 18:
-            raise ValueError('Each bridge needs 8 to 18 words: one concrete fictional learner-context analogy, not a generic reminder.')
+            errors.append(f"$.scenes[{index}].bridge has {len(after.get('bridge', '').split())} words; rewrite this path with 8 to 18 words: one concrete fictional learner-context analogy, not a generic reminder.")
         changed += after['bridge'] != before['bridge']
         if len(after['points']) != 2 or any(len(p) > 180 or len(p.split()) > 24 for p in after['points']):
-            raise ValueError('Each scene needs two complete concise visual points, at most 24 words and 180 characters each.')
+            errors.append(f'$.scenes[{index}].points needs two complete concise visual points, at most 24 words and 180 characters each.')
+    # Report every invalid scene in the same bounded repair. Reporting only
+    # the first one wasted the next attempt fixing one bridge at a time.
+    if errors:
+        raise ValueError('; '.join(errors))
     if changed < math.ceil(len(authored['scenes']) * .6):
         raise ValueError('Personalise contextual bridge explanations in most scenes, not just titles.')
     if len(' '.join(s['narration'] + ' ' + s['bridge'] for s in content['scenes']).split()) > 910:
@@ -416,6 +421,34 @@ def validate_concept(authored, content):
 
 
 def call_model(client, config, model, messages):
+    # A brief overload is not evidence that the lesson or its schema is wrong.
+    # Retry the same request before spending a schema repair or switching models.
+    for attempt in range(3):
+        try:
+            return _call_model_once(client, config, model, messages)
+        except (httpx.HTTPStatusError, httpx.TimeoutException) as exc:
+            response = exc.response if isinstance(exc, httpx.HTTPStatusError) else None
+            if attempt == 2 or response is not None and response.status_code not in {429, 500, 502, 503, 504}:
+                raise
+            # Daily quota exhaustion cannot recover during a short retry. Give
+            # the configured fallback its turn immediately, without spending
+            # the lesson's repair budget on the same exhausted model.
+            if response is not None and response.status_code == 429:
+                try:
+                    quota = response.json()
+                    errors = quota if isinstance(quota, list) else [quota]
+                    if any(re.search(r'per.day|daily|requestsperday', json.dumps(error), re.I) for error in errors):
+                        raise exc
+                except (ValueError, TypeError):
+                    pass
+            try:
+                delay = float(response.headers.get('retry-after', '')) if response is not None else 0
+            except ValueError:
+                delay = 0
+            time.sleep(min(30, max(2 ** (attempt + 1), delay)))
+
+
+def _call_model_once(client, config, model, messages):
     if config['provider'] == 'vertex':
         from .config import vertex_access_token
         config = {**config, 'key': vertex_access_token()}
@@ -530,7 +563,16 @@ def generate(job, client=None):
         pending_edits = {}
         for attempt in range(2):
             try:
-                text = call_model(client, c, model, messages)
+                try:
+                    text = call_model(client, c, model, messages)
+                except httpx.HTTPError:
+                    # A provider outage produces no candidate to validate. It
+                    # must not consume the one allowed content repair round.
+                    fallback = c['fallback']
+                    if not fallback or fallback == 'none' or fallback == model:
+                        raise
+                    model = fallback
+                    text = call_model(client, c, model, messages)
                 text = re.sub(r"^```(?:json)?\s*|\s*```$", "", text.strip())
                 candidate = json.loads(text)
                 if sparse_map:
@@ -614,12 +656,10 @@ def generate(job, client=None):
                 # Schema errors name constraints only; never log provider bodies.
                 detail = str(exc) if isinstance(exc, ValueError) else (f"HTTP {exc.response.status_code}" if isinstance(exc, httpx.HTTPStatusError) else type(exc).__name__)
                 logging.getLogger("adaptive-api").warning("Generation attempt %s (%s) failed: %s", attempt + 1, model, detail)
-                if attempt:
+                if attempt or isinstance(exc, httpx.HTTPError):
                     raise
                 # A schema repair needs the model that returned usable text.
                 # Switch providers/models only when the request itself failed.
-                if isinstance(exc, httpx.HTTPError) and c["fallback"] and c["fallback"] != "none":
-                    model = c["fallback"]
                 reason = str(exc) if isinstance(exc, ValueError) else "The previous request did not complete."
                 if isinstance(exc, ValueError) and 'text' in locals():
                     messages.append({"role": "assistant", "content": text})

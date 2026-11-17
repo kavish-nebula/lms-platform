@@ -23,5 +23,6 @@ __pycache__/
 /ai-agent-backend/
 /nebula-knowlab-complete-with-courses-*/
 /.playwright-mcp/
+/tools/chalkboard-upstream/
 /artifacts/
 /ZIP_README.txt

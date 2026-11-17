@@ -378,6 +378,13 @@ Video-first authoring supports owner-scoped concept recordings and immutable tim
 
 Teaching-only specialist handoffs can be saved through the owner-scoped `lesson-activities` course endpoint and opened at `/content/courses/[id]/activities/[activityId]`. They contain only the problem hook, worked examples and guided practice, with source/asset snapshots and an expected brief revision. These immutable files live in `.data/lesson-activities`, always have `needs_review` status and become outdated when the brief changes. They are creator previews, do not satisfy source-review or publication gates, and never write learner progress, grades or complete course packages.
 
+Adaptive model requests retry temporary overloads with bounded backoff before
+schema repair or fallback. Concept bridge repair identifies the failing scene
+path and word count. Worker heartbeats continue while a result receipt waits for
+queued local speech, with a thirty-minute receipt ceiling; completed derivatives
+still require the existing source, profile, structure and audio validation gates.
+See [adaptive recovery](adaptive-teaching.md#recovery-during-concept-preparation).
+
 Blueprint generation reconciles course-wide L4 assessment placement to the final declared module when a provider associates it with a known earlier teaching module. Unknown IDs and all source/objective/sequence checks remain validated; provider snapshots are not mutated. Prompts and bounded repair instructions identify `assessment.moduleId` explicitly. Exhausted structural validation returns the concrete contract failure, while provider/authentication failures retain a generic safe message. This does not approve or publish a blueprint.
 
 Published authored-course delivery derives its subject, skills, guided-practice phases and completion labels from the assembled package. Generic player presentation must not substitute another course's task-handoff content; existing stage IDs and progress contracts remain unchanged.
@@ -394,3 +401,27 @@ Uploaded concept personalisation reuses enrollment-scoped adaptation jobs and th
 Connected SCORM course imports now have durable source snapshots/runs, whole-course selection, proposed objective mappings and incremental course preparation. Published editions pin enrollments; explicit upgrades archive earlier enrollments without transferring completion. See [connected SCORM courses](connected-scorm-courses.md).
 
 The retired single-module `ai-for-production` import is omitted from learner dashboard/catalog/search listings and recommendations. Its direct course/package routes and existing progress records remain available; the published seven-module course keeps its separate identity. The raw imported-course registry remains intact, while listing components use its filtered view.
+
+# Chalkboard animated delivery
+
+Personalized video-first concepts and problem hooks can render locally to MP4
+with the pinned nicglazkov/Chalkboard runtime and Manim. Approved source teaching
+and matching narration are compiled into bounded animated diagrams, cached per
+enrollment/source/audio revision and streamed through an authorized range route.
+The existing continuous player retains checkpoints, resume and watched coverage.
+Module 1 foundation recommendations use recorded knowledge/completion evidence.
+See [Chalkboard video delivery](chalkboard-video.md) for setup, provenance, timing
+limitations and verification.
+
+Directed video refinement: personalized Chalkboard rendering now uses reviewed,
+source-specific chapter storyboards and local audio-word alignment instead of
+keyword diagrams/proportional sentence cues. It adds distinct compositions,
+reading holds, a fictional generated illustration, source/unit/layer guards
+and text-layout checks. See `docs/chalkboard-visual-quality.md` for the audit,
+research into Chalkboard/Remotion, measured verification and limitations.
+
+The local hybrid renderer now routes mechanisms to Manim and document/language
+illustrations to Remotion, using the same aligned narration timeline. Motion-only
+frame capture and FFmpeg holds avoid re-rendering static narration intervals.
+Enrollment-scoped authenticated delivery is unchanged. See
+`docs/hybrid-video-rendering.md` for recovery, setup and current verification.

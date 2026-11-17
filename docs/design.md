@@ -249,3 +249,28 @@ Global learner profiling ends with a personal thank-you and a single finite cons
 The profile-completion action now says "See my course suggestions" and saves before opening a dedicated recommendation page. Suggestions use a ranked list with course-specific explanations, actual course duration/module metadata, an existing-enrollment label where applicable and an Explore course link. General catalog options are labelled honestly when no subject-specific match is available. There are no match percentages, inferred learner levels, automatic enrollments or forced course choices. Browse all courses, return to the original destination and Update my profile remain visible. The list uses the shared light/dark and field-accent tokens and stacks its actions on narrow screens.
 
 Personalized concept playback now paginates each section's unchanged narration into readable teaching slides, followed by its learner-context explanation. Slides advance from the audio clock in both scene and continuous players, including seek/replay; pauses and speed changes require no separate timers. Timing is estimated by word count over the measured clip duration (not forced word alignment). Existing narration, original recordings, checkpoint/completion rules and saved revisions remain unchanged. Reduced motion disables transitions while retaining teaching progression.
+
+# Animated teaching diagrams
+
+Video-first personalized concepts and cases now have a Chalkboard MP4 path.
+Concise labels accompany animated document routing, conditions, learned trends,
+token flow and evidence checks. Narration paragraphs remain in optional captions
+and transcripts, rather than filling the visual canvas. The player has a single
+timeline and explicit play/pause, speed, mute, captions and fullscreen controls;
+it never autoplays. Original recordings/cases remain accessible while rendering
+or on failure. A prerequisite panel links to an unresolved foundation without
+claiming proficiency from profile answers. See `docs/chalkboard-video.md`.
+
+Directed visual delivery uses persistent compositions with one meaningful
+reveal at a time, source-anchored timing and stable reading holds. The fictional
+finance illustration is used only to establish context; it is never evidence.
+The final learner question stays neutral. Both captions and original recordings
+remain available. Visual quality and renderer research are documented in
+`docs/chalkboard-visual-quality.md`.
+
+Hybrid lesson visuals use Remotion document, spreadsheet, prompt and retrieval
+scenes alongside Manim physical diagrams. Explicit cues reveal at spoken anchors
+with 1.2-second Remotion transitions; the finished composition holds for reading.
+Uncued structural diagram layers appear together, avoiding disconnected arrows.
+Neutral questions, captions, original-recording access and player controls remain.
+See `docs/hybrid-video-rendering.md` for the inspected Module 1 outputs.

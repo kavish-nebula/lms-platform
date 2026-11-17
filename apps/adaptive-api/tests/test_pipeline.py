@@ -5,7 +5,7 @@ from unittest.mock import patch
 import httpx
 from fastapi.testclient import TestClient
 from adaptive_api.api import app
-from adaptive_api.pipeline import PROMPT_VERSION, SYSTEM, generate, output_constraints, validate, hook_text_map, apply_hook_text_map, normalize_hook_edits, validate_concept
+from adaptive_api.pipeline import PROMPT_VERSION, SYSTEM, generate, output_constraints, validate, hook_text_map, apply_hook_text_map, normalize_hook_edits, validate_concept, call_model
 from adaptive_api.worker import run_once
 
 SLIDE = {"kind": "title", "title": "Agents", "icon": "bot", "cue": 0,
@@ -458,10 +458,71 @@ class PipelineTests(unittest.TestCase):
         def failure(req):
             calls.append(req)
             return httpx.Response(429, json={"error": "busy"})
-        with httpx.Client(transport=httpx.MockTransport(failure)) as client:
+        with patch('adaptive_api.pipeline.time.sleep'), httpx.Client(transport=httpx.MockTransport(failure)) as client:
             with self.assertRaises(httpx.HTTPStatusError):
                 generate(JOB, client)
-        self.assertEqual(len(calls), 2)
+        self.assertEqual(len(calls), 3)
+
+    def test_provider_overload_retries_same_model_before_schema_repair(self):
+        calls = []
+        def model(req):
+            calls.append(json.loads(req.content)['model'])
+            if len(calls) == 1:
+                return httpx.Response(503, headers={'retry-after': '3'}, json={'error': 'busy'})
+            return httpx.Response(200, json={'choices': [{'message': {'content': json.dumps(SLIDE)}}]})
+        with patch('adaptive_api.pipeline.time.sleep') as sleep, httpx.Client(transport=httpx.MockTransport(model)) as client:
+            result = generate(JOB, client)
+        self.assertEqual(calls, ['test-model', 'test-model'])
+        sleep.assert_called_once_with(3)
+        self.assertEqual(result['content']['narration'], SLIDE['narration'])
+
+    def test_daily_quota_uses_fallback_without_retrying_exhausted_model(self):
+        for wrap in (lambda e: e, lambda e: [e]):
+            calls = []
+            def model(req):
+                name = json.loads(req.content)['model']
+                calls.append(name)
+                if name == 'test-model':
+                    return httpx.Response(429, json=wrap({'error': {'message': 'Generate content requests per day limit exceeded', 'details': [{'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier'}]}}))
+                return httpx.Response(200, json={'choices': [{'message': {'content': json.dumps(SLIDE)}}]})
+            with patch.dict(os.environ, {'LLM_FALLBACK_MODEL': 'fallback-model'}), patch('adaptive_api.pipeline.time.sleep') as sleep, httpx.Client(transport=httpx.MockTransport(model)) as client:
+                result = generate(JOB, client)
+            self.assertEqual(calls, ['test-model', 'fallback-model'])
+            sleep.assert_not_called()
+            self.assertEqual(result['model'], 'fallback-model')
+
+    def test_provider_fallback_retains_content_repair_round(self):
+        calls = []
+        def model(req):
+            name = json.loads(req.content)['model']
+            calls.append(name)
+            if name == 'test-model':
+                return httpx.Response(429, json=[{'error': {'message': 'Daily quota exhausted'}}])
+            content = {**SLIDE, 'sentences': []} if len(calls) == 2 else SLIDE
+            return httpx.Response(200, json={'choices': [{'message': {'content': json.dumps(content)}}]})
+        with patch.dict(os.environ, {'LLM_FALLBACK_MODEL': 'fallback-model'}), patch('adaptive_api.pipeline.time.sleep') as sleep, httpx.Client(transport=httpx.MockTransport(model)) as client:
+            result = generate(JOB, client)
+        self.assertEqual(calls, ['test-model', 'fallback-model', 'fallback-model'])
+        sleep.assert_not_called()
+        self.assertEqual(result['content']['sentences'], SLIDE['sentences'])
+
+    def test_rejected_credentials_are_not_retried(self):
+        with patch('adaptive_api.pipeline.time.sleep') as sleep, httpx.Client(transport=httpx.MockTransport(lambda req: httpx.Response(401))) as client:
+            with self.assertRaises(httpx.HTTPStatusError):
+                call_model(client, {'provider': 'openai', 'key': 'test', 'base': 'https://model.test'}, 'test-model', [{'role': 'system', 'content': 'test'}, {'role': 'user', 'content': 'test'}])
+        sleep.assert_not_called()
+
+    def test_concept_bridge_repair_identifies_exact_scene_and_word_count(self):
+        source = {'scenes': [{'narration': 'Source teaching.', 'bridge': 'A short bridge.', 'points': ['A', 'B']}]}
+        with self.assertRaisesRegex(ValueError, r'\$\.scenes\[0\]\.bridge has 3 words'):
+            validate_concept(source, source)
+
+    def test_concept_repair_reports_all_invalid_bridges_together(self):
+        source = {'scenes': [{'narration': 'Source teaching.', 'bridge': 'A short bridge.', 'points': ['A', 'B']}] * 2}
+        with self.assertRaises(ValueError) as raised:
+            validate_concept(source, source)
+        self.assertIn('$.scenes[0].bridge has 3 words', str(raised.exception))
+        self.assertIn('$.scenes[1].bridge has 3 words', str(raised.exception))
 
     def test_example_requires_the_learners_field(self):
         import copy

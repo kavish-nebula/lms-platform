@@ -52,12 +52,14 @@ def main():
     import os
     def remote_generate(job):
         response = httpx.post(os.getenv("ADAPTIVE_API_URL", "http://127.0.0.1:8001") + "/v1/generate", headers={
-            "Authorization": "Bearer " + c["token"]}, json={"input": job["input"]}, timeout=120)
+            "Authorization": "Bearer " + c["token"]}, json={"input": job["input"]}, timeout=600)
         response.raise_for_status()
         return response.json()
     def lane_loop(lane):
         with httpx.Client(base_url=c["lms"] + "/api/internal/adaptation/", headers={
-            "Authorization": "Bearer " + c["token"]}, timeout=600) as client:
+            # Result delivery includes serialized local speech synthesis. Keep
+            # renewing the lease while another narration job uses the CPU.
+            "Authorization": "Bearer " + c["token"]}, timeout=1800) as client:
             while True:
                 try:
                     if not run_once(client, remote_generate, lane):

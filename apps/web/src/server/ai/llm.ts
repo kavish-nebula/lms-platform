@@ -97,7 +97,7 @@ export type ChatRequest = {
   model: string;
   messages: LlmMessage[];
   /** json_object asks for a JSON reply; providers without a JSON mode get the instruction from the prompt alone */
-  response_format?: { type: "json_object" | "text" };
+  response_format?: { type: "json_object" | "text" } | { type: "json_schema"; json_schema: { name: string; strict: boolean; schema: Record<string, unknown> } };
   thinking: { type: "enabled" | "disabled" };
   max_tokens: number;
   temperature: number;
@@ -159,7 +159,7 @@ export function anthropicBody(req: ChatRequest): Record<string, unknown> {
     else turns.push({ role: m.role, content: m.content });
   }
   if (turns[0]?.role !== "user") turns.unshift({ role: "user", content: "(start)" });
-  const json = req.response_format?.type === "json_object" ? "\n\nReply with one JSON object only, no prose before or after it." : "";
+  const json = req.response_format && req.response_format.type !== "text" ? "\n\nReply with one JSON object only, no prose before or after it." : "";
   return { model: req.model, max_tokens: req.max_tokens, temperature: req.temperature, ...(system || json ? { system: system + json } : {}), messages: turns };
 }
 

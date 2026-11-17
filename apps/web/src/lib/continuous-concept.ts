@@ -1,6 +1,6 @@
 /** Presentation-only opt-in: other courses keep their existing scene player. */
 export const continuousConceptEnabled = (courseId: string) => courseId === 'affcb1b6-5539-431c-9a95-cce2bdb26b51';
-export type ContinuousPlayback = { kind: 'continuous'; audio: string; durationSeconds: number; checkpointSeconds: number | null; segments: { sceneId: string; startSeconds: number; endSeconds: number }[] };
+export type ContinuousPlayback = { kind: 'continuous'; audio: string; video?: string; captions?: { start: number; end: number; caption: string }[]; durationSeconds: number; checkpointSeconds: number | null; segments: { sceneId: string; startSeconds: number; endSeconds: number }[] };
 export type PlayedRange = [number, number];
 export type ContinuousResume = { version: 2; seconds: number; checkpointDone: boolean; ranges: PlayedRange[]; endCheckDone: boolean };
 export const conceptClock = (seconds: number) => `${Math.floor(seconds / 60)}:${String(Math.floor(seconds % 60)).padStart(2, '0')}`;
