@@ -14,6 +14,11 @@ enrollments keep their setup/progress and do not acquire a new gate. No schema
 migration, final-assessment change or automatic enrollment is introduced. Run
 `node tests/backend/run.mjs course-prerequisites` from `apps/web` for regressions.
 
+An explicit `?step=prerequisites` enrollment URL also lets existing learners review
+suggestions. Their answers remain in component state; the action returns to the
+course without calling the enrollment save path. Unsupported courses ignore this
+query step. Normal existing-enrollment setup and new-enrollment behavior are retained.
+
 The requested Healthcare Automation vs AI derivative is selected from the saved
 learner field within the concept-piece template for Production Module 1 only.
 Its seven source/phase-mapped clinic-administration scripts and healthcare visuals
@@ -389,6 +394,8 @@ Blueprint generation reconciles course-wide L4 assessment placement to the final
 
 Published authored-course delivery derives its subject, skills, guided-practice phases and completion labels from the assembled package. Generic player presentation must not substitute another course's task-handoff content; existing stage IDs and progress contracts remain unchanged.
 
+The root `npm run app` launcher checks ports, builds the current code once into the isolated `.next-app` output, and starts the production web server plus adaptive services when enabled. It does not reuse a potentially stale build; build failure starts no services. Production browsing has no on-demand route compilation or development indicator. `npm run dev` remains the hot-reload workflow: its Webpack watcher preserves Next's ignores while excluding runtime `.data` and `.next*` outputs, and retains twenty recently visited pages for ten minutes to reduce recompilation between learner and worker/API requests. These changes do not cache learner data across users or change adaptation scheduling.
+
 After global profiling is saved successfully, WelcomeFlow opens `/learn/recommended`, preserving the original learner destination as an optional return link. A request-scoped server service reads that user's saved profile, enrollments and learner-visible catalog. The pure `course-recommendations` function ranks metadata by explicitly stated field/interests and coding comfort, favors an applicable introductory starting point, deduplicates title aliases and returns up to three suggestions with honest matching/fallback reasons. Ranking values are internal, not learner proficiency scores. Draft courses and assessment content do not enter suggestion output; no external model call, recommendation record, enrollment, grade or profile mutation is added. Profile edits affect the next request. Catalog navigation retains access to all courses and a link back to suggestions. Test with `node tests/backend/run.mjs course-recommendations` from `apps/web`.
 
 Video-first publications use four enrollment-scoped adaptive activity jobs per module (`activity:hook`, `activity:worked`, `activity:guided`, `activity:lab`). These reuse the existing durable Python generation and matching-audio pipeline, with profile/release fingerprints, stale-result rejection and immutable objective/source IDs. Uploaded concept recordings, quizzes, final assessment and project criteria remain authored. Separate on-demand `concept:<videoId>` revisions personalise reviewed transcript teaching and narration without overwriting recordings. Each activity becomes available only with matching narration; narration introduces the task without reading hidden practice evidence. The player adopts ready content before interaction and holds it steady once a learner starts; the original activity remains available during preparation or failure. This path needs the existing adaptive service/worker, not a new course-specific setting.
@@ -402,6 +409,7 @@ Connected SCORM course imports now have durable source snapshots/runs, whole-cou
 
 The retired single-module `ai-for-production` import is omitted from learner dashboard/catalog/search listings and recommendations. Its direct course/package routes and existing progress records remain available; the published seven-module course keeps its separate identity. The raw imported-course registry remains intact, while listing components use its filtered view.
 
+The optional AI for Production Module 1 learning pilot adds edition-bound diagnostic attempts, per-topic dispositions, immediate review tasks and durable contextual tutoring. It reuses existing grading, companion, enrollment and recommendation services. Historical progress remains untouched; resolved concepts are projected into enrollment views without claiming playback. See [personalized learning pilot](personalized-learning-pilot.md) for schema, policy scope, operational limits and verification.
 # Chalkboard animated delivery
 
 Personalized video-first concepts and problem hooks can render locally to MP4

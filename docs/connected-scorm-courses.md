@@ -79,3 +79,8 @@ Large source-library blueprints send complete source evidence once in `input.sou
 Blueprint generation resolves only uniquely declared topic-to-source references and separates known entry-prerequisite prose from module dependencies; unknown references still fail validation. Creator review and publication links use the existing `/authoring` workspace.
 
 Original hook narration accepts both uploaded recordings and connected source audio/video, and resolves the requesting learner's pinned edition. This prevents connected imports from failing with `Published hook not found` while retaining enrollment and ownership checks. The video-first regression covers connected-media hook preparation and access by an enrolled learner.
+
+Connected imports preserve the saved target course title and subject, including
+non-production subjects such as Healthcare. Generated final-assessment labels use
+that title; production arithmetic fixtures are supplied only for the Production
+course, while other subjects use the bounded guided-review workflow.

@@ -15,6 +15,7 @@ import { useLearning } from "@/lib/learning-state";
 import { exportNotesPdf } from "@/lib/notes-pdf";
 import { AssistantComposer } from "./assistant-composer";
 import "./learning.css";
+import { PERSONAL_LEARNING_COURSE, PERSONAL_LEARNING_REVISION } from '@/lib/personal-learning';
 
 type Context = { courseId: string; moduleId: string; phase: string; setStep: (step: CompanionStep) => () => void };
 const LearningContext = React.createContext<Context | null>(null);
@@ -55,7 +56,7 @@ export function CourseCompanionProvider({ children }: { children: React.ReactNod
   const value = React.useMemo(() => ({ courseId, moduleId, phase: currentPhase, setStep }), [courseId, moduleId, currentPhase, setStep]);
   return <LearningContext.Provider value={value}>
     {children}
-    {selected && <Companion key={courseId} data={selected} moduleId={moduleId} phase={currentPhase} step={step} />}
+    {selected && !(courseId === PERSONAL_LEARNING_COURSE && selected.course.authoredRevisionId === PERSONAL_LEARNING_REVISION) && <Companion key={courseId} data={selected} moduleId={moduleId} phase={currentPhase} step={step} />}
   </LearningContext.Provider>;
 }
 

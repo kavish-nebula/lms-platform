@@ -9,6 +9,10 @@ import { ModuleLock } from "@/components/player/module-lock";
 import { EmptyState } from "@/components/kit/states";
 import { Button } from "@/components/ui/button";
 import { isModuleStage } from "@/lib/stages";
+import { getSessionUser } from '@/server/auth';
+import { learningService } from '@/server/learning/service';
+import { PILOT_COURSE } from '@/server/learning/pilot-policy';
+import { ApiError } from '@/server/http';
 
 type Params = { courseId: string; moduleId: string; stage: string };
 
@@ -33,6 +37,13 @@ export default async function PlayerPage({ params, searchParams }: { params: Pro
 
   const courseHref = `/learn/courses/${courseId}`;
   const mod = await getModule(courseId, moduleId);
+  if (courseId === PILOT_COURSE && moduleId === 'M1' && stage === 'explainer' && !v) {
+    try {
+      const state = await learningService.state((await getSessionUser()).id, courseId);
+      const next = state.topics.find(t => !t.disposition);
+      if (next) redirect(next.href);
+    } catch (error) { if (!(error instanceof ApiError && ['not_enrolled', 'learning_unavailable'].includes(error.code))) throw error; }
+  }
 
   if (!mod) {
     const t = await getTranslations("player");

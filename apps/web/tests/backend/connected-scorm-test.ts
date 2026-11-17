@@ -37,6 +37,9 @@ const topics=Object.values(complete.output.topics as Record<string,Parameters<ty
 assert(sourceMedia(topics[0].snapshot.source).every(u=>u.startsWith('https://scorm-builder-gcs.b-cdn.net/')));
 const objectives=preview.snapshots.flatMap(s=>s.source.objectives.map(original=>({original,text:original,bloom:'Understand' as const})));
 const brief=importedBrief(course.brief,topics,connection.mapping,objectives);assert.equal(brief.sourceLibrary!.modules.length,2);assert.equal(brief.objectives[0].text,objectives[0].original);
+const healthcare=importedBrief({...course.brief,title:'AI for Healthcare',subject:'Artificial intelligence in healthcare'},topics,connection.mapping,objectives);
+assert.equal(healthcare.title,'AI for Healthcare','Import planning preserves the creator course title.');
+assert.equal(healthcare.subject,'Artificial intelligence in healthcare','An unrelated import must never acquire production-specific teaching context.');
 const base={modules:[{id:'M1',text:'old'},{id:'M2',text:'old'}]};const local={modules:[{id:'M1',text:'creator edit'},{id:'M2',text:'old'}]};const incoming={modules:[{id:'M1',text:'old'},{id:'M2',text:'new source'}]};
 assert.deepEqual(reconcileSource(base,local,incoming),{value:{modules:[{id:'M1',text:'creator edit'},{id:'M2',text:'new source'}]},conflicts:[]});
 const conflict=reconcileSource({a:'old'},{a:'local'},{a:'remote'});assert.deepEqual(conflict.conflicts,['$.a']);assert.deepEqual(reconcileSource({a:'old'},{a:'local'},{a:'remote'},'$',{'$.a':'incoming'}).value,{a:'remote'});
@@ -66,6 +69,9 @@ assert(Math.abs(Number(a.outputs.oeeFraction)-.8379)<.000001);assert.equal(b.out
 assert.equal(project.sandbox!.guided!.stages.length,7);assert.equal(project.sandbox!.criteria.length,7);
 const practice=connectedGuidedPractice(seven[0],project,0);assert(practice.instructions.includes('Case 1'));assert(practice.instructions.includes('Case 2'));assert(practice.instructions.includes('no accounts'));assert.deepEqual(practice.steps.map(s=>s.id),seven[0].guidedPractice.steps.map(s=>s.id));
 assert(connectedGuidedProject([unit],{M1:caseContent.M1},false).sandbox!.guided!.stages.length>=2,'A single-topic project retains an orientation and exploration stage.');
+const healthcareProject=connectedGuidedProject(seven,caseContent,false);
+assert(!/arithmetic|equipment/i.test(healthcareProject.brief+' '+healthcareProject.sandbox!.instructions.join(' ')), 'Non-production courses must describe only the supplied evidence-review runtime.');
+assert(healthcareProject.sandbox!.guided!.artifact.steps.every(step=>step.operation==='copy'||step.operation==='template'));
 
 const storage=new Map<string,string>();const oldWindow=globalThis.window;const oldStorage=globalThis.localStorage;
 Object.defineProperty(globalThis,'window',{value:{},configurable:true});Object.defineProperty(globalThis,'localStorage',{value:{getItem:(k:string)=>storage.get(k)??null,setItem:(k:string,v:string)=>storage.set(k,v),removeItem:(k:string)=>storage.delete(k)},configurable:true});

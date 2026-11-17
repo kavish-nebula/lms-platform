@@ -1,5 +1,11 @@
 # Learning experience UI
 
+Existing learners can explicitly open `/learn/courses/<id>/enroll?step=prerequisites`
+to review prerequisite suggestions without changing setup. This view clearly says
+the learner is enrolled, keeps answers in component state only, and returns to
+the course instead of saving or re-enrolling. Courses with no configured
+prerequisites ignore this step parameter.
+
 The AI Agent enrollment opens with a Starting point step for LLMs and chatbots.
 Each topic has a labelled familiarity radio group; a claimed familiarity reveals
 a brief ungraded concept question. Results distinguish the learner's answer from
@@ -249,7 +255,6 @@ Global learner profiling ends with a personal thank-you and a single finite cons
 The profile-completion action now says "See my course suggestions" and saves before opening a dedicated recommendation page. Suggestions use a ranked list with course-specific explanations, actual course duration/module metadata, an existing-enrollment label where applicable and an Explore course link. General catalog options are labelled honestly when no subject-specific match is available. There are no match percentages, inferred learner levels, automatic enrollments or forced course choices. Browse all courses, return to the original destination and Update my profile remain visible. The list uses the shared light/dark and field-accent tokens and stacks its actions on narrow screens.
 
 Personalized concept playback now paginates each section's unchanged narration into readable teaching slides, followed by its learner-context explanation. Slides advance from the audio clock in both scene and continuous players, including seek/replay; pauses and speed changes require no separate timers. Timing is estimated by word count over the measured clip duration (not forced word alignment). Existing narration, original recordings, checkpoint/completion rules and saved revisions remain unchanged. Reduced motion disables transitions while retaining teaching progression.
-
 # Animated teaching diagrams
 
 Video-first personalized concepts and cases now have a Chalkboard MP4 path.

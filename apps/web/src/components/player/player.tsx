@@ -25,6 +25,12 @@ import { HookCinema } from "@/components/player/hook/hook-cinema";
 import { VideoFirstHook } from './hook/video-first-hook';
 import { ModuleMap } from "@/components/player/module-map";
 import { useWatchedVideos } from "@/components/player/video/watched";
+import useSWR from 'swr';
+import { api, refreshEnrollments } from '@/lib/api';
+import { flushSignals } from '@/lib/signals';
+import { PERSONAL_LEARNING_COURSE, personalLearningHref } from '@/lib/personal-learning';
+import type { LearningState } from '@/server/learning/service';
+import { LearningTutor } from '@/components/learning/personal-learning';
 import { ExplainerStage } from "@/components/player/stages/explainer-stage";
 import { WorkedStage } from "@/components/player/stages/worked-stage";
 import { GuidedStage } from "@/components/player/stages/guided-stage";
@@ -82,6 +88,10 @@ export function Player({ module, moduleIndex, stage, video, courseHref, initialD
   const latestAdapted = useAdaptedModule(module.course_id, module.module_id, enrolled, stage);
   const adapted = useSteadyAdapted(latestAdapted, topicKey, module.videoFirstActivities ? startedActivity !== topicKey : stage === "hook");
   const content = React.useMemo(() => withAdapted(module, adapted), [module, adapted]);
+  const learningUrl = enrolled && module.course_id === PERSONAL_LEARNING_COURSE && module.module_id === 'M1' ? `/api/v1/enrollments/${module.course_id}/learning` : null;
+  const { data: knowledge, mutate: refreshKnowledge } = useSWR(learningUrl, (url: string) => api<LearningState & { enabled: boolean }>(url), { revalidateOnFocus: true });
+  const [showKnowledgeOffer, setShowKnowledgeOffer] = React.useState(true);
+  const demonstrated = React.useMemo(() => knowledge?.enabled ? knowledge.topics.filter(t => t.disposition === 'demonstrated').map(t => t.id) : [], [knowledge]);
   const profileHookTitle = content.videoFirstActivities?.problemHook.title;
   const [railOpen, setRailOpen] = React.useState(false);
   const outlineKey = `lms-outline:v1:${module.course_id}`;
@@ -101,10 +111,10 @@ export function Player({ module, moduleIndex, stage, video, courseHref, initialD
   const part = currentPart(parts, stage, video);
   const at = part ? parts.indexOf(part) : -1;
   const prevPart = at > 0 ? parts[at - 1] : undefined;
-  const nextPart = at >= 0 && at < parts.length - 1 ? parts[at + 1] : undefined;
+  const nextPart = at >= 0 ? parts.slice(at + 1).find(p => !p.video || !demonstrated.includes(p.video.id)) : undefined;
   const isDone = React.useCallback(
-    (p: ModulePart) => (p.video ? watched.includes(p.video.id) || done.includes("explainer") : done.includes(p.stage)),
-    [watched, done],
+    (p: ModulePart) => (p.video ? !!knowledge?.topics?.find(t => t.id === p.video?.id)?.disposition || done.includes('explainer') || !knowledge?.enabled && watched.includes(p.video.id) : done.includes(p.stage)),
+    [watched, done, knowledge],
   );
   const doneKeys = React.useMemo(() => new Set(parts.filter(isDone).map((p) => p.key)), [parts, isDone]);
 
@@ -116,13 +126,18 @@ export function Player({ module, moduleIndex, stage, video, courseHref, initialD
     [moduleHref, router],
   );
 
-  const onComplete = React.useCallback(() => {
+  const onComplete = React.useCallback(async () => {
     const newReward = part ? !isDone(part) : !done.includes(stage);
     if (part?.video) {
+      if (knowledge?.enabled) {
+        try { if (!demonstrated.includes(part.video.id)) { await flushSignals(module.course_id); await api(learningUrl!, { method: 'POST', body: { action: 'complete', topicId: part.video.id } }); await refreshKnowledge(); await refreshEnrollments(); } }
+        catch (error) { toast.error(error instanceof Error ? error.message : 'Topic completion could not be saved.'); return; }
+      } else {
       markWatched(part.video.id);
       // the concept topic is done once its last unwatched video is
       const videos = parts.filter((p) => p.video);
       if (videos.every((p) => p.key === part.key || watched.includes(p.video!.id))) complete("explainer");
+      }
     } else complete(stage);
     if (newReward) {
       recordActivity(module.course_id);
@@ -133,7 +148,7 @@ export function Player({ module, moduleIndex, stage, video, courseHref, initialD
       if (!newReward) toast.success(t("moduleComplete", { next: after.title }));
       router.push(after.href);
     }
-  }, [part, parts, watched, markWatched, complete, stage, nextPart, go, router, after, t, isDone, done, module.course_id, module.title]);
+  }, [part, parts, watched, markWatched, complete, stage, nextPart, go, router, after, t, isDone, done, module.course_id, module.title, knowledge, learningUrl, refreshKnowledge, demonstrated]);
 
   React.useEffect(() => {
     window.scrollTo({ top: 0 });
@@ -316,6 +331,7 @@ export function Player({ module, moduleIndex, stage, video, courseHref, initialD
           {map}
         </aside>
         <main id="stage-main" tabIndex={-1} className="min-w-0 flex-1 pb-6 outline-none">
+          {knowledge?.enabled && <div className="m-4 space-y-3 rounded-xl border border-line bg-panel-2 p-4"><Link className="font-medium text-brand-ink underline" href={`${personalLearningHref(module.course_id)}${part?.video ? `?topic=${encodeURIComponent(part.video.id)}` : ''}`}>Your personalized path: knowledge checks, tutor and targeted reviews</Link>{stage === 'hook' && showKnowledgeOffer && knowledge.topics.some(t => !t.diagnosticTaken) && <div className="flex flex-wrap items-center gap-3"><span>Check your starting point, or study the whole module.</span><Button asChild variant="outline"><Link href={personalLearningHref(module.course_id)}>Check what I already know</Link></Button><Button variant="ghost" onClick={() => setShowKnowledgeOffer(false)}>Study everything</Button></div>}{part?.video && demonstrated.includes(part.video.id) && <div className="mt-2 flex flex-wrap items-center gap-3"><span>Knowledge demonstrated. You may review this topic or continue without playback.</span><Button variant="outline" onClick={() => nextPart ? go(nextPart) : router.push(after.href)}>Continue learning</Button></div>}</div>}
           <AdaptedStrip
             enrolled={enrolled}
             setupHref={setupHref}
@@ -335,7 +351,7 @@ export function Player({ module, moduleIndex, stage, video, courseHref, initialD
           />
           <div className="learning-stage-layout">
             <SignalProvider courseId={module.course_id} enabled={enrolled}><LearningWorkspace key={`${module.module_id}:${stage}:${video ?? ""}`}>
-              <TopicContext.Provider value={header}>{body}</TopicContext.Provider>
+              <TopicContext.Provider value={header}>{body}{knowledge?.enabled && part?.video && learningUrl && <details className="mt-5 rounded-xl border border-line bg-panel p-5"><summary className="cursor-pointer font-semibold">Ask your AI tutor about this topic</summary><div className="mt-4"><LearningTutor key={part.video.id} base={learningUrl} topicId={part.video.id} /></div></details>}</TopicContext.Provider>
             </LearningWorkspace></SignalProvider>
           </div>
         </main>

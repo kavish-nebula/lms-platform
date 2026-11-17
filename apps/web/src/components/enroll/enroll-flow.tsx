@@ -62,7 +62,7 @@ export function EnrollFlow({
   const [showOptions, setShowOptions] = React.useState(initialPhase === "customize");
   const [prerequisiteSelections, setPrerequisiteSelections] = React.useState<PrerequisiteSelections>({});
   // Keep the stepper steady when saving creates the enrollment during Build.
-  const PHASES: EnrollPhase[] = [...(prerequisiteTopics.length && (!enrolled || Object.keys(prerequisiteSelections).length) ? ['prerequisites' as const] : []), ...(showOptions ? ["fit", "customize", "build"] as const : ["fit", "build"] as const)];
+  const PHASES: EnrollPhase[] = enrolled && phase === 'prerequisites' ? ['prerequisites'] : [...(prerequisiteTopics.length && (!enrolled || Object.keys(prerequisiteSelections).length) ? ['prerequisites' as const] : []), ...(showOptions ? ["fit", "customize", "build"] as const : ["fit", "build"] as const)];
   const [answers, setAnswers] = React.useState<SetupAnswers>({});
   const [override, setOverride] = React.useState<SupportOverride>("auto");
   const [pace, setPace] = React.useState<Pace>({ sessionMinutes: 30, studyDays: [1, 3, 5], addToPlan: true });
@@ -120,7 +120,7 @@ export function EnrollFlow({
 
   let body: React.ReactNode = <CardSkeleton lines={6} />;
   if (phase === 'prerequisites')
-    body = <PrerequisiteCheck title={course.title} topics={prerequisiteTopics} suggestions={prerequisiteSuggestions} value={prerequisiteSelections} onChange={setPrerequisiteSelections} onContinue={()=>{setAnswers(current=>prerequisiteEnrollmentAnswers(current,prerequisiteTopics,prerequisiteSelections));setPhase('fit');}} />;
+    body = <PrerequisiteCheck title={course.title} topics={prerequisiteTopics} suggestions={prerequisiteSuggestions} value={prerequisiteSelections} onChange={setPrerequisiteSelections} alreadyEnrolled={enrolled} onContinue={()=>{if(enrolled){router.push(courseHref);return;}setAnswers(current=>prerequisiteEnrollmentAnswers(current,prerequisiteTopics,prerequisiteSelections));setPhase('fit');}} />;
   else if (phase === "fit")
     body = (
       <div className="grid gap-6">
