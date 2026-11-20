@@ -1,4 +1,4 @@
-import { courseSources, sourceCoverage, moduleSourceIssues, sourceTeachingText } from './source-library';
+import { courseSources, sourceCoverage, moduleSourceIssues, sourceTeachingText, isConceptTeachingSource, moduleHasScenarioLab, type SourceRecord } from './source-library';
 import { z } from "zod/v4";
 import { MODULE_FLOW, COURSE_END_FLOW, CODEX_MODULE_FLOW, CODEX_COURSE_END_FLOW, type DeliveryStructure } from './course-delivery';
 import { BLOOM_LEVELS, type CourseBriefData } from "./content-creator";
@@ -21,7 +21,7 @@ export const InstructionalBlueprint = z.object({
     psychomotor: z.object({ applicable: z.boolean(), feasibility: text, requirements: lines }).strict(),
   }).strict(),
   modules: z.array(z.object({ id: text, title: text, objectiveIds: ids, sourceIds: ids, prerequisites: z.array(text).max(20), minutes: z.number().positive().max(600),
-    steps: z.array(z.object({ kind: z.enum([...BLUEPRINT_STEPS, 'quiz']), activity: text, minutes: z.number().nonnegative().max(600) }).strict()).min(5).max(9),
+    steps: z.array(z.object({ kind: z.enum([...BLUEPRINT_STEPS, 'quiz']), activity: text, minutes: z.number().nonnegative().max(600) }).strict()).min(4).max(9),
   }).strict()).min(1).max(12),
   tasks: z.array(z.object({ ...moduleLink, tier: z.enum(["Practice", "Application", "Extension"]), title: text, instructions: text, deliverable: text, feedback: text, sourceIds: ids }).strict()).min(1).max(60),
   assessments: z.array(z.object({ ...moduleLink, layer: z.enum(["L1", "L2", "L3", "L4", "L5"]), bloom: z.enum(BLOOM_LEVELS), solo: z.enum(["Unistructural", "Multistructural", "Relational", "Extended abstract"]), timing: text, prompt: text, evidence: text, successCriteria: lines.min(1), misconceptions: lines, remediation: text }).strict()).min(4).max(80),
@@ -32,7 +32,7 @@ export const InstructionalBlueprint = z.object({
   finalDeliverable: z.object({ brief: text, criteria: lines.min(1), minutes: z.number().nonnegative().max(600) }).strict(),
 }).strict();
 export type Blueprint = z.infer<typeof InstructionalBlueprint>;
-export type BlueprintInput = { deliveryStructure?: DeliveryStructure; existingModules?: { id: string; title: string; objectiveIds: string[] }[]; brief: CourseBriefData; objectives: { id: string; text: string; bloom: string }[]; sources: { id: string; text: string; revision?: number; scope?: string; moduleId?: string; topicId?: string; objectiveIds?: string[]; purpose?: 'problem-hook' }[] };
+export type BlueprintInput = { deliveryStructure?: DeliveryStructure; existingModules?: { id: string; title: string; objectiveIds: string[] }[]; brief: CourseBriefData; objectives: { id: string; text: string; bloom: string }[]; sources: { id: string; text: string; revision?: number; scope?: string; moduleId?: string; topicId?: string; objectiveIds?: string[]; purpose?: SourceRecord['purpose'] }[] };
 export type BlueprintRun = { id: string; courseId: string; inputRevision: number; promptVersion: number; status: "running" | "ready" | "failed"; attempts: number; model: string | null; error: string | null; output: Blueprint | null; input: BlueprintInput; createdAt: string; updatedAt: string; outdated: boolean; deliveryStructure?: DeliveryStructure };
 
 export function blueprintInput(brief: CourseBriefData, deliveryStructure?: DeliveryStructure): BlueprintInput {
@@ -49,11 +49,11 @@ export function validateBlueprint(raw: unknown, input: BlueprintInput): Blueprin
   if (input.brief.sourceLibrary) {
     for (const item of [...result.modules, ...result.tasks]) errors.push(...moduleSourceIssues(item, 'moduleId' in item ? item.moduleId : item.id, courseSources(input.brief)));
     for (const item of result.recommendations.objectives) {
-      if (!item.sourceIds.some(id => { const source = input.sources.find(s => s.id === id); return source?.purpose !== 'problem-hook' && source?.objectiveIds?.includes(item.objectiveId); })) errors.push(`${item.objectiveId}: cite mapped teaching evidence.`);
+      if (!item.sourceIds.some(id => { const source = input.sources.find(s => s.id === id); return source && isConceptTeachingSource(source) && source?.objectiveIds?.includes(item.objectiveId); })) errors.push(`${item.objectiveId}: cite mapped teaching evidence.`);
     }
     for (const unit of result.modules) {
       for (const objective of unit.objectiveIds) {
-        if (!unit.sourceIds.some(id => { const source = input.sources.find(s => s.id === id); return source?.purpose !== 'problem-hook' && source?.objectiveIds?.includes(objective); })) errors.push(`${unit.id}: cite mapped teaching evidence for ${objective}.`);
+        if (!unit.sourceIds.some(id => { const source = input.sources.find(s => s.id === id); return source && isConceptTeachingSource(source) && source?.objectiveIds?.includes(objective); })) errors.push(`${unit.id}: cite mapped teaching evidence for ${objective}.`);
         const videoSources = input.brief.sourceLibrary.sources.filter(s => s.video && s.moduleId === unit.id);
         if (videoSources.length && !videoSources.some(s => s.objectiveIds.includes(objective))) errors.push(`${unit.id}: map a reviewed concept video to ${objective}.`);
       }
@@ -80,7 +80,7 @@ export function validateBlueprint(raw: unknown, input: BlueprintInput): Blueprin
   for (const unit of result.modules) {
     checkIds(unit.objectiveIds, objectives, "Module objectives"); checkIds(unit.sourceIds, sources, "Module sources");
     checkIds(unit.prerequisites, prior, "Prerequisites must precede the module"); prior.add(unit.id);
-    const expected = input.deliveryStructure === 'six-stage-v1' ? MODULE_FLOW : input.deliveryStructure === 'codex-ild-v2' ? CODEX_MODULE_FLOW : BLUEPRINT_STEPS;
+    const expected = input.deliveryStructure === 'six-stage-v1' ? MODULE_FLOW : input.deliveryStructure === 'codex-ild-v2' ? CODEX_MODULE_FLOW.filter(kind => kind !== 'scenario' || moduleHasScenarioLab(input.brief, unit.id)) : BLUEPRINT_STEPS;
     if (unit.steps.length !== expected.length || unit.steps.some((step, i) => step.kind !== expected[i])) errors.push(`${unit.id}: preserve the required teaching steps in order`);
     if (Math.abs(unit.steps.reduce((n, s) => n + s.minutes, 0) - unit.minutes) > 0.1) errors.push(`${unit.id}: step durations must sum to module minutes`);
   }

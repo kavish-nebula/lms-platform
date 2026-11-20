@@ -473,3 +473,20 @@ the existing byte-range stream and continuous player (watched coverage, midpoint
 pause, seek bounds, resume and progress callbacks). Historical editions retain
 their frozen scripts/media even if later creator approvals change. No database
 migration or learner progress rewrite is needed.
+
+
+### Activity video delivery
+
+Authored modules may bind worked-example and guided-practice MP4s with optional `stageVideos` entries, alongside the existing hook binding. Stage 4 derives these visual targets from the latest current-brief package without assessment answers. Existing immutable visual jobs and files are reused; no schema migration is required. Publication validates stage ownership and activity-source alignment. Learner delivery resolves the MP4 from the enrollment's edition and preserves interactive practice below it; watching alone does not complete practice.
+
+
+### SME activity inputs
+
+SourceLibrary v1 gains optional module-only purposes `worked-example`, `guided-practice` and `module-quiz`, with structured reasoning, practice-step and question records. These additive JSON fields use the existing brief/source revision mechanism and need no database migration. `smeModuleActivities` maps them to native authored fragments; both video-first generation and complete-package validation preserve creator wording and answer keys. Assessment material is excluded from concept-evidence coverage and midpoint citations. Source revision comparison normalizes nested activity field order to avoid invalidating unrelated modules after JSONB round trips. Existing courses without activity inputs retain their behavior.
+
+
+### Course-end project authoring
+
+SourceLibrary v1 optionally stores miniProject task planning as additive JSON: title, challenge, deliverable, stable task IDs, instructions, expected evidence, criteria and module/objective/source coverage. Course-only readiness checks validate this plan; module-scoped inputs/hashes remain independent. MCP assembly preserves it through optional native miniProject.tasks, with one rubric item per task and the existing guided sandbox required for creator-defined project completion. Public task descriptions reach the learner intro and workspace while grading checks remain private. Brief and package revision controls, review/publication and enrollment edition pinning remain unchanged; no migration or learner record write is needed to save a plan.
+
+Optional Scenario Lab authoring uses additive JSON fields, with no database migration: `sourceLibrary.modules[].scenarioLabEnabled` and module-scoped `scenario-lab` sources containing stable-ID scenarios. Undefined flags preserve legacy labs; new UI modules explicitly set false. Disabled lab sources remain stored but are excluded from active `courseSources`, generation and coverage. Module input hashes include the setting; unrelated module edits do not invalidate fragments. The package permits omitted `scenarioLab`/lab narration, and full saving enforces the saved brief policy and exact manual fragments. Delivery derives stages, topics, progress and adaptation pieces from actual included content; published editions are not rewritten.

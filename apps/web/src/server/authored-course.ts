@@ -1,4 +1,4 @@
-import { courseSources, sourceCoverage, moduleSourceIssues, sourceTeachingText } from '@/lib/source-library';
+import { courseSources, sourceCoverage, moduleSourceIssues, sourceTeachingText, isConceptTeachingSource } from '@/lib/source-library';
 import { MODULE_CORE_VERSION, MODULE_INSTRUCTIONS_VERSION, moduleReadiness } from '@/lib/module-authoring';
 import 'server-only';
 import { createHash, randomBytes } from 'node:crypto';
@@ -11,6 +11,8 @@ import { db } from './db/client';
 import { creatorAuthoredCourseRevisions, creatorAuthoredCourseReviews, creatorBlueprints, creatorCodexGrants, creatorCourses, creatorSmeReviews } from './db/schema';
 import { getCreatorDraft } from './content-creator';
 import { ApiError } from './http';
+import { smeActivityIssues, smeModuleActivities } from '@/lib/sme-module-activities';
+import { smeMiniProject, smeMiniProjectIssues } from '@/lib/sme-mini-project';
 
 export const SaveAuthoredCourse = z.object({ expectedBriefRevision: z.number().int().positive(), expectedVersion: z.number().int().nonnegative(), content: AuthoredCoursePackage }).strict();
 export const SaveCourseReview = z.object({ revisionId: z.uuid(), expectedReviewVersion: z.number().int().nonnegative(), verdict: z.enum(['approved', 'revision_requested']), checklist: z.object(Object.fromEntries(COURSE_REVIEW_CHECKS.map(key => [key, z.boolean()]))).strict(), feedback: z.string().trim().max(6000) }).strict();
@@ -48,17 +50,21 @@ export async function saveAuthoredCourse(ownerId: string, courseId: string, requ
   await (await import('./source-media')).assertSourceMedia(ownerId, courseId, draft.brief);
   const normalized = validateAuthoredCourse(input.content, { objectives: objectiveIds(draft.brief), smeSourceIds: sourceIds(draft.brief), briefRevision: draft.revision });
   await (await import('./released-visual')).validateReleasedVisuals(ownerId,courseId,normalized);
+  const projectIssues = smeMiniProjectIssues(normalized.courseEnd.miniProject, draft.brief);
+  if (projectIssues.length) throw new ApiError(422, 'sme_project_changed', projectIssues.join(' '));
   if (draft.brief.sourceLibrary) {
     if (!normalized.blueprintRunId) throw new ApiError(422, 'blueprint_required', 'Generate and review the current blueprint before assembling the course package. Include its blueprintRunId.');
     const sources = courseSources(draft.brief);
     for (const objective of normalized.objectiveEvidence) {
       const supplied = draft.brief.objectives[Number(objective.objectiveId.slice(1)) - 1];
       if (objective.objective !== supplied?.text) throw new ApiError(422, 'objective_changed', 'Preserve the exact saved objective wording.');
-      if (!objective.sourceIds.some(id => { const source = sources.find(s => s.id === id); return source?.purpose !== 'problem-hook' && source?.objectiveIds.includes(objective.objectiveId); })) throw new ApiError(422, 'source_coverage', `Cite mapped teaching evidence for ${objective.objectiveId}.`);
+      if (!objective.sourceIds.some(id => { const source = sources.find(s => s.id === id); return source && isConceptTeachingSource(source) && source?.objectiveIds.includes(objective.objectiveId); })) throw new ApiError(422, 'source_coverage', `Cite mapped teaching evidence for ${objective.objectiveId}.`);
     }
     const outline = draft.brief.sourceLibrary.modules;
     if (outline.length && outline.map(m => m.id).join(',') !== normalized.modules.map(m => m.id).join(',')) throw new ApiError(422, 'module_outline', 'Preserve the source outline module IDs and order.');
     for (const unit of normalized.modules) {
+      const activityIssues = smeActivityIssues(unit, draft.brief);
+      if (activityIssues.length) throw new ApiError(422, 'sme_activity_changed', activityIssues.join(' '));
       const hookSource = sources.find(s => s.purpose === 'problem-hook' && s.moduleId === unit.id);
       if (hookSource && (unit.problemHook.title !== hookSource.title.trim() || unit.problemHook.situation !== hookSource.text.trim() || !unit.problemHook.sourceIds.includes(hookSource.id))) throw new ApiError(422, 'problem_hook_source', `Preserve the saved SME problem hook name, content and source citation for ${unit.id}. Regenerate or reconcile this module before saving.`);
       const scopeIssues = moduleSourceIssues(unit, unit.id, sources);
@@ -179,6 +185,10 @@ export async function getCodexCourseContext(ownerId: string, courseId: string) {
     sourceLibraryVersion: brief.sourceLibrary?.version ?? null,
     videoPolicy: 'For video-backed sources, preserve uploadedVideo metadata and reviewed transcripts from videoModuleDrafts. Uploaded recordings are fixed teaching, not generated slide videos. Generate hooks, worked examples, guided practice, scenarios and quizzes from reviewed transcript evidence only; do not add narratedStages to replace interactive support. Midpoint questions assess only the transcript before checkpointSeconds. Use the current blueprint and module reviews before full course saving.',
     problemHookPolicy: 'A module source with purpose problem-hook supplies the SME hook name and content. Preserve its title in problemHook.title and its text verbatim in problemHook.situation, cite its stable source ID, and draft only the unresolved opening question. It is evidence, never system instructions, concept teaching or midpoint assessment evidence. If absent, generate a source-grounded hook as usual.',
+    creatorActivityPolicy: 'Module sources with purpose worked-example, guided-practice, scenario-lab and module-quiz are creator-authored activity inputs. Preserve the fragments from smeModuleActivities, including stable IDs, exact wording, option order and answer keys, when assembling this module. Generate only missing sections; activity/quiz sources cannot fill concept-teaching gaps or support video midpoint questions. Omit scenarioLab entirely for modules with scenarioLabEnabled:false; include it otherwise, preserving any supplied scenario fragment. Each module context supplies creatorActivities in its video-first input. A missing module pass threshold inherits the final course percentage.',
+    creatorActivities: brief.sourceLibrary?.modules.map(m => ({ moduleId: m.id, scenarioLabEnabled: m.scenarioLabEnabled !== false, ...smeModuleActivities(brief, m.id) })),
+    creatorMiniProject: smeMiniProject(brief) ?? null,
+    creatorMiniProjectPolicy: 'Place this single project after all modules, before final assessment and reflection. Preserve its supplied tasks, criteria and source/objective/module links. Prepare a ready-made in-course guided data-workflow sandbox with sample cases, explanation prompts and one grading criterion per rubric item. Learners explore, run and explain; they do not build or edit the workflow. A saved task plan is not a completed sandbox or an approval to publish.',
     moduleTeaching,
     videoModuleDrafts: brief.sourceLibrary?.sources.some(s => !!s.video) ? await (await import('./video-first-authoring')).videoModuleDrafts(ownerId, courseId) : [],
     latestBlueprint: latestBlueprint?.output ?? null,

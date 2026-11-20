@@ -404,6 +404,7 @@ export type Objective = { id: string; text: string; lesson: string };
 
 export type ModuleContent = {
   remotionHook?: {endpoint:string};
+  remotionStages?: Partial<Record<'worked' | 'guided', {endpoint:string}>>;
   videoFirstActivities?: Pick<import('@/lib/authored-course').AuthoredCoursePackageData['modules'][number], 'problemHook' | 'workedExamples' | 'guidedPractice' | 'scenarioLab'>;
   course_id: string;
   course_title: string;

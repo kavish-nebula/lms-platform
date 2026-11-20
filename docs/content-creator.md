@@ -192,3 +192,31 @@ Long-form midpoint checkpoints: newly generated plans require exactly two source
 Automation vs AI source cards offer Create text-to-visual lesson. Creators can edit and version narration/visual scripts, prepare cached local speech, preview the shared Remotion composition and request a background MP4. Unsaved edits have silent previews; only matching saved narration can play/export. This is a creator draft requiring review, not publication. See [text-to-visual authoring](text-to-visual-lessons.md).
 
 The Stage 1 form no longer displays the inline Source coverage report or Physical skills controls. Source coverage validation remains in the generation/assembly services. Existing physicalSkills and physicalNotes values remain in the brief schema and are preserved on ordinary draft saves; this UI change does not rewrite stored briefs or change downstream blueprint review.
+
+
+## Creator-supplied module activities in SME input
+
+Each module's source-library form now follows Problem hook, Concepts, Worked examples, Guided practice and Module quiz. The last three sections are optional; leaving a section absent keeps the existing generation behavior. Adding one creates a module-scoped, versioned SME source with a dedicated purpose. Incomplete entries can be saved, while generation reports missing required details.
+
+- Worked examples: add one or more named problems, reasoning steps, results, references and objective mappings.
+- Guided practice: add a named task, instructions and stable steps with hints and expected evidence/feedback.
+- Module quiz: add instructions and questions, two to five options per question, single-answer or select-all mode, correct choices, hints, explanations and question-objective mappings. Select-all uses exact-set grading, with at least two correct options and a distractor. The module threshold inherits the configured course rule unless separately configured. Video midpoint checks and the final assessment remain separate.
+
+The module generator deterministically preserves supplied activity fragments and generates only absent sections. Course-scoped MCP context exposes the same fragments; full-package saving rejects silent changes to their wording, option order or answer keys. Activity/quiz sources cannot establish concept-teaching coverage or support video midpoint checks. Current video transcripts remain fixed. Editing these inputs increments their source revisions and invalidates only affected module drafts; final publication still requires review of the new package. No published course or learner record changes when saving SME input.
+
+
+## Course-end mini project workspace
+
+After the module outline, the SME form offers one Mini project workspace for the entire course. Add the project name, challenge, final deliverable and numbered tasks. Each task records instructions, expected evidence, a success criterion and declared module/objective/teaching-source links. The default placement follows every module and its quiz, before the final assessment and reflection.
+
+Use existing course project copies the latest assembled project's brief, rubric and explanation prompts into an editable plan; it does not change or publish the existing workspace. Save draft stores the plan in the brief. Incomplete plans remain saveable, and their gaps do not block independent module preparation. Full-course assembly checks completeness and coverage.
+
+The authoring MCP exposes creatorMiniProject and its policy. Preserve these task requirements when assembling the native miniProject, and supply a validated ready-made guided sandbox with runnable cases and explanation grading. A text brief alone is not runnable and cannot be saved as a completed creator-defined project. The project tasks and matching rubric criteria appear in the learner project overview/workspace after publication. Existing courses without an SME project plan retain their current project and grading.
+
+## Optional module Scenario Labs
+
+In Stage 1, each module has **5. Scenario Lab · optional** between Guided practice and Module quiz. **Include a Scenario Lab in this module** controls whether the lab exists in the assembled course. Newly added modules start with it off; unconfigured older modules keep their existing labs.
+
+Enable it to generate a source-grounded lab, or choose **Add Scenario Lab content** to supply a lab name, instructions, and one or more scenarios with a situation, learner decision and expected evidence. Source references and objective mappings stay with the versioned SME input. Incomplete drafts save; enabled incomplete labs block generation. Switching off retains custom content but excludes it from active evidence and readiness checks. Re-enabling restores it.
+
+Generation and full-package saving enforce the module setting. An omitted lab has no learner rail item, progress requirement, narration or adaptation job; guided practice leads to the module quiz. Supplied lab instructions and scenarios are preserved during assembly. Existing published editions and learner history are unchanged until a revised package is reviewed and published.

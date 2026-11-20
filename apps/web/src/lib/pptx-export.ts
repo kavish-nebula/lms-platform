@@ -39,7 +39,7 @@ export function courseDeckSlides(course: AuthoredCoursePackageData): DeckSlide[]
     }
     courseModule.workedExamples.forEach((example, index) => slides.push(group(`Worked Example ${index + 1} · ${example.title}`, [example.problem, ...example.reasoning, `Result: ${example.result}`], example.sourceIds)));
     slides.push(group(`Guided Practice · ${courseModule.guidedPractice.title}`, [courseModule.guidedPractice.instructions, ...courseModule.guidedPractice.steps.map((s, i) => `${i + 1}. ${s.instruction}`)]));
-    courseModule.scenarioLab.scenarios.forEach((scenario, index) => slides.push(group(`Scenario Lab ${index + 1} · ${scenario.title}`, [scenario.situation, `Challenge: ${scenario.challenge}`, `Evidence: ${scenario.expectedEvidence}`], scenario.sourceIds)));
+    courseModule.scenarioLab?.scenarios.forEach((scenario, index) => slides.push(group(`Scenario Lab ${index + 1} · ${scenario.title}`, [scenario.situation, `Challenge: ${scenario.challenge}`, `Evidence: ${scenario.expectedEvidence}`], scenario.sourceIds)));
     if (courseModule.moduleQuiz) {
       slides.push(group(`Module quiz · ${courseModule.moduleQuiz.title}`, [courseModule.moduleQuiz.instructions, `Pass rule: ${courseModule.moduleQuiz.passPercent ?? course.courseEnd.masteryGate.passPercent}%`]));
       slides.push(...assessmentSlides(`Module quiz · ${courseModule.moduleQuiz.title}`, courseModule.moduleQuiz.questions));

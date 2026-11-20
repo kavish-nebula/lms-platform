@@ -5,6 +5,7 @@ import { ArrowRight, Check, CirclePlay, LockKeyhole } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Surface } from '@/components/kit/surface';
 import type { PublicSandboxProject } from '@/server/project-sandbox';
+import { ProjectTaskList } from './project-task-list';
 
 export function GuidedProjectIntro({ project }: { project: PublicSandboxProject }) {
   return <Surface pad="lg" className="space-y-5">
@@ -16,6 +17,7 @@ export function GuidedProjectIntro({ project }: { project: PublicSandboxProject 
       <li className="flex items-center gap-2"><CirclePlay className="size-4" aria-hidden />Run supplied examples and inspect each transformation</li>
       <li className="flex items-center gap-2"><Check className="size-4" aria-hidden />Submit your explanations for concept checks</li>
     </ul>
+    <ProjectTaskList tasks={project.tasks} />
     <Button asChild variant="brand" size="lg"><Link href={`/learn/courses/${project.courseId}/finale/capstone/workspace`}>Open guided project<ArrowRight aria-hidden /></Link></Button>
     <p className="text-xs text-ink-muted">Your saved explanations and place in the project will resume in the workspace.</p>
   </Surface>;

@@ -1,5 +1,5 @@
 import { z } from "zod/v4";
-import { courseSources, moduleSourceIssues } from './source-library';
+import { courseSources, moduleSourceIssues, moduleHasScenarioLab } from './source-library';
 import type { VideoSlide } from "@/data/types";
 import { BLUEPRINT_STEPS, type BlueprintRun } from "./instructional-blueprint";
 import { CODEX_MODULE_FLOW } from './course-delivery';
@@ -60,6 +60,7 @@ export function validateProduction(raw: unknown, input: ProductionInput, generat
   const unit = input.run.output!.modules.find(m => m.id === input.moduleId)!;
   const objectives = new Set(unit.objectiveIds); const sources = new Set(input.run.input.sources.map(s => s.id));
   const errors: string[] = input.run.input.brief.sourceLibrary ? moduleSourceIssues(content, input.moduleId, courseSources(input.run.input.brief)) : [];
+  const moduleFlow = CODEX_MODULE_FLOW.filter(kind => kind !== 'scenario' || moduleHasScenarioLab(input.run.input.brief, input.moduleId));
   const lessonMode = !input.unit && input.run.input.deliveryStructure === 'codex-ild-v2';
   if (input.unit?.kind === 'plan') {
     if (content.slides.length || !content.plan) throw new Error('A plan package requires a plan and no narration slides.');
@@ -83,7 +84,7 @@ export function validateProduction(raw: unknown, input: ProductionInput, generat
   if (new Set(content.slides.map(s => s.id)).size !== content.slides.length) errors.push("Slide IDs must be unique and stable.");
   let previousStep = -1;
   for (const slide of content.slides) {
-    const stageOrder: readonly string[] = lessonMode ? CODEX_MODULE_FLOW : BLUEPRINT_STEPS;
+    const stageOrder: readonly string[] = lessonMode ? moduleFlow : BLUEPRINT_STEPS;
     const step = stageOrder.indexOf(slide.step);
     if (!input.unit && (step < 0 || step < previousStep)) errors.push("Keep the required teaching stages in blueprint order; course-end activities belong after all modules."); previousStep = step;
     if (input.unit?.kind === 'video' && slide.step !== 'concept') errors.push(`${slide.id}: video slides use the concept stage; activities are separate.`);
@@ -103,11 +104,11 @@ export function validateProduction(raw: unknown, input: ProductionInput, generat
     if (narrationSentences(slide.narration).join(' ') !== slide.narration.trim().replace(/\s+/g, ' ')) errors.push(`${slide.id}: narration sentence alignment failed.`);
   }
   if (!input.unit) {
-    for (const step of lessonMode ? CODEX_MODULE_FLOW : BLUEPRINT_STEPS) if (!content.slides.some(s => s.step === step)) errors.push(`Missing teaching stage: ${step}`);
+    for (const step of lessonMode ? moduleFlow : BLUEPRINT_STEPS) if (!content.slides.some(s => s.step === step)) errors.push(`Missing teaching stage: ${step}`);
     for (const id of objectives) if (!content.slides.some(s => s.objectiveIds.includes(id))) errors.push(`Missing objective coverage: ${id}`);
   }
   if (lessonMode) {
-    for (const kind of ['hook','worked_example','guided_practice','scenario']) if (content.slides.filter(s=>s.step===kind).length < 2) errors.push(`${kind}: provide a meaningful multi-scene teaching sequence, not one static card.`);
+    for (const kind of moduleFlow.filter(kind => kind !== 'concept')) if (content.slides.filter(s=>s.step===kind).length < 2) errors.push(`${kind}: provide a meaningful multi-scene teaching sequence, not one static card.`);
     if (!content.lessonVideos || !content.moduleQuiz) errors.push('Provide 3–4 concept videos with midpoint checks and a module quiz.');
     const concepts = content.slides.filter(s => s.step === 'concept');
     if (content.lessonVideos?.flatMap(v => v.slideIds).join(',') !== concepts.map(s => s.id).join(',')) errors.push('Each concept slide must belong to exactly one video, in teaching order.');

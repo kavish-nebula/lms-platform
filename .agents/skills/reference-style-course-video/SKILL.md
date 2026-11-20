@@ -1,6 +1,6 @@
 ---
 name: reference-style-course-video
-description: Create editable, source-linked Remotion problem-hook and concept videos from current Stage 3-approved SME modules, using the supplied cinematic reference style. Use for Stage 4 visual scripts and media preparation, not quizzes, human approval or publication.
+description: Create editable, source-linked Remotion problem-hook, concept, worked-example and guided-practice videos from current Stage 3-approved SME modules, using the supplied cinematic reference style. Use for Stage 4 visual scripts and media preparation, not quizzes, human approval or publication.
 ---
 
 # Reference-style Course Video Skill
@@ -9,7 +9,7 @@ description: Create editable, source-linked Remotion problem-hook and concept vi
 Turn an approved module's SME evidence into clear visual explanations with editable scripts, synchronized local narration and a Remotion Player preview. Optional MP4 export uses the same saved timeline.
 
 ## 2. When to Use
-Use after Stage 3 module approval for a problem hook or one concept topic. Apply to the selected course, not unrelated existing learner editions. Preserve uploaded concept recordings as separate originals.
+Use after Stage 3 module approval for a problem hook or one concept topic. After a current course package is assembled, it also supports worked-example and guided-practice targets. Apply to the selected course, not unrelated existing learner editions. Preserve uploaded concept recordings as separate originals.
 
 ## 3. Inputs
 Read get_visual_module with courseId and moduleId, the lms://schemas/visual-lesson resource and get_visual_lesson for each stable target videoId. Use the current brief revision, approval ID, source identity, source IDs, exact objectives, shared system prompt, module instructions and teaching evidence. Missing approval or evidence is a blocker, not a reason to invent it.
@@ -29,6 +29,8 @@ Use exact source evidence quotations for every scene. Do not fabricate technical
 5. On the user's request to generate media, call prepare_visual_media with kind audio for the exact saved revision. Poll get_visual_lesson until ready or failed; never label queued work as completed.
 6. Inspect the Player with actual narration. Check successive beats, captions, transitions, reduced motion and readable artifact content. Correct the script and regenerate only changed audio if needed.
 7. Export with kind export only when an MP4 is requested. Verify the exported file, duration and audio; provide the private creator URL. Never approve or publish the course as part of this skill.
+
+For worked examples and guided practice, read the dedicated draft_<moduleId>_worked and draft_<moduleId>_guided targets from get_visual_module. Use their saved activity teaching and mapped sources; exclude module/final assessment answers. Demonstrate the reasoning with varied artifacts and deliberate pauses. Keep learner practice responses separate. Attach only ready revision/audio/export references to module.stageVideos.worked or module.stageVideos.guided when assembling a reviewed package; watching a demonstration must not complete practice automatically.
 
 ## 6. Tools
 The existing authenticated course-authoring MCP provides get_visual_module, get_visual_lesson, save_visual_lesson and prepare_visual_media. It does not automatically launch Codex. The Stage 4 panel supplies the connection link, a copyable task prompt and an approved SME JSON handoff. Use the existing Remotion composition and local Kokoro pipeline; do not add a second renderer or change credentials.
