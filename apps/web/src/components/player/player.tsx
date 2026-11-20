@@ -20,6 +20,7 @@ import { recordActivity, recordLearning, ensureReviews, useLearning } from "@/li
 import { rewardFor } from "@/lib/gamification";
 import { supportFor } from "@/lib/setup";
 import { NarratedStage } from "@/components/player/narrated-stage";
+import { ReleasedVisualLesson } from './video/released-visual-lesson';
 import { VideoFirstActivity } from './stages/video-first-activity';
 import { HookCinema } from "@/components/player/hook/hook-cinema";
 import { VideoFirstHook } from './hook/video-first-hook';
@@ -194,6 +195,7 @@ export function Player({ module, moduleIndex, stage, video, courseHref, initialD
   };
 
   const sceneSlides = stage === "hook" || stage === "worked" || stage === "guided" || stage === "lab" ? module.narratedStages?.[stage] : undefined;
+  if(stage==='hook'&&module.remotionHook)return <ReleasedVisualLesson endpoint={module.remotionHook.endpoint} video={{id:`${module.course_id}-${module.module_id}-hook`,module:module.module_id,lesson:'hook',midQuiz:[],endQuiz:[]}} onComplete={onComplete}/>;
   if (sceneSlides?.length) return <NarratedStage key={`${module.module_id}:${stage}`} title={title} courseHref={courseHref} slides={sceneSlides} onComplete={onComplete} onPrev={nav.onPrev} />;
 
   // The problem hook plays full screen, with no map, tutor or banners around it.

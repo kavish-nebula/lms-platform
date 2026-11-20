@@ -13,8 +13,8 @@ import { Button } from '@/components/ui/button';
 import { PersonalizedConceptStory } from './personalized-concept-story';
 import { QuizOverlay } from './video-lesson';
 
-type Props = { video:Pick<ConceptVideo, 'id' | 'module' | 'lesson' | 'midQuiz' | 'endQuiz'>; scenes:ConceptScene[]; revisionId:string; playback:ContinuousPlayback; onComplete?:()=>void; onNext?:()=>void; nextLabel?:string };
-export function ContinuousConceptPlayer({video,scenes,revisionId,playback,onComplete,onNext,nextLabel}:Props) {
+type Props = { authored?:boolean;video:Pick<ConceptVideo, 'id' | 'module' | 'lesson' | 'midQuiz' | 'endQuiz'>; scenes:ConceptScene[]; revisionId:string; playback:ContinuousPlayback; onComplete?:()=>void; onNext?:()=>void; nextLabel?:string };
+export function ContinuousConceptPlayer({authored=false,video,scenes,revisionId,playback,onComplete,onNext,nextLabel}:Props) {
   const context=useLearningContext(), signal=useSignal(), hydrated=useHydrated();
   const key=`lms-personalized-concept:v2:${context?.courseId}:${video.id}:${revisionId}`;
   const saved=useLocalJson<ContinuousResume|null>(key,null);
@@ -75,7 +75,7 @@ export function ContinuousConceptPlayer({video,scenes,revisionId,playback,onComp
   const index=continuousSection(playback,Math.max(0,checking?seconds-.001:seconds)),scene=scenes[index];
   const localSeconds=Math.max(0,seconds-playback.segments[index].startSeconds);
   const Media = playback.video ? 'video' : 'audio';
-  const renderedMedia = (<Media ref={media} src={playback.video ?? playback.audio} preload="metadata" muted={muted} playsInline className={playback.video ? "aspect-video w-full bg-panel" : undefined} aria-label={playback.video ? "Animated personalised video" : "Continuous personalised narration"}
+  const renderedMedia = (<Media ref={media} src={playback.video ?? playback.audio} preload="metadata" muted={muted} playsInline className={playback.video ? "aspect-video w-full bg-panel" : undefined} aria-label={playback.video ? authored?'Reviewed course video':"Animated personalised video" : "Continuous personalised narration"}
         onLoadedMetadata={e=>{e.currentTarget.playbackRate=rate;e.currentTarget.currentTime=seconds;}}
         onPlay={()=>{lastTime.current=media.current?.currentTime??null;setPlaying(true);}}
         onPause={e=>{recordPlayed(e.currentTarget);lastTime.current=null;setPlaying(false);persist();}}
@@ -84,8 +84,8 @@ export function ContinuousConceptPlayer({video,scenes,revisionId,playback,onComp
         onTimeUpdate={e=>track(e.currentTarget)} onEnded={ended}
         onError={()=>{pause();setMessage('Narration could not load. Retry playback or choose the original lesson.');}}/>);
   return <div className="space-y-4">
-    <p className="text-sm text-ink-muted">{playback.video ? `Personalised visual lesson · Animations follow the narration.${hasCheckpoint ? ' Playback pauses for the knowledge check.' : ''}` : 'One continuous personalised lesson. Visuals follow the narration; playback pauses for the knowledge check.'}</p>
-    <div ref={screen} className="hook-film relative" aria-label="Continuous personalised lesson">
+    <p className="text-sm text-ink-muted">{authored?`Reviewed Remotion lesson · Animations follow the narration.${hasCheckpoint?' Playback pauses for two knowledge-check questions.':''}`:playback.video ? `Personalised visual lesson · Animations follow the narration.${hasCheckpoint ? ' Playback pauses for the knowledge check.' : ''}` : 'One continuous personalised lesson. Visuals follow the narration; playback pauses for the knowledge check.'}</p>
+    <div ref={screen} className="hook-film relative" aria-label={authored?'Reviewed continuous lesson':'Continuous personalised lesson'}>
       {playback.video ? renderedMedia : <PersonalizedConceptStory scene={scene} seconds={localSeconds} duration={playback.segments[index].endSeconds-playback.segments[index].startSeconds} reducedMotion={reducedMotion}/>}
       <div className="hook-film-controls">
         <Button size="sm" variant="ghost" aria-label={playing?'Pause personalised lesson':'Play personalised lesson'} disabled={!restored||checking||endChecking} onClick={()=>playing?pause():void play()}>{playing?<Pause aria-hidden/>:<Play aria-hidden/>}{playing?'Pause':'Play'}</Button>

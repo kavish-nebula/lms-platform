@@ -1,4 +1,4 @@
-import { courseSources, sourceCoverage, moduleSourceIssues } from './source-library';
+import { courseSources, sourceCoverage, moduleSourceIssues, sourceTeachingText } from './source-library';
 import { z } from "zod/v4";
 import { MODULE_FLOW, COURSE_END_FLOW, CODEX_MODULE_FLOW, CODEX_COURSE_END_FLOW, type DeliveryStructure } from './course-delivery';
 import { BLOOM_LEVELS, type CourseBriefData } from "./content-creator";
@@ -32,12 +32,12 @@ export const InstructionalBlueprint = z.object({
   finalDeliverable: z.object({ brief: text, criteria: lines.min(1), minutes: z.number().nonnegative().max(600) }).strict(),
 }).strict();
 export type Blueprint = z.infer<typeof InstructionalBlueprint>;
-export type BlueprintInput = { deliveryStructure?: DeliveryStructure; existingModules?: { id: string; title: string; objectiveIds: string[] }[]; brief: CourseBriefData; objectives: { id: string; text: string; bloom: string }[]; sources: { id: string; text: string; revision?: number; scope?: string; moduleId?: string; topicId?: string; objectiveIds?: string[] }[] };
+export type BlueprintInput = { deliveryStructure?: DeliveryStructure; existingModules?: { id: string; title: string; objectiveIds: string[] }[]; brief: CourseBriefData; objectives: { id: string; text: string; bloom: string }[]; sources: { id: string; text: string; revision?: number; scope?: string; moduleId?: string; topicId?: string; objectiveIds?: string[]; purpose?: 'problem-hook' }[] };
 export type BlueprintRun = { id: string; courseId: string; inputRevision: number; promptVersion: number; status: "running" | "ready" | "failed"; attempts: number; model: string | null; error: string | null; output: Blueprint | null; input: BlueprintInput; createdAt: string; updatedAt: string; outdated: boolean; deliveryStructure?: DeliveryStructure };
 
 export function blueprintInput(brief: CourseBriefData, deliveryStructure?: DeliveryStructure): BlueprintInput {
   return { ...(deliveryStructure && deliveryStructure !== 'legacy' ? { deliveryStructure } : {}), brief, objectives: brief.objectives.map((o, i) => ({ id: `O${i + 1}`, ...o })).filter(o => o.text.trim()),
-    sources: courseSources(brief) };
+    sources: courseSources(brief).map(source => ({ ...source, text: sourceTeachingText(source) })) };
 }
 
 /** Structure and traceability checks are not a factual or instructional-quality approval. */
@@ -49,11 +49,11 @@ export function validateBlueprint(raw: unknown, input: BlueprintInput): Blueprin
   if (input.brief.sourceLibrary) {
     for (const item of [...result.modules, ...result.tasks]) errors.push(...moduleSourceIssues(item, 'moduleId' in item ? item.moduleId : item.id, courseSources(input.brief)));
     for (const item of result.recommendations.objectives) {
-      if (!item.sourceIds.some(id => input.sources.find(s => s.id === id)?.objectiveIds?.includes(item.objectiveId))) errors.push(`${item.objectiveId}: cite mapped objective evidence.`);
+      if (!item.sourceIds.some(id => { const source = input.sources.find(s => s.id === id); return source?.purpose !== 'problem-hook' && source?.objectiveIds?.includes(item.objectiveId); })) errors.push(`${item.objectiveId}: cite mapped teaching evidence.`);
     }
     for (const unit of result.modules) {
       for (const objective of unit.objectiveIds) {
-        if (!unit.sourceIds.some(id => input.sources.find(s => s.id === id)?.objectiveIds?.includes(objective))) errors.push(`${unit.id}: cite mapped evidence for ${objective}.`);
+        if (!unit.sourceIds.some(id => { const source = input.sources.find(s => s.id === id); return source?.purpose !== 'problem-hook' && source?.objectiveIds?.includes(objective); })) errors.push(`${unit.id}: cite mapped teaching evidence for ${objective}.`);
         const videoSources = input.brief.sourceLibrary.sources.filter(s => s.video && s.moduleId === unit.id);
         if (videoSources.length && !videoSources.some(s => s.objectiveIds.includes(objective))) errors.push(`${unit.id}: map a reviewed concept video to ${objective}.`);
       }

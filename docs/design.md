@@ -283,3 +283,28 @@ See `docs/hybrid-video-rendering.md` for the inspected Module 1 outputs.
 Automation vs AI uses distinct rule-routing, intent interpretation, same-input comparison, machine condition, reviewed workflow and recap compositions. Profile-matched examples share one narrative; visual reveals follow locally aligned speech and hold for reading. The full-course edition also depicts the oversized-part exception and threshold-versus-prediction contrast. See [Automation/AI explainer](automation-ai-explainer.md).
 
 Generated topic videos follow the creator's narrative demonstration reference: source-supported fictional workspaces, readable annotations and state changes matched to speech. The shared dark/rose art direction retains different mechanism, conversation, document and comparison treatments. Original recordings remain separately selectable. See [video rollout](reference-style-videos.md).
+
+Each module in the Stage 1 source outline begins with “1. Problem hook”: separate name and content fields without opening-situation guidance or an example placeholder. Hook objective mappings and its stable source ID live in a disclosure. Clearing both fields returns to automatic hook authoring. It shares existing light/dark tokens, native form labels and the course brief's explicit-save/unsaved-change behavior; no new animation is introduced.
+
+“2. Concepts” follows the hook. Each topic shows its name and context, then disclosures for video, audio and diagrams. Source details/objectives and additional materials remain accessible through separate disclosures. Module instructions follow the concepts. Newly added modules start with one topic, and Add topic stops at five; existing larger imported outlines remain editable without truncation. Audio offers local playback, transcript editing and an explicit review checkbox. Diagram images require useful text descriptions, while text diagrams use a plain-text monospace field. No diagram code is executed. Shared and orphaned records remain in a separate reassignable section. The same controls and tokens support light/dark modes, focus visibility and keyboard access; successful uploads still require Save draft to attach them to the brief.
+
+The course brief editor uses the full available content width. The former “Preparation and source coverage” sidebar is removed from both new and existing briefs; module preparation feedback and server validation still run at their workflow steps.
+
+The “Course learning sequence” overview is also omitted from course brief pages. The workflow navigation leads directly into the brief; teaching-stage order and assessment behavior remain defined by the existing delivery structure.
+
+Stage 2 blueprint documents and Stage 3 SME review pages also omit the “Course learning sequence” overview. Their blueprint sections, module teaching details and review controls remain available.
+
+The text-to-visual workspace pairs a sticky responsive Player with editable section cards, short visible labels and source evidence disclosures. Status text distinguishes estimated silent previews from measured narration. Captions, keyboard Player controls, reduced-motion preference and explicit section navigation support review. Six SVG visualization recipes use frame-based animation and narration-aligned cues; background export does not block editing. Creator forms retain shared light/dark tokens.
+
+Course brief forms omit the inline “Source coverage” findings panel and the “Physical skills” fieldset. The source library now ends after shared source controls, followed by module generation and Save draft. The same shared form applies to new and existing creator drafts.
+
+Stage 4 module pages now place a Remotion panel before the existing production
+workspace, listing the approved problem hook and individual concept targets. A
+Codex disclosure contains an explicit MCP connection link, copyable task and SME
+handoff download. The visual editor adds an optional full-width large preview and
+editable per-beat artifact headings/content. Its reference-cinema treatment uses
+the supplied clean dark/rose texture, document pages, workspace screens, journey
+paths and before/after comparisons. Motion settles over 2.4 seconds, while the
+existing reduced-motion path settles immediately; captions follow measured local
+narration. The cinematic video palette is deliberately fixed for exported media,
+while surrounding creator controls continue to use the application's theme tokens.

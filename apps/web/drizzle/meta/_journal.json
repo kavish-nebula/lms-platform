@@ -190,6 +190,20 @@
       "when": 1794800000000,
       "tag": "0026_personalized_learning_pilot",
       "breakpoints": true
+    },
+    {
+      "idx": 27,
+      "version": "7",
+      "when": 1794920000000,
+      "tag": "0027_creator_draft_archive",
+      "breakpoints": true
+    },
+    {
+      "idx": 28,
+      "version": "7",
+      "when": 1795010000000,
+      "tag": "0028_creator_visual_lessons",
+      "breakpoints": true
     }
   ]
 }

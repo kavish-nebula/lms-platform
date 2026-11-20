@@ -3,6 +3,7 @@
 import "./video.css";
 import { UploadedVideoLesson } from './uploaded-video-lesson';
 import { PersonalizedConceptLesson } from './personalized-concept-lesson';
+import { ReleasedVisualLesson } from './released-visual-lesson';
 import * as React from "react";
 import { reactPip, useCompanionStep, useLearningContext } from "@/components/learning/course-companion";
 import { cn } from "cn";
@@ -57,6 +58,7 @@ type Phase = "play" | "mid" | "end" | "done";
  * F fullscreen.
  */
 export function VideoLesson(props: { video: ConceptVideo; onComplete?: () => void; onNext?: () => void; nextLabel?: string }) {
+  if(props.video.remotion)return <ReleasedVisualLesson {...props} endpoint={props.video.remotion.endpoint}/>;
   return props.video.personalizationSource ? <PersonalizedConceptLesson key={`${props.video.id}:${props.video.personalizationSource.transcriptId}`} {...props} /> : props.video.uploadedVideo ? <UploadedVideoLesson key={`${props.video.id}:${props.video.uploadedVideo.transcriptId}`} {...props} /> : <SlideVideoLesson {...props} />;
 }
 

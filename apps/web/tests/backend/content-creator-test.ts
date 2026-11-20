@@ -1,12 +1,13 @@
 import assert from "node:assert/strict";
 import { eq } from "drizzle-orm";
 import { EMPTY_BRIEF, briefReadiness, CourseBrief, sameCourseBrief } from "@/lib/content-creator";
-import { createCreatorDraft, getCreatorDraft, listCreatorDrafts, updateCreatorDraft } from "@/server/content-creator";
+import { createCreatorDraft, getCreatorDraft, listCreatorDrafts, updateCreatorDraft, setCreatorDraftArchived } from "@/server/content-creator";
 import { getSessionUser } from "@/server/auth";
 import { db } from "@/server/db/client";
 import { users, profiles, stepProgress } from "@/server/db/schema";
 import { GET, POST } from "@/app/api/v1/content/courses/route";
 import { GET as GET_ONE, PATCH } from "@/app/api/v1/content/courses/[id]/route";
+import { PATCH as ARCHIVE } from "@/app/api/v1/content/courses/[id]/archive/route";
 
 const owner = await getSessionUser();
 const database = await db();
@@ -58,6 +59,18 @@ assert.equal((await GET_ONE(new Request("http://localhost"), context)).status, 2
 assert.equal((await PATCH(req({ brief: EMPTY_BRIEF, revision: 9 }, "PATCH"), context)).status, 409);
 assert.equal((await PATCH(req({ brief: EMPTY_BRIEF, revision: 1 }, "PATCH"), context)).status, 200);
 assert.equal((await GET()).status, 200);
+const beforeArchive = await getCreatorDraft(owner.id, created.id);
+await assert.rejects(setCreatorDraftArchived('creator-test-other', created.id, { archived: true }), { status: 404 });
+assert.equal((await ARCHIVE(req({ archived: 'yes' }, 'PATCH'), context)).status, 400);
+assert.equal((await ARCHIVE(req({ archived: true, ownerId: 'creator-test-other' }, 'PATCH'), context)).status, 400);
+assert.equal((await ARCHIVE(req({ archived: true }, 'PATCH'), context)).status, 200);
+assert(!(await listCreatorDrafts(owner.id)).some(d => d.id === created.id));
+assert((await listCreatorDrafts(owner.id)).some(d => d.id === draft.id), 'Other drafts remain visible.');
+assert.deepEqual(await getCreatorDraft(owner.id, created.id), beforeArchive, 'Archive preserves saved content, revision and timestamps.');
+assert.equal((await GET_ONE(new Request('http://localhost'), context)).status, 200);
+assert.equal((await ARCHIVE(req({ archived: false }, 'PATCH'), context)).status, 200);
+assert((await listCreatorDrafts(owner.id)).some(d => d.id === created.id));
+assert.deepEqual(await getCreatorDraft(owner.id, created.id), beforeArchive);
 assert.equal((await database.select().from(users).where(eq(users.id, owner.id))).length, 1);
 assert.deepEqual({ profiles: await database.select().from(profiles), progress: await database.select().from(stepProgress) }, before);
 console.log("PASS creator drafts: additive migration, incomplete save, readiness, validation, owner isolation, atomic conflict, API contracts, learner data unchanged");

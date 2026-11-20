@@ -37,6 +37,7 @@ export async function generateVideoModule(ownerId: string, courseId: string, mod
   if (!unit) throw new ApiError(404, 'module_not_found', 'Select a module in the source outline.');
   const sources = draft.brief.sourceLibrary!.sources.filter(s => s.scope === 'course' || s.moduleId === moduleId);
   await assertVideoSources(ownerId, courseId, { ...draft.brief, sourceLibrary: { ...draft.brief.sourceLibrary!, modules: [unit], sources } });
+  await (await import('./source-media')).assertSourceMedia(ownerId, courseId, { ...draft.brief, sourceLibrary: { ...draft.brief.sourceLibrary!, modules: [unit], sources } });
   const authoringInput = moduleAuthoringInput(draft.brief, moduleId);
   const videoSources = sources.filter(s => s.video && s.moduleId === moduleId).sort((a, b) => unit.topics.findIndex(t => t.id === a.topicId) - unit.topics.findIndex(t => t.id === b.topicId));
   if (!videoSources.length) throw new ApiError(422, 'video_required', 'Upload and review at least one concept video for this module.');
@@ -71,6 +72,15 @@ export async function generateVideoModule(ownerId: string, courseId: string, mod
     try {
       if (reply.choices?.[0]?.finish_reason === 'length') throw new Error('Output truncated. Shorten prose.');
       const parsed = ModuleSchema.parse(JSON.parse(raw));
+      // The hook's name and situation belong to the SME, not a model paraphrase.
+      const hookSource = authoringInput.problemHookSource;
+      if (hookSource) {
+        parsed.problemHook.title = hookSource.title.trim();
+        parsed.problemHook.situation = hookSource.text.trim();
+        parsed.problemHook.sourceIds = [...new Set([...parsed.problemHook.sourceIds, hookSource.id])];
+        parsed.problemHook.objectiveIds = [...hookSource.objectiveIds];
+        parsed.sourceIds = [...new Set([...parsed.sourceIds, hookSource.id])];
+      }
       if (parsed.id !== moduleId || parsed.objectiveIds.slice().sort().join(',') !== objectiveIds.slice().sort().join(',')) throw new Error('Preserve module ID and objective IDs.');
       if (parsed.conceptExplainer.videos.length !== videos.length) throw new Error('Preserve every supplied concept video.');
       parsed.conceptExplainer.videos = videos.map(video => {

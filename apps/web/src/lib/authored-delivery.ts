@@ -54,7 +54,8 @@ export function authoredDelivery({ courseId, revisionId, content: pkg }: Release
       course_id: courseId, course_title: pkg.title, module_id: m.id, version, locale: 'en', title: m.title,
       summary: m.problemHook.situation, estimated_minutes: m.durationMinutes, stages_included: moduleStages(m),
       metadata: { objectives: m.objectiveIds.map(id => ({ id, text: objective(id), lesson })) },
-      ...(m.conceptExplainer.videos.some(v => v.uploadedVideo || v.sourceMedia) ? { videoFirstActivities: { problemHook: m.problemHook, workedExamples: m.workedExamples, guidedPractice: m.guidedPractice, scenarioLab: m.scenarioLab } } : {}),
+      ...(m.problemHook.remotion?{remotionHook:{endpoint:`/api/v1/courses/${courseId}/visual-lessons/${m.problemHook.remotion.revisionId}`}}:{}),
+      ...(m.conceptExplainer.videos.some(v => v.remotion || v.uploadedVideo || v.sourceMedia) ? { videoFirstActivities: { problemHook: m.problemHook, workedExamples: m.workedExamples, guidedPractice: m.guidedPractice, scenarioLab: m.scenarioLab } } : {}),
       ...(m.narratedStages && !m.conceptExplainer.videos.some(v => v.uploadedVideo || v.sourceMedia) ? { narratedStages: Object.fromEntries(Object.entries(m.narratedStages).map(([stage, slides]) => [stage, slides.map(s => ({ id: s.id, title: s.title, body: s.body, narration: s.narration, audio: `/api/v1/courses/${courseId}/released-audio/${revisionId}/${s.id}` }))])) } : {}),
       blocks: [
         { ...base, step_id: `${scope}.hook`, stage: 'hook', kicker: 'A fictional workplace case', title: m.problemHook.title,
@@ -77,6 +78,7 @@ export function authoredDelivery({ courseId, revisionId, content: pkg }: Release
         { ...base, step_id: `${scope}.explain`, stage: 'explainer', duration_min: Math.max(1, Math.ceil(m.conceptExplainer.videos.reduce((n, v) => n + v.plannedMinutes, 0))), concepts: m.objectiveIds.map(objective), segments: [],
           videos: m.conceptExplainer.videos.map(v => ({
             ...(v.sourceMedia ? { sourceMedia: v.sourceMedia } : {}),
+            ...(v.remotion?{remotion:{endpoint:`/api/v1/courses/${courseId}/visual-lessons/${v.remotion.revisionId}`}}:{}),
             ...((v.uploadedVideo || v.sourceMedia) ? { personalizationSource: { transcriptId: v.uploadedVideo?.transcriptId ?? `source-${revisionId}-${v.id}`, checkpointAfterPart: v.slides.findIndex(s => s.id === v.midpointQuiz.afterSlideId), parts: v.slides.map(s => ({ id: s.id, narration: s.narration, sourceIds: s.sourceIds, objectiveIds: s.objectiveIds })) } } : {}),
             ...(v.uploadedVideo ? { uploadedVideo: { ...v.uploadedVideo, src: `/api/v1/courses/${courseId}/concept-video/${v.uploadedVideo.assetId}`, transcriptUrl: `/api/v1/courses/${courseId}/concept-video/${v.uploadedVideo.assetId}?transcript=${v.uploadedVideo.transcriptId}` } } : {}),
             id: `${courseId}-${m.id}-${v.id}`, module: m.id, lesson, title: v.title, notes: v.slides.flatMap(s => s.body),

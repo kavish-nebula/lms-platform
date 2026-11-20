@@ -437,3 +437,39 @@ Enrollment-scoped authenticated delivery is unchanged. See
 Automation vs AI creator revision: the scoped derivative in automation-ai-lesson.ts combines the creator's supplemental source with edition-specific checkpoint teaching. Source recordings and questions remain immutable. The updated authored text invalidates adaptation fingerprints; deterministic storyboards use exact narration anchors. See [Automation/AI explainer](automation-ai-explainer.md).
 
 Reference-style video delivery uses source-anchored demonstration compositions, reusable reviewed storyboards for unchanged teaching, and a renderer source fingerprint in each private derivative key. A local resumable regeneration runner rebuilds prepared narration derivatives without publishing or changing grades. See [video rollout](reference-style-videos.md).
+
+SMEs can supply each module's opening situation directly in Stage 1. The editor saves it as an ordinary module-scoped source with optional `purpose: problem-hook`, stable ID, objective mappings and server-owned revisions. Existing source records remain compatible; no database migration is needed. The video-first generator receives only the selected module's hook source as evidence and preserves its name, text and citation in the generated hook while drafting only the opening question. Complete-package saving rejects a substituted name/situation or missing citation, including MCP saves. Hook sources cannot satisfy concept teaching coverage. Their revisions enter the existing module input hash and source provenance, so edits invalidate affected drafts while unrelated modules and published editions remain unchanged.
+
+Topic material cards are views of the existing source registry, not a second copy of SME evidence. Optional context, text-diagram, diagram-image and audio-transcript fields are additive JSON brief fields. Source revisions and module input hashes include them. A separate local creator-owned media store validates audio/image uploads, records SHA-256 and immutable audio transcript reviews, and serves only owner-authorized previews. Blueprint generation, video module generation and assembled-package saving verify referenced media ownership and exact reviewed transcript text. Source teaching coverage can use reviewed audio and diagram descriptions while context alone cannot establish it. AI inputs include textual evidence, never raw attachments or automatic pixel interpretation. Functional source patches preserve concurrent unsaved field edits when uploads finish. Topic removal keeps evidence recoverable for remapping; published editions and learner records are unaffected.
+# Creator draft visibility
+
+`creator_courses.archived_at` controls visibility in creator draft listings. Owner-scoped archive/restore operations change this field alone; publication, editions, source revisions and learner progress resolve independently and remain accessible. Migration `0027_creator_draft_archive` leaves existing drafts visible until explicitly archived.
+
+Creator text-to-visual authoring uses immutable script revisions and durable media jobs (migration 0028), with shared Remotion Player/export compositions, measured Kokoro beat cues and creator-scoped byte-range media. It leaves published learner editions untouched. See [text-to-visual authoring](text-to-visual-lessons.md).
+
+Stage 2 blueprint generation supplies a strict JSON Schema derived from the existing
+Zod contract to Gemini, Vertex and OpenAI; other compatible providers retain JSON
+mode. Decoding omits size bounds to keep the provider grammar manageable, while
+the server still enforces all field bounds, source scope, objective coverage,
+sequence and timing checks. A JSON fence is accepted only around the entire
+response; prose, incomplete JSON, empty responses and unfinished generations are
+rejected with specific errors and one bounded repair per model. Retrying a failed
+blueprint retains the frozen SME revision and does not approve or publish it.
+
+Stage 4 Remotion authoring can now resolve current Stage 3-approved SME sources
+directly, without a published package. Stable hook/topic targets share the
+existing visual revision/job store and private media routes. The general
+course-authoring MCP exposes visual context, storyboard saves and media
+preparation; its connection remains explicit. Source identities include approval
+and instruction context, and stale/revoked approval prevents preparation. See
+[the Stage 4 Remotion workflow](stage4-remotion-workflow.md).
+
+Published packages can bind a saved Remotion script to its exact ready audio and
+MP4 export using optional `remotion` references on a problem hook or concept.
+Assembly/publication validates course ownership, current reviewed source, identical
+concept narration and physical media availability. Learner media resolves only
+references in the enrollment's pinned edition, requires enrollment, and reuses
+the existing byte-range stream and continuous player (watched coverage, midpoint
+pause, seek bounds, resume and progress callbacks). Historical editions retain
+their frozen scripts/media even if later creator approvals change. No database
+migration or learner progress rewrite is needed.

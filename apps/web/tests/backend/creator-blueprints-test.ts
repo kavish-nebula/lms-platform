@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { eq } from "drizzle-orm";
 import { EMPTY_BRIEF, type CourseBriefData } from "@/lib/content-creator";
 import { blueprintInput, validateBlueprint } from "@/lib/instructional-blueprint";
-import { BLUEPRINT_SYSTEM, blueprintSystem, blueprintShape, generateBlueprint } from "@/server/blueprint-ai";
+import { BLUEPRINT_SYSTEM, blueprintResponseFormat, blueprintSystem, blueprintShape, generateBlueprint } from "@/server/blueprint-ai";
 import { MODULE_FLOW, COURSE_END_FLOW } from '@/lib/course-delivery';
 import { createCreatorDraft, getCreatorDraft, updateCreatorDraft, setDeliveryStructure } from "@/server/content-creator";
 import { listBlueprints, processBlueprint, startBlueprint } from "@/server/creator-blueprints";
@@ -26,6 +26,51 @@ await assert.rejects(startBlueprint('blueprint-other', draft.id, 1), { status: 4
 await assert.rejects(listBlueprints('blueprint-other', draft.id), { status: 404 });
 const input = blueprintInput(brief); const expected = blueprintShape(input);
 validateBlueprint(expected, input);
+// A whole-document wrapper is presentation only; teaching/source validation
+// must still reject invalid content rather than accepting an extracted object.
+let wrapperCalls = 0;
+const wrapped = await generateBlueprint(input, async () => {
+  wrapperCalls++;
+  return { choices: [{ finish_reason: 'stop', message: { content: '\uFEFF```json\n' + JSON.stringify(expected) + '\n```' } }] };
+});
+assert.equal(wrapperCalls, 1);
+assert.deepEqual(wrapped.output, expected);
+for (const content of ['null', '[]', '', 'Explanation: ' + JSON.stringify(expected), '```json\n' + JSON.stringify(expected) + '\n```\nExtra prose']) {
+  let attempts = 0;
+  await assert.rejects(generateBlueprint(input, async () => { attempts++; return { choices: [{ message: { content } }] }; }));
+  assert.equal(attempts, 2, 'Malformed responses use only one repair per model.');
+}
+await assert.rejects(generateBlueprint(input, async () => ({ choices: [{ finish_reason: 'length', message: { content: JSON.stringify(expected) } }] })), /truncated/);
+await assert.rejects(generateBlueprint(input, async () => ({ choices: [{ finish_reason: 'content_filter', message: { content: JSON.stringify(expected) } }] })), /did not finish/);
+let jsonRepairCalls = 0;
+const jsonRepaired = await generateBlueprint(input, async request => {
+  jsonRepairCalls++;
+  if (jsonRepairCalls === 2) assert(request.messages.at(-1)?.content.includes('complete corrected JSON object'));
+  return { choices: [{ message: { content: jsonRepairCalls === 1 ? '{' : JSON.stringify(expected) } }] };
+});
+assert.deepEqual(jsonRepaired.output, expected);
+assert.equal(jsonRepaired.usage.modelCalls, 2);
+const priorEnv = { ...process.env };
+try {
+  process.env.LLM_API_KEY = 'test'; process.env.LLM_PROVIDER = 'openai';
+  process.env.LLM_BASE_URL = 'https://generativelanguage.googleapis.com/v1beta/openai';
+  const format = blueprintResponseFormat({ ...input, deliveryStructure: 'codex-ild-v2' });
+  assert.equal(format?.type, 'json_schema');
+  if (format?.type === 'json_schema') {
+    assert.equal(format.json_schema.strict, true);
+    assert((format.json_schema.schema.required as string[]).includes('courseEnd'));
+    assert(!JSON.stringify(format.json_schema.schema).includes('maxItems'), 'Array bounds remain in server validation, not decoding grammar.');
+    const properties = format.json_schema.schema.properties as Record<string, unknown>;
+    assert.deepEqual(Object.keys(properties).sort(), [...Object.keys(expected), 'courseEnd'].sort());
+  }
+  const legacy = blueprintResponseFormat(input);
+  assert(legacy?.type === 'json_schema' && !(legacy.json_schema.schema.required as string[]).includes('courseEnd'));
+  process.env.LLM_BASE_URL = 'https://api.other-provider.test/v1';
+  assert.deepEqual(blueprintResponseFormat(input), { type: 'json_object' });
+} finally {
+  for (const key of Object.keys(process.env)) if (!(key in priorEnv)) delete process.env[key];
+  Object.assign(process.env, priorEnv);
+}
 const libraryInput = blueprintInput({ ...brief, sourceLibrary: { version: 1, modules: [{ id: 'M1', title: 'Source module', topics: [{ id: 'T1', title: 'Source topic' }] }], sources: input.sources.map(source => ({ ...source, title: 'Source topic evidence', reference: 'Supplied synthetic notes', revision: 1, scope: 'topic' as const, moduleId: 'M1', topicId: 'T1', objectiveIds: input.objectives.map(o => o.id) })) } });
 await generateBlueprint(libraryInput, async request => {
   const sent = JSON.parse(request.messages[1].content).input;

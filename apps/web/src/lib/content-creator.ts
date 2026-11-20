@@ -1,5 +1,5 @@
 import { z } from "zod/v4";
-import { SourceLibrary, courseSources, sourceCoverage } from './source-library';
+import { SourceLibrary, courseSources, sourceCoverage, sourceTeachingText } from './source-library';
 
 export const BLOOM_LEVELS = ["Remember", "Understand", "Apply", "Analyze", "Evaluate", "Create"] as const;
 const note = z.string().max(12000);
@@ -35,7 +35,7 @@ export function briefReadiness(brief: CourseBriefData) {
   return [
     { label: "Course title, subject and audience supplied", ready: !!(brief.title.trim() && brief.subject.trim() && brief.audience.trim()) },
     { label: "Objectives supplied — SME must verify measurable outcomes", ready: objectives.length > 0 },
-    { label: "Source evidence and intended outcomes supplied", ready: !!(courseSources(brief).some(s => s.text.trim()) && brief.outcomes.trim()) },
+    { label: "Source evidence and intended outcomes supplied", ready: !!(courseSources(brief).some(s => sourceTeachingText(s).trim()) && brief.outcomes.trim()) },
     ...(brief.sourceLibrary ? [{ label: "Source evidence mapped to every objective, module and topic", ready: sourceCoverage(brief).length === 0 }] : []),
     { label: "Topic sequence and dependencies documented", ready: !!brief.dependencies.trim() },
     { label: "Physical practice requirements documented, if applicable", ready: !brief.physicalSkills || !!brief.physicalNotes.trim() },
