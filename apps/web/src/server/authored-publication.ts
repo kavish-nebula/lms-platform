@@ -9,6 +9,8 @@ export const PublishAuthoredCourse = z.object({ revisionId: z.uuid(), reviewId: 
 
 export async function publishAuthoredCourse(ownerId: string, courseId: string, input: z.infer<typeof PublishAuthoredCourse>) {
   const request = PublishAuthoredCourse.parse(input);
+  const [selected]=await(await db()).select().from(revisions).where(and(eq(revisions.id,request.revisionId),eq(revisions.courseId,courseId),eq(revisions.ownerId,ownerId)));
+  if(selected)await(await import('./released-visual')).validateReleasedVisuals(ownerId,courseId,selected.content);
   return (await db()).transaction(async tx => {
     const [course] = await tx.select().from(creatorCourses).where(and(eq(creatorCourses.id, courseId), eq(creatorCourses.ownerId, ownerId))).for('update');
     if (!course) throw new ApiError(404, 'not_found', 'Course draft not found.');

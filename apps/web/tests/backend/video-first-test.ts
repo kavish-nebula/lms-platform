@@ -368,5 +368,39 @@ const withPrompt = await generateVideoModule(owner.id, partial.id, 'M1', partial
   return moduleTransport({ ...request, messages: [{ ...request.messages[0], content: MODULE_CORE_PROMPT }, ...request.messages.slice(1)] });
 });
 assert.equal((await videoModuleDrafts(owner.id, partial.id)).find(m => m.id === withPrompt.id)!.outdated, false);
+const suppliedSituation = 'Fictional shift review: the report says “Line A stopped at 09:05.” An AI draft adds an unsupported cause. The supervisor needs to decide what to verify.';
+const hookBrief = structuredClone(partial.brief);
+hookBrief.sourceLibrary!.sources.push({ id: 'Sopening', purpose: 'problem-hook', revision: 1, title: 'SME opening', scope: 'module', moduleId: 'M1', topicId: '', objectiveIds: ['O1'], text: suppliedSituation, reference: 'SME scenario' });
+hookBrief.sourceLibrary!.sources.push({ id: 'SlaterHook', purpose: 'problem-hook', revision: 1, title: 'Later opening', scope: 'module', moduleId: 'M2', topicId: '', objectiveIds: ['O2'], text: 'PRIVATE_LATER_HOOK_CONTENT', reference: '' });
+partial = await updateCreatorDraft(owner.id, partial.id, { brief: hookBrief, revision: partial.revision });
+assert.equal((await videoModuleDrafts(owner.id, partial.id)).find(m => m.id === withPrompt.id)!.outdated, true);
+const hookedModule = await generateVideoModule(owner.id, partial.id, 'M1', partial.revision, async request => {
+  assert(request.messages[0].content.includes('SME PROBLEM HOOK'));
+  assert(!request.messages[0].content.includes(suppliedSituation), 'SME content belongs in evidence, not the system prompt.');
+  const input = JSON.parse(request.messages[1].content);
+  assert.equal(input.problemHookSource.text, suppliedSituation);
+  assert.equal(input.problemHookSource.id, 'Sopening');
+  assert(!request.messages[1].content.includes('PRIVATE_LATER_HOOK_CONTENT'));
+  // Model output deliberately proposes a different scenario and omits its source.
+  // The server must preserve the authoritative SME situation and provenance.
+  return { choices: [{ message: { content: JSON.stringify(withPrompt.content) } }] };
+});
+assert.equal(hookedModule.content.problemHook.situation, suppliedSituation);
+assert.equal(hookedModule.content.problemHook.title, 'SME opening');
+assert(hookedModule.content.problemHook.sourceIds.includes('Sopening'));
+assert(hookedModule.content.sourceIds.includes('Sopening'));
+assert(hookedModule.provenance!.sourceRevisions.some(s => s.id === 'Sopening' && s.revision === 1));
+assert.deepEqual(hookedModule.content.conceptExplainer, withPrompt.content.conceptExplainer, 'SME hook content never changes concept recordings, transcripts or midpoint checks.');
+assert.deepEqual(hookedModule.content.workedExamples, withPrompt.content.workedExamples);
+assert.deepEqual(hookedModule.content.moduleQuiz, withPrompt.content.moduleQuiz);
+const laterHookEdit = structuredClone(partial.brief);
+laterHookEdit.sourceLibrary!.sources.find(s => s.id === 'SlaterHook')!.text += ' Later detail.';
+partial = await updateCreatorDraft(owner.id, partial.id, { brief: laterHookEdit, revision: partial.revision });
+assert.equal((await videoModuleDrafts(owner.id, partial.id)).find(m => m.id === hookedModule.id)!.outdated, false);
+const ownHookEdit = structuredClone(partial.brief);
+ownHookEdit.sourceLibrary!.sources.find(s => s.id === 'Sopening')!.text += ' The notes omit the cause.';
+partial = await updateCreatorDraft(owner.id, partial.id, { brief: ownHookEdit, revision: partial.revision });
+assert.equal(partial.brief.sourceLibrary!.sources.find(s => s.id === 'Sopening')!.revision, 2);
+assert.equal((await videoModuleDrafts(owner.id, partial.id)).find(m => m.id === hookedModule.id)!.outdated, true);
 await closeDb();
 console.log('PASS video-first: upload/transcripts, module-scoped generation, separate instructions/evidence, prompt provenance, unrelated-edit preservation, stale/concurrent writes, cross-module rejection, bounded repair, learner streaming and review/publication');

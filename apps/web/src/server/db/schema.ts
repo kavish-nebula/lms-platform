@@ -18,6 +18,23 @@ import type { SandboxArtifactData, SandboxReport } from '@/lib/project-sandbox';
 import type { GuidedReport } from '@/lib/guided-project';
 import type { PackageState } from '@/lib/imported-courses';
 import type { ScormTopicData, ScormImport } from '@/lib/scorm-topic';
+import type { VisualLessonData, VisualJobOutput } from '@/lib/visual-lesson';
+
+/** Creator-only text-to-visual revisions. Never replace a published learner edition. */
+export const creatorVisualLessons = pgTable('creator_visual_lessons', {
+  id: uuid('id').primaryKey().defaultRandom(), courseId: uuid('course_id').notNull().references(() => creatorCourses.id),
+  ownerId: text('owner_id').notNull().references(() => users.id), moduleId: text('module_id').notNull(), videoId: text('video_id').notNull(),
+  version: integer('version').notNull(), briefRevision: integer('brief_revision').notNull(), sourceIdentity: text('source_identity').notNull(),
+  content: jsonb('content').$type<VisualLessonData>().notNull(), createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+}, t => [uniqueIndex('creator_visual_lesson_version').on(t.courseId, t.videoId, t.version)]);
+export const creatorVisualJobs = pgTable('creator_visual_jobs', {
+  id: uuid('id').primaryKey().defaultRandom(), revisionId: uuid('revision_id').notNull().references(() => creatorVisualLessons.id),
+  kind: text('kind').$type<'audio'|'export'>().notNull(), identity: text('identity').notNull(),
+  status: text('status').$type<'queued'|'running'|'ready'|'failed'>().notNull().default('queued'),
+  dependencyId: uuid('dependency_id'), output: jsonb('output').$type<VisualJobOutput>().notNull().default({}),
+  token: uuid('token'), leaseUntil: timestamp('lease_until', { withTimezone: true }), error: text('error'),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(), updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+}, t => [uniqueIndex('creator_visual_job_identity').on(t.revisionId, t.kind, t.identity)]);
 
 /** Immutable source snapshots; activation selects a learner pilot without approving the source. */
 export const scormTopicImports = pgTable('scorm_topic_imports', {
@@ -154,6 +171,7 @@ export const creatorCourses = pgTable("creator_courses", {
   productionFormat: text('production_format').$type<'pilot' | 'longform-v1'>().notNull().default('pilot'),
   deliveryStructure: text('delivery_structure').$type<'legacy' | 'six-stage-v1' | 'codex-ild-v2'>().notNull().default('legacy'),
   revision: integer("revision").notNull().default(1),
+  archivedAt: timestamp("archived_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });

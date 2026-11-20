@@ -14,16 +14,37 @@ export const SourceLibrary = z.object({
   modules: z.array(z.object({ id, title: z.string().max(200), instructions: ModuleInstructions.optional(), topics: z.array(z.object({ id, title: z.string().max(200) }).strict()).max(40) }).strict()).max(12),
   sources: z.array(z.object({
     id, revision: z.number().int().positive(), title: z.string().max(200),
+    purpose: z.literal('problem-hook').optional(),
     scope: z.enum(['course', 'module', 'topic']), moduleId: z.string().max(30), topicId: z.string().max(30),
     objectiveIds: z.array(id).max(60), text: z.string().max(100000), reference: z.string().max(2000),
+    context: z.string().max(12000).optional(),
+    supplementalText: z.string().max(100000).optional(),
+    diagramText: z.string().max(12000).optional(),
+    diagram: z.object({ assetId: z.uuid(), description: z.string().max(12000) }).strict().optional(),
+    audio: z.object({ assetId: z.uuid(), durationSeconds: z.number().positive().max(1800), transcriptId: z.uuid().optional(), transcriptText: z.string().max(100000).optional() }).strict().optional(),
     video: UploadedConceptVideo.partial({ transcriptId: true, checkpointSeconds: true }).optional(),
   }).strict()).max(100),
 }).strict().superRefine((value, ctx) => {
   const ids = [...value.modules.map(m => m.id), ...value.modules.flatMap(m => m.topics.map(t => t.id)), ...value.sources.map(s => s.id)];
   if (new Set(ids).size !== ids.length) ctx.addIssue({ code: 'custom', message: 'Module, topic and source IDs must be unique.', path: ['sources'] });
-  if (value.sources.reduce((n, s) => n + s.text.length, 0) > 1000000) ctx.addIssue({ code: 'custom', message: 'Source library exceeds 1,000,000 characters.', path: ['sources'] });
+  const hooks = value.sources.filter(s => s.purpose === 'problem-hook');
+  if (new Set(hooks.map(s => s.moduleId)).size !== hooks.length) ctx.addIssue({ code: 'custom', message: 'Supply only one problem hook source per module.', path: ['sources'] });
+  for (const s of hooks) if (s.scope !== 'module' || s.topicId || s.video) ctx.addIssue({ code: 'custom', message: 'Problem hook content must be a module source without a concept video.', path: ['sources'] });
+  for (const s of hooks) if (s.text.length > 12000) ctx.addIssue({ code: 'custom', message: 'Problem hook content cannot exceed 12,000 characters.', path: ['sources'] });
+  if (value.sources.reduce((n, s) => n + s.text.length + (s.supplementalText?.length ?? 0) + (s.context?.length ?? 0) + (s.diagramText?.length ?? 0) + (s.diagram?.description.length ?? 0) + (s.audio?.transcriptText?.length ?? 0), 0) > 1000000) ctx.addIssue({ code: 'custom', message: 'Source library exceeds 1,000,000 characters.', path: ['sources'] });
 });
 export type SourceLibraryData = z.infer<typeof SourceLibrary>;
+export type SourceRecord = SourceLibraryData['sources'][number];
+
+/** Binary attachments alone cannot establish teaching coverage. Context is framing. */
+export function sourceTeachingText(source: SourceRecord) {
+  return [...new Set([source.text, source.supplementalText, source.audio?.transcriptId ? source.audio.transcriptText : '', source.diagramText, source.diagram?.description].filter(value => value?.trim()))].join('\n\n');
+}
+
+/** Apply async media results to the latest record, preserving SME text. */
+export function patchSourceRecord(source: SourceRecord, patch: Partial<SourceRecord>): SourceRecord {
+  return { ...source, ...patch, ...(!source.video && patch.video && source.text.trim() && !source.supplementalText ? { supplementalText: source.text } : {}) };
+}
 type Brief = { sourceText: string; sourceLibrary?: SourceLibraryData; objectives: { text: string }[] };
 const hasEvidence = (text: string) => !!text.replace(/https?:\/\/\S+/g, '').trim();
 
@@ -49,7 +70,8 @@ export function sourceCoverage(brief: Brief, moduleId?: string) {
   const targetObjectives = moduleId ? new Set(modules[0]?.instructions?.objectiveIds.length ? modules[0].instructions.objectiveIds : sources.filter(s => s.scope !== 'course').flatMap(s => s.objectiveIds)) : objectives;
   if (moduleId && !modules.length) issues.push('Select an existing module.');
   if (moduleId && !targetObjectives.size) issues.push(`${moduleId}: map module objectives to its teaching sources.`);
-  const evidence = sources.filter(s => s.title.trim() && hasEvidence(s.text));
+  // An opening situation introduces a problem; it cannot fill a teaching gap.
+  const evidence = sources.filter(s => s.purpose !== 'problem-hook' && s.title.trim() && hasEvidence(sourceTeachingText(s)));
   if (!sources.length) issues.push('Add at least one source containing evidence, not only a URL.');
   for (const m of modules) {
     for (const o of m.instructions?.objectiveIds ?? []) if (!objectives.has(o)) issues.push(`${m.id}: unknown objective ${o}; remap module instructions.`);
@@ -64,9 +86,15 @@ export function sourceCoverage(brief: Brief, moduleId?: string) {
     }
   }
   for (const s of sources) {
+    if (s.audio && (!s.audio.transcriptId || !s.audio.transcriptText?.trim())) issues.push(`${s.id}: review the audio transcript before generation.`);
+    if (s.diagram && !s.diagram.description.trim()) issues.push(`${s.id}: describe the diagram’s essential labels, relationships and meaning.`);
+    if (s.purpose === 'problem-hook') {
+      const selected = modules.find(m => m.id === s.moduleId)?.instructions?.objectiveIds;
+      if (selected?.length && s.objectiveIds.some(o => !selected.includes(o))) issues.push(`${s.id}: map problem hook content only to this module’s objectives.`);
+    }
     if (s.video && (!s.video.transcriptId || !s.video.checkpointSeconds)) issues.push(`${s.id}: review the timestamped video transcript before generation.`);
     if (s.video && s.scope === 'course') issues.push(`${s.id}: concept videos must target a module or topic.`);
-    if (!s.title.trim() || !hasEvidence(s.text)) issues.push(`${s.id}: supply a title and source evidence; references alone are insufficient.`);
+    if (!s.title.trim() || !hasEvidence(sourceTeachingText(s))) issues.push(`${s.id}: supply a title and source evidence; references alone are insufficient.`);
     if (!s.objectiveIds.length) issues.push(`${s.id}: map at least one objective.`);
     for (const o of s.objectiveIds) if (!objectives.has(o)) issues.push(`${s.id}: unknown objective ${o}; remap this source.`);
     const m = modules.find(m => m.id === s.moduleId);
@@ -86,7 +114,7 @@ export function sourceCoverage(brief: Brief, moduleId?: string) {
 export function reviseSourceLibrary(next: SourceLibraryData, previous?: SourceLibraryData): SourceLibraryData {
   return { ...next, sources: next.sources.map(source => {
     const old = previous?.sources.find(s => s.id === source.id);
-    const content = (s: typeof source) => JSON.stringify([s.id, s.title, s.scope, s.moduleId, s.topicId, s.objectiveIds, s.text, s.reference, s.video]);
+    const content = (s: typeof source) => JSON.stringify([s.id, s.title, s.scope, s.moduleId, s.topicId, s.objectiveIds, s.text, s.reference, s.video, s.purpose, s.context, s.supplementalText, s.diagramText, s.diagram, s.audio]);
     return { ...source, revision: old ? old.revision + Number(content(source) !== content(old)) : 1 };
   }) };
 }
@@ -94,15 +122,16 @@ export function reviseSourceLibrary(next: SourceLibraryData, previous?: SourceLi
 /** Inspect all nested citations, including slides, practice and quiz questions. */
 export function moduleSourceIssues(content: unknown, moduleId: string, sources: ReturnType<typeof courseSources>): string[] {
   const issues = new Set<string>();
-  const visit = (value: unknown) => {
+  const visit = (value: unknown, midpoint = false) => {
     if (!value || typeof value !== 'object') return;
-    if (Array.isArray(value)) { value.forEach(visit); return; }
+    if (Array.isArray(value)) { value.forEach(item => visit(item, midpoint)); return; }
     const record = value as Record<string, unknown>;
     if (Array.isArray(record.sourceIds)) for (const id of record.sourceIds) {
       const source = sources.find(s => s.id === id);
       if (source && source.scope !== 'course' && source.moduleId !== moduleId) issues.add(`${moduleId}: source ${source.id} belongs to another module.`);
+      if (source?.purpose === 'problem-hook' && midpoint) issues.add(`${moduleId}: midpoint questions must cite concept teaching, not problem hook source ${source.id}.`);
     }
-    Object.values(record).forEach(visit);
+    Object.entries(record).forEach(([key, item]) => visit(item, midpoint || key === 'midpointQuiz'));
   };
   visit(content);
   return [...issues];

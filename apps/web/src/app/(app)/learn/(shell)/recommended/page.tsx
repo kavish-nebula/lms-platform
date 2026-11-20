@@ -21,6 +21,7 @@ export default async function RecommendedCourses({ searchParams }: { searchParam
       <p>These suggestions connect your answers with courses available now. Choose what interests you; your profile is a starting point, not a limit.</p>
       {result.suggestions.length > 0 && result.suggestions.every(s => s.basis === 'starting-point') && <p>These are general starting points, rather than courses specific to your field.</p>}
     </header>
+    {result.learningActions.length > 0 && <section aria-label="Recommended next steps" className="space-y-3"><h2 className="text-xl font-semibold">Based on your learning progress</h2>{result.learningActions.map(action => <article key={action.href + action.title} className="rounded-xl border border-line bg-panel p-5"><h3 className="font-semibold"><Link className="text-brand-ink underline" href={action.href}>{action.title}</Link></h3><p className="mt-2 text-sm text-ink-muted">{action.reason}</p></article>)}</section>}
     <section aria-label="Suggested courses" className="course-recommendations-list">
       {result.suggestions.map(({ course, reason, enrolled }, i) => <article key={course.course_id} className="course-recommendation">
         <div className="course-recommendation-position" aria-hidden="true">{i + 1}</div>

@@ -18,6 +18,7 @@
     "@modelcontextprotocol/sdk": "^1.32.1",
     "@remotion/bundler": "4.0.534",
     "@remotion/cli": "4.0.534",
+    "@remotion/player": "4.0.534",
     "@remotion/renderer": "4.0.534",
     "@xyflow/react": "^12.12.0",
     "class-variance-authority": "^0.7.1",

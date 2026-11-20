@@ -34,7 +34,19 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
-    "**/*.mts"
+    "**/*.mts",
+    ".next-app/types/**/*.ts",
+    ".next-app/dev/types/**/*.ts",
+    ".next-visual-director/types/**/*.ts",
+    ".next-visual-director/dev/types/**/*.ts",
+    ".next-hybrid/types/**/*.ts",
+    ".next-hybrid/dev/types/**/*.ts",
+    ".next-automation/types/**/*.ts",
+    ".next-automation/dev/types/**/*.ts",
+    ".next-automation-full/types/**/*.ts",
+    ".next-automation-full/dev/types/**/*.ts",
+    ".next-reference-release/types/**/*.ts",
+    ".next-reference-release/dev/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"

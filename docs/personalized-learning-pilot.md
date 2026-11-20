@@ -1,0 +1,25 @@
+# Personalized learning pilot
+
+The pilot is optional learner-side enrichment for the existing standalone AI for Production Module 1 course (dd1fec93-8c51-4f2d-9e0c-943823062c76), bound to published source revision 2f676c65-2849-42f9-ab75-2d503142d5e1. It does not edit the approved edition, recordings, assessments or learner grades. Other editions/courses retain their current delivery. A separate reviewed authoring policy/editor rollout is needed before enabling other courses.
+
+Open /learn/courses/<courseId>/personalized or the personalized-path link in the module player. A learner must explicitly start a diagnostic; existing enrollments receive no inferred mastery or automatic skip. The two concept topics map to O1/M1S1 and O2/M1S2, with two source-grounded diagnostic questions each. One unaided-attempt opportunity is offered per topic/policy. Exact server grading, including multiple answers, is required. Learners may instead study everything. A demonstrated topic may be skipped during next-step navigation and remains available to review. Module quizzes, projects and the final assessment are never waived.
+
+Migration 0026 adds knowledge_attempts, topic_progress, learning_reviews and learning_tutor_sessions. All queries require an active owned enrollment, source edition and versioned policy key. An enrollment row lock serializes grading. Diagnostic retries/replays cannot award duplicate credit. Cancelling closes the attempt without evidence or a grade. Wrong/incomplete responses cannot claim correctness. Both the new tutor and existing course companion refuse help during an open diagnostic.
+
+Topic dispositions distinguish completed from demonstrated. Existing completion records remain unchanged; completion of the concepts stage is projected into the enrollment response when all concept topics are resolved. It does not create watched-video records. Original-player completion must have server-verified source checkpoint submissions. As in the existing app, playback itself is client-observed; this is not a proctored system or proof that someone watched every second.
+
+Incorrect diagnostics and fresh server-verified course signals open one deduplicated review per topic. Reviews provide teaching, an illustrative worked example and alternate questions. Successful review closes that task but never awards a diagnostic skip or changes an old grade. Contrary graded evidence revokes optional demonstrated credit while preserving historical completed work. Targeted review is immediate; existing scheduled reviews are unchanged.
+
+The AI tutor reuses the configured companion model. It retrieves approved passages and reviewed transcripts from the learner's pinned edition, includes limited field/role/preferences and verified topic state, and validates source links. Four actions offer simple explanations, fictional field examples, guided reasoning and ungraded practice. Conversation does not grade knowledge. Bounded histories (80 messages; eight used as model context) persist across devices and are scoped to enrollment, edition, policy, topic and profile context. Optimistic writes reject concurrent edits and stale-profile/source responses. Original assessment keys never enter model prompts. Provider failures use the existing explicitly labelled reference-support fallback.
+
+Recommendations prioritize outstanding reviews, then unresolved learning. Completed course suggestions are suppressed when server completion and verified final-assessment evidence agree. Recommendations use only the learner-visible published catalog and show a reason; there are no inferred proficiency scores, automatic enrollments or paid model calls in ranking.
+
+Verification:
+- node tests/backend/run.mjs personal-learning
+- Existing companion, recommendation, enrollment, adaptation, video-first, assessment and player regressions.
+- TypeScript, targeted lint and production build.
+- Live configured-provider tutor calls and browser checks use isolated learner records/database; mocked tests do not constitute live AI verification.
+
+The current application still uses its existing demo identity adapter. All new data is scoped by the session adapter's user ID; introducing managed multi-user authentication remains separate work.
+
+Live verification (16 November 2026): PostgreSQL migration and diagnostic/review/tutor persistence passed for disposable Finance and Healthcare learners; both test users were removed afterward. Canonical hashes for existing profiles, enrollments, step progress and published courses matched the pre-test baseline. Browser checks in an isolated database verified optional navigation skipping, retained source access, fresh review questions, refresh persistence and progress-based recommendations. Authorized live Gemini tutor examples used two synthetic profiles and approved Module 1 passages, returning cited Finance and Healthcare administration examples in 2.43 and 39.08 seconds. Provider latency remains variable; reference-support fallback is labelled and does not award knowledge credit.

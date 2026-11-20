@@ -35,6 +35,7 @@ Requires Node.js 20+ (installed: 24 LTS).
 
 ```bash
 npm install
+npm run app        # build once, then run without development compilation (http://localhost:3000)
 npm run dev        # http://localhost:3000
 npm run build      # production build
 npm run lint
@@ -42,6 +43,8 @@ npm run typecheck
 ```
 
 When `ADAPTIVE_PYTHON_ENABLED=true` in `apps/web/.env.local`, the root `npm run dev` starts the web app, adaptive Python service and worker together on web port 3000 by default. Install the Python dependencies first (see `docs/adaptive-teaching.md`). Keep one running stack per local database; a separate web-only process can leave personalization waiting on a worker attached to another app. A busy requested port stops startup instead of silently moving the web app away from its worker.
+
+For learning, demonstrations and port forwarding, use `npm run app`. It checks the ports first, builds the current code once into `.next-app`, and starts the production web server with the adaptive API/worker when enabled. The initial build takes time; navigation after startup does not compile routes. Stop the previous stack with Ctrl+C before switching commands. Use `npm run dev` when editing code and needing hot reload; its first visit to a new route still compiles that route. Recently compiled development pages remain cached for ten minutes (up to twenty recent pages), and runtime data/audio and isolated build directories are excluded from Webpack watches.
 
 ## Backend: AI plans each learner's course
 

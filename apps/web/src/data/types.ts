@@ -160,6 +160,7 @@ export type VideoQuiz = { q: string; options: string[]; explain: string; hint: s
 
 /** A narrated slide video for one lesson (audio: /audio/video-{id}-s{n}.mp3). */
 export type ConceptVideo = {
+  remotion?: { endpoint:string };
   /** Reviewed source for a learner-specific derivative; the original stays available. */
   sourceMedia?: { audio?: string; video?: string; image?: string; transcript: string; referenceOnly?: boolean; reviewNotes?: string[] };
   personalizationSource?: import('@/lib/personalized-concept').ConceptSource;
@@ -402,6 +403,7 @@ export type StageBlock =
 export type Objective = { id: string; text: string; lesson: string };
 
 export type ModuleContent = {
+  remotionHook?: {endpoint:string};
   videoFirstActivities?: Pick<import('@/lib/authored-course').AuthoredCoursePackageData['modules'][number], 'problemHook' | 'workedExamples' | 'guidedPractice' | 'scenarioLab'>;
   course_id: string;
   course_title: string;

@@ -6,6 +6,7 @@ const id = z.string().regex(/^[A-Za-z0-9_-]{1,80}$/);
 const text = z.string().trim().min(1).max(12000);
 const ids = z.array(id).min(1).max(60);
 const linked = { objectiveIds: ids, sourceIds: ids };
+export const ReleasedVisual = z.object({ revisionId:z.uuid(),audioJobId:z.uuid(),exportJobId:z.uuid() }).strict();
 const questionFields = {
   id, prompt: text, choices: z.array(text).min(2).max(5),
   hint: text, explanation: text, ...linked,
@@ -42,10 +43,11 @@ export const AuthoredCoursePackage = z.object({
   }).strict()).min(1).max(160),
   modules: z.array(z.object({
     id, title: text.max(300), durationMinutes: z.number().positive().max(2000), objectiveIds: ids, sourceIds: ids,
-    problemHook: z.object({ title: text.max(300), situation: text, question: text, ...linked }).strict(),
+    problemHook: z.object({ title: text.max(300), situation: text, question: text, remotion:ReleasedVisual.optional(), ...linked }).strict(),
     conceptExplainer: z.object({ videos: z.array(z.object({
       id, title: text.max(300), plannedMinutes: z.number().positive().max(300), slides: z.array(Slide).min(1).max(40),
       uploadedVideo: UploadedConceptVideo.optional(),
+      remotion:ReleasedVisual.optional(),
       sourceChecks: z.array(Question).max(100).optional(),
       sourceMedia: z.object({ audio: z.string().optional(), video: z.string().optional(), image: z.string().optional(), transcript: z.string(), referenceOnly: z.boolean().optional(), reviewNotes: z.array(text).max(10).optional() }).strict().optional(),
       midpointQuiz: z.object({ afterSlideId: id, questions: z.array(Question).length(2) }).strict(),
@@ -150,5 +152,5 @@ export function validateAuthoredCourse(raw: unknown, context: { objectives: stri
 
 /** Recordings supply their own voice; only editable narration needs synthesis. */
 export function courseNarrationSlides(course: AuthoredCoursePackageData) {
-  return course.modules.flatMap(module => [...module.conceptExplainer.videos.flatMap(video => video.uploadedVideo || video.sourceMedia?.audio || video.sourceMedia?.video ? [] : video.slides), ...Object.values(module.narratedStages ?? {}).flat()]);
+  return course.modules.flatMap(module => [...module.conceptExplainer.videos.flatMap(video => video.remotion || video.uploadedVideo || video.sourceMedia?.audio || video.sourceMedia?.video ? [] : video.slides), ...Object.values(module.narratedStages ?? {}).flat()]);
 }

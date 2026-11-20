@@ -1,5 +1,4 @@
 import { moduleDeliverySteps, STAGE_LABELS } from '@/lib/course-delivery';
-import { CourseDeliveryFlow } from './course-delivery-flow';
 import { type BlueprintRun } from "@/lib/instructional-blueprint";
 
 const List = ({ items }: { items: string[] }) => items.length ? <ul className="list-disc space-y-1 pl-5">{items.map((item, i) => <li key={i}>{item}</li>)}</ul> : <p>None identified by AI; SME verification still required.</p>;
@@ -11,7 +10,7 @@ export function BlueprintDocument({ run }: { run: BlueprintRun }) {
   const codex = run.deliveryStructure === 'codex-ild-v2';
   const staged = run.deliveryStructure === 'six-stage-v1' || codex;
   return <div className="space-y-8 text-sm leading-relaxed">
-    <CourseDeliveryFlow structure={run.deliveryStructure} lastModule={b.modules.at(-1)!.id} /><nav aria-label="Blueprint sections" className="flex flex-wrap gap-3 text-brand-ink">{["Recommendations", "Modules", "Tasks", "Assessments", "Motivation", "Tools", "Accessibility", "Sources"].map((name, i) => <a key={name} className="underline" href={`#blueprint-${i}`}>{name}</a>)}</nav>
+    <nav aria-label="Blueprint sections" className="flex flex-wrap gap-3 text-brand-ink">{["Recommendations", "Modules", "Tasks", "Assessments", "Motivation", "Tools", "Accessibility", "Sources"].map((name, i) => <a key={name} className="underline" href={`#blueprint-${i}`}>{name}</a>)}</nav>
     <section id="blueprint-0" className="scroll-mt-24 space-y-4"><h2 className="text-xl font-semibold">1. ILD recommendations report</h2><p>{b.recommendations.summary}</p>
       <div className="grid gap-4 md:grid-cols-2">{([['Gaps', b.recommendations.gaps], ['Risks', b.recommendations.risks], ['Assumptions', b.recommendations.assumptions], ['Questions for the SME', b.recommendations.smeQuestions]] as const).map(([name, items]) => <article key={name} className={box}><h3 className="font-semibold">{name}</h3><List items={items} /></article>)}</div>
       <h3 className="text-lg font-semibold">Objective classification and alignment</h3><div className="grid gap-4 md:grid-cols-2">{b.recommendations.objectives.map(o => <article key={o.objectiveId} className={box}><h4 className="font-semibold">{o.objectiveId} · {o.bloom} · {o.knowledgeType}</h4><p>{run.input.objectives.find(original => original.id === o.objectiveId)?.text}</p><p className="text-ink-muted">SME Bloom’s label: {run.input.objectives.find(original => original.id === o.objectiveId)?.bloom}</p><p>{o.alignment}</p><p className="text-xs text-ink-muted">SME source blocks: {o.sourceIds.join(', ')}</p></article>)}</div>

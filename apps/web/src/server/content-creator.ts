@@ -1,6 +1,6 @@
 import "server-only";
 import { reviseSourceLibrary } from '@/lib/source-library';
-import { and, desc, eq, sql } from "drizzle-orm";
+import { and, desc, eq, isNull, sql } from "drizzle-orm";
 import { z } from "zod/v4";
 import { CourseBrief, sameCourseBrief, type CreatorDraft } from "@/lib/content-creator";
 import { db } from "./db/client";
@@ -30,7 +30,17 @@ export async function setProductionFormat(ownerId: string, id: string, input: z.
 const validId = (id: string) => { if (!z.uuid().safeParse(id).success) throw new ApiError(404, "not_found", "Course draft not found."); };
 
 export async function listCreatorDrafts(ownerId: string) {
-  return (await (await db()).select().from(creatorCourses).where(eq(creatorCourses.ownerId, ownerId)).orderBy(desc(creatorCourses.updatedAt))).map(view);
+  return (await (await db()).select().from(creatorCourses).where(and(eq(creatorCourses.ownerId, ownerId), isNull(creatorCourses.archivedAt))).orderBy(desc(creatorCourses.updatedAt))).map(view);
+}
+export const SetDraftArchive = z.object({ archived: z.boolean() }).strict();
+/** Workspace visibility is separate from source revisions and learner publication. */
+export async function setCreatorDraftArchived(ownerId: string, id: string, input: z.infer<typeof SetDraftArchive>) {
+  validId(id);
+  const { archived } = SetDraftArchive.parse(input);
+  const [row] = await (await db()).update(creatorCourses).set({ archivedAt: archived ? new Date() : null })
+    .where(and(eq(creatorCourses.id, id), eq(creatorCourses.ownerId, ownerId))).returning();
+  if (!row) throw new ApiError(404, 'not_found', 'Course draft not found.');
+  return { course: view(row), archived: row.archivedAt !== null };
 }
 export async function getCreatorDraft(ownerId: string, id: string) {
   validId(id);

@@ -31,6 +31,7 @@ export async function startBlueprint(ownerId: string, courseId: string, revision
   const gaps = sourceCoverage(draft.brief);
   if (gaps.length) throw new ApiError(422, 'source_coverage', gaps.join(' '));
   await (await import('./concept-videos')).assertVideoSources(ownerId, courseId, draft.brief);
+  await (await import('./source-media')).assertSourceMedia(ownerId, courseId, draft.brief);
   const missing = briefReadiness(draft.brief).filter(c => !c.ready);
   if (missing.length) throw new ApiError(422, "incomplete_input", `Complete the Stage 1 inputs first: ${missing.map(c => c.label).join("; ")}`);
   const promptVersion = draft.deliveryStructure === 'codex-ild-v2' ? CODEX_ILD_BLUEPRINT_PROMPT_VERSION : draft.deliveryStructure === 'six-stage-v1' ? SIX_STAGE_BLUEPRINT_PROMPT_VERSION : BLUEPRINT_PROMPT_VERSION;

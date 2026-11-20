@@ -26,7 +26,9 @@ export type CompanionContext = {
 
 const cache = new Map<string, Promise<CompanionContext | null>>();
 
-export function companionContext(courseId: string): Promise<CompanionContext | null> {
+export function companionContext(courseId: string, userId?: string): Promise<CompanionContext | null> {
+  // Enrollment editions must never share a current-release cache across users.
+  if (userId) return build(courseId, userId);
   let hit = cache.get(courseId);
   if (!hit) {
     hit = build(courseId);
@@ -36,10 +38,10 @@ export function companionContext(courseId: string): Promise<CompanionContext | n
   return hit;
 }
 
-async function build(courseId: string): Promise<CompanionContext | null> {
-  const course = await getCourse(courseId);
+async function build(courseId: string, userId?: string): Promise<CompanionContext | null> {
+  const course = await getCourse(courseId, userId);
   if (!course) return null;
-  const modules = (await Promise.all(course.modules.map((m) => getModule(courseId, m.module_id)))).filter((m): m is ModuleContent => !!m);
+  const modules = (await Promise.all(course.modules.map((m) => getModule(courseId, m.module_id, userId)))).filter((m): m is ModuleContent => !!m);
 
   const lines = [`COURSE: "${course.title}"`, course.tagline];
   if (course.goal) lines.push(`Goal: ${course.goal}`);
@@ -57,12 +59,17 @@ async function build(courseId: string): Promise<CompanionContext | null> {
   lines.push("", "After the modules: one mini-project (the capstone), then the final assessment, then a wrap-up reflection.");
 
   const gates: GateBlock[] = modules.flatMap((m) => m.blocks.filter((b): b is GateBlock => b.stage === "gate"));
-  const finale = await getFinale(courseId);
+  const finale = await getFinale(courseId, userId);
   if (finale) gates.push(finale.final);
   // short stems are too generic to tell a pasted question from an honest one
   const assessments = gates.flatMap((g) => g.items.map((item) => ({ words: tokens(item.stem) }))).filter((a) => a.words.length >= 5);
 
-  return { course, outline: lines.join("\n"), passages: coursePassages(course, modules), assessments };
+  const passages = coursePassages(course, modules);
+  for (const courseModule of modules) for (const video of courseModule.blocks.find(b => b.stage === 'explainer')?.videos ?? []) {
+    for (const part of video.personalizationSource?.parts ?? []) passages.push({ title: `${video.title} · reviewed transcript`, text: part.narration, href: `/learn/courses/${courseId}/${courseModule.module_id}/explainer?v=${video.id}`, moduleId: courseModule.module_id, stage: 'explainer', videoId: video.id });
+    for (const question of [...video.midQuiz, ...video.endQuiz]) assessments.push({ words: tokens(question.q) });
+  }
+  return { course, outline: lines.join("\n"), passages, assessments };
 }
 
 /** A message that carries most of an assessment question's words is that question, pasted. */

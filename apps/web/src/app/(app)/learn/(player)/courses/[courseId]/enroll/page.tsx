@@ -8,7 +8,7 @@ import { getSessionUser } from '@/server/auth';
 type Params = { courseId: string };
 type Search = { step?: string };
 
-const STEPS: EnrollPhase[] = ["fit", "customize"];
+const STEPS: EnrollPhase[] = ["prerequisites", "fit", "customize"];
 
 export async function generateMetadata({ params }: { params: Promise<Params> }): Promise<Metadata> {
   const { courseId } = await params;
@@ -35,7 +35,7 @@ export default async function EnrollPage({ params, searchParams }: { params: Pro
       today={FIXTURE_TODAY}
       authoredModules={authored}
       prerequisiteSuggestions={suggestions}
-      initialPhase={STEPS.includes(step as EnrollPhase) ? (step as EnrollPhase) : undefined}
+      initialPhase={STEPS.includes(step as EnrollPhase) && (step !== 'prerequisites' || topics.length > 0) ? (step as EnrollPhase) : undefined}
     />
   );
 }

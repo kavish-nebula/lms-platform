@@ -54,7 +54,11 @@ const tools = (await rpc('tools/list', {})).result.tools.map((t: { name: string 
 assert(tools.includes('create_course') && tools.includes('save_lesson') && tools.includes('save_module_quiz'));
 assert(!tools.includes('publish_course') && !tools.includes('approve_course'));
 assert.equal((await rpc('prompts/list', {})).result.prompts.length, 5);
-assert.equal((await rpc('resources/list', {})).result.resources.length, 3);
+const resourceUris=(await rpc('resources/list', {})).result.resources.map((r:{uri:string})=>r.uri);
+assert(resourceUris.includes('lms://schemas/visual-lesson'));
+for(const name of ['get_visual_module','get_visual_lesson','save_visual_lesson','prepare_visual_media'])assert(tools.includes(name));
+const visualSchema=await rpc('resources/read',{uri:'lms://schemas/visual-lesson'});
+assert(visualSchema.result.contents[0].text.includes('reference-cinema'));
 const briefSchema = await rpc('resources/read', { uri: 'lms://schemas/course-brief' });
 assert(JSON.parse(briefSchema.result.contents[0].text).properties.title);
 const packageSchema = await rpc('resources/read', { uri: 'lms://schemas/course-package' });

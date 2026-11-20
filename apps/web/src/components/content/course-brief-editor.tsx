@@ -3,7 +3,6 @@ import { VideoModuleGeneration } from './video-module-generation';
 import { SourceLibraryEditor } from './source-library-editor';
 import { CourseWorkflowNav } from './course-workflow-nav';
 import { formatIst } from "@/lib/display-time";
-import { CourseDeliveryFlow } from './course-delivery-flow';
 import { useRef, useState } from "react";
 import { ProductionFormatSettings } from "./production-format-settings";
 import { useUnsavedGuard } from "@/lib/use-unsaved-guard";
@@ -13,7 +12,8 @@ import { Plus, Save, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { BLOOM_LEVELS, CourseBrief, EMPTY_BRIEF, briefReadiness, type CourseBriefData, type CreatorDraft } from "@/lib/content-creator";
+import { BLOOM_LEVELS, CourseBrief, EMPTY_BRIEF, type CourseBriefData, type CreatorDraft } from "@/lib/content-creator";
+import { patchSourceRecord } from '@/lib/source-library';
 
 const fields = [
   ["title", "Course title", "A clear, learner-facing title", 200],
@@ -27,7 +27,7 @@ const fields = [
   ["systemPrompt", "System prompt", "Optional course-wide authoring instructions for the blueprint and video-first modules. Describe teaching style and content rules here; keep technical evidence in the source library. Schema, source checks and human approval still apply.", 12000],
 ] as const;
 
-export function CourseBriefEditor({ draft, lastModule }: { draft: CreatorDraft | null; lastModule?: string }) {
+export function CourseBriefEditor({ draft }: { draft: CreatorDraft | null }) {
   const router = useRouter();
   const [brief, setBrief] = useState<CourseBriefData>(draft?.brief ?? { ...EMPTY_BRIEF, sourceLibrary: { version: 1, modules: [], sources: [] } });
   const [saved, setSaved] = useState(JSON.stringify(brief));
@@ -60,12 +60,11 @@ export function CourseBriefEditor({ draft, lastModule }: { draft: CreatorDraft |
     } catch (e) { setError(e instanceof TypeError ? "Could not reach the server. Your text is still here; please retry when it is available." : e instanceof Error ? e.message : "Could not save. Your text is still here; please retry."); }
     finally { busyRef.current = false; setBusy(false); }
   }
-  const checks = briefReadiness(brief);
   return <div className="space-y-6">
     <div><Link href="/content/courses" className="text-sm text-brand-ink underline">← All course drafts</Link><h1 className="mt-3 text-3xl font-semibold">{record ? "Edit course brief" : "Create a course brief"}</h1><p className="mt-2 text-ink-muted">Stage 1 · SME Input. Incomplete drafts are welcome. Your work does not change published courses.</p><div className="mt-4 flex flex-wrap gap-2">{record && !dirty ? <><Button asChild variant="outline"><Link href={`/content/courses/${record.id}/blueprint`}>Stage 2: AI instructional blueprint</Link></Button></> : <p className="text-sm text-ink-muted">Save your SME input to continue to course authoring.</p>}</div></div>
     {record && <CourseWorkflowNav courseId={record.id} step={1} videoFirst={!!brief.sourceLibrary?.sources.some(s => s.video)} />}
-    {record && <><CourseDeliveryFlow structure={record?.deliveryStructure} lastModule={lastModule} />{!brief.sourceLibrary?.sources.some(s => s.video) && <ProductionFormatSettings courseId={record.id} initialFormat={record.productionFormat ?? 'pilot'} />}</>}
-    <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
+    {record && !brief.sourceLibrary?.sources.some(s => s.video) && <ProductionFormatSettings courseId={record.id} initialFormat={record.productionFormat ?? 'pilot'} />}
+    <div className="min-w-0">
       <form onSubmit={save} className="min-w-0 space-y-6">
         <fieldset disabled={busy} className="min-w-0 space-y-5 rounded-xl border border-line bg-panel p-5 md:p-7"><legend className="px-2 text-lg font-semibold">Course brief (entire course)</legend>
           {fields.filter(([key]) => !brief.sourceLibrary || (key !== "sourceText" && key !== "references")).map(([key, label, hint, max]) => <div className="space-y-2" key={key}><label htmlFor={`brief-${key}`} className="block text-sm font-medium">{label}</label><p id={`hint-${key}`} className="text-xs text-ink-muted">{hint}</p>
@@ -77,14 +76,12 @@ export function CourseBriefEditor({ draft, lastModule }: { draft: CreatorDraft |
           {brief.objectives.map((o, i) => <div key={i} className="space-y-2 rounded-lg border border-line p-3"><label className="block text-sm font-medium" htmlFor={`objective-${i}`}>Objective {i + 1}</label><Textarea id={`objective-${i}`} maxLength={1000} value={o.text} onChange={e => set("objectives", brief.objectives.map((item, n) => n === i ? { ...item, text: e.target.value } : item))} /><div className="flex flex-wrap items-center gap-3"><label htmlFor={`bloom-${i}`} className="text-sm">Bloom’s level</label><select id={`bloom-${i}`} value={o.bloom} className="min-h-11 rounded-lg border border-input bg-panel px-3 text-sm focus-visible:outline-2 focus-visible:outline-ring" onChange={e => set("objectives", brief.objectives.map((item, n) => n === i ? { ...item, bloom: e.target.value as typeof o.bloom } : item))}>{BLOOM_LEVELS.map(level => <option key={level}>{level}</option>)}</select><Button type="button" variant="outline" aria-label={`Remove objective ${i + 1}`} onClick={() => { setBrief(b => ({ ...b, objectives: b.objectives.filter((_, n) => n !== i), ...(b.sourceLibrary ? { sourceLibrary: { ...b.sourceLibrary, modules: b.sourceLibrary.modules.map(m => ({ ...m, ...(m.instructions ? { instructions: { ...m.instructions, objectiveIds: m.instructions.objectiveIds.filter(id => id !== `O${i + 1}`).map(id => Number(id.slice(1)) > i + 1 ? `O${Number(id.slice(1)) - 1}` : id) } } : {}) })), sources: b.sourceLibrary.sources.map(s => ({ ...s, objectiveIds: s.objectiveIds.filter(id => id !== `O${i + 1}`).map(id => Number(id.slice(1)) > i + 1 ? `O${Number(id.slice(1)) - 1}` : id) })) } } : {}) })); setMessage(''); }}><Trash2 aria-hidden />Remove</Button></div></div>)}
           <Button type="button" variant="outline" disabled={brief.objectives.length >= 60} onClick={() => set("objectives", [...brief.objectives, { text: "", bloom: "Apply" }])}><Plus aria-hidden />Add objective</Button>
         </fieldset>
-        <fieldset disabled={busy}><SourceLibraryEditor courseId={record?.id} brief={brief} onChange={library => set("sourceLibrary", library)} /></fieldset>
+        <fieldset disabled={busy}><SourceLibraryEditor courseId={record?.id} brief={brief} onChange={library => set("sourceLibrary", library)} onSourceChange={(sourceId, patch) => { setBrief(current => current.sourceLibrary ? { ...current, sourceLibrary: { ...current.sourceLibrary, sources: current.sourceLibrary.sources.map(source => source.id === sourceId ? patchSourceRecord(source, patch) : source) } } : current); setMessage(''); }} /></fieldset>
         <VideoModuleGeneration courseId={record?.id} revision={record?.revision} brief={brief} dirty={dirty} />
-        <fieldset disabled={busy} className="space-y-4 rounded-xl border border-line bg-panel p-5 md:p-7"><legend className="px-2 text-lg font-semibold">Physical skills</legend><label className="flex items-start gap-3 text-sm"><input type="checkbox" className="mt-1 size-4 accent-brand" checked={brief.physicalSkills} onChange={e => set("physicalSkills", e.target.checked)} />This course includes physical or psychomotor skills.</label>{brief.physicalSkills && <div className="space-y-2"><label htmlFor="physical-notes" className="block text-sm font-medium">Physical practice requirements</label><p className="text-xs text-ink-muted">Describe supervised practice, equipment and any activities that cannot be assessed online.</p><Textarea id="physical-notes" maxLength={12000} value={brief.physicalNotes} onChange={e => set("physicalNotes", e.target.value)} /></div>}</fieldset>
         <div className="sticky bottom-3 rounded-xl border border-line bg-panel p-4 shadow-sm"><div className="flex flex-wrap items-center gap-4"><Button type="submit" disabled={busy}><Save aria-hidden />{busy ? "Saving…" : "Save draft"}</Button><span className="text-xs text-ink-muted">{dirty ? "Unsaved changes" : record ? `Saved · Revision ${record.revision} · ${formatIst(record.updatedAt)}` : "Not saved yet"}</span></div>
           <p role="status" className="mt-2 text-sm text-brand-ink">{message}</p>{error && <div role="alert" className="mt-2 text-sm text-destructive"><p>{error}</p>{conflict && record && <a className="mt-2 inline-block underline" href={`/content/courses/${record.id}`}>Open latest saved version (unsaved text will be lost)</a>}</div>}
         </div>
       </form>
-      <aside className="space-y-4 rounded-xl border border-line bg-panel p-5" aria-labelledby="readiness-heading"><h2 id="readiness-heading" className="text-lg font-semibold">Preparation and source coverage</h2><p className="text-sm text-ink-muted">Automated input completeness only. This does not verify facts, objective measurability or provide expert approval.</p><p className="text-sm font-medium" role="status">{checks.filter(c => c.ready).length} of {checks.length} input checks complete</p><ul className="space-y-3 text-sm">{checks.map(check => <li key={check.label} className="flex gap-2"><span aria-hidden className={check.ready ? "text-brand-ink" : "text-ink-muted"}>{check.ready ? "✓" : "○"}</span><span><span className="sr-only">{check.ready ? "Complete: " : "Missing: "}</span>{check.label}</span></li>)}</ul><p className="border-t border-line pt-4 text-xs text-ink-muted">Whole-course checks apply to the blueprint and final assembly. For video-first modules, save the brief and use the selected module’s preparation checks to generate its activities independently. Review all teaching before final human approval and publication.</p></aside>
     </div>
   </div>;
 }

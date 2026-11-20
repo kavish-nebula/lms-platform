@@ -14,6 +14,8 @@ import { AI_COOLDOWN_MS, replanReason, ruleRevision } from "./policy";
 import { validatePlan } from "./validate";
 import { adaptFirstModule, adaptNextModule } from "@/server/adapt/service";
 import { liveEnabled, summarize, verifiedSignals } from "@/server/adapt/live";
+import { learningService } from '@/server/learning/service';
+import { PILOT_COURSE } from '@/server/learning/pilot-policy';
 
 /**
  * The plan lifecycle. Enrolling stores a baseline plan at once and asks the
@@ -59,6 +61,12 @@ export async function viewOf(e: repo.EnrollmentRow): Promise<EnrollmentView> {
   const failed = plans.find((p) => p.status === "failed" && (!current || p.version > current.version)) ?? null;
   const progress: Record<string, string[]> = {};
   for (const r of await repo.progressFor(e.id)) (progress[r.moduleId] ??= []).push(r.stage);
+  if (e.courseId === PILOT_COURSE) {
+    try {
+      const learning = await learningService.state(e.userId, e.courseId);
+      if (learning.topics.every(t => !!t.disposition) && !(progress.M1 ?? []).includes('explainer')) (progress.M1 ??= []).push('explainer');
+    } catch (error) { if (!(error instanceof ApiError && error.code === 'learning_unavailable')) throw error; }
+  }
   // raw quick-check responses stay on the server
   const precheck: PrecheckResult | null = e.precheck
     ? { at: e.precheck.at, skipped: e.precheck.skipped, isNew: e.precheck.isNew, lessons: e.precheck.lessons }
@@ -128,8 +136,9 @@ export async function saveSetup(user: SessionUser, courseId: string, setup: Setu
 /** Store answers from lessons; re-plan when the evidence calls for it. */
 export async function recordSignals(user: SessionUser, courseId: string, list: repo.NewSignal[], schedule: Schedule, api?: PlannerTransport) {
   const e = await mustFind(user, courseId);
-  const checked = liveEnabled(courseId) ? await verifiedSignals(courseId, list, user.id) : list;
+  const checked = liveEnabled(courseId) || courseId === PILOT_COURSE ? await verifiedSignals(courseId, list, user.id) : list;
   const fresh = await repo.insertSignals(e.id, checked.map((s) => ({ ...s, key: `${e.id}:${s.key}` })));
+  if (courseId === PILOT_COURSE && fresh.length) await learningService.recordMistakes(user.id, courseId, fresh);
   const replanning = fresh.length ? await maybeReplan(user, e, fresh, schedule, api) : false;
   if (liveEnabled(courseId) && fresh.length) {
     for (const moduleId of new Set(fresh.map((s) => s.moduleId).filter((x): x is string => !!x))) {

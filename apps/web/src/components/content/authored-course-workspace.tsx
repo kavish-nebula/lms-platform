@@ -53,7 +53,7 @@ export function AuthoredCourseWorkspace({ initial }: { initial: State }) {
   const latestReview = head?.reviews.at(-1);
   const currentAudioJob = audioState?.jobs.find(job => job.revisionId === head?.id);
   const narratedSlides = head ? courseNarrationSlides(head.content) : [];
-  const recordedConcepts = head?.content.modules.flatMap(module => module.conceptExplainer.videos).filter(video => video.uploadedVideo || video.sourceMedia?.audio || video.sourceMedia?.video).length ?? 0;
+  const recordedConcepts = head?.content.modules.flatMap(module => module.conceptExplainer.videos).filter(video => video.remotion || video.uploadedVideo || video.sourceMedia?.audio || video.sourceMedia?.video).length ?? 0;
 
   useEffect(() => {
     const revisionId = head?.id;
