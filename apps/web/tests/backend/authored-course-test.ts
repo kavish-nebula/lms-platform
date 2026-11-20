@@ -89,7 +89,7 @@ const withScenes = structuredClone(changedPackage);
 const scene = (id: string) => ({ id, title: `Scene ${id}`, body: [`Content ${id}`], narration: `Narration for ${id}.`, ...linked });
 withScenes.modules[0].narratedStages = { hook: [scene('H1')], worked: [scene('W1')], guided: [scene('G1')], lab: [scene('L1')] };
 validateAuthoredCourse(withScenes, { objectives: ['O1'], smeSourceIds: ['S1'], briefRevision: draft.revision });
-const duplicatedScene = structuredClone(withScenes); duplicatedScene.modules[0].narratedStages!.lab[0].id = 'SL1';
+const duplicatedScene = structuredClone(withScenes); duplicatedScene.modules[0].narratedStages!.lab![0].id = 'SL1';
 assert.throws(() => validateAuthoredCourse(duplicatedScene, { objectives: ['O1'], smeSourceIds: ['S1'], briefRevision: draft.revision }), /IDs must be unique/);
 const saved3 = await saveAuthoredCourse(owner.id, draft.id, { expectedBriefRevision: draft.revision, expectedVersion: 2, content: withScenes });
 const player = authoredDelivery({ courseId: draft.id, revisionId: saved3.id, content: withScenes });

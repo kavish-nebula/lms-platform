@@ -20,7 +20,7 @@ export async function sandboxProject(courseId: string, userId?: string) {
 
 export async function publicSandboxProject(courseId: string) {
   const { release, project, definition } = await sandboxProject(courseId);
-  return { courseId, revisionId: release.revisionId, title: project.title, brief: project.brief, deliverable: project.deliverable, rubric: project.rubric, sandbox: publicSandbox(definition) };
+  return { courseId, revisionId: release.revisionId, title: project.title, brief: project.brief, deliverable: project.deliverable, rubric: project.rubric, ...(project.tasks ? { tasks: project.tasks } : {}), sandbox: publicSandbox(definition) };
 }
 export type PublicSandboxProject = Awaited<ReturnType<typeof publicSandboxProject>>;
 

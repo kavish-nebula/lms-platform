@@ -195,8 +195,9 @@ export function Player({ module, moduleIndex, stage, video, courseHref, initialD
   };
 
   const sceneSlides = stage === "hook" || stage === "worked" || stage === "guided" || stage === "lab" ? module.narratedStages?.[stage] : undefined;
+  const activityVideo = stage === 'worked' || stage === 'guided' ? module.remotionStages?.[stage] : undefined;
   if(stage==='hook'&&module.remotionHook)return <ReleasedVisualLesson endpoint={module.remotionHook.endpoint} video={{id:`${module.course_id}-${module.module_id}-hook`,module:module.module_id,lesson:'hook',midQuiz:[],endQuiz:[]}} onComplete={onComplete}/>;
-  if (sceneSlides?.length) return <NarratedStage key={`${module.module_id}:${stage}`} title={title} courseHref={courseHref} slides={sceneSlides} onComplete={onComplete} onPrev={nav.onPrev} />;
+  if (sceneSlides?.length && !activityVideo) return <NarratedStage key={`${module.module_id}:${stage}`} title={title} courseHref={courseHref} slides={sceneSlides} onComplete={onComplete} onPrev={nav.onPrev} />;
 
   // The problem hook plays full screen, with no map, tutor or banners around it.
   const hook = stage === "hook" ? getBlock(content, "hook") : undefined;
@@ -221,7 +222,7 @@ export function Player({ module, moduleIndex, stage, video, courseHref, initialD
   }
 
   let body: React.ReactNode;
-  const activityNav = { ...nav, audio: adapted?.activityAudio?.[stage], personalized: !!adapted?.activityAudio?.[stage], preparing: !adapted?.activityAudio?.[stage] && ['writing', 'voicing'].includes(latestAdapted?.pieces[`activity:${stage}`]?.status ?? ''), onInteract: () => setStartedActivity(topicKey) };
+  const activityNav = { ...nav, audio: activityVideo ? undefined : adapted?.activityAudio?.[stage], personalized: !activityVideo && !!adapted?.activityAudio?.[stage], preparing: !activityVideo && !adapted?.activityAudio?.[stage] && ['writing', 'voicing'].includes(latestAdapted?.pieces[`activity:${stage}`]?.status ?? ''), onInteract: () => setStartedActivity(topicKey) };
   switch (stage) {
     case 'hook':
       if (content.videoFirstActivities) body = <VideoFirstHook key={`${module.version}:${stage}`} hook={content.videoFirstActivities.problemHook} sceneAudio={adapted?.activitySceneAudio?.hook} fallbackAudioUrl={`/api/v1/courses/${module.course_id}/hook-audio/${module.module_id}`} {...activityNav} />;
@@ -267,6 +268,9 @@ export function Player({ module, moduleIndex, stage, video, courseHref, initialD
       body = <ReviewStage block={getBlock(module, "review")!} {...nav} />;
       break;
   }
+
+  // Watching the demonstration does not submit the learner's practice response.
+  if (activityVideo) body = <div className="space-y-6"><section aria-label={`${title} video`}><ReleasedVisualLesson endpoint={activityVideo.endpoint} video={{id:`${module.course_id}-${module.module_id}-${stage}`,module:module.module_id,lesson:stage,midQuiz:[],endQuiz:[]}} /></section>{body}</div>;
 
   const map = (
     <ModuleMap

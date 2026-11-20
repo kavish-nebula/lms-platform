@@ -308,3 +308,20 @@ paths and before/after comparisons. Motion settles over 2.4 seconds, while the
 existing reduced-motion path settles immediately; captions follow measured local
 narration. The cinematic video palette is deliberately fixed for exported media,
 while surrounding creator controls continue to use the application's theme tokens.
+
+
+Activity videos appear above the existing worked-example or guided-practice task. Use the shared continuous-video controls, captions and transcript, with token-based panel spacing. Preserve the written steps and input fields below the MP4; video completion does not submit practice. Stage 4 labels hooks, concepts, worked examples and guided practice separately and exposes ready MP4 downloads.
+
+
+The SME source-library editor places optional worked-example, guided-practice and module-quiz cards after each module's concept topics. Cards use existing Input, Textarea and Button primitives and theme tokens. Quiz options use labelled native radios for one correct answer and checkboxes for select-all; changing/removing options preserves the associated answer-index mapping. Stable practice/question IDs survive editing. Source references and objective mappings remain available in expandable details.
+
+
+Module quizzes display their first question, four option inputs and per-option correct-answer selectors immediately when added. Previously saved empty quizzes show the same editable first-question placeholder without silently changing the brief. The creator can add more questions, choose single-answer or select-all mode and save their keys with the draft.
+
+
+Quiz authoring opens a blank first question with four options immediately, including a clearly labelled answer type and correct-answer controls. Existing empty saved quizzes render a stable editable placeholder without marking the brief dirty until the creator edits it. Adding another question retains that first question. Remove the whole optional quiz to clear its last question. Existing populated quizzes keep their question IDs, option order and answer keys.
+
+
+One course-end Mini project workspace follows all module editors, including the three-module course layout. It uses labelled theme-aware fields and numbered task cards, with optional expandable coverage mappings and a button to copy the existing assembled project as a draft. Task requirements appear in a collapsed Tasks to accomplish panel on the learner project pages, preserving the guided workspace's step-by-step layout.
+
+The SME module editor now places an optional Scenario Lab section between Guided practice and Module quiz. A labelled native checkbox independently controls each module and explains generated-versus-custom content and retention when disabled. Custom scenarios use labelled, stable-ID fieldsets for name, situation, task and expected evidence, plus source/objective mapping. The form uses existing panel, border, text and brand tokens, with no added motion.

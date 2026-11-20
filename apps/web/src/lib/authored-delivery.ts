@@ -4,7 +4,7 @@ import { correctChoiceIndices } from './assessment-answers';
 import { publicSandbox } from './project-sandbox';
 
 type Release = { courseId: string; revisionId: string; content: AuthoredCoursePackageData };
-const stages = ['hook', 'explainer', 'worked', 'guided', 'lab'] as const;
+const stages = ['hook', 'explainer', 'worked', 'guided'] as const;
 
 function playerSlide(s: AuthoredCoursePackageData['modules'][number]['conceptExplainer']['videos'][number]['slides'][number], index: number): VideoSlide {
   const base = { title: s.title, narration: s.narration, sentences: s.narration.match(/[^.!?]+[.!?]+(?:\s|$)|[^.!?]+$/g)?.map(t => t.trim()).filter(Boolean) ?? [s.narration] };
@@ -18,7 +18,7 @@ function playerSlide(s: AuthoredCoursePackageData['modules'][number]['conceptExp
 export function authoredDelivery({ courseId, revisionId, content: pkg }: Release) {
   const version = revisionId;
   const objective = (id: string) => pkg.objectiveEvidence.find(o => o.objectiveId === id)?.objective ?? id;
-  const moduleStages = (m: AuthoredCoursePackageData['modules'][number]) => [...stages, ...(m.moduleQuiz ? ['gate' as const] : [])];
+  const moduleStages = (m: AuthoredCoursePackageData['modules'][number]) => [...stages, ...(m.scenarioLab ? ['lab' as const] : []), ...(m.moduleQuiz ? ['gate' as const] : [])];
   const gateFor = (quiz: NonNullable<AuthoredCoursePackageData['modules'][number]['moduleQuiz']>, module?: AuthoredCoursePackageData['modules'][number]): GateBlock => {
     const objectives = module?.objectiveIds ?? pkg.objectiveEvidence.map(o => o.objectiveId);
     return {
@@ -38,7 +38,7 @@ export function authoredDelivery({ courseId, revisionId, content: pkg }: Release
     { stage: 'explainer', title: 'Explore the concepts', summary: m.conceptExplainer.videos.map(v => v.title).join('; ') },
     { stage: 'worked', title: 'Watch complete examples', summary: m.workedExamples.map(e => e.title).join('; ') },
     { stage: 'guided', title: m.guidedPractice.title, summary: m.guidedPractice.instructions },
-    { stage: 'lab', title: m.scenarioLab.title, summary: m.narratedStages ? 'Apply the concepts to a new situation.' : 'Apply the routine to new situations.' },
+    ...(m.scenarioLab ? [{ stage: 'lab' as const, title: m.scenarioLab.title, summary: m.narratedStages ? 'Apply the concepts to a new situation.' : 'Apply the routine to new situations.' }] : []),
     ...(m.moduleQuiz ? [{ stage: 'gate' as const, title: m.moduleQuiz.title, summary: m.moduleQuiz.instructions }] : []),
   ];
   const modules: ModuleContent[] = pkg.modules.map((m, index) => {
@@ -55,8 +55,9 @@ export function authoredDelivery({ courseId, revisionId, content: pkg }: Release
       summary: m.problemHook.situation, estimated_minutes: m.durationMinutes, stages_included: moduleStages(m),
       metadata: { objectives: m.objectiveIds.map(id => ({ id, text: objective(id), lesson })) },
       ...(m.problemHook.remotion?{remotionHook:{endpoint:`/api/v1/courses/${courseId}/visual-lessons/${m.problemHook.remotion.revisionId}`}}:{}),
+      ...(m.stageVideos ? { remotionStages: Object.fromEntries(Object.entries(m.stageVideos).map(([stage, ref]) => [stage, { endpoint: `/api/v1/courses/${courseId}/visual-lessons/${ref.revisionId}` }])) } : {}),
       ...(m.conceptExplainer.videos.some(v => v.remotion || v.uploadedVideo || v.sourceMedia) ? { videoFirstActivities: { problemHook: m.problemHook, workedExamples: m.workedExamples, guidedPractice: m.guidedPractice, scenarioLab: m.scenarioLab } } : {}),
-      ...(m.narratedStages && !m.conceptExplainer.videos.some(v => v.uploadedVideo || v.sourceMedia) ? { narratedStages: Object.fromEntries(Object.entries(m.narratedStages).map(([stage, slides]) => [stage, slides.map(s => ({ id: s.id, title: s.title, body: s.body, narration: s.narration, audio: `/api/v1/courses/${courseId}/released-audio/${revisionId}/${s.id}` }))])) } : {}),
+      ...(m.narratedStages && !m.conceptExplainer.videos.some(v => v.uploadedVideo || v.sourceMedia) ? { narratedStages: Object.fromEntries(Object.entries(m.narratedStages).filter(([, slides]) => !!slides).map(([stage, slides]) => [stage, slides!.map(s => ({ id: s.id, title: s.title, body: s.body, narration: s.narration, audio: `/api/v1/courses/${courseId}/released-audio/${revisionId}/${s.id}` }))])) } : {}),
       blocks: [
         { ...base, step_id: `${scope}.hook`, stage: 'hook', kicker: 'A fictional workplace case', title: m.problemHook.title,
           brand: { name: 'Cedar', short: 'Cedar' }, roleNotes: {},
@@ -103,12 +104,12 @@ export function authoredDelivery({ courseId, revisionId, content: pkg }: Release
           steps: m.guidedPractice.steps.map(s => ({ id: s.id, title: s.instruction, body: s.instruction, actions: [s.instruction], check: s.evidence, tip: s.hint })),
           finish: { title: 'Practice ready for review', body: 'Compare your response with the supplied case.', checklist: m.guidedPractice.steps.map(s => s.evidence) },
         },
-        { ...base, step_id: `${scope}.lab`, stage: 'lab', bloom: 'analyze', title: m.scenarioLab.title, intro: 'Read each fictional situation and choose the next action.', scenarios: m.scenarioLab.scenarios.map(s => ({
+        ...(m.scenarioLab ? [{ ...base, step_id: `${scope}.lab`, stage: 'lab' as const, bloom: 'analyze' as const, title: m.scenarioLab.title, intro: m.scenarioLab.instructions ?? 'Read each fictional situation and choose the next action.', scenarios: m.scenarioLab.scenarios.map(s => ({
           id: `${scope}.${s.id}`, lesson, title: s.title, situation: s.situation,
-          question: { step_id: `${scope}.${s.id}.decision`, kind: 'mc', stem: s.challenge,
+          question: { step_id: `${scope}.${s.id}.decision`, kind: 'mc' as const, stem: s.challenge,
             options: [{ id: 'evidence', text: s.expectedEvidence, correct: true, rationale: s.expectedEvidence }, { id: 'guess', text: 'Guess a resolution without checking the supplied facts.', correct: false, rationale: 'The course convention requires clarification rather than guessing.' }, { id: 'claim', text: 'Claim that the work has already been completed.', correct: false, rationale: 'A draft does not establish completion or an action result.' }], hints: ['Use the supplied facts. Preserve uncertainty and request clarification.'] },
           debrief: s.expectedEvidence,
-        })) },
+        })) }] : []),
         ...(m.moduleQuiz ? [gateFor(m.moduleQuiz, m)] : []),
       ],
     };
@@ -120,7 +121,7 @@ export function authoredDelivery({ courseId, revisionId, content: pkg }: Release
     course_id: courseId, version, objectives: pkg.objectiveEvidence.map(o => ({ id: o.objectiveId, text: o.objective, lesson: lessonFor(o.objectiveId) })), final,
     capstone: { step_id: `${courseId}.finale.capstone`, duration_min: projectMinutes, kicker: 'Mini project', title: end.miniProject.title, project_name: end.miniProject.deliverable, scene: end.miniProject.brief,
       requirements: end.miniProject.rubric.map((text, i) => ({ id: `r${i}`, text })), edge_cases: [], closing: end.miniProject.deliverable, reactions: [],
-      ...(end.miniProject.sandbox ? { sandbox: { courseId, revisionId, title: end.miniProject.title, brief: end.miniProject.brief, deliverable: end.miniProject.deliverable, rubric: end.miniProject.rubric, sandbox: publicSandbox(end.miniProject.sandbox) } } : { writing: { storageKey: `authored:${revisionId}:project`, label: end.miniProject.deliverable } }),
+      ...(end.miniProject.sandbox ? { sandbox: { courseId, revisionId, title: end.miniProject.title, brief: end.miniProject.brief, deliverable: end.miniProject.deliverable, rubric: end.miniProject.rubric, ...(end.miniProject.tasks ? { tasks: end.miniProject.tasks } : {}), sandbox: publicSandbox(end.miniProject.sandbox) } } : { writing: { storageKey: `authored:${revisionId}:project`, label: end.miniProject.deliverable } }),
     },
     wrap_up: { step_id: `${courseId}.finale.wrap-up`, duration_min: 1, min_sentences: 1, prompts: end.reflection.prompts.map((text, i) => ({ id: `${courseId}-reflection-${i}`, kind: i === 0 ? 'worked' : i === 1 ? 'failed' : 'transfers', text })) },
   };

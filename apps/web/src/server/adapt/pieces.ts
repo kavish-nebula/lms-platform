@@ -62,7 +62,7 @@ export function piecesOf(mod: ModuleContent, courseId = '', context?: unknown): 
       ['worked', { workedExamples: a.workedExamples }],
       ['guided', { guidedPractice: a.guidedPractice }],
       ['lab', { scenarioLab: a.scenarioLab }],
-    ] as const).map(([stage, authored]) => ({
+    ] as const).filter(([stage]) => stage !== 'lab' || !!a.scenarioLab).map(([stage, authored]) => ({
       piece: `activity:${stage}` as const,
       label: `the ${stage} practice around a fixed uploaded concept video; personalise its fictional context and support, preserve source facts, objectives, evidence standards and IDs`,
       authored,

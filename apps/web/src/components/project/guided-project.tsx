@@ -15,6 +15,7 @@ import { runSandbox, type SandboxRun } from '@/lib/project-sandbox';
 import type { GuidedReport, GuidedWork } from '@/lib/guided-project';
 import type { PublicSandboxProject } from '@/server/project-sandbox';
 import { GuidedWorkflowCanvas } from './guided-workflow-canvas';
+import { ProjectTaskList } from './project-task-list';
 import './guided-project.css';
 
 export function GuidedProjectWorkspace({ project }: { project: PublicSandboxProject }) {
@@ -105,6 +106,7 @@ export function GuidedProjectWorkspace({ project }: { project: PublicSandboxProj
       <main className="guided-project-main" data-mobile-hidden={mobilePanel !== 'explore'}>
         <p className="text-sm text-brand-ink">Step {index + 1} of {guided.stages.length}</p>
         <h1 ref={heading} tabIndex={-1} className="guided-project-title">{stage.title}</h1>
+        <ProjectTaskList tasks={project.tasks} />
         <p className="guided-project-instruction">{stage.instruction}</p>
         {!enrolled && ready && <p className="guided-notice"><Link className="underline" href={`/learn/courses/${project.courseId}/enroll`}>Enroll in the course</Link> to run examples and save your explanations.</p>}
         {isLoading && <p role="status">Loading your saved explanations…</p>}

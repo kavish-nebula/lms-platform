@@ -402,5 +402,41 @@ ownHookEdit.sourceLibrary!.sources.find(s => s.id === 'Sopening')!.text += ' The
 partial = await updateCreatorDraft(owner.id, partial.id, { brief: ownHookEdit, revision: partial.revision });
 assert.equal(partial.brief.sourceLibrary!.sources.find(s => s.id === 'Sopening')!.revision, 2);
 assert.equal((await videoModuleDrafts(owner.id, partial.id)).find(m => m.id === hookedModule.id)!.outdated, true);
+const activityBrief=structuredClone(partial.brief);
+activityBrief.sourceLibrary!.sources.push(
+ {id:'SmanualExample',revision:1,purpose:'worked-example',title:'SME worked example',scope:'module',moduleId:'M1',topicId:'',objectiveIds:['O1'],text:'A draft invents a cause.',reference:'SME',workedExample:{reasoning:['Read the notes.','Find the absent cause.'],result:'The cause is not stated.'}},
+ {id:'SmanualPractice',revision:1,purpose:'guided-practice',title:'SME guided practice',scope:'module',moduleId:'M1',topicId:'',objectiveIds:['O1'],text:'Check the supplied draft.',reference:'SME',practiceSteps:[{id:'SMEPractice1',instruction:'Identify the unsupported claim.',hint:'Read the source.',evidence:'Name the absent cause.'}]},
+ {id:'SmanualQuiz',revision:1,purpose:'module-quiz',title:'SME module quiz',scope:'module',moduleId:'M1',topicId:'',objectiveIds:['O1'],text:'Select all correct answers.',reference:'SME',quizQuestions:[{id:'SMEQuiz1',prompt:'Which actions are source-grounded?',selectionType:'multiple',choices:['Read the supplied notes','Mark the cause unknown','Invent a likely reason'],correctIndices:[0,1],hint:'Use the evidence.',explanation:'Read notes and mark gaps; do not invent a cause.',objectiveIds:['O1']}]},
+ {id:'SlaterQuiz',revision:1,purpose:'module-quiz',title:'Later quiz',scope:'module',moduleId:'M2',topicId:'',objectiveIds:['O2'],text:'OTHER_MODULE_QUIZ_SECRET',reference:'SME',quizQuestions:[]},
+);
+partial=await updateCreatorDraft(owner.id,partial.id,{brief:activityBrief,revision:partial.revision});
+const creatorSupplied=await generateVideoModule(owner.id,partial.id,'M1',partial.revision,async request=>{
+ const input=JSON.parse(request.messages[1].content);
+ assert.equal(input.creatorActivities.workedExamples[0].title,'SME worked example');
+ assert.equal(input.creatorActivities.moduleQuiz.questions[0].selectionType,'multiple');
+ assert(!input.sources.some((s:{id:string})=>s.id==='SmanualQuiz'),'Assessment keys have their own authoring fragment.');
+ assert(!request.messages[1].content.includes('OTHER_MODULE_QUIZ_SECRET'));
+ // Deliberately omit all three fields: deterministic creator input must fill them.
+ const raw=structuredClone(withPrompt.content) as Partial<typeof withPrompt.content>;
+ delete raw.workedExamples;delete raw.guidedPractice;delete raw.moduleQuiz;
+ return {choices:[{message:{content:JSON.stringify(raw)}}]};
+});
+assert.equal(creatorSupplied.content.workedExamples[0].problem,'A draft invents a cause.');
+assert.equal(creatorSupplied.content.guidedPractice.steps[0].id,'SMEPractice1');
+const suppliedQuestion=creatorSupplied.content.moduleQuiz!.questions[0];assert.equal(suppliedQuestion.selectionType,'multiple');assert(suppliedQuestion.selectionType==='multiple');assert.deepEqual(suppliedQuestion.correctIndices,[0,1]);assert.deepEqual(suppliedQuestion.choices,['Read the supplied notes','Mark the cause unknown','Invent a likely reason']);
+assert.deepEqual(creatorSupplied.content.conceptExplainer,withPrompt.content.conceptExplainer,'Creator activity inputs leave recordings and midpoint checks unchanged.');
+const laterQuiz=structuredClone(partial.brief);laterQuiz.sourceLibrary!.sources.find(s=>s.id==='SlaterQuiz')!.text+=' Later update.';
+partial=await updateCreatorDraft(owner.id,partial.id,{brief:laterQuiz,revision:partial.revision});
+assert.equal((await videoModuleDrafts(owner.id,partial.id)).find(m=>m.id===creatorSupplied.id)!.outdated,false,'Another module quiz edit does not stale this module.');
+// Optional labs are enforced by the server, even if a model adds an unwanted lab.
+const optionalBrief=structuredClone(partial.brief);
+optionalBrief.sourceLibrary!.modules.find(m=>m.id==='M1')!.scenarioLabEnabled=false;
+optionalBrief.sourceLibrary!.sources.push({id:'SdisabledLab',revision:1,purpose:'scenario-lab',title:'',scope:'module',moduleId:'M1',topicId:'',objectiveIds:['O1'],text:'',reference:'',scenarios:[]});
+partial=await updateCreatorDraft(owner.id,partial.id,{brief:optionalBrief,revision:partial.revision});
+const withoutLab=await generateVideoModule(owner.id,partial.id,'M1',partial.revision,async request=>{
+ const input=JSON.parse(request.messages[1].content);assert.equal(input.scenarioLabEnabled,false);assert(!input.sources.some((s:{id:string})=>s.id==='SdisabledLab'));
+ return {choices:[{message:{content:JSON.stringify({...creatorSupplied.content,scenarioLab:{invalid:'Model ignored the policy'}})}}]};
+});
+assert.equal(withoutLab.content.scenarioLab,undefined);assert(!withoutLab.content.sourceIds.includes('SdisabledLab'));assert.deepEqual(withoutLab.content.conceptExplainer,creatorSupplied.content.conceptExplainer);
 await closeDb();
 console.log('PASS video-first: upload/transcripts, module-scoped generation, separate instructions/evidence, prompt provenance, unrelated-edit preservation, stale/concurrent writes, cross-module rejection, bounded repair, learner streaming and review/publication');

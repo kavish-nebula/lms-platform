@@ -96,7 +96,7 @@ export function ContinuousConceptPlayer({authored=false,video,scenes,revisionId,
         <Button size="icon" variant="ghost" aria-label="Show lesson captions" aria-pressed={captions} onClick={()=>setCaptions(v=>!v)}><Captions/></Button>
         <Button size="icon" variant="ghost" aria-label="Lesson fullscreen" onClick={()=>{const action=document.fullscreenElement?document.exitFullscreen():screen.current?.requestFullscreen();void action?.catch(()=>setMessage('Fullscreen is unavailable in this browser.'));}}><Maximize/></Button>
       </div>
-      <label className="sr-only" htmlFor={`continuous-seek-${video.id}`}>Seek within personalised lesson</label>
+      <label className="sr-only" htmlFor={`continuous-seek-${video.id}`}>{authored ? 'Seek within lesson video' : 'Seek within personalised lesson'}</label>
       <input id={`continuous-seek-${video.id}`} className="block w-full accent-[var(--ok)]" type="range" min={0} max={playback.durationSeconds} step={.01} value={seconds} disabled={!restored||checking||endChecking} onChange={e=>seek(Number(e.target.value))}/>
       {!playback.video && renderedMedia}
       {captions&&<p className="hook-film-captions" aria-label="Lesson narration captions">{playback.captions?.find(c => seconds >= c.start && seconds < c.end)?.caption ?? conceptNarration(scene)}</p>}
@@ -105,7 +105,7 @@ export function ContinuousConceptPlayer({authored=false,video,scenes,revisionId,
       {endChecking&&<div ref={quiz}><QuizOverlay questions={video.endQuiz} doneLabel="Complete source check" onDone={()=>{setEndChecking(false);complete();}} onAnswer={(question,response)=>signal({kind:'video_check',moduleId:video.module,lesson:video.lesson,payload:{videoId:video.id,section:'end',question,response}})}/></div>}
     </div>
     {message&&<p role="status" className="text-sm text-ink-muted">{message}</p>}
-    <details><summary className="cursor-pointer text-sm font-medium">Read personalised transcript</summary><div className="mt-3 space-y-3 text-sm leading-relaxed">{scenes.filter(s=>checkpointDone||s.phase==='before').map(s=><p key={s.id}>{conceptNarration(s)}</p>)}</div></details>
-    {done&&<div className="flex flex-wrap items-center gap-3 rounded-lg border border-line bg-panel p-4"><p role="status">Personalised lesson complete.</p>{onNext&&<Button onClick={onNext}>{nextLabel??'Continue learning'}</Button>}</div>}
+    <details><summary className="cursor-pointer text-sm font-medium">{authored ? 'Read video transcript' : 'Read personalised transcript'}</summary><div className="mt-3 space-y-3 text-sm leading-relaxed">{scenes.filter(s=>checkpointDone||s.phase==='before').map(s=><p key={s.id}>{conceptNarration(s)}</p>)}</div></details>
+    {done&&<div className="flex flex-wrap items-center gap-3 rounded-lg border border-line bg-panel p-4"><p role="status">{authored ? "Lesson video complete." : "Personalised lesson complete."}</p>{onNext&&<Button onClick={onNext}>{nextLabel??'Continue learning'}</Button>}</div>}
   </div>;
 }

@@ -1,6 +1,7 @@
 import { z } from 'zod/v4';
 import { ProjectSandbox } from './project-sandbox';
 import { UploadedConceptVideo } from './concept-video-source';
+import { MiniProjectTask } from './sme-mini-project';
 
 const id = z.string().regex(/^[A-Za-z0-9_-]{1,80}$/);
 const text = z.string().trim().min(1).max(12000);
@@ -44,6 +45,7 @@ export const AuthoredCoursePackage = z.object({
   modules: z.array(z.object({
     id, title: text.max(300), durationMinutes: z.number().positive().max(2000), objectiveIds: ids, sourceIds: ids,
     problemHook: z.object({ title: text.max(300), situation: text, question: text, remotion:ReleasedVisual.optional(), ...linked }).strict(),
+    stageVideos: z.object({ worked: ReleasedVisual.optional(), guided: ReleasedVisual.optional() }).strict().optional(),
     conceptExplainer: z.object({ videos: z.array(z.object({
       id, title: text.max(300), plannedMinutes: z.number().positive().max(300), slides: z.array(Slide).min(1).max(40),
       uploadedVideo: UploadedConceptVideo.optional(),
@@ -54,12 +56,12 @@ export const AuthoredCoursePackage = z.object({
     }).strict()).min(1).max(20) }).strict(),
     workedExamples: z.array(z.object({ id, title: text.max(300), problem: text, reasoning: z.array(text).min(1).max(20), result: text, ...linked }).strict()).min(1).max(20),
     guidedPractice: z.object({ title: text.max(300), instructions: text, steps: z.array(z.object({ id, instruction: text, hint: text, evidence: text, ...linked }).strict()).min(1).max(30) }).strict(),
-    scenarioLab: z.object({ title: text.max(300), scenarios: z.array(z.object({ id, title: text.max(300), situation: text, challenge: text, expectedEvidence: text, ...linked }).strict()).min(1).max(20) }).strict(),
+    scenarioLab: z.object({ title: text.max(300), instructions: text.optional(), scenarios: z.array(z.object({ id, title: text.max(300), situation: text, challenge: text, expectedEvidence: text, ...linked }).strict()).min(1).max(20) }).strict().optional(),
     moduleQuiz: ModuleQuiz.optional(),
-    narratedStages: z.object({ hook: z.array(Slide).min(1), worked: z.array(Slide).min(1), guided: z.array(Slide).min(1), lab: z.array(Slide).min(1) }).strict().optional(),
+    narratedStages: z.object({ hook: z.array(Slide).min(1), worked: z.array(Slide).min(1), guided: z.array(Slide).min(1), lab: z.array(Slide).min(1).optional() }).strict().optional(),
   }).strict()).min(1).max(20),
   courseEnd: z.object({
-    miniProject: z.object({ title: text.max(300), brief: text, deliverable: text, rubric: z.array(text).min(1).max(30), sandbox: ProjectSandbox.optional(), ...linked }).strict(),
+    miniProject: z.object({ title: text.max(300), brief: text, deliverable: text, rubric: z.array(text).min(1).max(30), tasks: z.array(MiniProjectTask.extend({ moduleIds: ids, ...linked })).min(1).max(30).optional(), sandbox: ProjectSandbox.optional(), ...linked }).strict(),
     masteryGate: z.object({ title: text.max(300), instructions: text, passPercent: z.number().int().min(1).max(100), questions: z.array(Question).min(1).max(100) }).strict(),
     reflection: z.object({ prompts: z.array(text).min(1).max(20) }).strict(),
   }).strict(),
@@ -112,10 +114,11 @@ export function validateAuthoredCourse(raw: unknown, context: { objectives: stri
       if (video.midpointQuiz.afterSlideId !== video.slides[midpointIndex]?.id) errors.push(`${video.id}: place its two-question knowledge check after the midpoint slide.`);
       for (const question of video.midpointQuiz.questions) { contentIds.push(question.id); checkLinks(question, courseModule.objectiveIds); }
     }
-    if (courseModule.narratedStages) for (const stageSlides of Object.values(courseModule.narratedStages)) for (const slide of stageSlides) { contentIds.push(slide.id); checkLinks(slide, courseModule.objectiveIds); }
+    if (courseModule.narratedStages) for (const stageSlides of Object.values(courseModule.narratedStages).filter(s => !!s)) for (const slide of stageSlides) { contentIds.push(slide.id); checkLinks(slide, courseModule.objectiveIds); }
     for (const example of courseModule.workedExamples) { contentIds.push(example.id); checkLinks(example, courseModule.objectiveIds); }
     for (const step of courseModule.guidedPractice.steps) { contentIds.push(step.id); checkLinks(step, courseModule.objectiveIds); }
-    for (const scenario of courseModule.scenarioLab.scenarios) { contentIds.push(scenario.id); checkLinks(scenario, courseModule.objectiveIds); }
+    for (const scenario of (courseModule.scenarioLab?.scenarios ?? [])) { contentIds.push(scenario.id); checkLinks(scenario, courseModule.objectiveIds); }
+    if (!courseModule.scenarioLab && courseModule.narratedStages?.lab) errors.push(`${courseModule.id}: lab narration requires a scenario lab.`);
     if (courseModule.moduleQuiz) {
       for (const question of courseModule.moduleQuiz.questions) { contentIds.push(question.id); checkLinks(question, courseModule.objectiveIds); }
       for (const objective of courseModule.objectiveIds) if (!courseModule.moduleQuiz.questions.some(q => q.objectiveIds.includes(objective))) errors.push(`${courseModule.id}: module quiz must assess ${objective}.`);
@@ -129,6 +132,11 @@ export function validateAuthoredCourse(raw: unknown, context: { objectives: stri
   }
   checkLinks(course.courseEnd.miniProject);
   const project = course.courseEnd.miniProject;
+  if (project.tasks) {
+    if (project.tasks.length !== project.rubric.length || project.tasks.some((task, i) => task.criterion !== project.rubric[i] || !task.title.trim() || !task.instruction.trim() || !task.expectedEvidence.trim() || !task.criterion.trim())) errors.push('Every mini-project task needs instructions, evidence and a matching rubric criterion.');
+    for (const task of project.tasks) { contentIds.push(task.id); checkLinks(task); if (!task.moduleIds.length || task.moduleIds.some(id => !moduleIds.has(id))) errors.push(`Mini-project task ${task.id}: cite existing course modules.`); }
+    for (const unit of course.modules) if (!project.tasks.some(t => t.moduleIds.includes(unit.id))) errors.push(`Mini-project tasks must include module ${unit.id}.`);
+  }
   if (project.sandbox) {
     const criteria = project.sandbox.criteria;
     const videos = course.modules.flatMap(m => m.conceptExplainer.videos);
@@ -152,5 +160,5 @@ export function validateAuthoredCourse(raw: unknown, context: { objectives: stri
 
 /** Recordings supply their own voice; only editable narration needs synthesis. */
 export function courseNarrationSlides(course: AuthoredCoursePackageData) {
-  return course.modules.flatMap(module => [...module.conceptExplainer.videos.flatMap(video => video.remotion || video.uploadedVideo || video.sourceMedia?.audio || video.sourceMedia?.video ? [] : video.slides), ...Object.values(module.narratedStages ?? {}).flat()]);
+  return course.modules.flatMap(module => [...module.conceptExplainer.videos.flatMap(video => video.remotion || video.uploadedVideo || video.sourceMedia?.audio || video.sourceMedia?.video ? [] : video.slides), ...Object.entries(module.narratedStages ?? {}).filter(([stage]) => stage === 'hook' ? !module.problemHook.remotion : !module.stageVideos?.[stage as 'worked' | 'guided']).flatMap(([, slides]) => slides ?? [])]);
 }

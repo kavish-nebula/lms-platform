@@ -107,3 +107,12 @@ checks required runs, length and declared concept groups. It does not establish
 expert semantic quality. Publication added no enrollments or learner progress.
 Backend verification includes source/transcript binding, enrollment denial,
 edition membership, byte ranges, server assessment grading and guided submissions.
+
+
+## Worked examples and guided-practice MP4s
+
+After a current course package has been assembled, Stage 4 also lists `draft_<moduleId>_worked` and `draft_<moduleId>_guided`. Their teaching comes from the saved worked examples or guided-practice instructions, steps and hints, plus the mapped module sources. Final-assessment questions and answer keys are excluded. Changes to that teaching invalidate the visual source identity; adding only media bindings does not. Current Stage 3 approval, ownership and brief/version checks still apply.
+
+Use the same script editor, local Kokoro narration, measured timeline and background MP4 exporter. Attach the ready revision/audio/export references to `module.stageVideos.worked` and `module.stageVideos.guided`; hooks retain `problemHook.remotion`. The package validator verifies the correct module and stage, exact activity evidence, matching narration, completed MP4 and file availability. No database migration is needed for these optional package fields.
+
+Learners watch the MP4 above the original worked-example or practice activity. Watching does not submit a practice response or bypass its existing completion requirements. The MP4 replaces the duplicate audio-only introduction. Narrated-stage fallback and all legacy courses remain available when no stage MP4 is attached. Access is still enrollment/edition-scoped; media is streamed through the authenticated range-capable route. New package revisions use the existing review/publication flow; current enrollments remain on their pinned edition.
