@@ -16,6 +16,11 @@ async function selectedStage4VisualTargets(ownerId: string, courseId: string, mo
   if (!run?.output) throw new ApiError(409, 'visual_blueprint_required', 'Generate and review the current blueprint before creating module videos.');
   const reviews = await getSmeReview(ownerId, courseId, run.id);
   const modules = course.brief.sourceLibrary?.modules ?? [];
+  const approval = reviews.summary.latest[moduleId];
+  if (approval?.verdict !== 'approved' || !Object.values(approval.checklist).every(Boolean)) throw new ApiError(409, 'visual_approval_required', 'Approve this module with all seven Stage 3 checks before creating videos.');
+  // Older approved slide courses have no module/topic source outline. That is
+  // a visual-authoring setup requirement, not a missing SME approval.
+  if (!modules.some(module => module.id === moduleId)) throw new ApiError(409, 'visual_sources_required', 'This approved module uses the earlier slide-authoring workflow. Add its module and topic sources in the course brief before creating new Remotion videos.');
   const [prepared] = await (await db()).select().from(creatorAuthoredCourseRevisions).where(and(eq(creatorAuthoredCourseRevisions.courseId, courseId), eq(creatorAuthoredCourseRevisions.ownerId, ownerId), eq(creatorAuthoredCourseRevisions.briefRevision, course.revision))).orderBy(desc(creatorAuthoredCourseRevisions.version)).limit(1);
   const approved = modules.filter(m => (!moduleId || m.id === moduleId) && reviews.summary.latest[m.id]?.verdict === 'approved' && Object.values(reviews.summary.latest[m.id].checklist).every(Boolean));
   if (moduleId && !approved.length) throw new ApiError(409, 'visual_approval_required', 'Approve this module with all seven Stage 3 checks before creating videos.');
@@ -56,4 +61,16 @@ export async function stage4VisualTargets(ownerId: string, courseId: string, mod
   if (moduleId) return selectedStage4VisualTargets(ownerId, courseId, moduleId);
   const course = await getCreatorDraft(ownerId, courseId);
   return (await Promise.all((course.brief.sourceLibrary?.modules ?? []).map(m => selectedStage4VisualTargets(ownerId, courseId, m.id).catch(error => { if (error instanceof ApiError && error.status === 409) return []; throw error; })))).flat();
+}
+
+/** Optional visual authoring must not hide saved scripts/audio on setup conflicts. */
+export async function stage4VideoPanelState(ownerId: string, courseId: string, moduleId: string, runId: string) {
+  try {
+    const targets = await stage4VisualTargets(ownerId, courseId, moduleId);
+    if (targets.some(target => target.runId !== runId)) return { targets: [], unavailableReason: 'A different blueprint is current for video authoring. Open its Stage 3 review to continue; this production workspace retains its saved content.' };
+    return { targets, unavailableReason: null };
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 409 && ['visual_blueprint_required', 'visual_approval_required', 'visual_sources_required'].includes(error.code)) return { targets: [], unavailableReason: error.message };
+    throw error;
+  }
 }

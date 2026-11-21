@@ -342,3 +342,5 @@ The SME module editor now places an optional Scenario Lab section between Guided
 SME input includes a planned module count and module workspace selector. Stage 2 distinguishes independent module preparation from complete-course final assembly, using native labelled controls and existing theme tokens.
 
 Problem hook authoring has a labelled prompt textarea with help text and a starter-instructions action, before the source name/content. The starter action is disabled when a prompt is already entered, avoiding accidental replacement.
+
+Stages 2–4 share the creator workspace width and 17px body/control typography. Blueprint generation and module review use consistent section spacing and responsive panel padding. The Stage 3 checklist becomes two columns on wide screens, returning to one on smaller screens. Stage 4 gives the production outline a wider sticky desktop rail and a contained horizontal rail on mobile, while save controls remain clear of the floating theme switch. Long-form production and final course assembly use the same stage spacing; review and publishing behavior is unchanged.
