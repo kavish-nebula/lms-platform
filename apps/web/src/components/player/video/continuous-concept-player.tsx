@@ -5,8 +5,9 @@ import { Captions, Maximize, Pause, Play, RotateCcw, Volume2, VolumeX } from 'lu
 import type { ConceptVideo } from '@/data/types';
 import type { ConceptScene } from '@/lib/personalized-concept';
 import { conceptNarration } from '@/lib/personalized-concept';
-import { addPlayedRange, allConceptSectionsPlayed, allowedConceptTime, conceptClock, continuousSection, restoreContinuousResume, type ContinuousPlayback, type ContinuousResume, type PlayedRange } from '@/lib/continuous-concept';
+import { addPlayedRange, allConceptSectionsPlayed, firstUnplayedConceptTime, allowedConceptTime, conceptClock, continuousSection, restoreContinuousResume, type ContinuousPlayback, type ContinuousResume, type PlayedRange } from '@/lib/continuous-concept';
 import { useHydrated, useLocalJson, writeLocal } from '@/lib/local-store';
+import { useLearnerData } from '@/lib/api';
 import { useLearningContext } from '@/components/learning/course-companion';
 import { useSignal } from '@/lib/signals';
 import { Button } from '@/components/ui/button';
@@ -16,6 +17,7 @@ import { QuizOverlay } from './video-lesson';
 type Props = { authored?:boolean;video:Pick<ConceptVideo, 'id' | 'module' | 'lesson' | 'midQuiz' | 'endQuiz'>; scenes:ConceptScene[]; revisionId:string; playback:ContinuousPlayback; onComplete?:()=>void; onNext?:()=>void; nextLabel?:string };
 export function ContinuousConceptPlayer({authored=false,video,scenes,revisionId,playback,onComplete,onNext,nextLabel}:Props) {
   const context=useLearningContext(), signal=useSignal(), hydrated=useHydrated();
+  const { ready: enrollmentReady, error: enrollmentError } = useLearnerData();
   const key=`lms-personalized-concept:v2:${context?.courseId}:${video.id}:${revisionId}`;
   const saved=useLocalJson<ContinuousResume|null>(key,null);
   const legacy=useLocalJson<unknown>(`lms-personalized-concept:v1:${context?.courseId}:${video.id}:${revisionId}`,null);
@@ -27,8 +29,9 @@ export function ContinuousConceptPlayer({authored=false,video,scenes,revisionId,
   const position=useRef(0),coverage=useRef<PlayedRange[]>([]),lastTime=useRef<number|null>(null),completed=useRef(false),checkpoint=useRef(!hasCheckpoint);
   const notified = useRef(false);
   const reducedMotion=!!useReducedMotionConfig();
-  if(hydrated&&!restored){
-    const state=restoreContinuousResume(saved,legacy,playback,hasCheckpoint);
+  // Enrollment registration scopes local resume keys before they are read or saved.
+  if(hydrated&&enrollmentReady&&!enrollmentError&&!restored){
+    const state=restoreContinuousResume(saved,legacy,playback,hasCheckpoint,!!video.endQuiz.length);
     setSeconds(state.seconds);setCheckpointDone(state.checkpointDone);
     setRanges(state.ranges);setDone(state.endCheckDone);setRestored(true);
   }
@@ -73,6 +76,8 @@ export function ContinuousConceptPlayer({authored=false,video,scenes,revisionId,
     if(video.endQuiz.length&&!completed.current)setEndChecking(true);else complete();
   };
   const index=continuousSection(playback,Math.max(0,checking?seconds-.001:seconds)),scene=scenes[index];
+  const unfinishedStart=firstUnplayedConceptTime(playback,ranges);
+  const unfinishedAtEnd=restored&&!done&&!checking&&!endChecking&&seconds>=playback.durationSeconds-.05;
   const localSeconds=Math.max(0,seconds-playback.segments[index].startSeconds);
   const Media = playback.video ? 'video' : 'audio';
   const renderedMedia = (<Media ref={media} src={playback.video ?? playback.audio} preload="metadata" muted={muted} playsInline className={playback.video ? "aspect-video w-full bg-panel" : undefined} aria-label={playback.video ? authored?'Reviewed course video':"Animated personalised video" : "Continuous personalised narration"}
@@ -83,6 +88,7 @@ export function ContinuousConceptPlayer({authored=false,video,scenes,revisionId,
         onSeeked={e=>{const allowed=allowedConceptTime(playback,e.currentTarget.currentTime,checkpoint.current);if(e.currentTarget.currentTime>allowed+.001){e.currentTarget.currentTime=allowed;openCheckpoint();}else if(!e.currentTarget.paused)lastTime.current=allowed;updatePosition(allowed);}}
         onTimeUpdate={e=>track(e.currentTarget)} onEnded={ended}
         onError={()=>{pause();setMessage('Narration could not load. Retry playback or choose the original lesson.');}}/>);
+  if (!restored) return <p role="status">{enrollmentError ? 'Your saved lesson progress could not load. Refresh this page to retry.' : 'Restoring your lesson position…'}</p>;
   return <div className="space-y-4">
     <p className="text-sm text-ink-muted">{authored?`Reviewed Remotion lesson · Animations follow the narration.${hasCheckpoint?' Playback pauses for two knowledge-check questions.':''}`:playback.video ? `Personalised visual lesson · Animations follow the narration.${hasCheckpoint ? ' Playback pauses for the knowledge check.' : ''}` : 'One continuous personalised lesson. Visuals follow the narration; playback pauses for the knowledge check.'}</p>
     <div ref={screen} className="hook-film relative" aria-label={authored?'Reviewed continuous lesson':'Continuous personalised lesson'}>
@@ -105,6 +111,7 @@ export function ContinuousConceptPlayer({authored=false,video,scenes,revisionId,
       {endChecking&&<div ref={quiz}><QuizOverlay questions={video.endQuiz} doneLabel="Complete source check" onDone={()=>{setEndChecking(false);complete();}} onAnswer={(question,response)=>signal({kind:'video_check',moduleId:video.module,lesson:video.lesson,payload:{videoId:video.id,section:'end',question,response}})}/></div>}
     </div>
     {message&&<p role="status" className="text-sm text-ink-muted">{message}</p>}
+    {unfinishedAtEnd&&<div className="space-y-3 rounded-lg border border-line bg-panel p-4"><p>Your place is at the end. Finish the remaining teaching or checks to complete this lesson.</p><Button variant="outline" onClick={()=>{if(unfinishedStart!==null){pause();seek(unfinishedStart);void play();}else ended();}}>{unfinishedStart!==null?'Replay unfinished teaching':'Finish lesson checks'}</Button></div>}
     <details><summary className="cursor-pointer text-sm font-medium">{authored ? 'Read video transcript' : 'Read personalised transcript'}</summary><div className="mt-3 space-y-3 text-sm leading-relaxed">{scenes.filter(s=>checkpointDone||s.phase==='before').map(s=><p key={s.id}>{conceptNarration(s)}</p>)}</div></details>
     {done&&<div className="flex flex-wrap items-center gap-3 rounded-lg border border-line bg-panel p-4"><p role="status">{authored ? "Lesson video complete." : "Personalised lesson complete."}</p>{onNext&&<Button onClick={onNext}>{nextLabel??'Continue learning'}</Button>}</div>}
   </div>;

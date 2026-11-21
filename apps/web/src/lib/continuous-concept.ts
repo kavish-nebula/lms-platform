@@ -23,18 +23,25 @@ export function addPlayedRange(ranges: PlayedRange[], start: number, end: number
   return merged;
 }
 export function allConceptSectionsPlayed(playback: ContinuousPlayback, ranges: PlayedRange[]) {
-  return playback.segments.every(s => {
-    const covered = ranges.reduce((sum,r) => sum + Math.max(0, Math.min(r[1],s.endSeconds)-Math.max(r[0],s.startSeconds)),0);
-    return covered >= s.endSeconds-s.startSeconds-Math.min(.45,(s.endSeconds-s.startSeconds)*.03);
-  });
+  return firstUnplayedConceptTime(playback, ranges) === null;
 }
-export function restoreContinuousResume(saved: unknown, legacy: unknown, playback: ContinuousPlayback, hasCheckpoint: boolean): ContinuousResume {
+export function firstUnplayedConceptTime(playback: ContinuousPlayback, ranges: PlayedRange[]) {
+  return playback.segments.find(s => {
+    const covered = ranges.reduce((sum,r) => sum + Math.max(0, Math.min(r[1],s.endSeconds)-Math.max(r[0],s.startSeconds)),0);
+    return covered < s.endSeconds-s.startSeconds-Math.min(.45,(s.endSeconds-s.startSeconds)*.03);
+  })?.startSeconds ?? null;
+}
+export function restoreContinuousResume(saved: unknown, legacy: unknown, playback: ContinuousPlayback, hasCheckpoint: boolean, hasEndCheck = true): ContinuousResume {
   const value = saved as Partial<ContinuousResume> | null;
   if (value?.version === 2) {
     const checkpointDone = !hasCheckpoint || value.checkpointDone === true;
     let ranges: PlayedRange[] = [];
     for (const range of Array.isArray(value.ranges) ? value.ranges : []) if (Array.isArray(range) && range.length === 2 && range.every(Number.isFinite)) ranges = addPlayedRange(ranges, allowedConceptTime(playback,range[0],checkpointDone), allowedConceptTime(playback,range[1],checkpointDone));
-    return { version:2, seconds:allowedConceptTime(playback,Number(value.seconds),checkpointDone),checkpointDone,ranges,endCheckDone:value.endCheckDone === true && checkpointDone && allConceptSectionsPlayed(playback,ranges) };
+    const seconds = allowedConceptTime(playback,Number(value.seconds),checkpointDone);
+    // A refresh can land between the final playback save and the ended event.
+    // Recover only verified playback, never a seek to the end or an untaken quiz.
+    const finished = value.endCheckDone === true || !hasEndCheck && seconds >= playback.durationSeconds - .05;
+    return { version:2, seconds,checkpointDone,ranges,endCheckDone:finished && checkpointDone && allConceptSectionsPlayed(playback,ranges) };
   }
   const old = legacy as { version?: number; scene?: number; checkpointDone?: boolean; seen?: number[] } | null;
   const checkpointDone = !hasCheckpoint || old?.version === 1 && old.checkpointDone === true;
