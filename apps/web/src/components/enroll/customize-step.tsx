@@ -9,8 +9,9 @@ import type { LessonPart } from "@/lib/setup";
 
 export type Pace = { sessionMinutes: number; studyDays: number[]; addToPlan: boolean };
 
-export function CustomizeStep({ order, primaryLabel, onBack, onEditProfile, onSubmit }: {
+export function CustomizeStep({ order, preference, primaryLabel, onBack, onEditProfile, onSubmit }: {
   order: LessonPart[];
+  preference?: string | null;
   primaryLabel: string;
   onBack?: () => void;
   onEditProfile: () => void;
@@ -39,7 +40,7 @@ export function CustomizeStep({ order, primaryLabel, onBack, onEditProfile, onSu
             </span>
             <h2 id="lesson-sequence" className="font-semibold">{t("cLessonOrder")}</h2>
           </div>
-          <LessonOrderPreview order={order} />
+          <LessonOrderPreview order={order} preference={preference} />
         </Surface>
       </div>
 

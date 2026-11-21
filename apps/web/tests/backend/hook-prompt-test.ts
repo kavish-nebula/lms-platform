@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import { EMPTY_BRIEF, type CourseBriefData } from '@/lib/content-creator';
+import { SourceLibrary, courseSources, sourceCoverage } from '@/lib/source-library';
+import { moduleAuthoringInput, moduleInputSignature, MODULE_CORE_PROMPT } from '@/lib/module-authoring';
+import { createCreatorDraft, getCreatorDraft, updateCreatorDraft } from '@/server/content-creator';
+import { getCodexCourseContext } from '@/server/authored-course';
+import { closeDb } from '@/server/db/client';
+const brief:CourseBriefData={...EMPTY_BRIEF,title:'Hook prompt fixture',subject:'Evidence',audience:'Beginners',outcomes:'Read facts.',dependencies:'Read first.',objectives:[{text:'Identify a source fact.',bloom:'Understand'}],sourceLibrary:{version:1,modules:[{id:'M1',title:'Read facts',topics:[{id:'T1',title:'Read'}]},{id:'M2',title:'Later',topics:[]}],sources:[{id:'S1',revision:1,title:'Teaching',scope:'topic',moduleId:'M1',topicId:'T1',text:'Keep missing facts unknown.',reference:'Synthetic fixture',objectiveIds:['O1']}]}};
+const next=structuredClone(brief);next.sourceLibrary!.modules[0].problemHookPrompt='Use one simple visual comparison. End with a question, without giving the answer.';
+assert(SourceLibrary.safeParse(next.sourceLibrary).success);assert.deepEqual(courseSources(next),courseSources(brief));assert.deepEqual(sourceCoverage(next,'M1'),[]);assert.equal(moduleAuthoringInput(next,'M1').problemHookPrompt,next.sourceLibrary!.modules[0].problemHookPrompt);assert(!moduleAuthoringInput(next,'M2').problemHookPrompt);
+assert.notEqual(moduleInputSignature(brief,'M1'),moduleInputSignature(next,'M1'));assert.equal(moduleInputSignature(brief,'M2'),moduleInputSignature(next,'M2'));assert(MODULE_CORE_PROMPT.includes('not teaching evidence'));
+const draft=await createCreatorDraft('u-1001',{brief});await updateCreatorDraft('u-1001',draft.id,{revision:1,brief:next});const saved=await getCreatorDraft('u-1001',draft.id);assert.equal(saved.brief.sourceLibrary!.modules[0].problemHookPrompt,next.sourceLibrary!.modules[0].problemHookPrompt);assert.equal(saved.brief.sourceLibrary!.sources[0].revision,1);assert(!(saved.brief.sourceLibrary!.sources.some(s=>s.purpose==='problem-hook')));
+const context=await getCodexCourseContext('u-1001',draft.id);assert.equal(context.problemHookPrompts![0].prompt,next.sourceLibrary!.modules[0].problemHookPrompt);await assert.rejects(updateCreatorDraft('u-1001',draft.id,{revision:1,brief}),{status:409});await closeDb();console.log('PASS hook prompts: persistence, scoped generation/MCP context, source separation, module freshness and stale-write protection.');

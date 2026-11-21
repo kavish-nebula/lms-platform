@@ -151,6 +151,7 @@ export function EnrollFlow({
   else if (phase === "customize")
     body = (
       <CustomizeStep
+        preference={answers.firstStep}
         order={adaptation.order}
         primaryLabel={enrolled ? t(previewFromQuickStart ? "saveChanges" : "backToCourse") : t("buildCourse")}
         onBack={previewFromQuickStart ? () => { setShowOptions(false); setPreviewFromQuickStart(false); setPhase("fit"); } : undefined}

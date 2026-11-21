@@ -1,0 +1,124 @@
+/* Authoring uses the available canvas; learner reading widths stay separate. */
+.creator-shell {
+  --page-pad: clamp(20px, 2.4vw, 48px);
+  font-size: var(--fs-base);
+  line-height: 1.6;
+}
+
+.creator-workspace { width: 100%; min-width: 0; }
+.creator-stage { display: flex; flex-direction: column; gap: 2rem; min-width: 0; }
+.creator-stage > * { min-width: 0; }
+.creator-stage > header p { overflow-wrap: anywhere; }
+.creator-panel { padding: clamp(1.25rem, 2vw, 2rem); min-width: 0; }
+.creator-review-checks { display: grid; gap: 0.75rem 2rem; }
+.creator-review-checks > label { border-top: 1px solid var(--line); padding-block: 0.875rem; }
+.creator-production-grid { display: grid; align-items: start; gap: 1.75rem; min-width: 0; }
+.creator-production-outline { display: flex; gap: 1rem; min-width: 0; max-width: 100%; overflow-x: auto; }
+.creator-production-outline > div { flex-shrink: 0; width: 15rem; min-width: 0; }
+/* Package JSON is a document editor, not a content-sized form answer. */
+.creator-shell .creator-package-json {
+  field-sizing: fixed;
+  height: clamp(20rem, 55dvh, 36rem);
+  min-height: 20rem;
+  max-height: 75dvh;
+  overflow: auto;
+  resize: vertical;
+  tab-size: 2;
+}
+.creator-shell .creator-package-tabs [data-slot="tabs-trigger"] {
+  flex: 0 0 auto;
+  white-space: nowrap;
+  padding-inline: 0.875rem;
+}
+.creator-shell :where(.text-xs) { font-size: var(--fs-sm); line-height: 1.5; }
+.creator-shell :where(.text-sm) { font-size: var(--fs-base); line-height: 1.6; }
+.creator-shell :where(.text-lg) { font-size: var(--fs-md); }
+.creator-shell :where(label, legend, summary) { overflow-wrap: anywhere; }
+.creator-shell :where([data-slot="input"], textarea, select) {
+  min-height: 3rem;
+  min-width: 0;
+  max-width: 100%;
+  font-size: var(--fs-base);
+  line-height: 1.6;
+}
+.creator-shell :where(textarea) { padding: 0.875rem 1rem; }
+.creator-shell :where(button, [data-slot="button"]) {
+  min-height: 2.75rem;
+  height: auto;
+  max-width: 100%;
+  white-space: normal;
+  padding-block: 0.625rem;
+}
+
+.creator-brief-fields { display: grid; gap: 1.75rem 2rem; }
+.creator-brief-fields > * { min-width: 0; }
+.creator-brief-fields :where(p) { max-width: 80ch; }
+.creator-section { scroll-margin-top: 6rem; }
+.creator-section-links { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; }
+.creator-section-links a {
+  padding-block: 0.5rem;
+  color: var(--accent-ink);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+.creator-production-options { border-block: 1px solid var(--line); padding-block: 0.875rem; }
+.creator-production-options > summary { cursor: pointer; font-weight: 600; }
+.creator-production-options > section { margin-top: 1rem; }
+
+.creator-workflow { padding: 0; overflow: hidden; }
+.creator-workflow ol { display: grid; gap: 0; }
+.creator-workflow li { min-width: 0; }
+.creator-workflow a {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  height: 100%;
+  padding: 1.125rem;
+  text-decoration: none;
+}
+.creator-workflow a[aria-current="step"] { background: var(--accent-soft); color: var(--accent-ink); }
+.creator-workflow-number {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+  font-weight: 600;
+}
+.creator-workflow p { border-top: 1px solid var(--line); margin: 0; padding: 1rem 1.125rem; }
+.creator-savebar { z-index: 20; box-shadow: var(--shadow-sm); }
+.creator-savebar-actions { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+.creator-savebar button[type="submit"] { margin-left: auto; min-width: 9rem; }
+/* Keep the shared floating theme switch clear of the creator's save action. */
+:root:has(.creator-savebar) .app-theme-toggle {
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 7.5rem);
+}
+
+@media (min-width: 700px) {
+  .creator-workflow ol { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 1100px) {
+  .creator-review-checks { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .creator-production-grid { grid-template-columns: clamp(15rem, 18vw, 20rem) minmax(0, 1fr); }
+  .creator-production-outline {
+    position: sticky;
+    top: 6rem;
+    flex-direction: column;
+    max-height: calc(100dvh - 8rem);
+    overflow-y: auto;
+  }
+  .creator-production-outline > div { width: auto; }
+  .creator-brief-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .creator-field-wide { grid-column: 1 / -1; }
+  .creator-workflow ol { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+}
+@media (max-width: 600px) {
+  .creator-savebar-actions { align-items: stretch; }
+  .creator-savebar-actions > span { width: 100%; }
+  .creator-savebar button[type="submit"] { width: 100%; }
+  :root:has(.creator-savebar) .app-theme-toggle {
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 11rem);
+  }
+}

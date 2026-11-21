@@ -434,6 +434,10 @@ frame capture and FFmpeg holds avoid re-rendering static narration intervals.
 Enrollment-scoped authenticated delivery is unchanged. See
 `docs/hybrid-video-rendering.md` for recovery, setup and current verification.
 
+Fully Remotion storyboards run local word alignment without importing Manim or
+Cairo. Mixed storyboards retain native rendering for their Manim chapters;
+both routes require the final narrated MP4 to pass complete-file decoding.
+
 Automation vs AI creator revision: the scoped derivative in automation-ai-lesson.ts combines the creator's supplemental source with edition-specific checkpoint teaching. Source recordings and questions remain immutable. The updated authored text invalidates adaptation fingerprints; deterministic storyboards use exact narration anchors. See [Automation/AI explainer](automation-ai-explainer.md).
 
 Reference-style video delivery uses source-anchored demonstration compositions, reusable reviewed storyboards for unchanged teaching, and a renderer source fingerprint in each private derivative key. A local resumable regeneration runner rebuilds prepared narration derivatives without publishing or changing grades. See [video rollout](reference-style-videos.md).
@@ -473,3 +477,38 @@ the existing byte-range stream and continuous player (watched coverage, midpoint
 pause, seek bounds, resume and progress callbacks). Historical editions retain
 their frozen scripts/media even if later creator approvals change. No database
 migration or learner progress rewrite is needed.
+
+
+### Activity video delivery
+
+Authored modules may bind worked-example and guided-practice MP4s with optional `stageVideos` entries, alongside the existing hook binding. Stage 4 derives these visual targets from the latest current-brief package without assessment answers. Existing immutable visual jobs and files are reused; no schema migration is required. Publication validates stage ownership and activity-source alignment. Learner delivery resolves the MP4 from the enrollment's edition and preserves interactive practice below it; watching alone does not complete practice.
+
+
+### SME activity inputs
+
+SourceLibrary v1 gains optional module-only purposes `worked-example`, `guided-practice` and `module-quiz`, with structured reasoning, practice-step and question records. These additive JSON fields use the existing brief/source revision mechanism and need no database migration. `smeModuleActivities` maps them to native authored fragments; both video-first generation and complete-package validation preserve creator wording and answer keys. Assessment material is excluded from concept-evidence coverage and midpoint citations. Source revision comparison normalizes nested activity field order to avoid invalidating unrelated modules after JSONB round trips. Existing courses without activity inputs retain their behavior.
+
+
+### Course-end project authoring
+
+SourceLibrary v1 optionally stores miniProject task planning as additive JSON: title, challenge, deliverable, stable task IDs, instructions, expected evidence, criteria and module/objective/source coverage. Course-only readiness checks validate this plan; module-scoped inputs/hashes remain independent. MCP assembly preserves it through optional native miniProject.tasks, with one rubric item per task and the existing guided sandbox required for creator-defined project completion. Public task descriptions reach the learner intro and workspace while grading checks remain private. Brief and package revision controls, review/publication and enrollment edition pinning remain unchanged; no migration or learner record write is needed to save a plan.
+
+Optional Scenario Lab authoring uses additive JSON fields, with no database migration: `sourceLibrary.modules[].scenarioLabEnabled` and module-scoped `scenario-lab` sources containing stable-ID scenarios. Undefined flags preserve legacy labs; new UI modules explicitly set false. Disabled lab sources remain stored but are excluded from active `courseSources`, generation and coverage. Module input hashes include the setting; unrelated module edits do not invalidate fragments. The package permits omitted `scenarioLab`/lab narration, and full saving enforces the saved brief policy and exact manual fragments. Delivery derives stages, topics, progress and adaptation pieces from actual included content; published editions are not rewritten.
+
+Module-scoped blueprints use a scope key in run uniqueness (migration 0029) and canonical selected-module signatures for review freshness. Later module additions preserve earlier approvals, while relevant source/instruction changes invalidate them. Final assembly still requires complete-course coverage, the configured module count and course-end assets. No learner publication behavior changes.
+
+Optional sourceLibrary.modules[].problemHookPrompt is creator guidance, not source evidence. It participates in module freshness signatures and hook visual identities, appears in MCP context, and is excluded from concept-video visual contexts. No migration is needed for this additive JSON property. Existing source revisions and publications are unchanged by prompt-only edits.
+
+Stage 4 treats Remotion source setup as an optional panel rather than a prerequisite for opening saved production scripts and audio. Approved courses created before module/topic source outlines retain their existing Stage 3 approval and production access; the panel explains the missing visual sources. Expected source/approval freshness conflicts render guidance, while authorization failures and unexpected errors still propagate. Visual generation APIs continue to require current reviewed sources, and the panel never offers targets belonging to a different blueprint than the open production workspace.
+
+Guided written practice keeps local version-1 drafts under course/module/released-version keys, using the existing enrollment scoping in local-store. Answers and the exact compared text are stored separately from grades, server knowledge evidence and completion records. Editing an answer invalidates its comparison; a fresh answer/comparison is needed to enable practice continuation unless the stage was already completed. Corrupt/future draft data and removed step IDs do not grant readiness. Preview answers remain in memory. No database migration, grading rule, master course edit or published-edition change is introduced. Authoring navigation exposes the existing routes as five stages; approval and publication services remain unchanged.
+
+The stable `/content/courses/[id]/blueprint/review` entry point resolves an owned course to its latest ready current blueprint (or a historical ready blueprint for inspection). When none exists, it keeps Stage 3 active and directs the creator to prepare a blueprint in Stage 2. It does not generate content or record approval.
+
+Released Remotion problem hooks render inside the normal module player. Watching or restoring verified playback unlocks an explicit Next action; the action records existing hook progress and navigates to the first applicable concept. Restoring a saved end position can recover completion only with full section coverage and no outstanding midpoint/source check. Incomplete coverage offers a replay from the first unfinished section; an end position alone never grants completion.
+
+Continuous lesson playback waits for enrollment data before reading or writing its scoped resume state. The media element mounts after restoration, so metadata loading cannot reset the restored position to zero. An enrollment-read failure leaves the saved resume untouched and asks the learner to refresh.
+
+Catalog visibility excludes retired courses by stable ID through `isListedCourseId`, including Clean Data to Clear Decisions and Clear Task Handoffs — MCP Setup Verification. Discovery lists and recommendations omit these courses; their published content, direct routes, enrollments, grades and media remain intact.
+
+Course video presentation uses neutral teaching labels rather than platform-company branding. Authenticated visual exports, personalized videos and imported/uploaded recordings can resolve a verified sibling `.neutral-course-v1.mp4`; source files and published editions remain immutable. A sidecar binds the derivative to the original size/modification time and verified unchanged audio. Streaming uses the derivative's actual byte length and retains enrollment authorization and range support. Internal player URLs include a presentation-version query to refresh browser media caches without changing progress or resume identities. Header-only renderer changes may reuse an exactly scoped corrected legacy personalized render; revision, narration, visual plan and illustration hashes must still match.

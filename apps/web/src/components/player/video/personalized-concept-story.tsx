@@ -14,7 +14,7 @@ export function PersonalizedConceptStory({ scene, seconds, duration = 0, reduced
   const Icon = icons[index % icons.length];
   const point = scene.points[Math.min(scene.points.length - 1, Math.floor(index / Math.max(1, slides.length - 1) * scene.points.length))];
   return <div className="hook-film-scene personal-concept-scene personal-teaching-deck" data-scene={scene.id} data-slide={index + 1}>
-    <header className="hook-film-heading"><span>Nebula KnowLab · {purpose === 'hook' ? 'Your case study' : 'Your concept lesson'}</span><h2>{scene.title}</h2></header>
+    <header className="hook-film-heading"><span>{purpose === 'hook' ? 'Your case study' : 'Your concept lesson'}</span><h2>{scene.title}</h2></header>
     <motion.div key={`${scene.id}-${index}`} initial={reducedMotion ? false : { opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: reducedMotion ? 0 : .35 }} className={`personal-teaching-frame personal-teaching-layout-${slide?.context ? 'context' : index % 2}`}>
       <div className="personal-teaching-symbol" aria-hidden><Icon /></div>
       <div className="personal-teaching-copy">

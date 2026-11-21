@@ -1,4 +1,5 @@
 import { z } from 'zod/v4';
+import { hasPlatformBrand } from './lesson-presentation';
 
 const id = z.string().regex(/^[A-Za-z][A-Za-z0-9_-]{0,79}$/);
 export const VISUAL_KINDS = ['comparison', 'rule-flow', 'pattern-model', 'exception', 'hybrid', 'recap', 'document', 'workspace', 'journey', 'network', 'decision'] as const;
@@ -29,6 +30,8 @@ export const VisualLesson = z.object({
     beats: z.array(z.object({ id, label: z.string().trim().min(1).max(65), narration: z.string().trim().min(8).max(420), visual: z.object({ heading: z.string().trim().min(1).max(45), detail: z.string().trim().min(1).max(120), icon: z.enum(['document','message','check','question','person','model','shield','table']).default('document'), status: z.enum(['neutral','warning','success']).default('neutral') }).strict().optional() }).strict()).min(1).max(4),
   }).strict()).min(2).max(12),
 }).strict().superRefine((lesson, ctx) => {
+  const visibleText = [lesson.title, ...lesson.scenes.flatMap(s => [s.title, ...s.beats.flatMap(b => [b.label, b.narration, b.visual?.heading ?? '', b.visual?.detail ?? ''])])];
+  if (visibleText.some(hasPlatformBrand)) ctx.addIssue({ code:'custom', message:'Do not include the platform company name in lesson narration or visual labels. Use neutral labels or a source-supported fictional workplace.' });
   const ids = lesson.scenes.flatMap(s => [s.id, ...s.beats.map(b => b.id)]);
   if (new Set(ids).size !== ids.length) ctx.addIssue({ code: 'custom', message: 'Scene and narration beat IDs must be unique.' });
   let hasMovement = false;

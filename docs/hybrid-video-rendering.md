@@ -15,7 +15,10 @@ assessment rules remain separate and unchanged.
 3. Align words locally with faster-whisper. Cue timing must have sufficient
    source coverage; a missing first word can use the first matched word within
    the same phrase. Related reveals in the same sentence may be co-introduced.
-4. Render Manim chapters and hand the aligned timeline to Remotion. Explicit
+4. Load Manim only when the storyboard contains a Manim chapter. Fully Remotion
+   storyboards still pass word alignment and source-coverage checks, then hand
+   the aligned timeline directly to Remotion without loading Cairo or creating
+   an unused native movie. Explicit
    reveals follow their spoken cues; uncued structural parts of a diagram appear
    with its opening illustration. Conclusions still require their own cue.
 5. Render short motion windows and hold their last frame during narration. Copy
@@ -26,6 +29,9 @@ assessment rules remain separate and unchanged.
 The output is 1280x720 at 24 fps. The Node renderer serves only an allowlisted
 Manim asset through a random, loopback-only URL; it never exposes the media folder.
 Native render subprocesses receive no model-provider credentials.
+
+The alignment-only route does not mark a lesson ready. The compositor must
+produce the narrated MP4 and pass its complete-file decoder check first.
 
 ## Failure recovery and privacy
 
@@ -89,3 +95,9 @@ outbound connector at the local/cloud boundary and misplaced language-model
 labels. Generic model input, learned parameters and generated text are labeled
 by their visual roles; authored keywords/model names remain separate caption
 chips rather than being assigned to incorrect parts of the diagram.
+
+## Neutral course media presentation
+
+Course videos use neutral labels such as “Learning in focus,” “Visual explainer” and “Case study.” App branding remains separate. Visual-script validation rejects platform-company references in narration and visible labels; adaptation prompts require neutral labels or source-supported fictional workplaces.
+
+Run `node scripts/audit-course-media-brand.mjs` from `apps/web` for a read-only saved-script/media inventory. Then `node scripts/clean-course-video-branding.mjs` creates presentation copies of known branded renderer outputs and original recording logos. It preserves originals, copies the compressed audio stream, verifies exact audio packet hashes and fully decodes each output before atomically activating it. Repeated runs reuse current copies. Reports are local under `outputs/`; course packages, approvals, progress and source provenance are unchanged. Local original-recording speech review is available through `scripts/audit-original-video-narration.py` with the cached Whisper model. The script reports suspected spoken references for review; it does not silently alter teaching narration.

@@ -1,5 +1,18 @@
 # Learning experience UI
 
+The content creator shell uses the available width beside its sidebar, with
+responsive 20–48 px page padding rather than the learner reading-width cap.
+Creator-only typography uses the existing base token for labels and inputs,
+the small token for helper text, and 48 px minimum input height. The course
+brief pairs suitable fields above 1100 px while keeping long system prompts
+and source text across both columns; narrower screens use a single column.
+Section links jump to the brief, objectives and module sources. Production
+settings remain available in an expandable section. The save bar keeps status
+and the primary action visible, stacking them on mobile. Workflow links form
+four numbered stages on desktop and wrap to two or one column. These styles
+are scoped to the creator shell and use the existing dark/light theme tokens;
+learner layout, saved content, source mappings and approval behavior are unchanged.
+
 Existing learners can explicitly open `/learn/courses/<id>/enroll?step=prerequisites`
 to review prerequisite suggestions without changing setup. This view clearly says
 the learner is enrolled, keeps answers in component state only, and returns to
@@ -347,3 +360,30 @@ python "$filmTools/narrate.py" $filmWork $filmWork
 python "$filmTools/lesson_render.py" $filmWork apps/web/public/topic-shorts
 Copy-Item -LiteralPath "$filmWork/topic-film-titles.json" -Destination apps/web/src/components/player/video/topic-film-titles.json
 ```
+
+
+Activity videos appear above the existing worked-example or guided-practice task. Use the shared continuous-video controls, captions and transcript, with token-based panel spacing. Preserve the written steps and input fields below the MP4; video completion does not submit practice. Stage 4 labels hooks, concepts, worked examples and guided practice separately and exposes ready MP4 downloads.
+
+
+The SME source-library editor places optional worked-example, guided-practice and module-quiz cards after each module's concept topics. Cards use existing Input, Textarea and Button primitives and theme tokens. Quiz options use labelled native radios for one correct answer and checkboxes for select-all; changing/removing options preserves the associated answer-index mapping. Stable practice/question IDs survive editing. Source references and objective mappings remain available in expandable details.
+
+
+Module quizzes display their first question, four option inputs and per-option correct-answer selectors immediately when added. Previously saved empty quizzes show the same editable first-question placeholder without silently changing the brief. The creator can add more questions, choose single-answer or select-all mode and save their keys with the draft.
+
+
+Quiz authoring opens a blank first question with four options immediately, including a clearly labelled answer type and correct-answer controls. Existing empty saved quizzes render a stable editable placeholder without marking the brief dirty until the creator edits it. Adding another question retains that first question. Remove the whole optional quiz to clear its last question. Existing populated quizzes keep their question IDs, option order and answer keys.
+
+
+One course-end Mini project workspace follows all module editors, including the three-module course layout. It uses labelled theme-aware fields and numbered task cards, with optional expandable coverage mappings and a button to copy the existing assembled project as a draft. Task requirements appear in a collapsed Tasks to accomplish panel on the learner project pages, preserving the guided workspace's step-by-step layout.
+
+The SME module editor now places an optional Scenario Lab section between Guided practice and Module quiz. A labelled native checkbox independently controls each module and explains generated-versus-custom content and retention when disabled. Custom scenarios use labelled, stable-ID fieldsets for name, situation, task and expected evidence, plus source/objective mapping. The form uses existing panel, border, text and brand tokens, with no added motion.
+
+SME input includes a planned module count and module workspace selector. Stage 2 distinguishes independent module preparation from complete-course final assembly, using native labelled controls and existing theme tokens.
+
+Problem hook authoring has a labelled prompt textarea with help text and a starter-instructions action, before the source name/content. The starter action is disabled when a prompt is already entered, avoiding accidental replacement.
+
+Stages 2–4 share the creator workspace width and 17px body/control typography. Blueprint generation and module review use consistent section spacing and responsive panel padding. The Stage 3 checklist becomes two columns on wide screens, returning to one on smaller screens. Stage 4 gives the production outline a wider sticky desktop rail and a contained horizontal rail on mobile, while save controls remain clear of the floating theme switch. Long-form production and final course assembly use the same stage spacing; review and publishing behavior is unchanged.
+
+Desktop authoring now uses five consistent navigation stages: Brief and sources, Blueprint, Module review, Produce lessons, Review and publish. Production pages highlight Stage 4; final assembly highlights Stage 5. Course assembly opens with a course-preview tab and keeps Advanced JSON in a bounded, internally scrolling editor. Preview and editor share unsaved package state. Learning setup highlights the selected support preference alongside the fixed approved teaching sequence, rather than claiming recordings reorder. Narrated guided practice uses the shared lesson shell with labeled answer fields, optional hints, explicit self-review comparisons and a collapsed demonstration. The changes use existing theme tokens and desktop/laptop typography.
+
+Released problem-hook films retain the course header, module outline and shared lesson footer. The footer names the next concept and unlocks after verified playback or prior hook completion. Watching the film does not automatically redirect away from its final visual. A saved unfinished end position offers a clear replay/check action rather than a dead end.

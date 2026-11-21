@@ -12,23 +12,26 @@ import { visualLessonSource,serveVisualAsset } from './visual-lessons';
 import { findEnrollment } from './repo';
 import { ApiError } from './http';
 import { pcmWav } from './adapt/continuous-audio';
+import { activityVisualSource } from '@/lib/activity-visual';
 
 function bindings(content:AuthoredCoursePackageData){return content.modules.flatMap(m=>[
- ...(m.problemHook.remotion?[{moduleId:m.id,ref:m.problemHook.remotion,videoId:`draft_${m.id}_hook`,video:null}]:[]),
- ...m.conceptExplainer.videos.filter(v=>v.remotion).map(v=>({moduleId:m.id,ref:v.remotion!,videoId:v.id,video:v})),
+ ...(m.problemHook.remotion?[{moduleId:m.id,ref:m.problemHook.remotion,videoId:`draft_${m.id}_hook`,video:null,activity:null}]:[]),
+ ...(['worked','guided'] as const).flatMap(stage=>m.stageVideos?.[stage]?[{moduleId:m.id,ref:m.stageVideos[stage]!,videoId:`draft_${m.id}_${stage}`,video:null,activity:activityVisualSource(m,stage)}]:[]),
+ ...m.conceptExplainer.videos.filter(v=>v.remotion).map(v=>({moduleId:m.id,ref:v.remotion!,videoId:v.id,video:v,activity:null})),
 ]);}
 async function rows(ownerId:string,courseId:string,binding:ReturnType<typeof bindings>[number]){
  const d=await db();
  const [revision]=await d.select().from(creatorVisualLessons).where(and(eq(creatorVisualLessons.id,binding.ref.revisionId),eq(creatorVisualLessons.courseId,courseId),eq(creatorVisualLessons.ownerId,ownerId)));
  const jobs=await d.select().from(creatorVisualJobs).where(eq(creatorVisualJobs.revisionId,binding.ref.revisionId));
  const audio=jobs.find(j=>j.id===binding.ref.audioJobId&&j.kind==='audio'&&j.status==='ready'),exported=jobs.find(j=>j.id===binding.ref.exportJobId&&j.kind==='export'&&j.status==='ready'&&j.dependencyId===audio?.id);
- if(!revision||revision.moduleId!==binding.moduleId||!audio?.output.clips?.length||!exported)throw new ApiError(422,'visual_not_ready','Every released visual must reference its owned saved script, ready matching narration and completed MP4.');
+ if(!revision||revision.moduleId!==binding.moduleId||revision.videoId!==binding.videoId||!audio?.output.clips?.length||!exported)throw new ApiError(422,'visual_not_ready','Every released visual must reference its owned saved script, correct stage, ready matching narration and completed MP4.');
  return {revision,audio,exported};
 }
 export async function validateReleasedVisuals(ownerId:string,courseId:string,content:AuthoredCoursePackageData){
  for(const binding of bindings(content)){
   const {revision,audio,exported}=await rows(ownerId,courseId,binding),source=await visualLessonSource(ownerId,courseId,revision.videoId);
   if(source.identity!==revision.sourceIdentity)throw new ApiError(409,'visual_source_changed','Reconcile the changed visual source before publication.');
+  if(binding.activity&&(!source.text.startsWith(binding.activity.text+'\n\n')||JSON.stringify(source.sourceIds)!==JSON.stringify(binding.activity.sourceIds)))throw new ApiError(422,'visual_activity_mismatch','The activity changed. Reconcile its video with the current worked example or guided practice before saving.');
   const beats=revision.content.scenes.flatMap(s=>s.beats);
   if(binding.video&&(binding.video.slides.length!==beats.length||binding.video.slides.some((s,i)=>s.narration!==beats[i].narration)))throw new ApiError(422,'visual_transcript_mismatch','Keep the saved visual narration and learner transcript identical.');
   if(binding.video&&binding.video.id!==revision.videoId)throw new ApiError(422,'visual_binding','The concept must keep its saved visual video ID.');

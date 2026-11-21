@@ -4,10 +4,11 @@ import path from 'node:path';
 import { randomUUID, createHash } from 'node:crypto';
 import { z } from 'zod/v4';
 import { AuthoredCoursePackage, validateAuthoredCourse, type AuthoredCoursePackageData } from '@/lib/authored-course';
-import { moduleSourceIssues, courseSources } from '@/lib/source-library';
-import { MODULE_CORE_PROMPT, MODULE_CORE_VERSION, MODULE_INSTRUCTIONS_VERSION, moduleAuthoringInput, moduleReadiness } from '@/lib/module-authoring';
+import { moduleSourceIssues, courseSources, isActiveSource } from '@/lib/source-library';
+import { MODULE_CORE_PROMPT, MODULE_CORE_VERSION, MODULE_INSTRUCTIONS_VERSION, moduleAuthoringInput, moduleReadiness, moduleInputSignature } from '@/lib/module-authoring';
 import type { CourseBriefData } from '@/lib/content-creator';
 import { courseAuthoringSystem } from '@/lib/course-authoring-prompt';
+import { smeModuleActivities } from '@/lib/sme-module-activities';
 import { getCreatorDraft } from './content-creator';
 import { assertVideoSources, readVideoTranscript } from './concept-videos';
 import { llmHttp, llmModels, type LlmTransport } from './ai/llm';
@@ -19,7 +20,7 @@ type ModuleDraft = { id: string; courseId: string; moduleId: string; briefRevisi
   status?: 'needs_review'; provenance?: { corePromptVersion: string; moduleInstructionsVersion: number; inputHash: string; model: string; sourceRevisions: { id: string; revision: number; transcriptId?: string }[]; instructions: ReturnType<typeof moduleAuthoringInput>['moduleInstructions'] } };
 const root = () => process.env.LMS_VIDEO_DIR ?? path.join(appRoot(), '.data', 'concept-videos');
 const ModuleSchema = AuthoredCoursePackage.shape.modules.element;
-export const moduleInputHash = (brief: CourseBriefData, moduleId: string) => createHash('sha256').update(JSON.stringify({ core: MODULE_CORE_PROMPT, version: MODULE_CORE_VERSION, input: moduleAuthoringInput(brief, moduleId) })).digest('hex');
+export const moduleInputHash = (brief: CourseBriefData, moduleId: string) => createHash('sha256').update(JSON.stringify({ core: MODULE_CORE_PROMPT, version: MODULE_CORE_VERSION, input: moduleInputSignature(brief, moduleId) })).digest('hex');
 export async function videoModuleDrafts(ownerId: string, courseId: string) {
   const draft = await getCreatorDraft(ownerId, courseId);
   const dir = path.join(root(), courseId, 'modules');
@@ -35,7 +36,7 @@ export async function generateVideoModule(ownerId: string, courseId: string, mod
   if (gaps.length) throw new ApiError(422, 'source_coverage', gaps.join(' '));
   const unit = draft.brief.sourceLibrary?.modules.find(m => m.id === moduleId);
   if (!unit) throw new ApiError(404, 'module_not_found', 'Select a module in the source outline.');
-  const sources = draft.brief.sourceLibrary!.sources.filter(s => s.scope === 'course' || s.moduleId === moduleId);
+  const sources = draft.brief.sourceLibrary!.sources.filter(s => isActiveSource(draft.brief, s) && (s.scope === 'course' || s.moduleId === moduleId));
   await assertVideoSources(ownerId, courseId, { ...draft.brief, sourceLibrary: { ...draft.brief.sourceLibrary!, modules: [unit], sources } });
   await (await import('./source-media')).assertSourceMedia(ownerId, courseId, { ...draft.brief, sourceLibrary: { ...draft.brief.sourceLibrary!, modules: [unit], sources } });
   const authoringInput = moduleAuthoringInput(draft.brief, moduleId);
@@ -71,7 +72,10 @@ export async function generateVideoModule(ownerId: string, courseId: string, mod
     const raw = reply.choices?.[0]?.message?.content ?? '';
     try {
       if (reply.choices?.[0]?.finish_reason === 'length') throw new Error('Output truncated. Shorten prose.');
-      const parsed = ModuleSchema.parse(JSON.parse(raw));
+      const generated = { ...JSON.parse(raw), ...smeModuleActivities(draft.brief, moduleId) };
+      if (!authoringInput.scenarioLabEnabled) delete generated.scenarioLab;
+      const parsed = ModuleSchema.parse(generated);
+      if (authoringInput.scenarioLabEnabled && !parsed.scenarioLab) throw new Error('Include the enabled scenario lab.');
       // The hook's name and situation belong to the SME, not a model paraphrase.
       const hookSource = authoringInput.problemHookSource;
       if (hookSource) {
@@ -81,6 +85,7 @@ export async function generateVideoModule(ownerId: string, courseId: string, mod
         parsed.problemHook.objectiveIds = [...hookSource.objectiveIds];
         parsed.sourceIds = [...new Set([...parsed.sourceIds, hookSource.id])];
       }
+      parsed.sourceIds = [...new Set([...parsed.sourceIds, ...sources.filter(s => s.purpose && s.purpose !== 'problem-hook').map(s => s.id)])];
       if (parsed.id !== moduleId || parsed.objectiveIds.slice().sort().join(',') !== objectiveIds.slice().sort().join(',')) throw new Error('Preserve module ID and objective IDs.');
       if (parsed.conceptExplainer.videos.length !== videos.length) throw new Error('Preserve every supplied concept video.');
       parsed.conceptExplainer.videos = videos.map(video => {

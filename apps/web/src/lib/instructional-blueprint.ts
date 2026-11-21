@@ -1,4 +1,6 @@
-import { courseSources, sourceCoverage, moduleSourceIssues, sourceTeachingText } from './source-library';
+import { courseSources, sourceCoverage, moduleSourceIssues, sourceTeachingText, isConceptTeachingSource, moduleHasScenarioLab, type SourceRecord } from './source-library';
+import { sameCourseBrief } from './content-creator';
+import { moduleInputSignature } from './module-authoring';
 import { z } from "zod/v4";
 import { MODULE_FLOW, COURSE_END_FLOW, CODEX_MODULE_FLOW, CODEX_COURSE_END_FLOW, type DeliveryStructure } from './course-delivery';
 import { BLOOM_LEVELS, type CourseBriefData } from "./content-creator";
@@ -21,7 +23,7 @@ export const InstructionalBlueprint = z.object({
     psychomotor: z.object({ applicable: z.boolean(), feasibility: text, requirements: lines }).strict(),
   }).strict(),
   modules: z.array(z.object({ id: text, title: text, objectiveIds: ids, sourceIds: ids, prerequisites: z.array(text).max(20), minutes: z.number().positive().max(600),
-    steps: z.array(z.object({ kind: z.enum([...BLUEPRINT_STEPS, 'quiz']), activity: text, minutes: z.number().nonnegative().max(600) }).strict()).min(5).max(9),
+    steps: z.array(z.object({ kind: z.enum([...BLUEPRINT_STEPS, 'quiz']), activity: text, minutes: z.number().nonnegative().max(600) }).strict()).min(4).max(9),
   }).strict()).min(1).max(12),
   tasks: z.array(z.object({ ...moduleLink, tier: z.enum(["Practice", "Application", "Extension"]), title: text, instructions: text, deliverable: text, feedback: text, sourceIds: ids }).strict()).min(1).max(60),
   assessments: z.array(z.object({ ...moduleLink, layer: z.enum(["L1", "L2", "L3", "L4", "L5"]), bloom: z.enum(BLOOM_LEVELS), solo: z.enum(["Unistructural", "Multistructural", "Relational", "Extended abstract"]), timing: text, prompt: text, evidence: text, successCriteria: lines.min(1), misconceptions: lines, remediation: text }).strict()).min(4).max(80),
@@ -32,7 +34,7 @@ export const InstructionalBlueprint = z.object({
   finalDeliverable: z.object({ brief: text, criteria: lines.min(1), minutes: z.number().nonnegative().max(600) }).strict(),
 }).strict();
 export type Blueprint = z.infer<typeof InstructionalBlueprint>;
-export type BlueprintInput = { deliveryStructure?: DeliveryStructure; existingModules?: { id: string; title: string; objectiveIds: string[] }[]; brief: CourseBriefData; objectives: { id: string; text: string; bloom: string }[]; sources: { id: string; text: string; revision?: number; scope?: string; moduleId?: string; topicId?: string; objectiveIds?: string[]; purpose?: 'problem-hook' }[] };
+export type BlueprintInput = { scope?: { moduleId: string }; deliveryStructure?: DeliveryStructure; existingModules?: { id: string; title: string; objectiveIds: string[] }[]; brief: CourseBriefData; objectives: { id: string; text: string; bloom: string }[]; sources: { id: string; text: string; revision?: number; scope?: string; moduleId?: string; topicId?: string; objectiveIds?: string[]; purpose?: SourceRecord['purpose'] }[] };
 export type BlueprintRun = { id: string; courseId: string; inputRevision: number; promptVersion: number; status: "running" | "ready" | "failed"; attempts: number; model: string | null; error: string | null; output: Blueprint | null; input: BlueprintInput; createdAt: string; updatedAt: string; outdated: boolean; deliveryStructure?: DeliveryStructure };
 
 export function blueprintInput(brief: CourseBriefData, deliveryStructure?: DeliveryStructure): BlueprintInput {
@@ -43,17 +45,17 @@ export function blueprintInput(brief: CourseBriefData, deliveryStructure?: Deliv
 /** Structure and traceability checks are not a factual or instructional-quality approval. */
 export function validateBlueprint(raw: unknown, input: BlueprintInput): Blueprint {
   const result = InstructionalBlueprint.parse(raw);
-  const errors: string[] = sourceCoverage(input.brief);
-  const outline = input.brief.sourceLibrary?.modules;
+  const errors: string[] = sourceCoverage(input.brief, input.scope?.moduleId);
+  const outline = input.brief.sourceLibrary?.modules.filter(m => !input.scope || m.id === input.scope.moduleId);
   if (outline?.length && outline.map(m => m.id).join(',') !== result.modules.map(m => m.id).join(',')) errors.push('Preserve source outline module IDs and order.');
   if (input.brief.sourceLibrary) {
     for (const item of [...result.modules, ...result.tasks]) errors.push(...moduleSourceIssues(item, 'moduleId' in item ? item.moduleId : item.id, courseSources(input.brief)));
     for (const item of result.recommendations.objectives) {
-      if (!item.sourceIds.some(id => { const source = input.sources.find(s => s.id === id); return source?.purpose !== 'problem-hook' && source?.objectiveIds?.includes(item.objectiveId); })) errors.push(`${item.objectiveId}: cite mapped teaching evidence.`);
+      if (!item.sourceIds.some(id => { const source = input.sources.find(s => s.id === id); return source && isConceptTeachingSource(source) && source?.objectiveIds?.includes(item.objectiveId); })) errors.push(`${item.objectiveId}: cite mapped teaching evidence.`);
     }
     for (const unit of result.modules) {
       for (const objective of unit.objectiveIds) {
-        if (!unit.sourceIds.some(id => { const source = input.sources.find(s => s.id === id); return source?.purpose !== 'problem-hook' && source?.objectiveIds?.includes(objective); })) errors.push(`${unit.id}: cite mapped teaching evidence for ${objective}.`);
+        if (!unit.sourceIds.some(id => { const source = input.sources.find(s => s.id === id); return source && isConceptTeachingSource(source) && source?.objectiveIds?.includes(objective); })) errors.push(`${unit.id}: cite mapped teaching evidence for ${objective}.`);
         const videoSources = input.brief.sourceLibrary.sources.filter(s => s.video && s.moduleId === unit.id);
         if (videoSources.length && !videoSources.some(s => s.objectiveIds.includes(objective))) errors.push(`${unit.id}: map a reviewed concept video to ${objective}.`);
       }
@@ -80,7 +82,7 @@ export function validateBlueprint(raw: unknown, input: BlueprintInput): Blueprin
   for (const unit of result.modules) {
     checkIds(unit.objectiveIds, objectives, "Module objectives"); checkIds(unit.sourceIds, sources, "Module sources");
     checkIds(unit.prerequisites, prior, "Prerequisites must precede the module"); prior.add(unit.id);
-    const expected = input.deliveryStructure === 'six-stage-v1' ? MODULE_FLOW : input.deliveryStructure === 'codex-ild-v2' ? CODEX_MODULE_FLOW : BLUEPRINT_STEPS;
+    const expected = input.deliveryStructure === 'six-stage-v1' ? MODULE_FLOW : input.deliveryStructure === 'codex-ild-v2' ? CODEX_MODULE_FLOW.filter(kind => kind !== 'scenario' || moduleHasScenarioLab(input.brief, unit.id)) : BLUEPRINT_STEPS;
     if (unit.steps.length !== expected.length || unit.steps.some((step, i) => step.kind !== expected[i])) errors.push(`${unit.id}: preserve the required teaching steps in order`);
     if (Math.abs(unit.steps.reduce((n, s) => n + s.minutes, 0) - unit.minutes) > 0.1) errors.push(`${unit.id}: step durations must sum to module minutes`);
   }
@@ -98,11 +100,11 @@ export function validateBlueprint(raw: unknown, input: BlueprintInput): Blueprin
   for (const id of objectives) {
     if (!result.modules.some(m => m.objectiveIds.includes(id)) || !result.tasks.some(t => t.objectiveIds.includes(id)) || !result.assessments.some(a => a.objectiveIds.includes(id))) errors.push(`${id}: must be taught, practised and assessed`);
   }
-  for (const layer of ["L1", "L2", "L3", "L4"]) if (!result.assessments.some(a => a.layer === layer)) errors.push(`Missing assessment layer ${layer}`);
+  for (const layer of input.scope ? ["L1", "L2", "L3"] : ["L1", "L2", "L3", "L4"]) if (!result.assessments.some(a => a.layer === layer)) errors.push(`Missing assessment layer ${layer}`);
   if (result.recommendations.psychomotor.applicable !== input.brief.physicalSkills) errors.push("Psychomotor applicability must match SME input");
   if (input.brief.physicalSkills && !result.assessments.some(a => a.layer === "L5")) errors.push("Physical-skill objectives require an L5 assessment specification");
   if (!input.brief.physicalSkills && (result.assessments.some(a => a.layer === "L5") || result.tools.some(t => t.template === "T9" || t.template === "T10"))) errors.push("Physical-skill assessment/templates are not applicable to this course");
-  if (input.deliveryStructure === 'six-stage-v1' || input.deliveryStructure === 'codex-ild-v2') {
+  if (!input.scope && (input.deliveryStructure === 'six-stage-v1' || input.deliveryStructure === 'codex-ild-v2')) {
     const isCodex = input.deliveryStructure === 'codex-ild-v2';
     const endFlow = isCodex ? CODEX_COURSE_END_FLOW : COURSE_END_FLOW;
     if (input.existingModules && result.modules.map(m => m.id).join(',') !== input.existingModules.map(m => m.id).join(',')) errors.push('Preserve the existing course module IDs and order.');
@@ -118,6 +120,21 @@ export function validateBlueprint(raw: unknown, input: BlueprintInput): Blueprin
     if (result.assessments.some(a => a.layer === 'L4' && a.moduleId !== last)) errors.push('Course-wide mastery belongs after the final module.');
     if (result.tools.some(t => (isCodex ? ['T5', 'T6', 'T8'] : ['T5', 'T6', 'T7']).includes(t.template) && t.moduleId !== last)) errors.push('Course-end templates belong after the final module.');
   }
+  if (input.scope && (result.courseEnd?.length || result.assessments.some(a => a.layer === 'L4') || result.finalDeliverable.minutes !== 0)) errors.push('Module blueprints defer course-end activities and final assessment.');
   if (errors.length) throw new Error(errors.slice(0, 30).join("; "));
   return result;
+}
+
+/** Match a frozen module snapshot without invalidating it for later-module edits. */
+export function blueprintMatchesBrief(input: BlueprintInput, brief: CourseBriefData) {
+  if (!input.scope) return sameCourseBrief(input.brief, brief);
+  try { return moduleInputSignature(input.brief, input.scope.moduleId) === moduleInputSignature(brief, input.scope.moduleId); } catch { return false; }
+}
+
+export function moduleBlueprintInput(brief: CourseBriefData, moduleId: string, structure: DeliveryStructure = 'codex-ild-v2'): BlueprintInput {
+  const input = blueprintInput(brief, structure), unit = brief.sourceLibrary?.modules.find(m => m.id === moduleId);
+  if (!unit) throw new Error('Select an existing module.');
+  const sources = input.sources.filter(s => s.scope === 'course' || s.moduleId === moduleId);
+  const ids = unit.instructions?.objectiveIds.length ? unit.instructions.objectiveIds : [...new Set(sources.filter(s => s.scope !== 'course').flatMap(s => s.objectiveIds ?? []))];
+  return { ...input, scope: { moduleId }, sources, objectives: input.objectives.filter(o => ids.includes(o.id)) };
 }
