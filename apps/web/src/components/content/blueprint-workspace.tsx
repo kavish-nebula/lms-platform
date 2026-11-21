@@ -6,18 +6,22 @@ import Link from "next/link";
 import { Download, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BlueprintDocument } from "./blueprint-document";
+import { sourceCoverage } from '@/lib/source-library';
+import { useSearchParams } from 'next/navigation';
 import { briefReadiness, type CreatorDraft } from "@/lib/content-creator";
 import type { BlueprintRun } from "@/lib/instructional-blueprint";
 
 export function BlueprintWorkspace({ draft, initialRuns, configured }: { draft: CreatorDraft; initialRuns: BlueprintRun[]; configured: boolean }) {
+  const search = useSearchParams();
+  const [moduleId, setModuleId] = useState(search.get('moduleId') ?? '');
   const [runs, setRuns] = useState(initialRuns);
   const [selected, setSelected] = useState("");
   const [starting, setStarting] = useState(false);
   const [error, setError] = useState("");
   const endpoint = `/api/v1/content/courses/${draft.id}/blueprints`;
-  const active = runs.find(r => !r.outdated && r.promptVersion === (draft.deliveryStructure === 'codex-ild-v2' ? 4 : draft.deliveryStructure === 'six-stage-v1' ? 3 : 2));
+  const active = runs.find(r => (r.input.scope?.moduleId ?? '') === moduleId && !r.outdated && r.promptVersion === (draft.deliveryStructure === 'codex-ild-v2' ? 4 : draft.deliveryStructure === 'six-stage-v1' ? 3 : 2));
   const shown = runs.find(r => r.id === selected) ?? active ?? runs[0];
-  const complete = briefReadiness(draft.brief).every(c => c.ready);
+  const complete = briefReadiness(draft.brief).filter(c => !moduleId || c.label !== 'Source evidence mapped to every objective, module and topic').every(c => c.ready) && sourceCoverage(draft.brief, moduleId || undefined).length === 0;
   const refresh = useCallback(async (signal?: AbortSignal) => {
     const response = await fetch(endpoint, { signal, cache: "no-store" });
     const data = await response.json();
@@ -32,7 +36,7 @@ export function BlueprintWorkspace({ draft, initialRuns, configured }: { draft: 
   async function start() {
     setStarting(true); setError("");
     try {
-      const response = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ revision: draft.revision }) });
+      const response = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ revision: draft.revision, ...(moduleId ? { moduleId } : {}) }) });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error?.message ?? 'Could not start AI processing.');
       setRuns(old => [data.run, ...old.filter(r => r.id !== data.run.id)]); setSelected(data.run.id);
@@ -41,7 +45,7 @@ export function BlueprintWorkspace({ draft, initialRuns, configured }: { draft: 
   }
   return <div className="space-y-8"><CourseWorkflowNav courseId={draft.id} step={2} runId={shown?.id} />
     <header className="space-y-3"><Link className="text-sm text-brand-ink underline" href={`/content/courses/${draft.id}`}>← Edit SME input</Link><p className="text-sm text-brand-ink">Stage 2 · AI Processing</p><h1 className="text-3xl font-semibold">Instructional blueprint</h1><p className="text-lg">{draft.brief.title || 'Untitled course'}</p><p className="max-w-3xl text-sm text-ink-muted">Generate the seven ILD design sections from saved SME input revision {draft.revision}. The saved course brief, source notes and references will be sent to the configured AI provider. Learner profiles and progress are not included. Source links are not fetched.</p></header>
-    <section className="space-y-4 rounded-xl border border-line bg-panel p-5" aria-label="AI processing controls"><p className="text-sm">AI draft for SME review. Structural checks do not establish factual accuracy, instructional quality or approval. Review in Stage 3, then open the Stage 4 scripts-first pilot for an approved module. Approved scripts can then be narrated with local Kokoro. Publishing remains deferred.</p>
+    <section className="space-y-4 rounded-xl border border-line bg-panel p-5" aria-label="AI processing controls"><label className="block text-sm font-medium" htmlFor="blueprint-scope">Prepare a module or the final course blueprint</label><select id="blueprint-scope" className="min-h-11 rounded-lg border border-input bg-panel px-3" value={moduleId} onChange={e => {setModuleId(e.target.value);setSelected('');}}><option value="">Complete course · final assembly</option>{draft.brief.sourceLibrary?.modules.map((m,i)=><option key={m.id} value={m.id}>Module {i+1}: {m.title || 'Untitled'}</option>)}</select><p className="text-sm text-ink-muted">{moduleId ? 'Only this module’s sources and objectives are required. Approve and produce it, then return to SME input for the next module. Nothing is published yet.' : 'Use this after all modules are ready, with the mini project and final quiz.'}</p><p className="text-sm">AI draft for SME review. Structural checks do not establish factual accuracy, instructional quality or approval. Review in Stage 3, then open the Stage 4 scripts-first pilot for an approved module. Approved scripts can then be narrated with local Kokoro. Publishing remains deferred.</p>
       {!complete && <p className="text-sm text-destructive">Complete the Stage 1 preparation checks and save the input before generating.</p>}{!configured && <p className="text-sm text-destructive">The server AI service is not configured. Your saved input remains available.</p>}
       <div className="flex flex-wrap gap-3"><Button onClick={() => void start()} disabled={!complete || !configured || starting || active?.status === 'running' || active?.status === 'ready'}><Sparkles aria-hidden />{starting ? 'Starting…' : active?.status === 'running' ? 'AI processing in progress…' : active?.status === 'ready' ? 'Blueprint generated for this input' : active?.status === 'failed' ? 'Retry AI processing' : 'Generate instructional blueprint'}</Button><Button variant="outline" onClick={() => void refresh().catch(() => setError('Could not refresh. Your saved runs are retained.'))}>Refresh status</Button>
       {shown?.output && <><Button asChild variant="outline"><Link href={`/content/courses/${draft.id}/blueprint/review/${shown.id}`}>Stage 3: SME quality control →</Link></Button><Button variant="outline" onClick={() => { const url = URL.createObjectURL(new Blob([JSON.stringify({ ...shown, reviewStatus: 'AI draft — see separate SME review record for decisions' }, null, 2)], { type: 'application/json' })); const anchor = document.createElement('a'); anchor.href = url; anchor.download = `instructional-blueprint-${shown.id}.json`; anchor.click(); URL.revokeObjectURL(url); }}><Download aria-hidden />Download blueprint JSON</Button></>}</div>

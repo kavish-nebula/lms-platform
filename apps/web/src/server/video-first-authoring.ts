@@ -5,7 +5,7 @@ import { randomUUID, createHash } from 'node:crypto';
 import { z } from 'zod/v4';
 import { AuthoredCoursePackage, validateAuthoredCourse, type AuthoredCoursePackageData } from '@/lib/authored-course';
 import { moduleSourceIssues, courseSources, isActiveSource } from '@/lib/source-library';
-import { MODULE_CORE_PROMPT, MODULE_CORE_VERSION, MODULE_INSTRUCTIONS_VERSION, moduleAuthoringInput, moduleReadiness } from '@/lib/module-authoring';
+import { MODULE_CORE_PROMPT, MODULE_CORE_VERSION, MODULE_INSTRUCTIONS_VERSION, moduleAuthoringInput, moduleReadiness, moduleInputSignature } from '@/lib/module-authoring';
 import type { CourseBriefData } from '@/lib/content-creator';
 import { courseAuthoringSystem } from '@/lib/course-authoring-prompt';
 import { smeModuleActivities } from '@/lib/sme-module-activities';
@@ -20,7 +20,7 @@ type ModuleDraft = { id: string; courseId: string; moduleId: string; briefRevisi
   status?: 'needs_review'; provenance?: { corePromptVersion: string; moduleInstructionsVersion: number; inputHash: string; model: string; sourceRevisions: { id: string; revision: number; transcriptId?: string }[]; instructions: ReturnType<typeof moduleAuthoringInput>['moduleInstructions'] } };
 const root = () => process.env.LMS_VIDEO_DIR ?? path.join(appRoot(), '.data', 'concept-videos');
 const ModuleSchema = AuthoredCoursePackage.shape.modules.element;
-export const moduleInputHash = (brief: CourseBriefData, moduleId: string) => createHash('sha256').update(JSON.stringify({ core: MODULE_CORE_PROMPT, version: MODULE_CORE_VERSION, input: moduleAuthoringInput(brief, moduleId) })).digest('hex');
+export const moduleInputHash = (brief: CourseBriefData, moduleId: string) => createHash('sha256').update(JSON.stringify({ core: MODULE_CORE_PROMPT, version: MODULE_CORE_VERSION, input: moduleInputSignature(brief, moduleId) })).digest('hex');
 export async function videoModuleDrafts(ownerId: string, courseId: string) {
   const draft = await getCreatorDraft(ownerId, courseId);
   const dir = path.join(root(), courseId, 'modules');
