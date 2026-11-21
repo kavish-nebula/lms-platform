@@ -1,6 +1,7 @@
 import { connection } from "next/server";
 import { AppShell } from "@/components/shell/app-shell";
 import { getSessionUser } from "@/server/auth";
+import "./content-creator.css";
 
 export default async function ContentLayout({ children }: { children: React.ReactNode }) {
   await connection();

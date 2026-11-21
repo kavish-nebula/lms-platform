@@ -81,8 +81,8 @@ export function AppShell({
           settingsHref={settingsHref}
           onOpenMenu={() => setMenuOpen(true)}
         />
-        <main id="main" tabIndex={-1} className={`flex-1 page-pad py-6 outline-none md:py-8 ${platform ? "pb-24 nav:pb-8" : ""}`}>
-          <div className="content-max">{children}</div>
+        <main id="main" tabIndex={-1} className={`flex-1 page-pad py-6 outline-none md:py-8 ${role === "content_creator" ? "creator-shell" : ""} ${platform ? "pb-24 nav:pb-8" : ""}`}>
+          <div className={role === "content_creator" ? "creator-workspace" : "content-max"}>{children}</div>
         </main>
       </div>
       <MobileNavigation />

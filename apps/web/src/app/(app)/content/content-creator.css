@@ -1,0 +1,90 @@
+/* Authoring uses the available canvas; learner reading widths stay separate. */
+.creator-shell {
+  --page-pad: clamp(20px, 2.4vw, 48px);
+  font-size: var(--fs-base);
+  line-height: 1.6;
+}
+
+.creator-workspace { width: 100%; min-width: 0; }
+.creator-shell :where(.text-xs) { font-size: var(--fs-sm); line-height: 1.5; }
+.creator-shell :where(.text-sm) { font-size: var(--fs-base); line-height: 1.6; }
+.creator-shell :where(.text-lg) { font-size: var(--fs-md); }
+.creator-shell :where(label, legend, summary) { overflow-wrap: anywhere; }
+.creator-shell :where([data-slot="input"], textarea, select) {
+  min-height: 3rem;
+  min-width: 0;
+  max-width: 100%;
+  font-size: var(--fs-base);
+  line-height: 1.6;
+}
+.creator-shell :where(textarea) { padding: 0.875rem 1rem; }
+.creator-shell :where(button, [data-slot="button"]) {
+  min-height: 2.75rem;
+  height: auto;
+  max-width: 100%;
+  white-space: normal;
+  padding-block: 0.625rem;
+}
+
+.creator-brief-fields { display: grid; gap: 1.75rem 2rem; }
+.creator-brief-fields > * { min-width: 0; }
+.creator-brief-fields :where(p) { max-width: 80ch; }
+.creator-section { scroll-margin-top: 6rem; }
+.creator-section-links { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; }
+.creator-section-links a {
+  padding-block: 0.5rem;
+  color: var(--accent-ink);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+.creator-production-options { border-block: 1px solid var(--line); padding-block: 0.875rem; }
+.creator-production-options > summary { cursor: pointer; font-weight: 600; }
+.creator-production-options > section { margin-top: 1rem; }
+
+.creator-workflow { padding: 0; overflow: hidden; }
+.creator-workflow ol { display: grid; gap: 0; }
+.creator-workflow li { min-width: 0; }
+.creator-workflow a {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  height: 100%;
+  padding: 1.125rem;
+  text-decoration: none;
+}
+.creator-workflow a[aria-current="step"] { background: var(--accent-soft); color: var(--accent-ink); }
+.creator-workflow-number {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+  font-weight: 600;
+}
+.creator-workflow p { border-top: 1px solid var(--line); margin: 0; padding: 1rem 1.125rem; }
+.creator-savebar { z-index: 20; box-shadow: var(--shadow-sm); }
+.creator-savebar-actions { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+.creator-savebar button[type="submit"] { margin-left: auto; min-width: 9rem; }
+/* Keep the shared floating theme switch clear of the creator's save action. */
+:root:has(.creator-savebar) .app-theme-toggle {
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 7.5rem);
+}
+
+@media (min-width: 700px) {
+  .creator-workflow ol { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 1100px) {
+  .creator-brief-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .creator-field-wide { grid-column: 1 / -1; }
+  .creator-workflow ol { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+@media (max-width: 600px) {
+  .creator-savebar-actions { align-items: stretch; }
+  .creator-savebar-actions > span { width: 100%; }
+  .creator-savebar button[type="submit"] { width: 100%; }
+  :root:has(.creator-savebar) .app-theme-toggle {
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 11rem);
+  }
+}

@@ -1,5 +1,18 @@
 # Learning experience UI
 
+The content creator shell uses the available width beside its sidebar, with
+responsive 20–48 px page padding rather than the learner reading-width cap.
+Creator-only typography uses the existing base token for labels and inputs,
+the small token for helper text, and 48 px minimum input height. The course
+brief pairs suitable fields above 1100 px while keeping long system prompts
+and source text across both columns; narrower screens use a single column.
+Section links jump to the brief, objectives and module sources. Production
+settings remain available in an expandable section. The save bar keeps status
+and the primary action visible, stacking them on mobile. Workflow links form
+four numbered stages on desktop and wrap to two or one column. These styles
+are scoped to the creator shell and use the existing dark/light theme tokens;
+learner layout, saved content, source mappings and approval behavior are unchanged.
+
 Existing learners can explicitly open `/learn/courses/<id>/enroll?step=prerequisites`
 to review prerequisite suggestions without changing setup. This view clearly says
 the learner is enrolled, keeps answers in component state only, and returns to
