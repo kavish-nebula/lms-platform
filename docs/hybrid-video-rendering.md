@@ -15,7 +15,10 @@ assessment rules remain separate and unchanged.
 3. Align words locally with faster-whisper. Cue timing must have sufficient
    source coverage; a missing first word can use the first matched word within
    the same phrase. Related reveals in the same sentence may be co-introduced.
-4. Render Manim chapters and hand the aligned timeline to Remotion. Explicit
+4. Load Manim only when the storyboard contains a Manim chapter. Fully Remotion
+   storyboards still pass word alignment and source-coverage checks, then hand
+   the aligned timeline directly to Remotion without loading Cairo or creating
+   an unused native movie. Explicit
    reveals follow their spoken cues; uncued structural parts of a diagram appear
    with its opening illustration. Conclusions still require their own cue.
 5. Render short motion windows and hold their last frame during narration. Copy
@@ -26,6 +29,9 @@ assessment rules remain separate and unchanged.
 The output is 1280x720 at 24 fps. The Node renderer serves only an allowlisted
 Manim asset through a random, loopback-only URL; it never exposes the media folder.
 Native render subprocesses receive no model-provider credentials.
+
+The alignment-only route does not mark a lesson ready. The compositor must
+produce the narrated MP4 and pass its complete-file decoder check first.
 
 ## Failure recovery and privacy
 

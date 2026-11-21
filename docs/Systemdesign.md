@@ -104,3 +104,7 @@ contract now supports a local Remotion/Manim compositor, with motion-window
 rendering and full-file decode checks. This is a process-local queue with stale
 lease recovery, not a distributed render service or scale benchmark. See
 `docs/hybrid-video-rendering.md` for the current implementation and limitations.
+
+Native drawing dependencies are loaded only for storyboards that contain Manim
+chapters. Remotion-only lessons retain the same local word-alignment and final
+MP4 validation gates without importing Cairo.

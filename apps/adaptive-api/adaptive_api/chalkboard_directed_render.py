@@ -19,10 +19,6 @@ def atomic(file, data):
 
 
 def render(manifest):
-    import av
-    from manim import Scene, Text, Group, FadeIn, FadeOut, Indicate, Rotate, tempconfig, UP, DOWN, RIGHT
-    from chalkboard_base import ChalkboardSceneBase
-    from chalkboard_visuals import VisualLibrary
     directory = manifest.parent
     data = json.loads(manifest.read_text(encoding='utf-8'))
     status = directory / 'status.json'
@@ -33,14 +29,27 @@ def render(manifest):
     if not chapters or not 0 < duration <= 420.05 or alignment['repeatedCompositions']:
         raise ValueError('Directed storyboard has missing/repeated compositions or exceeds duration')
     atomic(directory / 'aligned.json', {'chapters': chapters, 'captions': captions, 'durationSeconds': duration})
-    library = VisualLibrary(data.get('illustration'))
-    first_times = [chapter['cues'][0]['seconds'] for chapter in chapters]
     quality = {'version': data['plan']['version'], 'compositions': len(chapters),
                'uniqueCompositions': len({chapter['visualKey'] for chapter in chapters}),
                'fullCompositionReplays': 0, 'motionSeconds': .95,
                'minimumCueGap': min((b['seconds']-a['seconds'] for c in chapters for a,b in zip(c['cues'],c['cues'][1:])), default=duration),
                'alignmentMethod': alignment['method'], 'minimumSourceCoverage': alignment['minimumSourceCoverage'],
                'semanticReview': data['plan'].get('review')}
+
+    # A fully Remotion storyboard needs alignment, not an empty Manim movie.
+    # Importing Cairo before this decision made otherwise independent Remotion
+    # lessons fail on hosts where the native drawing dependency is unavailable.
+    if data.get('hybrid') and all(c['kind'] in data.get('remotionKinds', []) for c in chapters):
+        atomic(directory / 'playback.json', {**data['playback'], 'captions': captions})
+        atomic(directory / 'visual-quality.json', {**quality, 'layoutPassed': True,
+               'textLayoutPassed': True, 'manimRequired': False})
+        return
+
+    from manim import Scene, Text, Group, FadeIn, FadeOut, Indicate, Rotate, tempconfig, UP, DOWN, RIGHT
+    from chalkboard_base import ChalkboardSceneBase
+    from chalkboard_visuals import VisualLibrary
+    library = VisualLibrary(data.get('illustration'))
+    first_times = [chapter['cues'][0]['seconds'] for chapter in chapters]
 
     class DirectedBoard(ChalkboardSceneBase, Scene):
         _REPORT_DIR = str(directory)
@@ -132,6 +141,7 @@ def render(manifest):
     subprocess.run([data['ffmpeg'], '-v', 'error', '-i', rendered, '-i', data['audio'],
                     '-map', '0:v:0', '-map', '1:a:0', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '128k',
                     '-t', str(duration), '-movflags', '+faststart', '-y', str(temporary)], check=True, timeout=120)
+    import av
     with av.open(str(temporary)) as container:
         measured = container.duration / av.time_base
         if abs(measured - duration) > .2 or not any(s.type == 'audio' for s in container.streams):
