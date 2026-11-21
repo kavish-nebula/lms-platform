@@ -20,6 +20,8 @@ import { recordActivity, recordLearning, ensureReviews, useLearning } from "@/li
 import { rewardFor } from "@/lib/gamification";
 import { supportFor } from "@/lib/setup";
 import { NarratedStage } from "@/components/player/narrated-stage";
+import { WrittenGuidedStage } from '@/components/player/stages/written-guided-stage';
+import { guidedResponseKey } from '@/lib/guided-responses';
 import { ReleasedVisualLesson } from './video/released-visual-lesson';
 import { VideoFirstActivity } from './stages/video-first-activity';
 import { HookCinema } from "@/components/player/hook/hook-cinema";
@@ -197,7 +199,7 @@ export function Player({ module, moduleIndex, stage, video, courseHref, initialD
   const sceneSlides = stage === "hook" || stage === "worked" || stage === "guided" || stage === "lab" ? module.narratedStages?.[stage] : undefined;
   const activityVideo = stage === 'worked' || stage === 'guided' ? module.remotionStages?.[stage] : undefined;
   if(stage==='hook'&&module.remotionHook)return <ReleasedVisualLesson endpoint={module.remotionHook.endpoint} video={{id:`${module.course_id}-${module.module_id}-hook`,module:module.module_id,lesson:'hook',midQuiz:[],endQuiz:[]}} onComplete={onComplete}/>;
-  if (sceneSlides?.length && !activityVideo) return <NarratedStage key={`${module.module_id}:${stage}`} title={title} courseHref={courseHref} slides={sceneSlides} onComplete={onComplete} onPrev={nav.onPrev} />;
+  if (sceneSlides?.length && !activityVideo && stage !== 'guided') return <NarratedStage key={`${module.module_id}:${stage}`} title={title} courseHref={courseHref} slides={sceneSlides} onComplete={onComplete} onPrev={nav.onPrev} />;
 
   // The problem hook plays full screen, with no map, tutor or banners around it.
   const hook = stage === "hook" ? getBlock(content, "hook") : undefined;
@@ -234,7 +236,7 @@ export function Player({ module, moduleIndex, stage, video, courseHref, initialD
       body = content.videoFirstActivities ? <VideoFirstActivity key={`${module.version}:${stage}`} activities={content.videoFirstActivities} stage="worked" {...activityNav} /> : <WorkedStage block={getBlock(content, "worked")!} {...nav} />;
       break;
     case "guided":
-      body = content.videoFirstActivities ? <VideoFirstActivity key={`${module.version}:${stage}`} activities={content.videoFirstActivities} stage="guided" {...activityNav} /> : <GuidedStage block={getBlock(module, "guided")!} adaptation={adaptation} {...nav} />;
+      body = content.videoFirstActivities ? <VideoFirstActivity key={`${module.version}:${stage}`} activities={content.videoFirstActivities} stage="guided" responseKey={enrolled && enrollmentReady ? guidedResponseKey(module.course_id, module.module_id, module.version) : undefined} {...activityNav} /> : sceneSlides?.length ? <WrittenGuidedStage key={`${module.course_id}:${module.version}:${stage}`} block={getBlock(module, 'guided')!} slides={sceneSlides} storageKey={enrolled && enrollmentReady ? guidedResponseKey(module.course_id, module.module_id, module.version) : undefined} {...nav} /> : <GuidedStage block={getBlock(module, "guided")!} adaptation={adaptation} {...nav} />;
       break;
     case "lab":
       body = content.videoFirstActivities ? <VideoFirstActivity key={`${module.version}:${stage}`} activities={content.videoFirstActivities} stage="lab" {...activityNav} /> : <ScenarioStage block={getBlock(module, "lab") as ScenarioBlock} support={support} {...nav} />;

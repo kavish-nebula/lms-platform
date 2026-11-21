@@ -64,8 +64,8 @@ export function MiniProjectSourceEditor({ courseId, library, objectives, onChang
         </fieldset>;
       })}
       <Button type="button" variant="outline" disabled={plan.tasks.length >= 30} onClick={() => edit({ tasks: [...plan.tasks, blankTask()] })}>Add project task</Button>
-      <p className="text-sm text-ink-muted">Save draft to store this plan. Stage 4 assembles and reviews the ready-made workflow, sample cases and explanation grading. A task brief alone does not create or publish a runnable workspace.</p>
-      <div className="flex flex-wrap gap-3">{courseId && <Button type="button" variant="outline" asChild><Link href={`/content/courses/${courseId}/authoring`}>Review project in Stage 4</Link></Button>}<Button type="button" variant="outline" onClick={() => onChange(undefined)}>Remove mini project plan</Button></div>
+      <p className="text-sm text-ink-muted">Save draft to store this plan. Stage 5 assembles and reviews the ready-made workflow, sample cases and explanation grading. A task brief alone does not create or publish a runnable workspace.</p>
+      <div className="flex flex-wrap gap-3">{courseId && <Button type="button" variant="outline" asChild><Link href={`/content/courses/${courseId}/authoring`}>Review project in Stage 5</Link></Button>}<Button type="button" variant="outline" onClick={() => onChange(undefined)}>Remove mini project plan</Button></div>
     </fieldset>}
     {message && <p role="status" className="text-sm text-brand-ink">{message}</p>}
   </section>;
