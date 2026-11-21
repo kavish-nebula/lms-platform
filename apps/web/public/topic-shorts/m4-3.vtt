@@ -1,0 +1,139 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:07.032
+Retrieval-augmented generation is a long name for an open-book way of answering a question.
+
+00:00:07.032 --> 00:00:11.143
+First, find the parts of a document that might answer it.
+
+00:00:11.143 --> 00:00:13.953
+Retrieval is the name for that search.
+
+00:00:13.953 --> 00:00:19.949
+Next, put the selected passages together with the question so the model can read both.
+
+00:00:19.949 --> 00:00:22.610
+This is what augmented means here.
+
+00:00:22.610 --> 00:00:28.565
+You are giving the model material for this answer; you do not need to teach it the whole book.
+
+00:00:28.565 --> 00:00:33.337
+Finally, the model writes a reply using the text it received.
+
+00:00:33.337 --> 00:00:41.007
+A good way to check the reply is to put your finger on the sentence in the source that supports each part.
+
+00:00:41.007 --> 00:00:44.169
+Let's walk through it with Orbit's policy file.
+
+00:00:44.169 --> 00:00:46.446
+You start with your documents.
+
+00:00:46.446 --> 00:00:54.693
+Ahead of time, you split them into chunks, small passages that make sense on their own, like one section of the policy.
+
+00:00:54.693 --> 00:01:00.455
+When a question arrives, you score every chunk against it and keep the best two or three.
+
+00:01:00.455 --> 00:01:04.247
+Those chunks go into the prompt, together with the question.
+
+00:01:04.247 --> 00:01:09.615
+The model answers from them, or says plainly that they don't cover the question.
+
+00:01:09.615 --> 00:01:15.333
+Splitting happens once. Searching and answering happen for every question.
+
+00:01:15.333 --> 00:01:19.007
+Owen bought a jacket for three hundred and ten dollars.
+
+00:01:19.007 --> 00:01:23.884
+He asks whether he can return it and whether he must pay return shipping.
+
+00:01:23.884 --> 00:01:29.710
+That sounds like one question, but try answering it from the return deadline alone.
+
+00:01:29.710 --> 00:01:34.703
+Knowing how many days he has tells you nothing about the shipping charge.
+
+00:01:34.703 --> 00:01:41.840
+Search Orbit’s policy for two things: the conditions for a return and the rule about shipping fees.
+
+00:01:41.840 --> 00:01:50.067
+The first passage says unused items in their original packaging can come back within thirty days of delivery.
+
+00:01:50.067 --> 00:01:55.805
+The second says return shipping is free for orders over seventy-five dollars.
+
+00:01:55.805 --> 00:01:59.414
+Supply both passages with Owen’s question.
+
+00:01:59.414 --> 00:02:03.066
+How do you score the chunks? There are two common ways.
+
+00:02:03.066 --> 00:02:08.892
+The simple way is keyword scoring: count the words each chunk shares with the question.
+
+00:02:08.892 --> 00:02:15.402
+It needs no extra service and fits in a few lines of Python. It's what you will build today.
+
+00:02:15.402 --> 00:02:21.866
+Its weakness is synonyms. Send it back and return mean the same thing, but share no words.
+
+00:02:21.866 --> 00:02:28.812
+A second approach uses an embedding, a set of numbers that represents some of the meaning in a passage.
+
+00:02:28.812 --> 00:02:38.746
+The question can be represented the same way. This lets a search for send it back find a return policy even when those exact words are missing.
+
+00:02:38.746 --> 00:02:46.993
+Those numbers live in a vector store, such as Chroma or pgvector, which searches millions of chunks quickly.
+
+00:02:46.993 --> 00:02:50.282
+Draw a line through the middle of Owen's message.
+
+00:02:50.282 --> 00:02:54.444
+On one side he asks whether he can return the jacket.
+
+00:02:54.444 --> 00:02:57.818
+On the other he asks who pays to ship it back.
+
+00:02:57.818 --> 00:03:02.096
+One relevant passage might settle only half the message.
+
+00:03:02.096 --> 00:03:08.103
+Place the return conditions beside the first question and the fee rule beside the second.
+
+00:03:08.103 --> 00:03:11.020
+His order value helps with the fee rule.
+
+00:03:11.020 --> 00:03:17.710
+It tells you nothing about whether the jacket is unused or still in its original packaging.
+
+00:03:17.710 --> 00:03:22.105
+Cover the fee passage and read the proposed reply again.
+
+00:03:22.105 --> 00:03:25.224
+You can still discuss the return conditions.
+
+00:03:25.224 --> 00:03:27.853
+You now lack a source for free shipping.
+
+00:03:27.853 --> 00:03:33.594
+This little test shows exactly what retrieving the second passage contributed.
+
+00:03:33.594 --> 00:03:37.043
+Now construct the reply one claim at a time.
+
+00:03:37.043 --> 00:03:43.924
+Owen’s purchase is above seventy-five dollars, so the shipping rule supports free return shipping.
+
+00:03:43.924 --> 00:03:49.900
+To confirm his jacket qualifies, you still need its condition and delivery date.
+
+00:03:49.900 --> 00:03:53.231
+Explain the rule and ask for missing facts.
+
+00:03:53.231 --> 00:03:59.225
+Two good passages answer more, but they cannot supply facts Owen never gave.

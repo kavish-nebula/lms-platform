@@ -1,0 +1,133 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:05.593
+Structured output means putting an answer into named boxes, like a form.
+
+00:00:05.593 --> 00:00:10.653
+People can understand many different ways of saying an order is late.
+
+00:00:10.653 --> 00:00:16.788
+A computer that sorts messages needs to know exactly where to find the kind of problem.
+
+00:00:16.788 --> 00:00:22.111
+JSON is a common way to write these boxes as names and values.
+
+00:00:22.111 --> 00:00:26.359
+A value can be text, a number, or a simple yes or no.
+
+00:00:26.359 --> 00:00:30.765
+Each name tells the next program what its value represents.
+
+00:00:30.765 --> 00:00:34.545
+A schema describes the form before it is filled in.
+
+00:00:34.545 --> 00:00:39.858
+It says which boxes are required and what kind of value belongs in each.
+
+00:00:39.858 --> 00:00:44.596
+It can also say how to record a missing detail honestly.
+
+00:00:44.596 --> 00:00:48.261
+A customer writes that an order still has not arrived.
+
+00:00:48.261 --> 00:00:56.829
+Orbit wants a support ticket with the reason for contacting the shop, the order number, whether it is urgent, and a short summary.
+
+00:00:56.829 --> 00:01:02.006
+Start by underlining which of those facts the customer actually supplied.
+
+00:01:02.006 --> 00:01:05.210
+There is no order number in this message.
+
+00:01:05.210 --> 00:01:10.558
+To get reliable JSON, you describe the shape you want with a JSON schema.
+
+00:01:10.558 --> 00:01:17.036
+A schema lists the fields, and the type of each one: text, a number, or true or false.
+
+00:01:17.036 --> 00:01:24.588
+It can limit a field to a fixed list of allowed values, called an enum, such as return or exchange.
+
+00:01:24.588 --> 00:01:28.720
+It says which fields are required, so none can go missing.
+
+00:01:28.720 --> 00:01:33.108
+And it can forbid extra fields the model might like to add.
+
+00:01:33.108 --> 00:01:41.695
+Think of a paper form with labelled boxes and tick-boxes: the model can only fill in what the form has room for.
+
+00:01:41.695 --> 00:01:44.942
+The order-number field allows text or null.
+
+00:01:44.942 --> 00:01:48.201
+Null means there was no value to record.
+
+00:01:48.201 --> 00:01:56.854
+The urgency field expects true or false, rather than a sentence, and the summary can say the order has not arrived.
+
+00:01:56.854 --> 00:02:00.739
+Use the shop’s urgency rule when setting that flag.
+
+00:02:00.739 --> 00:02:05.872
+Avoid inventing urgency just because the customer is waiting.
+
+00:02:05.872 --> 00:02:13.212
+Before sending the ticket to the queue, check that all required boxes exist and hold allowed values.
+
+00:02:13.212 --> 00:02:17.492
+Then compare important details with the original email.
+
+00:02:17.492 --> 00:02:22.688
+A made-up order number could be perfectly valid text and still be false.
+
+00:02:22.688 --> 00:02:29.289
+Checking the form and checking the facts answer different questions, and the ticket needs both.
+
+00:02:29.289 --> 00:02:32.302
+One last habit: validate anyway.
+
+00:02:32.302 --> 00:02:37.509
+The schema guarantees the shape of the answer, not that the answer is true.
+
+00:02:37.509 --> 00:02:43.413
+So check what matters, such as whether the order number looks like a real Orbit order number.
+
+00:02:43.413 --> 00:02:50.529
+Check the stop reason too, because a reply cut off at max tokens may not be complete JSON.
+
+00:02:50.529 --> 00:02:56.661
+If a check fails, do not guess: send the ticket to a person, or ask the model again.
+
+00:02:56.661 --> 00:03:01.738
+The model gives you structure, and your code still owns the decisions.
+
+00:03:01.738 --> 00:03:05.986
+Copy the customer's message onto a pretend order form.
+
+00:03:05.986 --> 00:03:10.300
+It says the order has not arrived, but there is no order number.
+
+00:03:10.300 --> 00:03:15.284
+Leaving a machine-readable empty value preserves an important fact.
+
+00:03:15.284 --> 00:03:18.680
+Nobody has supplied the identifier yet.
+
+00:03:18.680 --> 00:03:25.359
+Suppose a second form contains a beautifully formatted order number that nobody mentioned.
+
+00:03:25.359 --> 00:03:29.820
+It passes the shape check because it is text in the right box.
+
+00:03:29.820 --> 00:03:34.377
+It fails the evidence check because nobody can point to its source.
+
+00:03:34.377 --> 00:03:39.352
+Read each filled field back against the message before routing the ticket.
+
+00:03:39.352 --> 00:03:44.988
+The summary can describe the delay, and the next helper can ask for the missing number.
+
+00:03:44.988 --> 00:03:51.004
+The form lets software continue without turning missing information into fiction.

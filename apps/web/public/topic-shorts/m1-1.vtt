@@ -1,0 +1,145 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:03.939
+An AI agent is a program you give a goal to.
+
+00:00:03.939 --> 00:00:07.463
+You also give it a few things it is allowed to do.
+
+00:00:07.463 --> 00:00:10.253
+It can choose which one to try first.
+
+00:00:10.253 --> 00:00:13.742
+Think of a person answering the phone at a shop.
+
+00:00:13.742 --> 00:00:16.777
+They might know the opening hours by heart.
+
+00:00:16.777 --> 00:00:22.253
+To answer a question about a particular parcel, they need to open a record.
+
+00:00:22.253 --> 00:00:25.179
+A tool lets a program do that lookup.
+
+00:00:25.179 --> 00:00:33.029
+The agent reads what came back and decides whether it can answer, needs another fact, or should ask for help.
+
+00:00:33.029 --> 00:00:36.160
+Ana bought a tent from a shop called Orbit.
+
+00:00:36.160 --> 00:00:38.918
+Four days later she asks where it is.
+
+00:00:38.918 --> 00:00:44.049
+The shop’s old chat helper has a page about ordinary shipping times.
+
+00:00:44.049 --> 00:00:52.121
+It can repeat that page perfectly and still leave Ana wondering whether her own tent has even left the warehouse.
+
+00:00:52.121 --> 00:00:56.092
+Follow the loop inside this particular shop assistant.
+
+00:00:56.092 --> 00:01:01.413
+First, it perceives: it reads what is in front of it, like Ana's message.
+
+00:01:01.413 --> 00:01:06.473
+Then it decides: given the goal, what is the most useful next step?
+
+00:01:06.473 --> 00:01:12.278
+Then it acts: it calls a tool, such as the order lookup, or it writes the reply.
+
+00:01:12.278 --> 00:01:17.252
+The result of that action is new information, so the loop starts again.
+
+00:01:17.252 --> 00:01:23.367
+Scout perceives the order details, decides it now knows enough, and acts by replying.
+
+00:01:23.367 --> 00:01:28.850
+The loop ends when the goal is met, or when a limit you set tells it to stop.
+
+00:01:28.850 --> 00:01:33.353
+Now give a new helper, Scout, access to the order records.
+
+00:01:33.353 --> 00:01:35.727
+Ana supplies her order number.
+
+00:01:35.727 --> 00:01:39.465
+Scout chooses the order lookup and sends that number.
+
+00:01:39.465 --> 00:01:43.704
+The matching record says shipped and includes a tracking number.
+
+00:01:43.704 --> 00:01:46.664
+Notice that shipped answers one question.
+
+00:01:46.664 --> 00:01:49.869
+It does not tell us the tent has arrived.
+
+00:01:49.869 --> 00:01:55.013
+Imagine Ana is on the phone while you have her packing slip in front of you.
+
+00:01:55.013 --> 00:01:59.369
+Her question sounds simple, but it hides two different questions.
+
+00:01:59.369 --> 00:02:03.777
+Has the warehouse sent the tent, and has the carrier delivered it?
+
+00:02:03.777 --> 00:02:06.610
+Move your finger to the warehouse entry.
+
+00:02:06.610 --> 00:02:09.102
+Shipped settles the first question.
+
+00:02:09.102 --> 00:02:11.316
+Now look at the tracking label.
+
+00:02:11.316 --> 00:02:17.952
+The number identifies a parcel, but the number alone cannot tell you which doorstep it reached.
+
+00:02:17.952 --> 00:02:23.062
+Try speaking one sentence using only those two pieces of evidence.
+
+00:02:23.062 --> 00:02:26.544
+Your tent has shipped and here is the tracking number.
+
+00:02:26.544 --> 00:02:31.986
+If Ana asks when it will arrive, Scout has a new reason to look again.
+
+00:02:31.986 --> 00:02:38.112
+Scout can now tell Ana that her tent has left the warehouse and give her its tracking number.
+
+00:02:38.112 --> 00:02:44.644
+If the order number had matched nothing, the sensible next action would have been to check the number with Ana.
+
+00:02:44.644 --> 00:02:46.751
+The goal stays the same.
+
+00:02:46.751 --> 00:02:50.902
+What the agent does depends on the evidence it finds.
+
+00:02:50.902 --> 00:02:53.560
+You can check Scout’s answer yourself.
+
+00:02:53.560 --> 00:02:59.748
+Put Ana’s order beside the reply and look for the same tracking number in both places.
+
+00:02:59.748 --> 00:03:03.995
+That number is what makes the answer useful to Ana.
+
+00:03:03.995 --> 00:03:10.438
+Autonomy means how much an agent may do on its own, and it is a dial, not a switch.
+
+00:03:10.438 --> 00:03:17.247
+At the low end, an agent only reads: it looks up orders and tracking, and changes nothing.
+
+00:03:17.247 --> 00:03:22.722
+One step up, it drafts a reply, and a person checks it before it is sent.
+
+00:03:22.722 --> 00:03:31.544
+Higher still, it takes real actions, but risky ones wait for approval, like Orbit's refunds over two hundred dollars.
+
+00:03:31.544 --> 00:03:39.290
+Acting completely alone only makes sense for small steps that are easy to undo, because models can be wrong.
+
+00:03:39.290 --> 00:03:46.738
+A good rule: give an agent the least power that does the job, and widen it as you learn to trust it.

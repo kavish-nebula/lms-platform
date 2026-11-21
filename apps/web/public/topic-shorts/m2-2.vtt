@@ -1,0 +1,142 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:04.963
+A model is the part of an AI service that produces an answer.
+
+00:00:04.963 --> 00:00:09.446
+Choosing one is like choosing a helper for a particular job.
+
+00:00:09.446 --> 00:00:14.865
+A useful first question is what a correct answer to that job would look like.
+
+00:00:14.865 --> 00:00:24.402
+Two models can give equally useful answers to a simple question but take different amounts of time or cost different amounts to run.
+
+00:00:24.402 --> 00:00:28.520
+A harder question may change which model you would choose.
+
+00:00:28.520 --> 00:00:34.185
+An API is an agreed way for one program to ask another for something.
+
+00:00:34.185 --> 00:00:38.562
+Your program sends a request naming a model and a message.
+
+00:00:38.562 --> 00:00:42.459
+The service sends back an answer you can inspect.
+
+00:00:42.459 --> 00:00:45.313
+Orbit wants to sort support emails.
+
+00:00:45.313 --> 00:00:48.433
+Take a message asking to send boots back.
+
+00:00:48.433 --> 00:00:53.173
+Write down the expected label, return, before trying a model.
+
+00:00:53.173 --> 00:00:58.656
+Run that message and several other labeled examples through two candidates.
+
+00:00:58.656 --> 00:01:04.950
+Keep the messages and instructions the same so the comparison has a clear meaning.
+
+00:01:04.950 --> 00:01:11.019
+Choosing a model means weighing three things, separately for each step your agent takes.
+
+00:01:11.019 --> 00:01:15.774
+First, quality: can this model do this step well, every time?
+
+00:01:15.774 --> 00:01:24.232
+That matters most for planning, choosing tools and reading tricky policy, and you judge it by testing on real tickets.
+
+00:01:24.232 --> 00:01:28.544
+Second, speed: how long can someone wait for the answer?
+
+00:01:28.544 --> 00:01:35.127
+A customer in live chat notices a slow reply, while an overnight report does not care.
+
+00:01:35.127 --> 00:01:41.394
+Third, cost: the price per token, times the tokens per call, times the calls per day.
+
+00:01:41.394 --> 00:01:47.623
+A small difference per request can matter when the same step runs thousands of times.
+
+00:01:47.623 --> 00:01:49.624
+Open one request.
+
+00:01:49.624 --> 00:01:52.456
+The model name chooses the candidate.
+
+00:01:52.456 --> 00:01:56.638
+The messages contain the customer’s words and the task.
+
+00:01:56.638 --> 00:02:00.194
+The output limit bounds how much text may come back.
+
+00:02:00.194 --> 00:02:03.142
+A single label needs little space.
+
+00:02:03.142 --> 00:02:10.023
+An explanation of several policy rules needs more room and a different way to check quality.
+
+00:02:10.023 --> 00:02:14.880
+When the service answers, open the response before judging the result.
+
+00:02:14.880 --> 00:02:24.408
+This service returns a list of content blocks. For a simple reply we are interested in the block containing customer-facing text.
+
+00:02:24.408 --> 00:02:29.904
+So we take the first block whose type is text, with one short line of Python.
+
+00:02:29.904 --> 00:02:37.739
+Read that text as the customer would. Does it give a complete answer, or does it stop partway through a thought?
+
+00:02:37.739 --> 00:02:45.667
+The stop reason tells you why the model stopped: it finished its turn, or it ran into your max tokens ceiling.
+
+00:02:45.667 --> 00:02:53.082
+Usage counts the input and output tokens, which you multiply by the price to know what the call cost.
+
+00:02:53.082 --> 00:03:01.478
+If the stop reason is max tokens, the reply was cut off, so raise the limit or ask for a shorter answer.
+
+00:03:01.478 --> 00:03:05.982
+Read the returned label and compare it with the one you wrote down.
+
+00:03:05.982 --> 00:03:12.066
+Record the wait and the reported usage, which tells you how much text was processed.
+
+00:03:12.066 --> 00:03:14.428
+Repeat across the examples.
+
+00:03:14.428 --> 00:03:18.205
+Choose the helper that meets the actual job’s needs.
+
+00:03:18.205 --> 00:03:26.045
+A good email sorter still needs separate testing before you trust it to explain a complicated return.
+
+00:03:26.045 --> 00:03:34.249
+Imagine one candidate gets an easy ticket about returns and the second gets a confusing exchange request.
+
+00:03:34.249 --> 00:03:38.838
+Their answers tell you very little about which model suits the job.
+
+00:03:38.838 --> 00:03:43.618
+Give both candidates the same questions and expected labels.
+
+00:03:43.618 --> 00:03:47.416
+Read the first wrong label before counting totals.
+
+00:03:47.416 --> 00:03:54.394
+Did the customer explicitly ask to send something back, or was return merely part of a product name?
+
+00:03:54.394 --> 00:03:59.355
+That distinction tells you whether the test reflects the work in the queue.
+
+00:03:59.355 --> 00:04:05.424
+Only after checking the labels compare response times and the amount of text processed.
+
+00:04:05.424 --> 00:04:13.149
+A slower candidate might be worth using for a difficult decision while a smaller one handles a routine label.
+
+00:04:13.149 --> 00:04:16.587
+Keep the ticket set for the next comparison.

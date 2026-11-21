@@ -1,3 +1,4 @@
+import {VisualLesson} from '@/lib/visual-lesson';
 import assert from 'node:assert/strict';
 import { EMPTY_BRIEF, type CourseBriefData } from '@/lib/content-creator';
 import { blueprintShape } from '@/server/blueprint-ai';
@@ -59,6 +60,17 @@ const request={expectedVersion:0,expectedBriefRevision:1,sourceIdentity:target.i
 const saved=await saveVisualLesson(owner.id,draft.id,target.videoId,request);
 await assert.rejects(saveVisualLesson(owner.id,draft.id,target.videoId,request),{code:'visual_conflict'});
 await assert.rejects(saveVisualLesson(owner.id,draft.id,target.videoId,{...request,expectedVersion:1,content:{...saved.content,scenes:saved.content.scenes.map(s=>({...s,sourceIds:['H1']}))}}),{code:'visual_evidence'});
+const animated = VisualLesson.parse({...saved.content, style:'topic-animation', scenes:saved.content.scenes.map((scene,i) =>
+  i === 0 ? {...scene, motion:[{label:'Draft', keys:[{beat:0,at:0,x:120,y:80},{beat:1,at:0.9,x:450,y:200}]}]} : scene)});
+const revision = await saveVisualLesson(owner.id,draft.id,target.videoId,{...request,expectedVersion:1,content:animated});
+// This test only queues the job; it does not contact a model provider.
+process.env.AUDIO='on';process.env.KOKORO='on';
+const media = await startVisualJob(owner.id,draft.id,target.videoId,revision.id,'audio');
+assert.equal(media.output.voice?.voice,'af_heart');
+assert.equal(media.output.voice?.speed,0.84);
+assert((await visualLessonState(owner.id,draft.id,target.videoId)).jobs.some(job=>job.id===media.id));
+assert(!VisualLesson.safeParse({...animated,scenes:saved.content.scenes}).success);
+
 const links={objectiveIds:['O1'],sourceIds:['S1']},q=(id:string)=>({id,prompt:'Check which source?',choices:['Notes','Guess'],correct:0,hint:'Read.',explanation:'Use notes.',...links});
 const pkg:AuthoredCoursePackageData={schemaVersion:1,title:brief.title,subject:'AI',briefRevision:1,durationMinutes:10,objectiveEvidence:[{objectiveId:'O1',objective:brief.objectives[0].text,sourceIds:['S1']}],sources:[{id:'S1',kind:'sme',title:'Notes',reference:'Fixture'},{id:'H1',kind:'sme',title:'Hook',reference:'Fixture'}],modules:[{id:'M1',title:'Check sources',durationMinutes:8,...links,problemHook:{title:'An invented deadline',situation:brief.sourceLibrary!.sources[1].text,question:'What is missing?',...links},conceptExplainer:{videos:[{id:'T1',title:'Check',plannedMinutes:1,slides:[{id:'SL1',title:'Check',body:['Notes'],narration:brief.sourceLibrary!.sources[0].text,...links}],midpointQuiz:{afterSlideId:'SL1',questions:[q('Q1'),q('Q2')]}}]},workedExamples:[{id:'E1',title:'Review',problem:'A draft invents a date.',reasoning:['Inspect the notes.'],result:'Keep the date unknown.',...links}],guidedPractice:{title:'Your review',instructions:'Explain the missing date.',steps:[{id:'G1',instruction:'Read the notes.',hint:'Find the gap.',evidence:'Missing date.',...links}]},scenarioLab:{title:'Apply',scenarios:[{id:'L1',title:'New case',situation:'A missing owner.',challenge:'Explain.',expectedEvidence:'Unknown.',...links}]}}],courseEnd:{miniProject:{title:'Explore',brief:'Use the supplied case.',deliverable:'Explanation.',rubric:['Uses notes.'],...links},masteryGate:{title:'Final',instructions:'Select one.',passPercent:80,questions:[q('F1')]},reflection:{prompts:['What did you check?']}}};
 await d.insert(creatorAuthoredCourseRevisions).values({courseId:draft.id,ownerId:owner.id,createdBy:owner.id,version:1,briefRevision:1,content:pkg});

@@ -1,0 +1,127 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:05.250
+Planning means deciding what needs to happen before promising a result.
+
+00:00:05.250 --> 00:00:12.258
+Task decomposition means breaking one larger request into small questions or actions.
+
+00:00:12.258 --> 00:00:16.111
+A useful step has an outcome you can actually check.
+
+00:00:16.111 --> 00:00:20.903
+Imagine trying to book a table before learning how many people will come.
+
+00:00:20.903 --> 00:00:27.709
+Some tasks belong in a certain order because the first result determines what you must ask next.
+
+00:00:27.709 --> 00:00:30.234
+Treat the plan as a working list.
+
+00:00:30.234 --> 00:00:34.205
+As results arrive, keep the steps that still make sense.
+
+00:00:34.205 --> 00:00:40.360
+Replace any step that relied on an assumption the new information has disproved.
+
+00:00:40.360 --> 00:00:44.141
+Ana asks Orbit to swap her tent for a larger one.
+
+00:00:44.141 --> 00:00:52.656
+Scout could reply yes immediately, but that assumes the shop knows which tent she owns and has a larger one available.
+
+00:00:52.656 --> 00:01:01.693
+Write a short plan: find her order, identify the larger model, check its stock, and only then decide what to offer.
+
+00:01:01.693 --> 00:01:04.757
+Does every request need a plan? No.
+
+00:01:04.757 --> 00:01:10.861
+For a simple question, like where's my parcel, Scout can decide one step at a time.
+
+00:01:10.861 --> 00:01:17.218
+That's quick, but on a long request an agent can wander, or forget part of what was asked.
+
+00:01:17.218 --> 00:01:21.872
+For multi-step requests, a brief plan up front keeps it on track.
+
+00:01:21.872 --> 00:01:28.849
+For the shop assistant, a short plan gives the software a sequence it can check before using tools.
+
+00:01:28.849 --> 00:01:34.311
+And the plan doubles as a record you can read when something goes wrong.
+
+00:01:34.311 --> 00:01:36.459
+The order lookup succeeds.
+
+00:01:36.459 --> 00:01:41.614
+Scout checks inventory for the larger tent and finds zero available.
+
+00:01:41.614 --> 00:01:43.676
+Walk back through the steps.
+
+00:01:43.676 --> 00:01:46.392
+Her original order is still valid.
+
+00:01:46.392 --> 00:01:50.704
+The stock check also worked; zero is a useful answer.
+
+00:01:50.704 --> 00:01:56.037
+Only the planned offer of an immediate swap has become impossible.
+
+00:01:56.037 --> 00:01:59.317
+Lay out the proposed exchange as a sequence.
+
+00:01:59.317 --> 00:02:02.234
+First identify the tent Ana bought.
+
+00:02:02.234 --> 00:02:10.010
+The next check refers to a larger tent, so make sure it is the right replacement model before checking the warehouse.
+
+00:02:10.010 --> 00:02:13.673
+Now replace the expected stock count with zero.
+
+00:02:13.673 --> 00:02:16.581
+Which part of the work must you throw away?
+
+00:02:16.581 --> 00:02:19.050
+The order lookup is still useful.
+
+00:02:19.050 --> 00:02:22.107
+The stock result is also trustworthy.
+
+00:02:22.107 --> 00:02:25.822
+It is the planned offer that no longer makes sense.
+
+00:02:25.822 --> 00:02:31.540
+Cross out only the unavailable exchange and explain the remaining choices.
+
+00:02:31.540 --> 00:02:42.333
+A plan that can change one step is more useful than a script which starts the entire conversation again whenever the world differs from its first guess.
+
+00:02:42.333 --> 00:02:48.193
+Now the real run. Sam's stock sheet says the three-person tent is sold out.
+
+00:02:48.193 --> 00:02:53.039
+Step one works: Ana's two-person tent is already on its way.
+
+00:02:53.039 --> 00:02:58.332
+Step two comes back with zero. There's no three-person tent to swap in.
+
+00:02:58.332 --> 00:03:03.486
+Step three no longer makes sense, so Scout re-plans with what it now knows.
+
+00:03:03.486 --> 00:03:12.718
+It explains the problem and offers real options: keep the tent that's coming, or return it within thirty days of delivery.
+
+00:03:12.718 --> 00:03:19.493
+That beats both bad extremes: promising a swap that can't happen, or simply giving up.
+
+00:03:19.493 --> 00:03:29.458
+Scout can explain the shortage and offer the choices supported by the shop’s policy, such as keeping the current tent or discussing a return.
+
+00:03:29.458 --> 00:03:34.464
+It should not keep running the same stock check hoping for a different answer.
+
+00:03:34.464 --> 00:03:41.120
+A good plan lets one piece of evidence change exactly the decision that depends on it.

@@ -1,0 +1,142 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:02.735
+An agent needs several abilities.
+
+00:00:02.735 --> 00:00:09.629
+Its language model is the part that reads a message and produces words or chooses an action.
+
+00:00:09.629 --> 00:00:15.424
+Understanding the words is only the beginning of helping the person who wrote them.
+
+00:00:15.424 --> 00:00:20.365
+A tool gives the program a way to do something, like check a stock list.
+
+00:00:20.365 --> 00:00:24.975
+Memory supplies information from earlier in the conversation.
+
+00:00:24.975 --> 00:00:27.017
+One finds new facts.
+
+00:00:27.017 --> 00:00:30.264
+The other keeps you from having to repeat facts.
+
+00:00:30.264 --> 00:00:34.269
+Planning means putting small tasks in a sensible order.
+
+00:00:34.269 --> 00:00:41.920
+If one answer determines what to look up next, doing the second lookup first may send you to the wrong record.
+
+00:00:41.920 --> 00:00:47.257
+One detail surprises almost everyone, so let's get it right from day one.
+
+00:00:47.257 --> 00:00:55.871
+For tools you define, the model never runs anything itself: it sends back a request naming the tool and its input.
+
+00:00:55.871 --> 00:01:01.097
+Your own Python code receives that request and runs the real lookup.
+
+00:01:01.097 --> 00:01:05.346
+The result goes back to the model as part of the conversation.
+
+00:01:05.346 --> 00:01:11.204
+Then the model continues: it calls another tool, or writes the final reply.
+
+00:01:11.204 --> 00:01:18.212
+This matters for safety, because your code always has the final say over what actually runs.
+
+00:01:18.212 --> 00:01:21.417
+Owen writes to a shop assistant called Scout.
+
+00:01:21.417 --> 00:01:24.418
+He wants his jacket in a smaller size.
+
+00:01:24.418 --> 00:01:27.825
+The model recognizes an exchange request.
+
+00:01:27.825 --> 00:01:32.182
+Earlier in the conversation Owen identified his order.
+
+00:01:32.182 --> 00:01:37.197
+The app supplies that detail again so Scout can find the right jacket.
+
+00:01:37.197 --> 00:01:42.113
+Remembering the order still tells Scout nothing about today’s stock.
+
+00:01:42.113 --> 00:01:47.555
+Scout asks the stock tool about the smaller size of that particular jacket.
+
+00:01:47.555 --> 00:01:50.771
+Picture checking the correct shelf in a warehouse.
+
+00:01:50.771 --> 00:01:56.886
+Counting black jackets in another style would give a number, but it would answer the wrong question.
+
+00:01:56.886 --> 00:02:01.738
+The returned result belongs to a particular item and size.
+
+00:02:01.738 --> 00:02:05.124
+Memory is easiest to see in a conversation.
+
+00:02:05.124 --> 00:02:08.788
+Ana introduces herself and gives her order number.
+
+00:02:08.788 --> 00:02:11.451
+Scout looks the order up and answers.
+
+00:02:11.451 --> 00:02:15.721
+Then she asks a follow-up, without repeating her order number.
+
+00:02:15.721 --> 00:02:23.157
+Scout still knows which order she means, and that it is over seventy-five dollars, so return shipping is free.
+
+00:02:23.157 --> 00:02:31.020
+Without memory, every message would start from zero, and Ana would have to explain herself all over again.
+
+00:02:31.020 --> 00:02:37.174
+Imagine a colleague hands you just one detail, a black jacket in size large.
+
+00:02:37.174 --> 00:02:42.161
+Before you look for a medium, check which style the customer actually bought.
+
+00:02:42.161 --> 00:02:46.568
+A shelf labelled jackets can hold several different products.
+
+00:02:46.568 --> 00:02:51.532
+Follow the style identifier from the order slip to the stock enquiry.
+
+00:02:51.532 --> 00:02:56.316
+Keep the style and colour, change the size, and check availability.
+
+00:02:56.316 --> 00:03:00.969
+This is what remembering a detail across two actions looks like.
+
+00:03:00.969 --> 00:03:04.505
+A stock count answers whether the item exists.
+
+00:03:04.505 --> 00:03:09.351
+The shop's exchange policy answers whether the exchange is allowed.
+
+00:03:09.351 --> 00:03:11.203
+Both pieces matter.
+
+00:03:11.203 --> 00:03:17.743
+Planning means arranging those checks so that the reply can be traced back to the right jacket.
+
+00:03:17.743 --> 00:03:20.200
+Now follow the plan backwards.
+
+00:03:20.200 --> 00:03:23.679
+An exchange offer depends on finding stock.
+
+00:03:23.679 --> 00:03:27.501
+The stock check depends on identifying the jacket.
+
+00:03:27.501 --> 00:03:31.963
+Identifying it depended on the order from the conversation.
+
+00:03:31.963 --> 00:03:37.981
+If Scout remembers the order but promises a sold-out size, investigate the lookup.
+
+00:03:37.981 --> 00:03:43.102
+If it asks for the order again, investigate what memory supplied.

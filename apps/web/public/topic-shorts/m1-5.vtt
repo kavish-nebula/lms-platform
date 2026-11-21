@@ -1,0 +1,130 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:07.203
+A development environment is the small collection of things you need to run a program on your own computer.
+
+00:00:07.203 --> 00:00:09.661
+Python reads your instructions.
+
+00:00:09.661 --> 00:00:14.006
+A terminal is the window where you type a command to start them.
+
+00:00:14.006 --> 00:00:18.487
+A package is code somebody has already written for you to use.
+
+00:00:18.487 --> 00:00:29.036
+A virtual environment keeps the packages for one project separate, so installing something for another project does not accidentally change this one.
+
+00:00:29.036 --> 00:00:34.135
+A client library handles the conversation with an online service.
+
+00:00:34.135 --> 00:00:36.989
+You will also need a private access key.
+
+00:00:36.989 --> 00:00:44.179
+The first test is deliberately small: send one message and see whether a reply comes back.
+
+00:00:44.179 --> 00:00:47.980
+Create a folder for Scout and open a terminal in it.
+
+00:00:47.980 --> 00:00:54.072
+The command on screen asks Python to make a virtual environment named dot venv.
+
+00:00:54.072 --> 00:00:59.632
+Activate it for that terminal, then install the provider’s client library there.
+
+00:00:59.632 --> 00:01:06.512
+If Python later says the library is missing, check which environment your terminal is using.
+
+00:01:06.512 --> 00:01:10.538
+Everything for Scout lives in one folder, called scout.
+
+00:01:10.538 --> 00:01:20.064
+Inside it, you make a virtual environment: a private set of Python packages for this project only, so projects never clash.
+
+00:01:20.064 --> 00:01:24.430
+You create it once, with a tool that comes built into Python.
+
+00:01:24.430 --> 00:01:31.129
+Then you activate it, with one command on Windows and a slightly different one on Mac or Linux.
+
+00:01:31.129 --> 00:01:40.367
+With it active, pip install anthropic adds Anthropic's official SDK, the library your code uses to talk to the model.
+
+00:01:40.367 --> 00:01:46.769
+You can tell it's active because its name appears in brackets at the start of your terminal prompt.
+
+00:01:46.769 --> 00:01:51.103
+Activate it again every time you open a new terminal.
+
+00:01:51.103 --> 00:01:55.414
+The library needs to know which account is making the request.
+
+00:01:55.414 --> 00:02:01.178
+Put the key in an environment variable, a named setting your running program can read.
+
+00:02:01.178 --> 00:02:05.702
+The file you share with a colleague can refer to the setting by name.
+
+00:02:05.702 --> 00:02:09.652
+The secret value itself stays out of the shared file.
+
+00:02:09.652 --> 00:02:16.377
+Suppose your first request worked yesterday, but today Python says it cannot find the library.
+
+00:02:16.377 --> 00:02:18.346
+Start with what changed.
+
+00:02:18.346 --> 00:02:26.016
+Opening a new terminal can put you back in the system environment even though your project folder still exists.
+
+00:02:26.016 --> 00:02:30.702
+Select the project's environment and run the same small script again.
+
+00:02:30.702 --> 00:02:36.082
+If the import now succeeds, you have learned exactly which boundary failed.
+
+00:02:36.082 --> 00:02:41.888
+Changing the model name would have had no effect on Python finding a library.
+
+00:02:41.888 --> 00:02:45.988
+A service rejecting the account key is a different signal.
+
+00:02:45.988 --> 00:02:49.246
+The request reached a service that could answer.
+
+00:02:49.246 --> 00:02:58.164
+Keeping the first test tiny makes those two problems distinguishable before you add tools, memory or customer data.
+
+00:02:58.164 --> 00:03:01.147
+Let's follow that call from start to finish.
+
+00:03:01.147 --> 00:03:05.831
+Your script builds the request, with the model name and your message.
+
+00:03:05.831 --> 00:03:14.109
+The SDK attaches your API key and sends the request over the internet to Anthropic's API.
+
+00:03:14.109 --> 00:03:19.316
+The model reads the message, may think it through first, and writes its answer.
+
+00:03:19.316 --> 00:03:26.698
+The reply comes back as a list of content blocks, which is why you pick out the block whose type is text.
+
+00:03:26.698 --> 00:03:30.819
+Your script prints it, and the answer appears in your terminal.
+
+00:03:30.819 --> 00:03:38.892
+That is one model call, not an agent yet: there are no tools and no loop, so it can talk, but it can't act.
+
+00:03:38.892 --> 00:03:42.854
+Send a short test message and print the returned text.
+
+00:03:42.854 --> 00:03:52.926
+A reply means several things worked together: Python ran the file, found the library, reached the service, and supplied an accepted key.
+
+00:03:52.926 --> 00:03:56.482
+If authentication fails, check the key setting.
+
+00:03:56.482 --> 00:04:01.569
+There is no need to debug an order tool before the first message works.

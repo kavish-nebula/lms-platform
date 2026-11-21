@@ -1,0 +1,142 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:05.017
+Three helpers can appear in the same chat window and work quite differently.
+
+00:00:05.017 --> 00:00:12.305
+A simple question-and-answer chatbot reads your message and explains something it already has in writing.
+
+00:00:12.305 --> 00:00:16.107
+Think of asking a receptionist about opening hours.
+
+00:00:16.107 --> 00:00:20.345
+A workflow is a recipe someone wrote for a computer.
+
+00:00:20.345 --> 00:00:28.720
+It can make choices, like sending an incomplete form back, because a person already specified what to do in each case.
+
+00:00:28.720 --> 00:00:32.807
+An agent is given a goal and some permitted actions.
+
+00:00:32.807 --> 00:00:37.186
+It decides what information to look up next as it learns more.
+
+00:00:37.186 --> 00:00:41.072
+Watch what each helper can do for the same shopper.
+
+00:00:41.072 --> 00:00:44.352
+Owen bought a jacket and wants a smaller one.
+
+00:00:44.352 --> 00:00:47.153
+First he asks about return shipping.
+
+00:00:47.153 --> 00:00:54.630
+Orbit’s chatbot reads the shop policy and says shipping is free on orders over seventy-five dollars.
+
+00:00:54.630 --> 00:00:56.631
+That explains the rule.
+
+00:00:56.631 --> 00:01:04.395
+The chatbot in this example has not opened Owen’s order, so it cannot say whether his purchase qualifies.
+
+00:01:04.395 --> 00:01:06.661
+So when should you use which?
+
+00:01:06.661 --> 00:01:11.209
+If you can write the steps down ahead of time, use a fixed workflow.
+
+00:01:11.209 --> 00:01:17.995
+A fixed sequence can be tested with the same starting records and checked against an expected result.
+
+00:01:17.995 --> 00:01:22.071
+Reach for an agent when the steps depend on the request.
+
+00:01:22.071 --> 00:01:29.378
+Ana wants tracking, Grace wants a return, Owen wants a different size, and you can't predict the mix.
+
+00:01:29.378 --> 00:01:37.265
+Letting the model choose a new action can introduce extra calls, expense and opportunities for a mistake.
+
+00:01:37.265 --> 00:01:42.353
+So they need limits and testing, and that is a big part of this course.
+
+00:01:42.353 --> 00:01:45.270
+Owen submits the shop’s return form.
+
+00:01:45.270 --> 00:01:49.273
+A workflow checks that the required fields are filled in.
+
+00:01:49.273 --> 00:01:52.615
+A complete form goes into the returns queue.
+
+00:01:52.615 --> 00:01:56.363
+A missing order number sends the form back to Owen.
+
+00:01:56.363 --> 00:02:02.380
+This is still a workflow: both routes were written down before Owen bought his jacket.
+
+00:02:02.380 --> 00:02:06.523
+Follow a parcel through a different fixed workflow at Orbit.
+
+00:02:06.523 --> 00:02:11.923
+When Sam's warehouse marks an order as shipped, the orders system announces it.
+
+00:02:11.923 --> 00:02:16.972
+A template fills in the customer's name, the item and the tracking number.
+
+00:02:16.972 --> 00:02:19.720
+And the email goes out to the customer.
+
+00:02:19.720 --> 00:02:27.403
+Same three steps, every time, in the same order, with nothing to decide, so no language model is needed.
+
+00:02:27.403 --> 00:02:36.692
+Once those three steps are connected, a warehouse event can send a useful tracking email without someone deciding the route again.
+
+00:02:36.692 --> 00:02:41.038
+Now Owen asks whether he can actually get the smaller jacket.
+
+00:02:41.038 --> 00:02:46.276
+Scout must find which jacket he bought before it knows which size to check.
+
+00:02:46.276 --> 00:02:50.748
+If there is stock, it can offer the exchange under the shop’s rules.
+
+00:02:50.748 --> 00:02:55.082
+If the size is sold out, it can explain the other choices.
+
+00:02:55.082 --> 00:03:02.806
+One customer needed a policy answer, a fixed process, and a decision based on fresh information.
+
+00:03:02.806 --> 00:03:07.896
+Cover the names of the three helpers and listen to Owen's questions again.
+
+00:03:07.896 --> 00:03:10.826
+Could a printed sign answer the first one?
+
+00:03:10.826 --> 00:03:12.086
+Yes.
+
+00:03:12.086 --> 00:03:17.431
+The shipping rule can be written once and explained to the next customer who asks.
+
+00:03:17.431 --> 00:03:19.932
+Now cover the name of the jacket.
+
+00:03:19.932 --> 00:03:26.462
+The same validation rule still works because the missing field determines the next action.
+
+00:03:26.462 --> 00:03:32.232
+Changing the customer's wording does not change where an incomplete form goes.
+
+00:03:32.232 --> 00:03:34.946
+Finally, cover the stock result.
+
+00:03:34.946 --> 00:03:37.908
+You cannot promise Owen an exchange yet.
+
+00:03:37.908 --> 00:03:44.159
+The next useful action depends on which jacket he owns and what the warehouse finds.
+
+00:03:44.159 --> 00:03:48.853
+That missing fact is the clue to who should handle the request.

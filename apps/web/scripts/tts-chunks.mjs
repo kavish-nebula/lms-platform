@@ -21,12 +21,20 @@ export function narrationChunks(text, limit = 240) {
   return chunks;
 }
 
-export async function synthesizeNarration(tts, text, voice) {
+export async function synthesizeNarration(tts, text, voice, speed, endsScene = false) {
   const segments = [];
-  for (const chunk of narrationChunks(text)) {
-    const audio = await tts.generate(chunk, { voice });
-    if (!audio.audio.length || audio.sampling_rate !== 24000) throw new Error('Invalid speech segment.');
-    segments.push(audio.audio);
+  const sentences = speed === undefined ? [text] :
+    Array.from(new Intl.Segmenter('en', {granularity:'sentence'}).segment(text), s => s.segment.trim()).filter(Boolean);
+  for (const [i, sentence] of sentences.entries()) {
+    for (const chunk of narrationChunks(sentence)) {
+      const audio = await tts.generate(chunk, speed === undefined ? {voice} : {voice, speed});
+      if (!audio.audio.length || audio.sampling_rate !== 24000) throw new Error('Invalid speech segment.');
+      segments.push(audio.audio);
+    }
+    if (speed !== undefined) {
+      const pause = endsScene && i === sentences.length - 1 ? 0.65 : /\?[”"’']?$/.test(sentence) ? 0.46 : 0.30;
+      segments.push(new Float32Array(Math.round(24000 * pause)));
+    }
   }
   const samples = new Float32Array(segments.reduce((n, s) => n + s.length, 0));
   let offset = 0; for (const segment of segments) { samples.set(segment, offset); offset += segment.length; }

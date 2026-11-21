@@ -80,7 +80,7 @@ const tts = await load();
 
 for (const clip of job.clips) {
   try {
-    const audio = job.chunkLong ? await synthesizeNarration(tts, clip.text, job.voice ?? 'am_michael') : await tts.generate(clip.text, { voice: job.voice ?? "am_michael" });
+    const audio = job.chunkLong ? await synthesizeNarration(tts, clip.text, job.voice ?? 'am_michael', job.speed, clip.endsScene) : await tts.generate(clip.text, { voice: job.voice ?? "am_michael" });
     fs.mkdirSync(path.dirname(clip.out), { recursive: true });
     const tmp = `${clip.out}.part`;
     fs.writeFileSync(tmp, wav16(audio.audio, audio.sampling_rate));

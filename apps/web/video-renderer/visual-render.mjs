@@ -26,7 +26,7 @@ try{
   const windows=visualWindows(props,24),buffers=new Map(await Promise.all([...files].map(async([key,file])=>[key,await fs.readFile(file)])));
   await fs.writeFile(path.join(directory,'narration.wav'),alignedVisualWav(windows,buffers,24));
   for(const scene of props.scenes)for(const beat of scene.beats){const key=beat.audio?.replace(/^asset:/,'');if(!key||!files.has(key))throw Error('Missing approved narration clip');beat.audio=`http://127.0.0.1:${server.address().port}/${token}/${key}.wav`;}
-  const fingerprint=createHash('sha256');for(const name of ['visual-entry.tsx','../src/components/video/visual-lesson-composition.tsx','../src/components/video/reference-visual-scene.tsx','../src/lib/visual-lesson.ts','../public/video-style/reference-ambient.jpg'])fingerprint.update(await fs.readFile(path.join(here,name)));
+  const fingerprint=createHash('sha256');for(const name of ['visual-entry.tsx','../src/components/video/visual-lesson-composition.tsx','../src/components/video/reference-visual-scene.tsx','../src/components/video/topic-motion-scene.tsx','../src/lib/visual-lesson.ts','../public/video-style/reference-ambient.jpg'])fingerprint.update(await fs.readFile(path.join(here,name)));
   const bundleDir=path.resolve(here,'../.data/visual-lesson-bundles',fingerprint.digest('hex'));
   const publicDir=path.resolve(here,'../.data/visual-style-public');await fs.mkdir(path.join(publicDir,'video-style'),{recursive:true});await fs.copyFile(path.resolve(here,'../public/video-style/reference-ambient.jpg'),path.join(publicDir,'video-style/reference-ambient.jpg'));
   if(!existsSync(path.join(bundleDir,'index.html')))await bundle({entryPoint:path.join(here,'visual-entry.tsx'),outDir:bundleDir,publicDir});

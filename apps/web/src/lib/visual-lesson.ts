@@ -5,13 +5,28 @@ const id = z.string().regex(/^[A-Za-z][A-Za-z0-9_-]{0,79}$/);
 export const VISUAL_KINDS = ['comparison', 'rule-flow', 'pattern-model', 'exception', 'hybrid', 'recap', 'document', 'workspace', 'journey', 'network', 'decision'] as const;
 export const VISUAL_FPS = 24;
 export const VISUAL_RENDER_VERSION = 'visual-lesson-v2';
+const motionKey = z.object({
+  beat: z.number().int().min(0).max(3), at: z.number().min(0).max(1),
+  x: z.number().min(-1000).max(2000), y: z.number().min(-360).max(720),
+  scale: z.number().min(0).max(10).default(1), angle: z.number().min(-720).max(720).default(0),
+  opacity: z.number().min(0).max(1).default(1),
+}).strict();
+const motionObject = z.object({
+  // Only SVG path data is admitted, never markup, URLs, styles or scripts.
+  path: z.string().max(2400).regex(/^[Mm][MmZzLlHhVvCcSsQqTtAaEe\d\s.,+\-]*$/).optional(),
+  label: z.string().trim().min(1).max(60).optional(),
+  tone: z.enum(['paper','rose','mint','amber','muted']).default('paper'),
+  filled: z.boolean().default(false),
+  keys: z.array(motionKey).min(1).max(32),
+}).strict();
 export const VisualLesson = z.object({
   title: z.string().trim().min(1).max(100),
-  style: z.enum(['classic', 'reference-cinema']).optional(),
+  style: z.enum(['classic', 'reference-cinema', 'topic-animation']).optional(),
   scenes: z.array(z.object({
     id, title: z.string().trim().min(1).max(80), kind: z.enum(VISUAL_KINDS),
     sourceIds: z.array(id).min(1).max(20), evidence: z.string().trim().min(12).max(1200),
     holdSeconds: z.number().min(1).max(5),
+    motion: z.array(motionObject).min(1).max(32).optional(),
     beats: z.array(z.object({ id, label: z.string().trim().min(1).max(65), narration: z.string().trim().min(8).max(420), visual: z.object({ heading: z.string().trim().min(1).max(45), detail: z.string().trim().min(1).max(120), icon: z.enum(['document','message','check','question','person','model','shield','table']).default('document'), status: z.enum(['neutral','warning','success']).default('neutral') }).strict().optional() }).strict()).min(1).max(4),
   }).strict()).min(2).max(12),
 }).strict().superRefine((lesson, ctx) => {
@@ -19,6 +34,25 @@ export const VisualLesson = z.object({
   if (visibleText.some(hasPlatformBrand)) ctx.addIssue({ code:'custom', message:'Do not include the platform company name in lesson narration or visual labels. Use neutral labels or a source-supported fictional workplace.' });
   const ids = lesson.scenes.flatMap(s => [s.id, ...s.beats.map(b => b.id)]);
   if (new Set(ids).size !== ids.length) ctx.addIssue({ code: 'custom', message: 'Scene and narration beat IDs must be unique.' });
+  let hasMovement = false;
+  for (const [i, scene] of lesson.scenes.entries()) {
+    if (!scene.motion) continue;
+    const issue = (message: string) => ctx.addIssue({code:'custom', path:['scenes', i, 'motion'], message});
+    if (lesson.style !== 'topic-animation') issue('Use topic-animation for authored motion.');
+    for (const object of scene.motion) {
+      if (!object.path && !object.label) issue('A moving object needs a path or a label.');
+      for (const [index, key] of object.keys.entries()) {
+        if (key.beat >= scene.beats.length) issue('Motion references a missing narration beat.');
+        const previous = object.keys[index-1];
+        if (!previous) continue;
+        if (previous.beat + previous.at >= key.beat + key.at) issue('Object keys must advance in time.');
+        if (previous.x !== key.x || previous.y !== key.y || previous.scale !== key.scale ||
+            previous.angle !== key.angle || previous.opacity !== key.opacity) hasMovement = true;
+      }
+    }
+  }
+  if (lesson.style === 'topic-animation' && !hasMovement)
+    ctx.addIssue({code:'custom', message:'Animate a visible change in the topic’s worked example.'});
   const words = lesson.scenes.flatMap(s => s.beats).reduce((n, b) => n + b.narration.split(/\s+/).length, 0);
   if (words > 850) ctx.addIssue({ code: 'custom', message: 'Keep this topic under 850 spoken words; measured playback must stay below seven minutes.' });
 });

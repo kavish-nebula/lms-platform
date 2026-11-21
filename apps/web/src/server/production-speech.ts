@@ -5,10 +5,10 @@ import { mkdir } from 'node:fs/promises';
 import { appRoot } from './db/client';
 import type { ProductionVoice } from '@/lib/production-audio';
 
-export type SpeechClip = { key: string; text: string };
+export type SpeechClip = { key: string; text: string; endsScene?: boolean };
 export type ProductionSpeaker = (dir: string, clips: SpeechClip[], voice: ProductionVoice, completed: (key: string) => Promise<void>) => Promise<void>;
 
-export const productionSpeechPayload = (dir: string, clips: SpeechClip[], voice: ProductionVoice) => ({ voice: voice.voice, chunkLong: voice.version >= 2, clips: clips.map(c => ({ text: c.text, out: path.join(dir, `${c.key}.wav`) })) });
+export const productionSpeechPayload = (dir: string, clips: SpeechClip[], voice: ProductionVoice) => ({ voice: voice.voice, ...(voice.speed === undefined ? {} : {speed:voice.speed}), chunkLong: voice.version >= 2, clips: clips.map(c => ({ text: c.text, ...(c.endsScene === undefined ? {} : {endsScene:c.endsScene}), out: path.join(dir, `${c.key}.wav`) })) });
 
 /** Reuse the installed Kokoro worker, with a frozen voice and a bounded lifetime. */
 export const speakProduction: ProductionSpeaker = async (dir, clips, voice, completed) => {

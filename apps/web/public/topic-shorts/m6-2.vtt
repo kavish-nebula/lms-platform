@@ -1,0 +1,139 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:04.782
+A single customer reply can require several calls to a model.
+
+00:00:04.782 --> 00:00:08.031
+A call sends text in and receives text back.
+
+00:00:08.031 --> 00:00:12.121
+The service measures that text in pieces called tokens.
+
+00:00:12.121 --> 00:00:16.229
+The total cost of an answer adds up across the calls.
+
+00:00:16.229 --> 00:00:18.730
+Latency is waiting time.
+
+00:00:18.730 --> 00:00:23.213
+It includes time spent waiting for tools as well as the model.
+
+00:00:23.213 --> 00:00:30.233
+Seeing the first words sooner and finishing the whole job sooner are related but different improvements.
+
+00:00:30.233 --> 00:00:36.571
+Monitoring means recording enough about each request to spot changes across the day.
+
+00:00:36.571 --> 00:00:44.240
+A sudden rise in waiting time means more when you can also see whether a particular lookup started failing.
+
+00:00:44.240 --> 00:00:46.847
+Ana asks Orbit where her tent is.
+
+00:00:46.847 --> 00:00:52.045
+Scout first looks up the order, then checks the carrier, then writes a reply.
+
+00:00:52.045 --> 00:00:57.329
+Read the example receipt as three charges for one customer answer.
+
+00:00:57.329 --> 00:01:04.774
+The first charge is one point four cents, the next is one point six, and the last is two point one.
+
+00:01:04.774 --> 00:01:11.333
+Add them together and the answer costs five point one cents at these example rates.
+
+00:01:11.333 --> 00:01:20.713
+This illustrative bill belongs to Ana's order enquiry. Read it as an example of adding charges, rather than a price list.
+
+00:01:20.713 --> 00:01:28.395
+Step one sends three thousand tokens and gets back a short call to get order: about one and a half cents.
+
+00:01:28.395 --> 00:01:35.406
+Step two sends the whole conversation again, now with the order details, and calls track parcel.
+
+00:01:35.406 --> 00:01:41.614
+Step three sends everything once more and writes the answer, which costs about two cents.
+
+00:01:41.614 --> 00:01:49.604
+In total, ten and a half thousand input tokens and four hundred and fifty output tokens: about five cents.
+
+00:01:49.604 --> 00:01:57.710
+At four hundred tickets a day, that is about twenty dollars a day, far less than the hours Leo's team gets back.
+
+00:01:57.710 --> 00:02:00.115
+Now watch the customer’s screen.
+
+00:02:00.115 --> 00:02:04.960
+With an ordinary reply, she waits and then sees the whole message.
+
+00:02:04.960 --> 00:02:08.304
+With streaming, words appear as they are produced.
+
+00:02:08.304 --> 00:02:12.968
+She gets feedback sooner, even if the same three calls still happen.
+
+00:02:12.968 --> 00:02:18.535
+Removing an unnecessary call would change the amount of work itself.
+
+00:02:18.535 --> 00:02:24.957
+Latency is the time the customer waits, and in an agent it adds up across the steps.
+
+00:02:24.957 --> 00:02:33.952
+A model call takes time to read its input and produce its output. The length of the answer affects how long it takes to finish.
+
+00:02:33.952 --> 00:02:41.816
+Each tool has its own response time, and waiting for a busy carrier can account for much of a customer's delay.
+
+00:02:41.816 --> 00:02:49.896
+A customer waits through any steps that depend on one another. Measure each one to see where the time actually went.
+
+00:02:49.896 --> 00:02:58.505
+Streaming helps: the reply appears word by word as it is written, so the customer sees progress instead of a blank screen.
+
+00:02:58.505 --> 00:03:05.800
+Fewer steps, smaller models for quick steps, and streaming are your three main tools against waiting.
+
+00:03:05.800 --> 00:03:11.746
+Take the three example charges from Ana's order question and add them on paper.
+
+00:03:11.746 --> 00:03:15.569
+One point four plus one point six makes three cents.
+
+00:03:15.569 --> 00:03:21.523
+Add two point one and the full answer costs five point one cents in this example.
+
+00:03:21.523 --> 00:03:25.621
+Now picture the same three calls with streaming turned on.
+
+00:03:25.621 --> 00:03:34.347
+Ana can start reading earlier, but you have not removed a lookup or shortened the text simply by changing when it appears.
+
+00:03:34.347 --> 00:03:37.966
+Record both first word and completed answer.
+
+00:03:37.966 --> 00:03:43.462
+Try removing a genuinely repeated lookup and run the same question again.
+
+00:03:43.462 --> 00:03:48.894
+Compare cost, waiting time and whether the answer still matches the parcel.
+
+00:03:48.894 --> 00:03:55.378
+Two responses are only useful to compare if they were supposed to do the same job.
+
+00:03:55.378 --> 00:04:03.389
+To find a slow or expensive change, record the time, usage, and errors for comparable order questions.
+
+00:04:03.389 --> 00:04:05.700
+Did the carrier take longer?
+
+00:04:05.700 --> 00:04:08.008
+Did Scout repeat a lookup?
+
+00:04:08.008 --> 00:04:11.597
+Did accuracy change when a step was removed?
+
+00:04:11.597 --> 00:04:14.355
+Check the answer as well as the bill.
+
+00:04:14.355 --> 00:04:19.914
+A cheaper reply that gives the wrong parcel status is a poor trade.

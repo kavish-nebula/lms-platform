@@ -1,0 +1,142 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:03.889
+Testing asks whether a program does what you expected.
+
+00:00:03.889 --> 00:00:08.786
+Debugging is the investigation that follows when it does not.
+
+00:00:08.786 --> 00:00:15.519
+With an assistant, a wrong final answer may have started much earlier than the sentence you can see.
+
+00:00:15.519 --> 00:00:18.489
+A trace is like a receipt for the work.
+
+00:00:18.489 --> 00:00:24.753
+It can show which tool was requested, what information was sent to it, and what came back.
+
+00:00:24.753 --> 00:00:26.915
+Read those steps in order.
+
+00:00:26.915 --> 00:00:29.983
+Pick one failing request and repeat it.
+
+00:00:29.983 --> 00:00:33.646
+Compare expected with actual one step at a time.
+
+00:00:33.646 --> 00:00:41.549
+If an earlier lookup was already wrong, editing the final wording alone cannot recover the missing facts.
+
+00:00:41.549 --> 00:00:44.232
+Here is the trace of a healthy run.
+
+00:00:44.232 --> 00:00:48.356
+Step one: Scout calls get order with Ana's order number.
+
+00:00:48.356 --> 00:00:52.258
+The result comes back: shipped, with a tracking number.
+
+00:00:52.258 --> 00:00:57.819
+Step two: Scout calls track parcel, using the tracking number it just found.
+
+00:00:57.819 --> 00:01:03.218
+That result gives the arrival day, Thursday, which goes into the reply.
+
+00:01:03.218 --> 00:01:08.354
+Read a trace like a story: each step should follow from the one before.
+
+00:01:08.354 --> 00:01:15.345
+And when the reply and the trace disagree, trust the trace: it shows what Scout actually did.
+
+00:01:15.345 --> 00:01:21.895
+Grace asks whether she can return her boots and gives the email address used for her purchase.
+
+00:01:21.895 --> 00:01:24.494
+Scout gives a reassuring answer.
+
+00:01:24.494 --> 00:01:28.509
+Before judging that sentence, ask what it would need to know.
+
+00:01:28.509 --> 00:01:35.561
+The return window depends on the delivery date, so Scout first has to find Grace’s order.
+
+00:01:35.561 --> 00:01:37.296
+Open the trace.
+
+00:01:37.296 --> 00:01:44.116
+The order tool accepts an order identifier in one field and an email address in another.
+
+00:01:44.116 --> 00:01:48.099
+Scout put Grace’s email into the order-number field.
+
+00:01:48.099 --> 00:01:50.066
+The lookup found nothing.
+
+00:01:50.066 --> 00:01:54.124
+The next mistake was answering as if it had found the order.
+
+00:01:54.124 --> 00:01:57.912
+The first wrong step is the misplaced email.
+
+00:01:57.912 --> 00:02:00.766
+Start at the last sentence Grace would see.
+
+00:02:00.766 --> 00:02:05.602
+It might sound polite even when the order lookup underneath it failed.
+
+00:02:05.602 --> 00:02:13.400
+To debug this case, work backwards until you find the first place where the evidence differs from the expectation.
+
+00:02:13.400 --> 00:02:18.969
+The tool name is correct, so checking its description again will not fix this run.
+
+00:02:18.969 --> 00:02:22.452
+Read the input fields beside the saved request.
+
+00:02:22.452 --> 00:02:28.469
+An email in the order-number field gives you a specific, reproducible mismatch.
+
+00:02:28.469 --> 00:02:32.132
+Correct the field and use the same message again.
+
+00:02:32.132 --> 00:02:37.948
+Now check the returned delivery date against the return rule before trusting the draft.
+
+00:02:37.948 --> 00:02:41.013
+A successful tool call fixes the lookup.
+
+00:02:41.013 --> 00:02:45.514
+A correct customer answer still requires a second check.
+
+00:02:45.514 --> 00:02:48.815
+Most agent bugs fall into four families.
+
+00:02:48.815 --> 00:02:56.742
+Wrong tool: Scout searches the policy when it should look up the order, usually because two descriptions overlap.
+
+00:02:56.742 --> 00:03:03.411
+Wrong arguments: the right tool with the wrong input, like an email where an order number should be.
+
+00:03:03.411 --> 00:03:08.748
+Ignored error: a tool fails, and Scout answers confidently anyway.
+
+00:03:08.748 --> 00:03:14.672
+Looping: Scout calls the same tool again and again, hoping for a different result.
+
+00:03:14.672 --> 00:03:18.452
+Once you can name the bug, the fix is usually clear.
+
+00:03:18.452 --> 00:03:25.119
+Each family leaves its own fingerprint in the trace, so with practice you'll spot them at a glance.
+
+00:03:25.119 --> 00:03:29.082
+Correct the field and repeat Grace’s same request.
+
+00:03:29.082 --> 00:03:35.782
+Check that the lookup now finds the matching order, then compare the delivery date with the return rule.
+
+00:03:35.782 --> 00:03:39.788
+Finally repeat a request that supplies an order number.
+
+00:03:39.788 --> 00:03:47.103
+You have evidence of a fix when Grace’s case improves and the previously working case still works.

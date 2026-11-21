@@ -1,0 +1,145 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:04.291
+An agent loop is a repeatable way of working toward a goal.
+
+00:00:04.291 --> 00:00:07.389
+ReAct is short for reasoning and acting.
+
+00:00:07.389 --> 00:00:14.239
+At each turn the assistant chooses a useful next step based on the information it currently has.
+
+00:00:14.239 --> 00:00:16.709
+Think of checking a cake in the oven.
+
+00:00:16.709 --> 00:00:21.674
+You look at it, decide whether it needs more time, and check again later.
+
+00:00:21.674 --> 00:00:27.137
+Taking it out depends on what the check shows, not just on going around the loop.
+
+00:00:27.137 --> 00:00:30.203
+A program also needs a stopping rule.
+
+00:00:30.203 --> 00:00:38.074
+It can stop because it has an answer, or because it has reached a limit and should explain what it could not establish.
+
+00:00:38.074 --> 00:00:40.947
+Drawn as a loop, it looks like this.
+
+00:00:40.947 --> 00:00:47.328
+Think: Scout looks at the conversation and the results so far, and decides what to do next.
+
+00:00:47.328 --> 00:00:51.017
+Act: it asks for a tool, and your code runs it.
+
+00:00:51.017 --> 00:00:56.107
+Observe: the result goes back into the messages, so Scout can read it.
+
+00:00:56.107 --> 00:01:02.709
+Then a check: is the job done? If yes, Scout replies. If not, it goes round again.
+
+00:01:02.709 --> 00:01:08.779
+Notice who does what. Your code runs the loop, and the model decides each step.
+
+00:01:08.779 --> 00:01:11.389
+Ana asks whether her order shipped.
+
+00:01:11.389 --> 00:01:16.041
+At the start Scout has her message and order number, but no status.
+
+00:01:16.041 --> 00:01:18.884
+What is the smallest useful action?
+
+00:01:18.884 --> 00:01:21.537
+Ask the order system for that number.
+
+00:01:21.537 --> 00:01:25.548
+The application runs the lookup and returns a status.
+
+00:01:25.548 --> 00:01:30.188
+That returned information is the observation in this loop.
+
+00:01:30.188 --> 00:01:33.369
+Read the record of the run, called a trace.
+
+00:01:33.369 --> 00:01:36.147
+First comes the request for a status.
+
+00:01:36.147 --> 00:01:38.083
+Then comes the lookup.
+
+00:01:38.083 --> 00:01:40.903
+Next comes the observation, shipped.
+
+00:01:40.903 --> 00:01:45.772
+Now ask whether another call would answer anything Ana actually asked.
+
+00:01:45.772 --> 00:01:50.902
+For this question, the recorded status already supports a reply.
+
+00:01:50.902 --> 00:01:53.905
+Imagine a small notebook beside Scout.
+
+00:01:53.905 --> 00:01:58.003
+On the first line write the customer's exact question.
+
+00:01:58.003 --> 00:02:02.441
+Whether the parcel has shipped is narrower than when it will arrive.
+
+00:02:02.441 --> 00:02:06.495
+That wording determines which observation would be enough.
+
+00:02:06.495 --> 00:02:09.772
+The next line records the warehouse result.
+
+00:02:09.772 --> 00:02:13.233
+Ask whether the new fact answers the first line.
+
+00:02:13.233 --> 00:02:15.852
+If it does, Scout can stop here.
+
+00:02:15.852 --> 00:02:22.265
+Another carrier call might answer an interesting question, but nobody asked that question.
+
+00:02:22.265 --> 00:02:26.258
+Replace shipped with a timeout and read the notebook again.
+
+00:02:26.258 --> 00:02:30.644
+The original goal stays the same but the evidence changes.
+
+00:02:30.644 --> 00:02:34.372
+Scout might retry within its limit or hand over.
+
+00:02:34.372 --> 00:02:39.567
+A loop needs both a reason to continue and a reason to stop.
+
+00:02:39.567 --> 00:02:43.688
+Every loop needs a way out that doesn't depend on the model.
+
+00:02:43.688 --> 00:02:49.343
+If the tracking service keeps timing out, a loop with no limit can retry all night.
+
+00:02:49.343 --> 00:02:57.130
+If an item is out of stock, an agent can re-plan in circles, trying the same idea again and again.
+
+00:02:57.130 --> 00:03:02.948
+And if the model misreads a result, it may repeat the same call over and over.
+
+00:03:02.948 --> 00:03:08.188
+A step limit puts a hard ceiling on the time and the cost of every message.
+
+00:03:08.188 --> 00:03:15.773
+Six steps covers almost every Orbit request. If Scout needs more, a person should take a look.
+
+00:03:15.773 --> 00:03:20.374
+Change one detail: suppose the lookup times out each time.
+
+00:03:20.374 --> 00:03:26.809
+The assistant could keep choosing exactly the same action without getting closer to an answer.
+
+00:03:26.809 --> 00:03:31.237
+The application’s limit ends that run and allows a handoff.
+
+00:03:31.237 --> 00:03:37.265
+A successful stop and a stop because of a limit should sound different to the customer.

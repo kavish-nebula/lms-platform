@@ -1,0 +1,136 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:06.860
+Scoping a project means deciding what problem it will solve and where its responsibility ends.
+
+00:00:06.860 --> 00:00:10.672
+Saying build a helpful assistant is hard to test.
+
+00:00:10.672 --> 00:00:16.243
+Saying answer questions about known orders gives you something specific to try.
+
+00:00:16.243 --> 00:00:21.708
+Architecture is a map of the parts and how information travels between them.
+
+00:00:21.708 --> 00:00:29.733
+For a small assistant you might draw the customer, the part that reads the question, and the system that holds the answer.
+
+00:00:29.733 --> 00:00:33.014
+Write down a success condition before building.
+
+00:00:33.014 --> 00:00:37.519
+Include an ordinary request and one outside the boundary.
+
+00:00:37.519 --> 00:00:43.803
+That way you can check both whether the assistant helps and whether it knows when to hand over.
+
+00:00:43.803 --> 00:00:49.319
+Scoping means being exact, so let's sort some real requests from Leo's queue.
+
+00:00:49.319 --> 00:00:56.157
+Questions like where is my order are Scout's core job: it looks the order up and tracks the parcel.
+
+00:00:56.157 --> 00:01:03.006
+Returns and exchanges are in too, because Scout can check the order, the policy and the stock.
+
+00:01:03.006 --> 00:01:09.465
+Refunds over two hundred dollars are half in: Scout starts them, and a person approves them.
+
+00:01:09.465 --> 00:01:15.471
+Product advice needs real gear expertise, so Scout hands that chat to a person.
+
+00:01:15.471 --> 00:01:20.326
+Marketing emails are not Scout's job at all, so it never tries.
+
+00:01:20.326 --> 00:01:25.906
+Writing down what Scout will not do matters just as much as what it will do.
+
+00:01:25.906 --> 00:01:28.718
+Orbit wants Scout to help with support.
+
+00:01:28.718 --> 00:01:32.925
+Start with one customer question: has my order shipped?
+
+00:01:32.925 --> 00:01:35.906
+Put order lookups inside the project.
+
+00:01:35.906 --> 00:01:39.900
+Put actions the shop has not authorized outside it.
+
+00:01:39.900 --> 00:01:46.609
+If the customer asks for a change Scout may not make, a clear handoff is part of the design.
+
+00:01:46.609 --> 00:01:49.804
+Trace the ordinary question on a drawing.
+
+00:01:49.804 --> 00:01:52.146
+The customer supplies a number.
+
+00:01:52.146 --> 00:01:55.838
+The model identifies a need for an order lookup.
+
+00:01:55.838 --> 00:02:02.634
+A tool asks the records system, and the returned status gives the model a fact it can explain.
+
+00:02:02.634 --> 00:02:07.948
+Each connection has a purpose you can describe without knowing the code.
+
+00:02:07.948 --> 00:02:12.313
+Next, decide how you will know Scout works, before you build it.
+
+00:02:12.313 --> 00:02:19.463
+First, right answers: on a set of real test questions, Scout should pass 90 percent or more.
+
+00:02:19.463 --> 00:02:27.882
+Second, policy kept: no refund over two hundred dollars without a person, and no promise the policy doesn't make.
+
+00:02:27.882 --> 00:02:35.280
+Third, nothing invented: when a tool fails or data is missing, Scout says so instead of guessing.
+
+00:02:35.280 --> 00:02:42.680
+The last two targets are zero, because one broken promise costs more than ten clumsy replies.
+
+00:02:42.680 --> 00:02:46.363
+Imagine two notes arrive on the project desk.
+
+00:02:46.363 --> 00:02:49.441
+The first asks whether Ana's tent has shipped.
+
+00:02:49.441 --> 00:02:55.716
+Your team has an order record, a lookup tool and a way to compare the reply with the record.
+
+00:02:55.716 --> 00:02:58.772
+This job has a testable boundary.
+
+00:02:58.772 --> 00:03:02.905
+The second asks which equipment is right for an expedition.
+
+00:03:02.905 --> 00:03:10.106
+A friendly paragraph would be easy to produce, but the order lookup provides no evidence for that advice.
+
+00:03:10.106 --> 00:03:14.426
+Route the question to a colleague with the relevant expertise.
+
+00:03:14.426 --> 00:03:19.463
+Write both notes into your acceptance test before you build the chat screen.
+
+00:03:19.463 --> 00:03:23.180
+The first passes when the status matches the record.
+
+00:03:23.180 --> 00:03:27.364
+The second passes when Scout recognises the boundary.
+
+00:03:27.364 --> 00:03:31.760
+A correct handoff can be a successful project outcome.
+
+00:03:31.760 --> 00:03:33.622
+Now test the drawing.
+
+00:03:33.622 --> 00:03:39.277
+Use a known order marked shipped and check for that exact status in the reply.
+
+00:03:39.277 --> 00:03:46.521
+Use an order the system cannot find and check that Scout asks for help instead of inventing a result.
+
+00:03:46.521 --> 00:03:53.144
+Those two outcomes tell your team more about project scope than a list of attractive features.

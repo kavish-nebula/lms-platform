@@ -1,0 +1,145 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:05.881
+A tool is an action your application offers the model, such as looking up an order.
+
+00:00:05.881 --> 00:00:10.825
+Defining a tool is like writing an entry in a service directory.
+
+00:00:10.825 --> 00:00:16.845
+It needs a name, a purpose, and a description of the information needed to use it.
+
+00:00:16.845 --> 00:00:21.957
+An input is a value you supply so the action knows what to work on.
+
+00:00:21.957 --> 00:00:25.534
+An order lookup needs an order identifier.
+
+00:00:25.534 --> 00:00:29.430
+A policy search needs a question or search terms.
+
+00:00:29.430 --> 00:00:33.060
+A useful description makes that difference plain.
+
+00:00:33.060 --> 00:00:39.761
+Registering the tool connects the directory entry to the program that actually does the work.
+
+00:00:39.761 --> 00:00:46.500
+You need the description the model can read and a matching connection the application can follow.
+
+00:00:46.500 --> 00:00:50.325
+Orbit wants Scout to answer questions about purchases.
+
+00:00:50.325 --> 00:00:52.667
+Give it a tool called get order.
+
+00:00:52.667 --> 00:00:56.936
+Say that it looks up an existing order and returns its status.
+
+00:00:56.936 --> 00:01:00.107
+Name the required input order ID.
+
+00:01:00.107 --> 00:01:06.276
+Now compare two questions: where is my tent, and how long do I have to return it?
+
+00:01:06.276 --> 00:01:09.693
+Only the first asks for an order’s status.
+
+00:01:09.693 --> 00:01:14.122
+Here is the part beginners skip: the description is a prompt.
+
+00:01:14.122 --> 00:01:20.470
+The model chooses tools by reading their descriptions, just as it reads your system prompt.
+
+00:01:20.470 --> 00:01:25.860
+A vague description like gets data tells it nothing: which data, and when?
+
+00:01:25.860 --> 00:01:31.559
+Faced with that, Scout may reach for a search tool instead, or answer from memory.
+
+00:01:31.559 --> 00:01:38.165
+A clear description names the job, shows the input with an example, and says when to use it.
+
+00:01:38.165 --> 00:01:44.427
+It also says what comes back, so the model can tell whether the result will answer the question.
+
+00:01:44.427 --> 00:01:52.447
+When the model chooses the wrong tool, review the description first and test again with the same customer question.
+
+00:01:52.447 --> 00:01:56.718
+Think of the definition as a sign over a service counter.
+
+00:01:56.718 --> 00:02:01.285
+If every sign says help, a visitor cannot decide where to queue.
+
+00:02:01.285 --> 00:02:06.793
+An order lookup sign can say which question it answers and what number to bring.
+
+00:02:06.793 --> 00:02:13.387
+Now imagine that the sign is excellent but the phone extension underneath it goes nowhere.
+
+00:02:13.387 --> 00:02:17.923
+Scout can choose the correct named tool and still get no result.
+
+00:02:17.923 --> 00:02:22.823
+The application's list must connect that exact name to working code.
+
+00:02:22.823 --> 00:02:26.271
+Try one known order and inspect two things.
+
+00:02:26.271 --> 00:02:28.665
+Which name did Scout choose?
+
+00:02:28.665 --> 00:02:32.424
+Which function did the application actually run?
+
+00:02:32.424 --> 00:02:35.310
+A wrong choice sends you back to the sign.
+
+00:02:35.310 --> 00:02:40.038
+A correct choice with no handler sends you back to the directory.
+
+00:02:40.038 --> 00:02:43.064
+A customer supplies a known order number.
+
+00:02:43.064 --> 00:02:45.878
+Scout requests get order with that number.
+
+00:02:45.878 --> 00:02:53.580
+The application checks a list that matches tool names to functions, the pieces of code that perform each job.
+
+00:02:53.580 --> 00:02:59.338
+It finds the entry, runs its function, and returns the actual status.
+
+00:02:59.338 --> 00:03:04.394
+Defining a tool is half the job; registering it is the other half.
+
+00:03:04.394 --> 00:03:09.101
+First, put all your definitions in one list, which we call TOOLS.
+
+00:03:09.101 --> 00:03:14.714
+Pass that list to messages create with the tools parameter, on every request.
+
+00:03:14.714 --> 00:03:20.305
+When a tool request comes back, a small dispatcher function looks up the tool's name.
+
+00:03:20.305 --> 00:03:25.554
+It finds the matching Python function and calls it with the model's arguments.
+
+00:03:25.554 --> 00:03:31.784
+The definition tells the model the tool exists, and the mapping is what makes it real.
+
+00:03:31.784 --> 00:03:33.946
+Suppose something goes wrong.
+
+00:03:33.946 --> 00:03:42.289
+If Scout picked policy search for a tracking question, read the descriptions and see whether a beginner could tell them apart.
+
+00:03:42.289 --> 00:03:47.838
+If Scout picked get order but nothing ran, check the name in the application’s list.
+
+00:03:47.838 --> 00:03:51.062
+One test checks the directions on the sign.
+
+00:03:51.062 --> 00:03:53.924
+The other checks where the sign leads.

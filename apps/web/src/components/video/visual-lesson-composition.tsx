@@ -1,6 +1,7 @@
 import React from 'react';
 import { AbsoluteFill, Html5Audio, Sequence, interpolate, useCurrentFrame, useVideoConfig } from 'remotion';
 import type { VisualPlaybackProps, VisualTimedScene } from '@/lib/visual-lesson';
+import { TopicMotionScene } from './topic-motion-scene';
 import { ReferenceVisualScene } from './reference-visual-scene';
 
 const ink = '#f6f2ff', muted = '#b9b5d1', accent = '#9a85ff', mint = '#64d6b3', amber = '#ffd082';
@@ -56,7 +57,7 @@ function Scene({ scene, captions, reducedMotion }: { scene: VisualTimedScene; ca
 export function VisualLessonComposition({ scenes, style, captions, reducedMotion }: VisualPlaybackProps) {
   const { fps } = useVideoConfig();
   return <AbsoluteFill>
-    {scenes.map(scene=><Sequence key={scene.id} from={scene.from} durationInFrames={scene.durationInFrames} premountFor={fps} name={scene.title}>{style==='reference-cinema'?<ReferenceVisualScene scene={scene} captions={captions} reducedMotion={reducedMotion}/>:<Scene scene={scene} captions={captions} reducedMotion={reducedMotion}/>}</Sequence>)}
+    {scenes.map(scene=><Sequence key={scene.id} from={scene.from} durationInFrames={scene.durationInFrames} premountFor={fps} name={scene.title}>{scene.motion ? <TopicMotionScene scene={scene} captions={captions} reducedMotion={reducedMotion}/> : style==='reference-cinema' || style==='topic-animation' ? <ReferenceVisualScene scene={scene} captions={captions} reducedMotion={reducedMotion}/>:<Scene scene={scene} captions={captions} reducedMotion={reducedMotion}/>}</Sequence>)}
     {scenes.flatMap(s=>s.beats).filter(b=>b.audio).map(beat=><Sequence key={beat.id} from={beat.from} durationInFrames={beat.durationInFrames} premountFor={fps} name={`Narration: ${beat.label}`}><Html5Audio src={beat.audio!}/></Sequence>)}
   </AbsoluteFill>;
 }

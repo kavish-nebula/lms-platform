@@ -1,0 +1,136 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:06.455
+Evaluation means measuring how an assistant performs on a collection of examples.
+
+00:00:06.455 --> 00:00:15.458
+One good conversation can be encouraging, but it cannot tell you whether a change helped other customers asking different questions.
+
+00:00:15.458 --> 00:00:21.113
+For each case, write the expected action and the important facts in the answer.
+
+00:00:21.113 --> 00:00:25.725
+Two polite replies can use different words and both be correct.
+
+00:00:25.725 --> 00:00:30.013
+A polite reply that invents a delivery date should fail.
+
+00:00:30.013 --> 00:00:35.509
+To compare two versions, keep the cases and the rules for judging them the same.
+
+00:00:35.509 --> 00:00:41.771
+Then look at the particular cases that changed, as well as the total number that passed.
+
+00:00:41.771 --> 00:00:45.415
+Orbit prepares sixty customer requests for Scout.
+
+00:00:45.415 --> 00:00:51.776
+An order question should use the correct lookup and report the status found in the test record.
+
+00:00:51.776 --> 00:00:55.204
+A return request has different expectations.
+
+00:00:55.204 --> 00:01:04.515
+Run the first version on all sixty, starting each customer separately, and keep a record of which individual cases pass.
+
+00:01:04.515 --> 00:01:06.569
+Here is one test case.
+
+00:01:06.569 --> 00:01:10.978
+The question is real: Ravi asks whether his order has shipped.
+
+00:01:10.978 --> 00:01:14.716
+The case says which tool Scout must call: get order.
+
+00:01:14.716 --> 00:01:19.989
+It lists a fact the reply must contain: his order is still processing.
+
+00:01:19.989 --> 00:01:27.311
+And it lists something the reply must never contain: a tracking number, because Ravi doesn't have one yet.
+
+00:01:27.311 --> 00:01:34.138
+Good cases come from real tickets: the common ones, the awkward ones and the risky ones.
+
+00:01:34.138 --> 00:01:36.842
+The first run passes thirty-eight.
+
+00:01:36.842 --> 00:01:44.442
+Fifteen failures share a cause: customers supplied an email and the order lookup did not handle it correctly.
+
+00:01:44.442 --> 00:01:47.931
+After the change, fifty-three cases pass.
+
+00:01:47.931 --> 00:01:56.390
+Compare the lists of passing cases, not just the totals, to confirm which customers the change actually helped.
+
+00:01:56.390 --> 00:02:00.074
+Here is Scout's score history, one line per change.
+
+00:02:00.074 --> 00:02:05.718
+The first full run scored 38, and 15 of the failures shared one cause.
+
+00:02:05.718 --> 00:02:12.120
+Letting get order take an email lifted it to 53, and no case that passed before broke.
+
+00:02:12.120 --> 00:02:19.332
+Then a shorter system prompt dropped it to 50, breaking three return cases, so Priya undid it.
+
+00:02:19.332 --> 00:02:23.817
+A clearer rule about refund replies took it to 58.
+
+00:02:23.817 --> 00:02:28.608
+Without the history, that drop to 50 would have slipped through to customers.
+
+00:02:28.608 --> 00:02:36.032
+Scores can wobble a little between runs, so always look at which cases moved, not just the total.
+
+00:02:36.032 --> 00:02:38.990
+Picture sixty labelled envelopes.
+
+00:02:38.990 --> 00:02:43.438
+Each contains a question and the facts a passing answer needs.
+
+00:02:43.438 --> 00:02:47.527
+Using the same envelopes makes the two scores comparable.
+
+00:02:47.527 --> 00:02:53.492
+Swapping hard questions for easy ones would change the test as well as the model.
+
+00:02:53.492 --> 00:02:56.602
+Open the envelopes whose results changed.
+
+00:02:56.602 --> 00:03:01.328
+A drop from fifty-three passes to fifty tells you the net change.
+
+00:03:01.328 --> 00:03:09.960
+The count alone cannot tell you whether three old successes broke or several gains and losses cancelled each other out.
+
+00:03:09.960 --> 00:03:14.368
+Lay the affected return questions beside the prompt edit.
+
+00:03:14.368 --> 00:03:19.426
+Did a shorter instruction remove the rule those answers depended on?
+
+00:03:19.426 --> 00:03:23.034
+Rerun the original wording on the same cases.
+
+00:03:23.034 --> 00:03:27.347
+You now have evidence for deciding whether to keep the edit.
+
+00:03:27.347 --> 00:03:30.936
+Next the team shortens the assistant’s instructions.
+
+00:03:30.936 --> 00:03:33.169
+The score drops to fifty.
+
+00:03:33.169 --> 00:03:36.960
+Three return cases that used to pass now fail.
+
+00:03:36.960 --> 00:03:41.880
+Open those three and compare their replies with the return policy.
+
+00:03:41.880 --> 00:03:44.979
+Their common mistake guides the next edit.
+
+00:03:44.979 --> 00:03:51.752
+That is why keeping individual results is more useful than keeping only a percentage.

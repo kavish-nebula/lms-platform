@@ -1,0 +1,136 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:07.681
+An API is a way for programs to ask each other for information using agreed names and formats.
+
+00:00:07.681 --> 00:00:10.396
+Think of a parcel enquiry form.
+
+00:00:10.396 --> 00:00:16.691
+The carrier tells you which number goes in the box and what information you can expect back.
+
+00:00:16.691 --> 00:00:22.847
+Your application can offer a simple tool that fills out that form behind the scenes.
+
+00:00:22.847 --> 00:00:29.869
+This small piece of code translates the model’s request into the carrier’s format and reads the answer.
+
+00:00:29.869 --> 00:00:32.437
+The carrier may send a long record.
+
+00:00:32.437 --> 00:00:39.063
+Your tool can return just the useful details, such as status and estimated delivery day.
+
+00:00:39.063 --> 00:00:44.707
+A service can also decline a request or ask the application to wait.
+
+00:00:44.707 --> 00:00:47.804
+Ana wants to know when her tent will arrive.
+
+00:00:47.804 --> 00:00:54.089
+Orbit’s shop uses an order number, but ParcelPath tracks parcels using a different number.
+
+00:00:54.089 --> 00:00:56.069
+Start with Ana’s order.
+
+00:00:56.069 --> 00:00:59.679
+Its record says shipped and gives a tracking number.
+
+00:00:59.679 --> 00:01:06.667
+Sending the shop order number directly to the carrier would ask it to find the wrong kind of record.
+
+00:01:06.667 --> 00:01:09.978
+Here is why Scout needs the carrier's API.
+
+00:01:09.978 --> 00:01:12.596
+Ana asks when her tent will arrive.
+
+00:01:12.596 --> 00:01:19.063
+Scout calls get order, which returns her tracking number, but not where the parcel is right now.
+
+00:01:19.063 --> 00:01:26.404
+So Scout calls a second tool, track parcel, with that tracking number, and that tool calls ParcelPath.
+
+00:01:26.404 --> 00:01:31.621
+Now Scout can tell Ana her tent is in transit and due on Thursday.
+
+00:01:31.621 --> 00:01:39.374
+Notice that the output of one tool became the input of the next, and the model made that connection itself.
+
+00:01:39.374 --> 00:01:42.293
+Pass the tracking number to the carrier tool.
+
+00:01:42.293 --> 00:01:49.380
+It goes into the carrier’s enquiry, which returns in transit and an estimated Thursday delivery.
+
+00:01:49.380 --> 00:01:51.561
+Compare those two records.
+
+00:01:51.561 --> 00:01:56.440
+The shop establishes that this tracking number belongs to Ana’s tent.
+
+00:01:56.440 --> 00:01:58.909
+The carrier supplies the estimate.
+
+00:01:58.909 --> 00:02:03.272
+Neither record alone answers the entire question.
+
+00:02:03.272 --> 00:02:06.156
+Picture two labels on a parcel.
+
+00:02:06.156 --> 00:02:10.182
+One number belongs to the shop and the other to the carrier.
+
+00:02:10.182 --> 00:02:16.114
+Starting with the shop's order number is sensible because that is the number Ana knows.
+
+00:02:16.114 --> 00:02:18.660
+The carrier expects the other label.
+
+00:02:18.660 --> 00:02:22.080
+Put the shop result beside the carrier request.
+
+00:02:22.080 --> 00:02:25.882
+The tracking number on the left must be the one on the right.
+
+00:02:25.882 --> 00:02:32.926
+A real delivery estimate for somebody else's parcel would still produce a wrong answer for Ana.
+
+00:02:32.926 --> 00:02:36.727
+Read the carrier's wording before drafting the reply.
+
+00:02:36.727 --> 00:02:41.392
+An estimate can change, and in transit does not mean delivered.
+
+00:02:41.392 --> 00:02:49.958
+Keeping those two distinctions lets Scout give Ana a useful answer without turning a forecast into a guarantee.
+
+00:02:49.958 --> 00:02:52.767
+The last habit is trimming the result.
+
+00:02:52.767 --> 00:03:01.174
+ParcelPath's full answer is huge, but Scout mostly needs two things: the status and the expected delivery day.
+
+00:03:01.174 --> 00:03:06.712
+The last scan helps too, for customers who ask where exactly the parcel is.
+
+00:03:06.712 --> 00:03:11.802
+Scout does not need dozens of scan events, depot codes and barcodes.
+
+00:03:11.802 --> 00:03:17.075
+And some fields, like a driver's notes, should never reach a customer at all.
+
+00:03:17.075 --> 00:03:26.342
+Trimming takes the result from thousands of lines to three fields, which means fewer tokens, lower cost and fewer mistakes.
+
+00:03:26.342 --> 00:03:32.210
+Scout can now explain that the parcel is in transit and expected on Thursday.
+
+00:03:32.210 --> 00:03:35.244
+It should describe that day as an estimate.
+
+00:03:35.244 --> 00:03:41.531
+If the carrier replies that too many requests arrived, the application waits as directed.
+
+00:03:41.531 --> 00:03:47.815
+A delay getting fresh information gives Scout no reason to invent a delivery day.

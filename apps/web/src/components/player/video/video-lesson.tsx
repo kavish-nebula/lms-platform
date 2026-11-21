@@ -35,7 +35,8 @@ import { ChoiceList } from "@/components/player/items";
 import { correctChoiceIndices, exactChoices } from "@/lib/assessment-answers";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useLocalString, useLocalJson, useHydrated, writeLocal } from "@/lib/local-store";
-import { VideoSlideView } from "@/components/player/video/video-slide";
+import { FilmCredits, TopicFilm } from "./topic-film";
+import { sentenceStarts } from "./topic-storyboard";
 import type { ConceptVideo, VideoQuiz } from "@/data/types";
 import { useLiveSlides } from "@/lib/live-slides";
 import { useSignal, useSignalScope } from "@/lib/signals";
@@ -369,13 +370,7 @@ function SlideVideoLesson({
   useCompanionStep({ title: video.title === slide.title ? video.title : `${video.title} · ${slide.title}`, guidance: slide.narration, videoId: video.id, slideTitle: slide.title, phase: learningContext?.phase === "intro" ? "intro" : undefined });
   const sentences = React.useMemo(() => (slide.sentences.length ? slide.sentences : [slide.narration]), [slide]);
   // where in the narration (0-1) each sentence begins, by its share of the characters
-  const starts = React.useMemo(() => {
-    const lens = sentences.map((s) => s.length);
-    const total = lens.reduce((n, l) => n + l, 0) || 1;
-    return lens.map((_, i) => lens.slice(0, i).reduce((n, l) => n + l, 0) / total);
-  }, [sentences]);
-  const all = seen.has(idx);
-  const shown = (cue = 0) => all || (frac >= (starts[Math.min(cue, starts.length - 1)] ?? 0) - 0.005 && (cue === 0 || frac > 0));
+  const starts = React.useMemo(() => sentenceStarts(sentences), [sentences]);
   const sentenceNow = Math.max(0, starts.findLastIndex((at) => frac >= at));
   const total = lengths.reduce((a, b) => a + b, 0);
   const elapsed = lengths.slice(0, idx).reduce((a, b) => a + b, 0) + frac * lengths[idx]!;
@@ -436,7 +431,7 @@ function SlideVideoLesson({
             if (distance < 0) next(); else goTo(idx - 1);
           }}
         >
-        {phase !== "done" ? <VideoSlideView key={idx} slide={slide} shown={storyMode ? () => true : shown} /> : null}
+        {phase !== "done" && <TopicFilm chapters={slides} slide={slide} topic={video.title} position={idx} count={slides.length} fraction={frac} duration={lengths[idx]!} starts={starts} />}
 
         {storyMode && phase === "play" ? <>
           <button type="button" className="story-scene-nav story-scene-prev" onClick={() => goTo(idx - 1)} disabled={idx === 0} aria-label="Previous story scene"><ChevronLeft aria-hidden /></button>
@@ -509,7 +504,7 @@ function SlideVideoLesson({
             type="button"
             onClick={play}
             aria-label={t("playVideo")}
-            className="absolute inset-0 m-auto flex size-20 items-center justify-center rounded-full bg-[linear-gradient(140deg,var(--accent-deep),var(--accent))] pl-1 text-white shadow-lg outline-none transition-transform hover:scale-105 focus-visible:ring-4 focus-visible:ring-ring/60"
+            className="absolute bottom-5 right-5 flex size-12 items-center justify-center rounded-full bg-brand pl-0.5 text-white shadow-lg outline-none hover:brightness-110 focus-visible:ring-4 focus-visible:ring-ring/60"
           >
             <Play className="size-8" aria-hidden />
           </button>
@@ -518,7 +513,7 @@ function SlideVideoLesson({
 
         {phase === "play" && captionsOn ? (
           <p className={cn("min-h-[3.2em] w-full rounded-lg border-l-[3px] border-brand bg-panel-2 px-4 py-2.5 leading-relaxed", full && "max-w-[min(100%,calc((100dvh-170px)*16/9))]")}>
-            {untouched ? <span className="text-ink-muted">{t("pressPlay")}</span> : sentences[all && !playing ? sentences.length - 1 : sentenceNow]}
+            {untouched ? <span className="text-ink-muted">{t("pressPlay")}</span> : sentences[sentenceNow]}
           </p>
         ) : null}
 
@@ -630,6 +625,7 @@ function SlideVideoLesson({
         </div>
       </div>
 
+      {!full && !storyMode && <FilmCredits />}
       {!full && !storyMode ? (
         <div className="concept-text-card concept-transcript-card">
           <button

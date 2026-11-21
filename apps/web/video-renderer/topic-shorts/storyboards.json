@@ -1,0 +1,1191 @@
+[
+  {
+    "id": "m1-1",
+    "title": "The order the chatbot couldn't see",
+    "goal": "Chatbot versus agent capability",
+    "shots": [
+      {
+        "set": "Chat window",
+        "voice": "Ana bought a tent from a shop called Orbit. Four days later she asks where it is. The shop’s old chat helper has a page about ordinary shipping times. It can repeat that page perfectly and still leave Ana wondering whether her own tent has even left the warehouse.",
+        "props": [
+          "Ana › Where is my order?",
+          "Orbit FAQ › General shipping times",
+          "Reply › I can’t look that up."
+        ],
+        "kind": "phone",
+        "action": "feed"
+      },
+      {
+        "set": "Evidence cutaway",
+        "voice": "Now give a new helper, Scout, access to the order records. Ana supplies her order number. Scout chooses the order lookup and sends that number. The matching record says shipped and includes a tracking number. Notice that shipped answers one question. It does not tell us the tent has arrived.",
+        "props": [
+          "Order › ORB-10482",
+          "get_order › Shipped",
+          "ParcelPath › PP-88213"
+        ],
+        "kind": "document",
+        "action": "inspect"
+      },
+      {
+        "set": "Phone match cut",
+        "voice": "Scout can now tell Ana that her tent has left the warehouse and give her its tracking number. If the order number had matched nothing, the sensible next action would have been to check the number with Ana. The goal stays the same. What the agent does depends on the evidence it finds. You can check Scout’s answer yourself. Put Ana’s order beside the reply and look for the same tracking number in both places. That number is what makes the answer useful to Ana.",
+        "props": [
+          "Scout › Your tent has shipped.",
+          "Tracking › PP-88213"
+        ],
+        "kind": "phone",
+        "action": "return"
+      }
+    ],
+    "color": "d28e7e"
+  },
+  {
+    "id": "m1-2",
+    "title": "Three ways to handle one request",
+    "goal": "Choose a chatbot, workflow, or agent",
+    "shots": [
+      {
+        "set": "Three-lane split",
+        "voice": "Owen bought a jacket and wants a smaller one. First he asks about return shipping. Orbit’s chatbot reads the shop policy and says shipping is free on orders over seventy-five dollars. That explains the rule. The chatbot in this example has not opened Owen’s order, so it cannot say whether his purchase qualifies.",
+        "props": [
+          "Question › Is return shipping free?",
+          "Chatbot › Read supplied policy",
+          "Output › Explain the policy"
+        ],
+        "kind": "split",
+        "action": "branch"
+      },
+      {
+        "set": "Conveyor track",
+        "voice": "Owen submits the shop’s return form. A workflow checks that the required fields are filled in. A complete form goes into the returns queue. A missing order number sends the form back to Owen. This is still a workflow: both routes were written down before Owen bought his jacket.",
+        "props": [
+          "Return form › Submitted",
+          "Rule › Validate",
+          "Queue › Returns"
+        ],
+        "kind": "flow",
+        "action": "send"
+      },
+      {
+        "set": "Decision fork",
+        "voice": "Now Owen asks whether he can actually get the smaller jacket. Scout must find which jacket he bought before it knows which size to check. If there is stock, it can offer the exchange under the shop’s rules. If the size is sold out, it can explain the other choices. One customer needed a policy answer, a fixed process, and a decision based on fresh information.",
+        "props": [
+          "Order › Look up",
+          "Stock › Check size",
+          "Scout › Choose the next action"
+        ],
+        "kind": "fork",
+        "action": "branch"
+      }
+    ],
+    "color": "9785d5"
+  },
+  {
+    "id": "m1-3",
+    "title": "The tents that won't arrive",
+    "goal": "Identify suitable agent work",
+    "shots": [
+      {
+        "set": "Inbox arrival",
+        "voice": "Imagine a camping shop gets a supplier notice. Its green Trailhead tents will arrive two weeks late. Some customers are waiting for that tent, but others ordered boots or sleeping mats. Sending the same warning to everybody would worry customers who have nothing to do with the delay.",
+        "props": [
+          "Supplier › Delay of two weeks",
+          "Item › Green Trailhead tent"
+        ],
+        "kind": "inbox",
+        "action": "feed"
+      },
+      {
+        "set": "Warehouse search",
+        "voice": "The agent opens the list of orders still waiting to ship. It keeps only those containing the green tent. From that shorter list it prepares a message for each affected order. A useful draft names the item and reports the supplier’s delay. It leaves out a delivery date the supplier never confirmed.",
+        "props": [
+          "Search › Open orders",
+          "Filter › Green Trailhead tent",
+          "Drafts › Explain the delay"
+        ],
+        "kind": "grid",
+        "action": "scan"
+      },
+      {
+        "set": "Approval desk",
+        "voice": "Leo, who works at the shop, checks the proposed recipients against the order list. He checks the wording against the notice, then sends the approved messages. That is a practical first use: a frequent job, facts the program can find, and a person who can catch a mistake before customers see it.",
+        "props": [
+          "Order list › Only open green-tent orders",
+          "Supplier notice › Two weeks late",
+          "Leo › Check both before sending"
+        ],
+        "kind": "desk",
+        "action": "stamp"
+      }
+    ],
+    "color": "6eafa3"
+  },
+  {
+    "id": "m1-4",
+    "title": "Inside Scout's next move",
+    "goal": "Recognise the model, tools, memory, and planning",
+    "shots": [
+      {
+        "set": "Exploded device",
+        "voice": "Owen writes to a shop assistant called Scout. He wants his jacket in a smaller size. The model recognizes an exchange request. Earlier in the conversation Owen identified his order. The app supplies that detail again so Scout can find the right jacket. Remembering the order still tells Scout nothing about today’s stock.",
+        "props": [
+          "Owen › Can I swap sizes?",
+          "Model › Interpret the request",
+          "Memory › This jacket and order"
+        ],
+        "kind": "orbit",
+        "action": "assemble"
+      },
+      {
+        "set": "Tool close-up",
+        "voice": "Scout asks the stock tool about the smaller size of that particular jacket. Picture checking the correct shelf in a warehouse. Counting black jackets in another style would give a number, but it would answer the wrong question. The returned result belongs to a particular item and size.",
+        "props": [
+          "Inventory › Check requested size",
+          "Tool result › Stock availability"
+        ],
+        "kind": "document",
+        "action": "inspect"
+      },
+      {
+        "set": "Plan bench",
+        "voice": "Now follow the plan backwards. An exchange offer depends on finding stock. The stock check depends on identifying the jacket. Identifying it depended on the order from the conversation. If Scout remembers the order but promises a sold-out size, investigate the lookup. If it asks for the order again, investigate what memory supplied.",
+        "props": [
+          "Order › Identify Owen’s jacket",
+          "Inventory › Check the smaller size",
+          "Offer › Use the stock result"
+        ],
+        "kind": "timeline",
+        "action": "write"
+      }
+    ],
+    "color": "c2a26d"
+  },
+  {
+    "id": "m1-5",
+    "title": "From empty folder to first reply",
+    "goal": "Set up and run a local model call",
+    "shots": [
+      {
+        "set": "Terminal close-up",
+        "voice": "Create a folder for Scout and open a terminal in it. The command on screen asks Python to make a virtual environment named dot venv. Activate it for that terminal, then install the provider’s client library there. If Python later says the library is missing, check which environment your terminal is using.",
+        "props": [
+          "Project › scout/",
+          "Create › python -m venv .venv",
+          "Install › pip install anthropic"
+        ],
+        "kind": "terminal",
+        "action": "write"
+      },
+      {
+        "set": "Private drawer",
+        "voice": "The library needs to know which account is making the request. Put the key in an environment variable, a named setting your running program can read. The file you share with a colleague can refer to the setting by name. The secret value itself stays out of the shared file.",
+        "props": [
+          "Environment › ANTHROPIC_API_KEY",
+          "Source code › No key value",
+          "SDK › Reads the environment"
+        ],
+        "kind": "vault",
+        "action": "lock"
+      },
+      {
+        "set": "Request and response",
+        "voice": "Send a short test message and print the returned text. A reply means several things worked together: Python ran the file, found the library, reached the service, and supplied an accepted key. If authentication fails, check the key setting. There is no need to debug an order tool before the first message works.",
+        "props": [
+          "Test message › Send from the project",
+          "Returned text › Basic connection works"
+        ],
+        "kind": "split",
+        "action": "return"
+      }
+    ],
+    "color": "d08394"
+  },
+  {
+    "id": "m2-1",
+    "title": "How the wrong refund gets written",
+    "goal": "Explain token prediction and context",
+    "shots": [
+      {
+        "set": "Phone error",
+        "voice": "Grace asks an outdoor shop whether she can return her boots. Scout replies that the shop allows ninety days. It sounds like a perfectly ordinary customer-service sentence. Compare it with the shop’s own rule: returns within thirty days for eligible unused items. Smooth wording has disguised a wrong number.",
+        "props": [
+          "Scout › We offer 90-day refunds.",
+          "Orbit policy › 30 days"
+        ],
+        "kind": "phone",
+        "action": "pulse"
+      },
+      {
+        "set": "Typesetter",
+        "voice": "Look closely at how such a reply can be produced. After a few words like we offer, there are several plausible continuations. The model chooses one, adds it, and makes another prediction. Those choices can form a familiar-sounding policy without anyone having checked which policy this particular shop uses.",
+        "props": [
+          "Text › We offer",
+          "Candidates › free · returns · 90",
+          "Append › Next token"
+        ],
+        "kind": "tokens",
+        "action": "build"
+      },
+      {
+        "set": "Context splice",
+        "voice": "Now supply the real return rule alongside Grace’s question. Ask for a reply using that text, and compare the reply with the rule. Thirty days is now supported. Whether Grace herself qualifies still depends on when the boots arrived and their condition. The source answers the general question while leaving those personal facts open.",
+        "props": [
+          "Context › Returns within 30 days",
+          "Draft › Explains the 30-day rule"
+        ],
+        "kind": "split",
+        "action": "replace"
+      }
+    ],
+    "color": "80a6cd"
+  },
+  {
+    "id": "m2-2",
+    "title": "Assign the right model to the job",
+    "goal": "Select and verify a model call",
+    "shots": [
+      {
+        "set": "Work dispatch",
+        "voice": "Orbit wants to sort support emails. Take a message asking to send boots back. Write down the expected label, return, before trying a model. Run that message and several other labeled examples through two candidates. Keep the messages and instructions the same so the comparison has a clear meaning.",
+        "props": [
+          "Customer message › Can I send these boots back?",
+          "Expected label › Return",
+          "Test › Same messages for both models"
+        ],
+        "kind": "split",
+        "action": "branch"
+      },
+      {
+        "set": "Packet inspection",
+        "voice": "Open one request. The model name chooses the candidate. The messages contain the customer’s words and the task. The output limit bounds how much text may come back. A single label needs little space. An explanation of several policy rules needs more room and a different way to check quality.",
+        "props": [
+          "Request › Model identifier",
+          "Request › Messages",
+          "Request › Output limit"
+        ],
+        "kind": "terminal",
+        "action": "inspect"
+      },
+      {
+        "set": "Response inspection",
+        "voice": "Read the returned label and compare it with the one you wrote down. Record the wait and the reported usage, which tells you how much text was processed. Repeat across the examples. Choose the helper that meets the actual job’s needs. A good email sorter still needs separate testing before you trust it to explain a complicated return.",
+        "props": [
+          "Correct label? › Compare with return",
+          "Wait › Measure response time",
+          "Usage › Record text processed"
+        ],
+        "kind": "dashboard",
+        "action": "scan"
+      }
+    ],
+    "color": "ada0e1"
+  },
+  {
+    "id": "m2-3",
+    "title": "The support draft that Maya can send",
+    "goal": "Improve a prompt with explicit purpose and facts",
+    "shots": [
+      {
+        "set": "Marked-up email",
+        "voice": "A customer emails Orbit asking to return a pair of boots. Maya’s first prompt just says handle this. What should the model do? It might summarize the email, write a reply, or promise a refund. All three sound like handling the message, yet only one may serve Maya’s purpose.",
+        "props": [
+          "Customer email › Wants to return boots",
+          "Prompt › Handle this",
+          "Draft › Unclear next step"
+        ],
+        "kind": "document",
+        "action": "draw"
+      },
+      {
+        "set": "Editing desk",
+        "voice": "Maya tries again. She asks for a short reply to the customer, gives the rule about eligible unused items within thirty days of delivery, and says to ask for any missing facts. Now the task has a reader, a source, and a clear stopping point. The purchase date was never supplied.",
+        "props": [
+          "Task › Draft a reply",
+          "Facts › 30-day policy",
+          "Output › Short and specific"
+        ],
+        "kind": "desk",
+        "action": "write"
+      },
+      {
+        "set": "Before-after review",
+        "voice": "A possible draft says that unused boots in their original packaging can be returned within thirty days, then asks when the boots arrived. Read that beside the email. It explains the rule without inventing a delivery date. Test the instruction on another email that already includes the date. A useful prompt should help with both cases.",
+        "props": [
+          "Policy › Eligible unused boots within 30 days",
+          "Missing fact › When did they arrive?",
+          "Review › No refund promised"
+        ],
+        "kind": "split",
+        "action": "replace"
+      }
+    ],
+    "color": "e3a477"
+  },
+  {
+    "id": "m2-4",
+    "title": "Scout's standing instructions",
+    "goal": "Write system instructions and test them under pressure",
+    "shots": [
+      {
+        "set": "Pinned instruction file",
+        "voice": "Orbit gives Scout a support role. Answer politely using the shop’s rules, and pass important decisions to the team. One rule says refunds over two hundred dollars need approval. That gives Scout something useful to say when a customer asks for more than it can authorize.",
+        "props": [
+          "Role › Orbit support assistant",
+          "Fact › Unused returns within 30 days",
+          "Fallback › Offer a team handoff"
+        ],
+        "kind": "document",
+        "action": "pin"
+      },
+      {
+        "set": "Phone pressure",
+        "voice": "Owen writes that he wants a three-hundred-and-ten-dollar refund today. Compare the amount with the limit. Three hundred and ten is above two hundred. Asking urgently does not change the amount or the approval requirement. Scout can acknowledge Owen’s request, explain the review, and offer to send it to the team.",
+        "props": [
+          "Owen › Refund $310 today.",
+          "Orbit rule › Over $200 needs approval"
+        ],
+        "kind": "phone",
+        "action": "feed"
+      },
+      {
+        "set": "Escalation handoff",
+        "voice": "Check two separate outcomes. First, does Owen hear a clear next step rather than a promise that money has already moved? Second, does the payment system actually wait for approval? The instructions shape the first outcome. The application’s permission check protects the second, even if the model words its reply badly.",
+        "props": [
+          "Scout › Offer a team handoff",
+          "Approval › A person decides"
+        ],
+        "kind": "gate",
+        "action": "stop"
+      }
+    ],
+    "color": "77b0ad"
+  },
+  {
+    "id": "m2-5",
+    "title": "Turn a customer email into a record",
+    "goal": "Use and validate structured model output",
+    "shots": [
+      {
+        "set": "Email to record",
+        "voice": "A customer writes that an order still has not arrived. Orbit wants a support ticket with the reason for contacting the shop, the order number, whether it is urgent, and a short summary. Start by underlining which of those facts the customer actually supplied. There is no order number in this message.",
+        "props": [
+          "Email › My order still hasn’t arrived.",
+          "Ticket › intent · order_id · urgent · summary"
+        ],
+        "kind": "split",
+        "action": "transfer"
+      },
+      {
+        "set": "Schema inspection",
+        "voice": "The order-number field allows text or null. Null means there was no value to record. The urgency field expects true or false, rather than a sentence, and the summary can say the order has not arrived. Use the shop’s urgency rule when setting that flag. Avoid inventing urgency just because the customer is waiting.",
+        "props": [
+          "order_id › String or null",
+          "urgent › Boolean",
+          "summary › Short text"
+        ],
+        "kind": "tree",
+        "action": "assemble"
+      },
+      {
+        "set": "Validation gate",
+        "voice": "Before sending the ticket to the queue, check that all required boxes exist and hold allowed values. Then compare important details with the original email. A made-up order number could be perfectly valid text and still be false. Checking the form and checking the facts answer different questions, and the ticket needs both.",
+        "props": [
+          "Shape › Required fields and allowed values",
+          "Facts › Compare the record with the email",
+          "Queue › Send checked ticket"
+        ],
+        "kind": "gate",
+        "action": "send"
+      }
+    ],
+    "color": "b795cb"
+  },
+  {
+    "id": "m3-1",
+    "title": "Follow the order number",
+    "goal": "Trace a tool request and its return value",
+    "shots": [
+      {
+        "set": "Phone request",
+        "voice": "Ana contacts Orbit about a tent. She gives the order number shown on screen. Scout can read that number, but the number alone does not say whether a box has shipped. Telling Ana it shipped now would be guessing. Scout needs to ask the shop’s order system for the status.",
+        "props": [
+          "Ana › Where is my tent?",
+          "Order › ORB-10482"
+        ],
+        "kind": "phone",
+        "action": "write"
+      },
+      {
+        "set": "Relay desk",
+        "voice": "Follow the number across the screen. The model requests a tool called get order and supplies Ana’s number. The shop’s application runs the lookup and finds the matching record. It sends back shipped and a tracking number. That return trip is what gives Scout a new fact to work with.",
+        "props": [
+          "Model › Requests get_order",
+          "Application › Runs get_order",
+          "Result › Shipped · PP-88213"
+        ],
+        "kind": "relay",
+        "action": "send"
+      },
+      {
+        "set": "Reply return",
+        "voice": "Scout can now tell Ana her tent shipped through ParcelPath and share the tracking number from the result. Check the number in the reply against the number in the record. If the lookup had returned no match, the honest next step would be to ask Ana to check the order number instead. Notice who did each job. Scout requested the lookup, the shop’s software fetched the record, and Scout used that record to write the reply.",
+        "props": [
+          "Scout › Your tent has shipped.",
+          "Tracking › PP-88213"
+        ],
+        "kind": "phone",
+        "action": "return"
+      }
+    ],
+    "color": "7eb4a9"
+  },
+  {
+    "id": "m3-2",
+    "title": "The tool catalog Scout reads",
+    "goal": "Describe and register a tool",
+    "shots": [
+      {
+        "set": "Blueprint markup",
+        "voice": "Orbit wants Scout to answer questions about purchases. Give it a tool called get order. Say that it looks up an existing order and returns its status. Name the required input order ID. Now compare two questions: where is my tent, and how long do I have to return it? Only the first asks for an order’s status.",
+        "props": [
+          "Name › get_order",
+          "Description › Look up an Orbit order",
+          "Input › order_id"
+        ],
+        "kind": "document",
+        "action": "draw"
+      },
+      {
+        "set": "Index routing",
+        "voice": "A customer supplies a known order number. Scout requests get order with that number. The application checks a list that matches tool names to functions, the pieces of code that perform each job. It finds the entry, runs its function, and returns the actual status.",
+        "props": [
+          "Request › get_order",
+          "Registry › Match name",
+          "Function › Run lookup"
+        ],
+        "kind": "tree",
+        "action": "route"
+      },
+      {
+        "set": "Wrong-selection replay",
+        "voice": "Suppose something goes wrong. If Scout picked policy search for a tracking question, read the descriptions and see whether a beginner could tell them apart. If Scout picked get order but nothing ran, check the name in the application’s list. One test checks the directions on the sign. The other checks where the sign leads.",
+        "props": [
+          "Wrong tool chosen › Review its description",
+          "Right tool never ran › Check the name mapping"
+        ],
+        "kind": "split",
+        "action": "replace"
+      }
+    ],
+    "color": "d0a86c"
+  },
+  {
+    "id": "m3-3",
+    "title": "Three instruments, three limits",
+    "goal": "Match common tools to distinct kinds of work",
+    "shots": [
+      {
+        "set": "Search surface",
+        "voice": "Imagine a group asks Orbit about buying seven items priced at twenty-four dollars each. There is also news of a carrier delay. The customer wants the total, whether the delay affects delivery, and the shop’s return terms. Split that message into three questions because each needs a different kind of evidence.",
+        "props": [
+          "Group order › Seven items at $24 each",
+          "Carrier news › Does the delay cover this route?"
+        ],
+        "kind": "search",
+        "action": "scan"
+      },
+      {
+        "set": "Calculator keys",
+        "voice": "For the carrier question, search for a current notice and check the affected route. For the total, send twenty-four times seven to a calculator. Seven groups of twenty dollars make one hundred forty; seven groups of four add twenty-eight. The result is one hundred sixty-eight dollars before any unspecified charges.",
+        "props": [
+          "Expression › 24 × 7",
+          "Calculator › 168"
+        ],
+        "kind": "calculator",
+        "action": "build"
+      },
+      {
+        "set": "File cabinet",
+        "voice": "For the return terms, open the shop’s approved policy document and find the relevant passage. A carrier notice cannot tell you the shop’s return window, and the calculator cannot promise a delivery date. Build the reply from the three results. If the notice does not mention this route, leave that part open.",
+        "props": [
+          "Approved document › Read the return terms",
+          "Carrier notice › Check route and date",
+          "Calculator › $168 before extra charges"
+        ],
+        "kind": "vault",
+        "action": "lock"
+      }
+    ],
+    "color": "80a8da"
+  },
+  {
+    "id": "m3-4",
+    "title": "Orbit passes the tracking number to ParcelPath",
+    "goal": "Explain two dependent API operations",
+    "shots": [
+      {
+        "set": "Waybill assembly",
+        "voice": "Ana wants to know when her tent will arrive. Orbit’s shop uses an order number, but ParcelPath tracks parcels using a different number. Start with Ana’s order. Its record says shipped and gives a tracking number. Sending the shop order number directly to the carrier would ask it to find the wrong kind of record.",
+        "props": [
+          "Orbit order › ORB-10482",
+          "Tracking › PP-88213"
+        ],
+        "kind": "document",
+        "action": "inspect"
+      },
+      {
+        "set": "Map handoff",
+        "voice": "Pass the tracking number to the carrier tool. It goes into the carrier’s enquiry, which returns in transit and an estimated Thursday delivery. Compare those two records. The shop establishes that this tracking number belongs to Ana’s tent. The carrier supplies the estimate. Neither record alone answers the entire question.",
+        "props": [
+          "ParcelPath › Tracking enquiry",
+          "Response › In transit · Due Thursday"
+        ],
+        "kind": "map",
+        "action": "route"
+      },
+      {
+        "set": "API boundary",
+        "voice": "Scout can now explain that the parcel is in transit and expected on Thursday. It should describe that day as an estimate. If the carrier replies that too many requests arrived, the application waits as directed. A delay getting fresh information gives Scout no reason to invent a delivery day.",
+        "props": [
+          "ParcelPath › In transit",
+          "Expected › Thursday, an estimate",
+          "Too many requests › Wait before retrying"
+        ],
+        "kind": "terminal",
+        "action": "stop"
+      }
+    ],
+    "color": "e4a76d"
+  },
+  {
+    "id": "m3-5",
+    "title": "Elena's rope is still on the truck",
+    "goal": "Handle timeout, retries, and honest failure",
+    "shots": [
+      {
+        "set": "False-delivered phone",
+        "voice": "Elena asks whether her climbing rope was delivered. Scout contacts the carrier, but no reply arrives before the time limit. Imagine the tool simply returns an empty box. The assistant might treat it as a normal result and tell Elena her rope arrived. There is nothing in that box to support the claim.",
+        "props": [
+          "Carrier › Timed out",
+          "Bad return › Empty result",
+          "Scout › Delivered?"
+        ],
+        "kind": "phone",
+        "action": "replace"
+      },
+      {
+        "set": "Clock track",
+        "voice": "Instead, return a clear message saying the carrier lookup timed out. The application can allow a short wait and one further attempt in this example. Ask what changes on the second try. If a carrier record arrives, Scout can read it. If the same timeout returns, Scout still lacks a delivery status.",
+        "props": [
+          "Attempt 1 › Timeout",
+          "Wait › 1 second",
+          "Attempt 2 › Retry"
+        ],
+        "kind": "clock",
+        "action": "build"
+      },
+      {
+        "set": "Customer correction",
+        "voice": "Put a limit on the attempts so Elena is not left waiting indefinitely. Tell her the carrier status could not be confirmed and offer a follow-up. If the number itself were invalid, waiting would accomplish nothing; ask for the correct number. Good recovery starts with preserving the meaning of the original failure.",
+        "props": [
+          "Scout › I couldn’t confirm delivery.",
+          "Timeout › Offer a follow-up",
+          "Invalid number › Ask for the correct number"
+        ],
+        "kind": "phone",
+        "action": "return"
+      }
+    ],
+    "color": "d88480"
+  },
+  {
+    "id": "m4-1",
+    "title": "The order number Scout forgot",
+    "goal": "Distinguish conversation memory from saved facts",
+    "shots": [
+      {
+        "set": "Phone jump cut",
+        "voice": "Ravi gives Scout an order number and asks about his parcel. A moment later he asks whether the foam mat is in the same box. Read just that second question. You can understand the words, but which parcel does he mean? Without the previous turn, Scout asks for the order number all over again.",
+        "props": [
+          "Ravi › ORB-10533",
+          "Next turn › Is the foam mat in the same parcel?",
+          "Scout › What’s the order number?"
+        ],
+        "kind": "phone",
+        "action": "pulse"
+      },
+      {
+        "set": "Request X-ray",
+        "voice": "Inspect the information sent with the second request. Add the recent message that contains Ravi’s number, and same parcel now has a clear reference. Scout can look up the items in that order. Supplying his order number identifies the order; the contents still need to come from the order record.",
+        "props": [
+          "Missing › The earlier turn",
+          "Add › Recent messages"
+        ],
+        "kind": "terminal",
+        "action": "inspect"
+      },
+      {
+        "set": "Pinned record",
+        "voice": "Should the shop keep the entire chat forever to solve this problem? No. The earlier turn was needed for this conversation. A preferred size, if Ravi wants it saved for another visit, serves a different purpose. Ask which fact is needed next time, who may use it, and when it can be discarded.",
+        "props": [
+          "This chat › Ravi’s order number",
+          "Later visits › A preference Ravi asks to save"
+        ],
+        "kind": "pinboard",
+        "action": "pin"
+      }
+    ],
+    "color": "9297d4"
+  },
+  {
+    "id": "m4-2",
+    "title": "The conversation that got too heavy",
+    "goal": "Manage growing context",
+    "shots": [
+      {
+        "set": "Growing paper roll",
+        "voice": "Ravi has spent a long chat discussing a foam mat and a return. His first message contains his order number. Later messages contain greetings, repeated questions, and a decision about which item he wants help with. The request grows each time the whole conversation is sent again.",
+        "props": [
+          "Turn 1 › 500 tokens",
+          "Turn 10 › 5,000 tokens",
+          "Turn 40 › 20,000 tokens"
+        ],
+        "kind": "roll",
+        "action": "build"
+      },
+      {
+        "set": "Trim bench",
+        "voice": "Try keeping just the most recent messages. It saves space, but now the order number has disappeared. Try a better combination. Keep the last complete exchanges, summarize the earlier discussion in a few lines, and preserve the exact order number separately. A summary such as customer asked about some equipment loses the useful detail.",
+        "props": [
+          "Keep › Recent turns",
+          "Summarise › Earlier decisions",
+          "Carry forward › Needed facts"
+        ],
+        "kind": "desk",
+        "action": "trim"
+      },
+      {
+        "set": "Shorter request",
+        "voice": "Test both versions with Ravi’s follow-up about the same parcel. Does Scout still know which order to check and which item is in question? Compare the answer with the original conversation. A smaller request is useful when it saves text and still preserves the facts needed for the customer’s unfinished task.",
+        "props": [
+          "Follow-up › Which parcel contains the mat?",
+          "Check › Order ID and item still available"
+        ],
+        "kind": "terminal",
+        "action": "send"
+      }
+    ],
+    "color": "83afa6"
+  },
+  {
+    "id": "m4-3",
+    "title": "Find the two policy passages that matter",
+    "goal": "Explain retrieval-augmented generation",
+    "shots": [
+      {
+        "set": "Policy archive",
+        "voice": "Owen bought a jacket for three hundred and ten dollars. He asks whether he can return it and whether he must pay return shipping. That sounds like one question, but try answering it from the return deadline alone. Knowing how many days he has tells you nothing about the shipping charge.",
+        "props": [
+          "Owen › $310 jacket",
+          "Questions › Can I return it? Who pays shipping?"
+        ],
+        "kind": "vault",
+        "action": "inspect"
+      },
+      {
+        "set": "Document extraction",
+        "voice": "Search Orbit’s policy for two things: the conditions for a return and the rule about shipping fees. The first passage says unused items in their original packaging can come back within thirty days of delivery. The second says return shipping is free for orders over seventy-five dollars. Supply both passages with Owen’s question.",
+        "props": [
+          "Result one › Returns",
+          "Result two › Return shipping",
+          "Context › Selected passages"
+        ],
+        "kind": "search",
+        "action": "scan"
+      },
+      {
+        "set": "Evidence under reply",
+        "voice": "Now construct the reply one claim at a time. Owen’s purchase is above seventy-five dollars, so the shipping rule supports free return shipping. To confirm his jacket qualifies, you still need its condition and delivery date. Explain the rule and ask for missing facts. Two good passages answer more, but they cannot supply facts Owen never gave.",
+        "props": [
+          "Returns › Unused, original packaging, within 30 days",
+          "Shipping › Free on orders over $75"
+        ],
+        "kind": "split",
+        "action": "link"
+      }
+    ],
+    "color": "d2ae77"
+  },
+  {
+    "id": "m4-4",
+    "title": "The size swap with no stock",
+    "goal": "Plan several action steps and re-plan",
+    "shots": [
+      {
+        "set": "Planning desk",
+        "voice": "Ana asks Orbit to swap her tent for a larger one. Scout could reply yes immediately, but that assumes the shop knows which tent she owns and has a larger one available. Write a short plan: find her order, identify the larger model, check its stock, and only then decide what to offer.",
+        "props": [
+          "Plan A › Find order",
+          "Then › Check larger tent",
+          "Then › Offer swap if available"
+        ],
+        "kind": "desk",
+        "action": "write"
+      },
+      {
+        "set": "Inventory interruption",
+        "voice": "The order lookup succeeds. Scout checks inventory for the larger tent and finds zero available. Walk back through the steps. Her original order is still valid. The stock check also worked; zero is a useful answer. Only the planned offer of an immediate swap has become impossible.",
+        "props": [
+          "Stock › 0 available",
+          "Plan A › Swap unavailable"
+        ],
+        "kind": "grid",
+        "action": "pulse"
+      },
+      {
+        "set": "Branch to options",
+        "voice": "Scout can explain the shortage and offer the choices supported by the shop’s policy, such as keeping the current tent or discussing a return. It should not keep running the same stock check hoping for a different answer. A good plan lets one piece of evidence change exactly the decision that depends on it.",
+        "props": [
+          "Re-plan › Explain stock",
+          "Offer › Keep current tent or return"
+        ],
+        "kind": "fork",
+        "action": "branch"
+      }
+    ],
+    "color": "c19cda"
+  },
+  {
+    "id": "m4-5",
+    "title": "Read a loop without getting stuck in it",
+    "goal": "Trace reasoning, action, observation, and stop conditions",
+    "shots": [
+      {
+        "set": "Loop track",
+        "voice": "Ana asks whether her order shipped. At the start Scout has her message and order number, but no status. What is the smallest useful action? Ask the order system for that number. The application runs the lookup and returns a status. That returned information is the observation in this loop.",
+        "props": [
+          "Think › Need a status",
+          "Act › Look up the order",
+          "Observe › Read the result"
+        ],
+        "kind": "orbit",
+        "action": "route"
+      },
+      {
+        "set": "Trace close-up",
+        "voice": "Read the record of the run, called a trace. First comes the request for a status. Then comes the lookup. Next comes the observation, shipped. Now ask whether another call would answer anything Ana actually asked. For this question, the recorded status already supports a reply.",
+        "props": [
+          "Trace › Request → result → decision",
+          "Check › Does the next step follow?"
+        ],
+        "kind": "terminal",
+        "action": "inspect"
+      },
+      {
+        "set": "Stop marker",
+        "voice": "Change one detail: suppose the lookup times out each time. The assistant could keep choosing exactly the same action without getting closer to an answer. The application’s limit ends that run and allows a handoff. A successful stop and a stop because of a limit should sound different to the customer.",
+        "props": [
+          "Shipped › Answer the question",
+          "Repeated timeout › Stop and offer help"
+        ],
+        "kind": "gate",
+        "action": "stop"
+      }
+    ],
+    "color": "e68d88"
+  },
+  {
+    "id": "m5-1",
+    "title": "Draw the job before building Scout",
+    "goal": "Scope and design the project around one request",
+    "shots": [
+      {
+        "set": "Scope tape",
+        "voice": "Orbit wants Scout to help with support. Start with one customer question: has my order shipped? Put order lookups inside the project. Put actions the shop has not authorized outside it. If the customer asks for a change Scout may not make, a clear handoff is part of the design.",
+        "props": [
+          "In scope › Answer order and policy questions",
+          "Out of scope › Unauthorised actions"
+        ],
+        "kind": "split",
+        "action": "branch"
+      },
+      {
+        "set": "Architecture tracing",
+        "voice": "Trace the ordinary question on a drawing. The customer supplies a number. The model identifies a need for an order lookup. A tool asks the records system, and the returned status gives the model a fact it can explain. Each connection has a purpose you can describe without knowing the code.",
+        "props": [
+          "Customer → Model",
+          "Tools → Results",
+          "Response → Customer"
+        ],
+        "kind": "blueprint",
+        "action": "draw"
+      },
+      {
+        "set": "Acceptance stamp",
+        "voice": "Now test the drawing. Use a known order marked shipped and check for that exact status in the reply. Use an order the system cannot find and check that Scout asks for help instead of inventing a result. Those two outcomes tell your team more about project scope than a list of attractive features.",
+        "props": [
+          "Known order › Matches recorded status",
+          "Missing order › Ask for help"
+        ],
+        "kind": "desk",
+        "action": "stamp"
+      }
+    ],
+    "color": "799cca"
+  },
+  {
+    "id": "m5-2",
+    "title": "Build the smallest loop that runs",
+    "goal": "Add capabilities in tested increments",
+    "shots": [
+      {
+        "set": "Workbench",
+        "voice": "Orbit starts with a tiny version of Scout that sends one customer message to a model and displays a reply. Ask about an order. The honest answer at this point is that Scout cannot look it up. Getting that reply confirms the basic message path before anyone adds access to order records.",
+        "props": [
+          "Build › One model call",
+          "Run › Get one reply"
+        ],
+        "kind": "terminal",
+        "action": "write"
+      },
+      {
+        "set": "Tool installation",
+        "voice": "Add one lookup for a known test order. Ask the same question again. This time you expect to see an order number sent to the lookup and a status returned. Check the actual number as well as the final reply. A model that happened to guess shipped would not prove the new tool ran.",
+        "props": [
+          "Add › get_order",
+          "Try › Known order",
+          "Verify › Expected status"
+        ],
+        "kind": "relay",
+        "action": "assemble"
+      },
+      {
+        "set": "Regression comparison",
+        "voice": "Now try a question that never needed an order lookup. Did adding the new ability cause Scout to use it unnecessarily? Keep both tests: one that needs the tool and one that does not. The next time a change breaks the first or second case, you have a small place to start investigating. For example, ask for the shop’s opening hours. A correct answer using the supplied hours, with zero order lookups, gives you a simple check on that second case.",
+        "props": [
+          "Order question › One matching lookup",
+          "General question › No unnecessary lookup"
+        ],
+        "kind": "dashboard",
+        "action": "scan"
+      }
+    ],
+    "color": "86b598"
+  },
+  {
+    "id": "m5-3",
+    "title": "Stock Scout's tool cabinet",
+    "goal": "Connect tools, test data, and pinned memory",
+    "shots": [
+      {
+        "set": "Tool cabinet",
+        "voice": "A customer asks Scout about a test order. The shop gives Scout a read tool, which can look at the order without changing it. A separate action such as issuing a refund needs different checks. For this question a read is enough. There is no reason to give the assistant permission to move money.",
+        "props": [
+          "Read › Orders · stock · policy",
+          "Act › Changes require checks"
+        ],
+        "kind": "vault",
+        "action": "assemble"
+      },
+      {
+        "set": "Fixture desk",
+        "voice": "Run the lookup with the known order number. The test record says shipped. Check that the actual result and Scout’s reply agree. Save the customer’s order number for the next turn. There is a useful distinction here: the number identifies the order, while its current shipping status can change.",
+        "props": [
+          "Fixture › Known order and status",
+          "Check › Expected tool and value"
+        ],
+        "kind": "document",
+        "action": "inspect"
+      },
+      {
+        "set": "Memory pinboard",
+        "voice": "Now the customer asks, and where is it today? Scout loads the same order number without asking again and uses it for a fresh lookup if needed. Test a second customer as well. Remembering an identifier is useful only when it belongs to the person who is asking the follow-up.",
+        "props": [
+          "Remember › This customer’s order number",
+          "Next turn › Use it for a fresh lookup",
+          "Second customer › Separate conversation"
+        ],
+        "kind": "pinboard",
+        "action": "pin"
+      }
+    ],
+    "color": "e0a983"
+  },
+  {
+    "id": "m5-4",
+    "title": "Find the first bad line",
+    "goal": "Debug Scout from a recorded trace",
+    "shots": [
+      {
+        "set": "Trace replay",
+        "voice": "Grace asks whether she can return her boots and gives the email address used for her purchase. Scout gives a reassuring answer. Before judging that sentence, ask what it would need to know. The return window depends on the delivery date, so Scout first has to find Grace’s order.",
+        "props": [
+          "Grace › Can I return my boots?",
+          "Supplied › Email used to order",
+          "Needed › Delivery date"
+        ],
+        "kind": "terminal",
+        "action": "write"
+      },
+      {
+        "set": "Error freeze",
+        "voice": "Open the trace. The order tool accepts an order identifier in one field and an email address in another. Scout put Grace’s email into the order-number field. The lookup found nothing. The next mistake was answering as if it had found the order. The first wrong step is the misplaced email.",
+        "props": [
+          "Expected › Order ID",
+          "Received › Email address",
+          "Result › No order found"
+        ],
+        "kind": "document",
+        "action": "pulse"
+      },
+      {
+        "set": "Rerun bench",
+        "voice": "Correct the field and repeat Grace’s same request. Check that the lookup now finds the matching order, then compare the delivery date with the return rule. Finally repeat a request that supplies an order number. You have evidence of a fix when Grace’s case improves and the previously working case still works.",
+        "props": [
+          "Correct the field › Email goes in the email field",
+          "Rerun › Find Grace’s order",
+          "Check › Delivery date against return rule"
+        ],
+        "kind": "split",
+        "action": "replace"
+      }
+    ],
+    "color": "bc9ada"
+  },
+  {
+    "id": "m5-5",
+    "title": "Is Scout ready for Maya?",
+    "goal": "Measure and investigate changes across a test set",
+    "shots": [
+      {
+        "set": "Test ticket deck",
+        "voice": "Orbit prepares sixty customer requests for Scout. An order question should use the correct lookup and report the status found in the test record. A return request has different expectations. Run the first version on all sixty, starting each customer separately, and keep a record of which individual cases pass.",
+        "props": [
+          "Test set › Same cases",
+          "Expectations › Tool choice and answer"
+        ],
+        "kind": "inbox",
+        "action": "feed"
+      },
+      {
+        "set": "Score wall",
+        "voice": "The first run passes thirty-eight. Fifteen failures share a cause: customers supplied an email and the order lookup did not handle it correctly. After the change, fifty-three cases pass. Compare the lists of passing cases, not just the totals, to confirm which customers the change actually helped.",
+        "props": [
+          "First run › 38 / 60",
+          "After fix › 53 / 60",
+          "Shorter prompt › 50 / 60"
+        ],
+        "kind": "dashboard",
+        "action": "build"
+      },
+      {
+        "set": "Failure close-up",
+        "voice": "Next the team shortens the assistant’s instructions. The score drops to fifty. Three return cases that used to pass now fail. Open those three and compare their replies with the return policy. Their common mistake guides the next edit. That is why keeping individual results is more useful than keeping only a percentage.",
+        "props": [
+          "After shorter prompt › 50 of 60",
+          "Three new failures › Return cases",
+          "Review › Compare each reply with policy"
+        ],
+        "kind": "desk",
+        "action": "inspect"
+      }
+    ],
+    "color": "87b8ab"
+  },
+  {
+    "id": "m6-1",
+    "title": "The refund that needs a human",
+    "goal": "Layer policy guidance, implementation checks, and approval",
+    "shots": [
+      {
+        "set": "Permission board",
+        "voice": "Owen asks Orbit for three hundred and ten dollars back. Scout can look up his order to understand the request. Reading that record changes nothing. Sending money would change the shop’s accounts, so the application checks Orbit’s example policy before it allows a refund to go any further.",
+        "props": [
+          "Read › Look up order",
+          "Action › Refund over $200"
+        ],
+        "kind": "split",
+        "action": "branch"
+      },
+      {
+        "set": "Approval barrier",
+        "voice": "The policy requires a person to approve a refund over two hundred dollars. Compare three hundred and ten with two hundred. The request stops at the approval step. Scout can explain that the team needs to review it. A promise that the money has already been sent would misdescribe the actual state.",
+        "props": [
+          "Code › Enforce approval",
+          "Team › Review before action"
+        ],
+        "kind": "gate",
+        "action": "stop"
+      },
+      {
+        "set": "Untrusted-message tray",
+        "voice": "Suppose Owen adds a sentence saying the usual approval is unnecessary. It is still a customer message, not authorization from the shop. Test the result by checking whether money moved and whether an approval request was recorded. Those records tell you whether the guardrail worked, even if the assistant’s words sounded convincing.",
+        "props": [
+          "Owen’s message › Skip the approval",
+          "Actual payment › Waiting for review"
+        ],
+        "kind": "inbox",
+        "action": "scan"
+      }
+    ],
+    "color": "d98e8f"
+  },
+  {
+    "id": "m6-2",
+    "title": "The cost of one answer",
+    "goal": "Connect token cost, wait time, and monitoring",
+    "shots": [
+      {
+        "set": "Itemised receipt",
+        "voice": "Ana asks Orbit where her tent is. Scout first looks up the order, then checks the carrier, then writes a reply. Read the example receipt as three charges for one customer answer. The first charge is one point four cents, the next is one point six, and the last is two point one. Add them together and the answer costs five point one cents at these example rates.",
+        "props": [
+          "Lookup › $0.014",
+          "Tracking › $0.016",
+          "Reply › $0.021"
+        ],
+        "kind": "receipt",
+        "action": "write"
+      },
+      {
+        "set": "Stopwatch split",
+        "voice": "Now watch the customer’s screen. With an ordinary reply, she waits and then sees the whole message. With streaming, words appear as they are produced. She gets feedback sooner, even if the same three calls still happen. Removing an unnecessary call would change the amount of work itself.",
+        "props": [
+          "Time › Measure each step",
+          "Streaming › First words arrive sooner"
+        ],
+        "kind": "clock",
+        "action": "build"
+      },
+      {
+        "set": "Operations monitor",
+        "voice": "To find a slow or expensive change, record the time, usage, and errors for comparable order questions. Did the carrier take longer? Did Scout repeat a lookup? Did accuracy change when a step was removed? Check the answer as well as the bill. A cheaper reply that gives the wrong parcel status is a poor trade.",
+        "props": [
+        "One correct answer › 5.1 cents across 3 calls",
+        "Carrier wait › Check the time for this step",
+        "Repeated lookup? › Compare the call records",
+        "Answer check › Verify Ana’s parcel status"
+        ],
+        "kind": "dashboard",
+        "action": "scan"
+      }
+    ],
+    "color": "d5ae80"
+  },
+  {
+    "id": "m6-3",
+    "title": "From Scout's laptop to Orbit's website",
+    "goal": "Trace deployment and separate customer sessions",
+    "shots": [
+      {
+        "set": "Terminal to browser",
+        "voice": "Ana types where is my order on Orbit’s website. Her browser sends the message to the shop’s chat address. The server receives it and loads the conversation Ana is allowed to use. So far the browser is carrying a question. It has no need to hold the secret key used to contact the model.",
+        "props": [
+          "Browser › POST /chat",
+          "Server › Receives message"
+        ],
+        "kind": "split",
+        "action": "send"
+      },
+      {
+        "set": "Server cutaway",
+        "voice": "Inside the server, the application uses its own private key and runs the usual assistant steps. It can ask a tool for Ana’s order and compose a reply from the result. Only the permitted reply goes back to the browser. Inspect what Ana sees: a message about her parcel, not the server’s private settings.",
+        "props": [
+          "Server › Credential and tool loop",
+          "Browser › Reply"
+        ],
+        "kind": "blueprint",
+        "action": "lock"
+      },
+      {
+        "set": "Session drawers",
+        "voice": "Now open two test conversations, one for Ana and another for Owen. Give them different order numbers and alternate their follow-up questions. Each reply should refer to its own order. One successful message tests that the service is reachable. Two separate conversations test something just as important: whose information each reply uses.",
+        "props": [
+          "Ana › Ana’s order and history",
+          "Owen › Owen’s order and history"
+        ],
+        "kind": "vault",
+        "action": "route"
+      }
+    ],
+    "color": "83a8dc"
+  },
+  {
+    "id": "m6-4",
+    "title": "When Scout needs a teammate",
+    "goal": "Decide when to split an agent into specialists",
+    "shots": [
+      {
+        "set": "Crowded dispatch desk",
+        "voice": "A customer asks Orbit about terms for buying tents in bulk and whether enough tents are available. There are two facts to establish. The wholesale rules describe the terms. The inventory record shows the quantity available. Knowing one cannot establish the other, so the coordinator keeps the two questions separate.",
+        "props": [
+          "Incoming › Wholesale order + stock",
+          "Question › Does this need two specialists?"
+        ],
+        "kind": "inbox",
+        "action": "feed"
+      },
+      {
+        "set": "Routing map",
+        "voice": "It sends the buying question to the wholesale helper and the stock question to the inventory helper. Each needs the item and requested quantity. When the results return, the coordinator can combine the terms with the available quantity. If the inventory answer is missing, it should say availability is unconfirmed rather than promise the order.",
+        "props": [
+          "Coordinator › Split request",
+          "Wholesale › Terms",
+          "Inventory › Availability"
+        ],
+        "kind": "fork",
+        "action": "branch"
+      },
+      {
+        "set": "Handoff audit",
+        "voice": "Run the same request through one assistant with both tools. Compare the accuracy of the answer, how long it took, and whether the item and quantity survived each handoff. The extra specialists earn their place only if they solve a measurable problem. Extra messages by themselves do not make the service more capable.",
+        "props": [
+          "Review › Answer quality",
+          "Review › Handoff time and complexity"
+        ],
+        "kind": "dashboard",
+        "action": "scan"
+      }
+    ],
+    "color": "aea1df"
+  },
+  {
+    "id": "m6-5",
+    "title": "Orbit's first ticket, revisited",
+    "goal": "Bring the project together and choose the next practice",
+    "shots": [
+      {
+        "set": "Opening callback",
+        "voice": "Return to Ana, who wants to know where her tent is. The shop’s first helper could repeat a shipping policy. It could not tell her what happened to her own order. In your completed project, give Scout the same question and Ana’s order number. Write down the answer you expect from a known test record.",
+        "props": [
+          "Ana › Where is my order?",
+          "Scout › Reads the request"
+        ],
+        "kind": "phone",
+        "action": "feed"
+      },
+      {
+        "set": "Project trace",
+        "voice": "Follow the run. The conversation supplies the number, Scout chooses the order tool, and the tool returns a status. The application checks what information it may share. Compare the reply with the actual status and tracking number. That comparison tests whether the parts worked together, not just whether the final sentence sounded friendly.",
+        "props": [
+          "Memory › Context",
+          "Tool › Order status",
+          "Guardrail › Allowed action"
+        ],
+        "kind": "relay",
+        "action": "route"
+      },
+      {
+        "set": "Practice handoff",
+        "voice": "Change the test so the record cannot be found. A useful assistant asks for clarification or hands over instead of inventing a status. Keep both tests. If either fails, practice the specific skill the trace points to, fix one thing, and replay the same request. That gives you a concrete next step after this course.",
+        "props": [
+          "Known order › Status matches record",
+          "Missing order › Ask or hand over",
+          "Next exercise › Fix the first failing step"
+        ],
+        "kind": "pinboard",
+        "action": "pin"
+      }
+    ],
+    "color": "e3a399"
+  }
+]

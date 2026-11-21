@@ -1,0 +1,133 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:03.385
+A responsible assistant needs clear limits.
+
+00:00:03.385 --> 00:00:08.253
+A written instruction can help it explain a policy to a customer.
+
+00:00:08.253 --> 00:00:15.901
+If a mistake could move money or change someone’s account, the application needs a way to enforce the limit too.
+
+00:00:15.901 --> 00:00:22.452
+A guardrail is a check the program applies regardless of what the assistant asks for.
+
+00:00:22.452 --> 00:00:28.204
+Think of a till that requires a supervisor’s approval for a large refund.
+
+00:00:28.204 --> 00:00:34.182
+The cashier cannot remove that requirement just by describing the refund differently.
+
+00:00:34.182 --> 00:00:36.683
+Match each permission to the task.
+
+00:00:36.683 --> 00:00:41.291
+Reading an order and issuing money have different consequences.
+
+00:00:41.291 --> 00:00:48.771
+Keep customer information private, and give the customer a clear explanation when a person must take over.
+
+00:00:48.771 --> 00:00:55.749
+Since Module 2, Scout's system prompt has said that refunds over two hundred dollars need a person.
+
+00:00:55.749 --> 00:01:01.212
+A rule in the prompt is a request, and the model follows it most of the time.
+
+00:01:01.212 --> 00:01:05.526
+Most of the time is not good enough when the action moves money.
+
+00:01:05.526 --> 00:01:11.287
+A guardrail is a check in your own code that runs whatever the model decides.
+
+00:01:11.287 --> 00:01:17.704
+If the model is confused, or tricked, the guardrail still holds, and it leaves a record.
+
+00:01:17.704 --> 00:01:21.590
+Owen asks Orbit for three hundred and ten dollars back.
+
+00:01:21.590 --> 00:01:25.306
+Scout can look up his order to understand the request.
+
+00:01:25.306 --> 00:01:28.012
+Reading that record changes nothing.
+
+00:01:28.012 --> 00:01:38.369
+Sending money would change the shop’s accounts, so the application checks Orbit’s example policy before it allows a refund to go any further.
+
+00:01:38.369 --> 00:01:44.674
+Not every tool call deserves the same caution, so sort actions by what they could break.
+
+00:01:44.674 --> 00:01:50.597
+A permitted lookup reads an order after the shop has checked the customer's access to it.
+
+00:01:50.597 --> 00:01:57.042
+A refund up to two hundred dollars moves money, so Scout may do it, and your code logs it.
+
+00:01:57.042 --> 00:02:03.166
+A refund over two hundred dollars is paused until a person on Leo's team approves it.
+
+00:02:03.166 --> 00:02:10.634
+Anything that cannot be undone, like closing a customer's account, is simply not one of Scout's tools.
+
+00:02:10.634 --> 00:02:17.352
+For every tool, ask: what is the worst case if this call is wrong, and can we undo it?
+
+00:02:17.352 --> 00:02:22.984
+The policy requires a person to approve a refund over two hundred dollars.
+
+00:02:22.984 --> 00:02:26.180
+Compare three hundred and ten with two hundred.
+
+00:02:26.180 --> 00:02:29.086
+The request stops at the approval step.
+
+00:02:29.086 --> 00:02:32.706
+Scout can explain that the team needs to review it.
+
+00:02:32.706 --> 00:02:38.722
+A promise that the money has already been sent would misdescribe the actual state.
+
+00:02:38.722 --> 00:02:42.521
+Put two pretend refunds beside the shop's rule.
+
+00:02:42.521 --> 00:02:45.938
+The first is exactly two hundred dollars.
+
+00:02:45.938 --> 00:02:48.248
+Read the word over carefully.
+
+00:02:48.248 --> 00:02:56.240
+Under Orbit's example policy this particular approval threshold does not fire at exactly two hundred.
+
+00:02:56.240 --> 00:03:00.606
+Change only the amount to two hundred dollars and one cent.
+
+00:03:00.606 --> 00:03:03.546
+The request now crosses the threshold.
+
+00:03:03.546 --> 00:03:12.774
+A useful test checks whether the system actually pauses before moving money, even if the assistant writes a confident reply.
+
+00:03:12.774 --> 00:03:16.693
+Look at the payment record and the message side by side.
+
+00:03:16.693 --> 00:03:22.092
+If the record says pending review, the customer should hear that review is pending.
+
+00:03:22.092 --> 00:03:24.937
+A polite instruction helps the wording.
+
+00:03:24.937 --> 00:03:29.194
+The payment check enforces what can actually happen.
+
+00:03:29.194 --> 00:03:34.808
+Suppose Owen adds a sentence saying the usual approval is unnecessary.
+
+00:03:34.808 --> 00:03:39.576
+It is still a customer message, not authorization from the shop.
+
+00:03:39.576 --> 00:03:46.245
+Test the result by checking whether money moved and whether an approval request was recorded.
+
+00:03:46.245 --> 00:03:53.211
+Those records tell you whether the guardrail worked, even if the assistant’s words sounded convincing.

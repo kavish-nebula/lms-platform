@@ -1,0 +1,139 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:08.417
+A language model can read the words you send it, but it cannot see a shop’s live records just because someone asks about them.
+
+00:00:08.417 --> 00:00:14.030
+Tool calling is how the model can ask another program to do a specific job.
+
+00:00:14.030 --> 00:00:19.427
+Imagine a person at a service desk writing an order number on a lookup slip.
+
+00:00:19.427 --> 00:00:21.960
+Writing the slip asks for the work.
+
+00:00:21.960 --> 00:00:26.584
+Someone still has to open the records and find the matching order.
+
+00:00:26.584 --> 00:00:30.618
+The application does that work and returns the result.
+
+00:00:30.618 --> 00:00:33.729
+The model can then explain it to the customer.
+
+00:00:33.729 --> 00:00:40.128
+Keeping the request and result separate makes it possible to check where an answer came from.
+
+00:00:40.128 --> 00:00:42.929
+Ana contacts Orbit about a tent.
+
+00:00:42.929 --> 00:00:45.857
+She gives the order number shown on screen.
+
+00:00:45.857 --> 00:00:51.760
+Scout can read that number, but the number alone does not say whether a box has shipped.
+
+00:00:51.760 --> 00:00:54.593
+Telling Ana it shipped now would be guessing.
+
+00:00:54.593 --> 00:00:59.001
+Scout needs to ask the shop’s order system for the status.
+
+00:00:59.001 --> 00:01:02.164
+So which jobs need a tool, and which don't?
+
+00:01:02.164 --> 00:01:08.054
+Writing a friendly reply is pure language, so the model does that well on its own.
+
+00:01:08.054 --> 00:01:15.641
+Knowing a customer's order status is impossible without a lookup, because the model has never seen your data.
+
+00:01:15.641 --> 00:01:23.249
+Exact arithmetic is the surprise: models are often close, but close is not good enough for a refund.
+
+00:01:23.249 --> 00:01:30.463
+Current carrier delays can change after the model was trained. A current source can settle the question.
+
+00:01:30.463 --> 00:01:37.707
+And actions, like sending a refund, always need a tool, because the model can only write text.
+
+00:01:37.707 --> 00:01:45.323
+A good rule: if the answer lives in a system, a file or today's news, the model needs a tool.
+
+00:01:45.323 --> 00:01:47.783
+Follow the number across the screen.
+
+00:01:47.783 --> 00:01:52.916
+The model requests a tool called get order and supplies Ana’s number.
+
+00:01:52.916 --> 00:01:57.826
+The shop’s application runs the lookup and finds the matching record.
+
+00:01:57.826 --> 00:02:00.945
+It sends back shipped and a tracking number.
+
+00:02:00.945 --> 00:02:05.585
+That return trip is what gives Scout a new fact to work with.
+
+00:02:05.585 --> 00:02:09.154
+Here is what that looks like in a real conversation.
+
+00:02:09.154 --> 00:02:13.085
+Ana asks where her tent is, and gives her order number.
+
+00:02:13.085 --> 00:02:21.866
+Scout does not answer yet; instead it replies with a tool request, get order, with Ana's order number as the argument.
+
+00:02:21.866 --> 00:02:29.103
+Your code runs the lookup and sends back the result: shipped, with ParcelPath, plus a tracking number.
+
+00:02:29.103 --> 00:02:34.023
+That result goes back to Scout as a new message in the conversation.
+
+00:02:34.023 --> 00:02:40.116
+Now Scout writes the reply Ana actually sees, using only facts from the result.
+
+00:02:40.116 --> 00:02:46.506
+Notice that Scout never touched the order system: it asked, and your code did the work.
+
+00:02:46.506 --> 00:02:49.964
+Watch a single order number make a round trip.
+
+00:02:49.964 --> 00:02:56.205
+Before the lookup runs, all Scout knows is the number Ana supplied and what she wants.
+
+00:02:56.205 --> 00:03:00.570
+The fact that a request was written is no evidence of shipment.
+
+00:03:00.570 --> 00:03:06.706
+At the shop boundary, software compares that number with the records it is allowed to read.
+
+00:03:06.706 --> 00:03:10.232
+A match gives a status linked to a specific order.
+
+00:03:10.232 --> 00:03:15.781
+An empty match would be a different result even though the request looked identical.
+
+00:03:15.781 --> 00:03:18.644
+Read the reply one phrase at a time.
+
+00:03:18.644 --> 00:03:21.723
+Can you point to where each detail came from?
+
+00:03:21.723 --> 00:03:29.798
+Ana supplied the question, the tool supplied the status, and the model put the checked facts into a sentence for her.
+
+00:03:29.798 --> 00:03:37.032
+Scout can now tell Ana her tent shipped through ParcelPath and share the tracking number from the result.
+
+00:03:37.032 --> 00:03:41.016
+Check the number in the reply against the number in the record.
+
+00:03:41.016 --> 00:03:48.432
+If the lookup had returned no match, the honest next step would be to ask Ana to check the order number instead.
+
+00:03:48.432 --> 00:03:50.635
+Notice who did each job.
+
+00:03:50.635 --> 00:03:58.678
+Scout requested the lookup, the shop’s software fetched the record, and Scout used that record to write the reply.

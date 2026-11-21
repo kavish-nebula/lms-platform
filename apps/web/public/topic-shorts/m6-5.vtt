@@ -1,0 +1,139 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:03.216
+An agent combines several small ideas.
+
+00:00:03.216 --> 00:00:10.053
+It reads a request, decides which fact is missing, uses a permitted tool, and checks the result.
+
+00:00:10.053 --> 00:00:15.027
+Memory helps it carry useful details from one turn into the next.
+
+00:00:15.027 --> 00:00:20.513
+You can understand a whole project by following one question all the way through.
+
+00:00:20.513 --> 00:00:28.665
+Ask what was known at the start, what was learned along the way, and which piece of evidence supports the final reply.
+
+00:00:28.665 --> 00:00:32.646
+Your next learning project can grow out of one weak spot.
+
+00:00:32.646 --> 00:00:37.417
+A bad document search calls for practice finding better passages.
+
+00:00:37.417 --> 00:00:42.485
+Unpredictable results across many tickets call for better tests.
+
+00:00:42.485 --> 00:00:46.102
+Return to Ana, who wants to know where her tent is.
+
+00:00:46.102 --> 00:00:50.009
+The shop’s first helper could repeat a shipping policy.
+
+00:00:50.009 --> 00:00:53.397
+It could not tell her what happened to her own order.
+
+00:00:53.397 --> 00:00:59.141
+In your completed project, give Scout the same question and Ana’s order number.
+
+00:00:59.141 --> 00:01:03.146
+Write down the answer you expect from a known test record.
+
+00:01:03.146 --> 00:01:06.073
+Everything you built turns around one loop.
+
+00:01:06.073 --> 00:01:12.219
+Scout reads the customer's question, together with what it remembers from the conversation.
+
+00:01:12.219 --> 00:01:17.140
+It plans: it works out what it needs to know, and which tool could tell it.
+
+00:01:17.140 --> 00:01:21.804
+It acts by calling a tool, such as get order or track parcel.
+
+00:01:21.804 --> 00:01:27.854
+It observes the result, including any error, and decides whether it knows enough yet.
+
+00:01:27.854 --> 00:01:33.701
+Finally it answers within the policy and its limits, or hands over to a person.
+
+00:01:33.701 --> 00:01:39.887
+This is the reason and act loop you can now recognise when you look inside Scout.
+
+00:01:39.887 --> 00:01:41.446
+Follow the run.
+
+00:01:41.446 --> 00:01:48.358
+The conversation supplies the number, Scout chooses the order tool, and the tool returns a status.
+
+00:01:48.358 --> 00:01:52.448
+The application checks what information it may share.
+
+00:01:52.448 --> 00:01:56.813
+Compare the reply with the actual status and tracking number.
+
+00:01:56.813 --> 00:02:04.740
+That comparison tests whether the parts worked together, not just whether the final sentence sounded friendly.
+
+00:02:04.740 --> 00:02:08.286
+Imagine you have one afternoon to improve Scout.
+
+00:02:08.286 --> 00:02:11.203
+Pick an actual failed question first.
+
+00:02:11.203 --> 00:02:20.142
+If Scout fetched the wrong passage for send it back, inspect retrieval before replacing the model or building another specialist.
+
+00:02:20.142 --> 00:02:25.593
+Save the original question and the policy passage a correct answer needs.
+
+00:02:25.593 --> 00:02:30.196
+Try one change to the search and repeat that exact enquiry.
+
+00:02:30.196 --> 00:02:36.288
+A new answer that sounds friendlier is not evidence that search found the right passage.
+
+00:02:36.288 --> 00:02:40.878
+Finally ask a second version of the same customer question.
+
+00:02:40.878 --> 00:02:45.991
+If both now retrieve the right source, save the cases for the next change.
+
+00:02:45.991 --> 00:02:53.584
+You have turned a broad idea like learn retrieval into a small project with observable results.
+
+00:02:53.584 --> 00:02:57.034
+Change the test so the record cannot be found.
+
+00:02:57.034 --> 00:03:03.937
+A useful assistant asks for clarification or hands over instead of inventing a status.
+
+00:03:03.937 --> 00:03:05.768
+Keep both tests.
+
+00:03:05.768 --> 00:03:13.462
+If either fails, practice the specific skill the trace points to, fix one thing, and replay the same request.
+
+00:03:13.462 --> 00:03:17.422
+That gives you a concrete next step after this course.
+
+00:03:17.422 --> 00:03:22.024
+Where next? Here are four directions that build directly on Scout.
+
+00:03:22.024 --> 00:03:32.308
+Evaluations at scale: grow your ten test cases into hundreds, and use a model as a grader for answers that have no single right wording.
+
+00:03:32.308 --> 00:03:42.616
+Retrieval with embeddings: instead of matching words, search Orbit's documents by meaning, with a vector store such as Chroma or pgvector.
+
+00:03:42.616 --> 00:03:55.140
+More tools through MCP, the Model Context Protocol, an open standard for plugging an agent into ready-made tool servers, such as a help desk or a calendar.
+
+00:03:55.140 --> 00:04:00.548
+And multi-agent systems, for the day one agent is no longer enough.
+
+00:04:00.548 --> 00:04:10.823
+Everything you learned carries over to other providers, such as OpenAI, Google or open models; only the SDK calls change.
+
+00:04:10.823 --> 00:04:16.871
+Pick the direction that solves your next real problem, not the most exciting one.

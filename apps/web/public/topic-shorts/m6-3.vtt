@@ -1,0 +1,133 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:04.985
+Deployment means making a program available for other people to use.
+
+00:00:04.985 --> 00:00:08.097
+A script on your laptop works while you run it.
+
+00:00:08.097 --> 00:00:14.851
+A shop’s customer needs a service that can receive a message even when your laptop is closed.
+
+00:00:14.851 --> 00:00:17.213
+The browser displays the chat.
+
+00:00:17.213 --> 00:00:19.619
+A server runs the assistant.
+
+00:00:19.619 --> 00:00:29.219
+An API endpoint is an address on that server that accepts a particular kind of request, such as a message from the chat box.
+
+00:00:29.219 --> 00:00:33.563
+Several customers may use the same service at the same time.
+
+00:00:33.563 --> 00:00:36.832
+A session identifies a conversation.
+
+00:00:36.832 --> 00:00:43.904
+The server must check who can access it before loading its history or returning its information.
+
+00:00:43.904 --> 00:00:47.737
+Ana types where is my order on Orbit’s website.
+
+00:00:47.737 --> 00:00:51.613
+Her browser sends the message to the shop’s chat address.
+
+00:00:51.613 --> 00:00:56.777
+The server receives it and loads the conversation Ana is allowed to use.
+
+00:00:56.777 --> 00:00:59.876
+So far the browser is carrying a question.
+
+00:00:59.876 --> 00:01:04.890
+It has no need to hold the secret key used to contact the model.
+
+00:01:04.890 --> 00:01:07.872
+Follow one message from start to finish.
+
+00:01:07.872 --> 00:01:15.596
+A customer types into the chat widget on Orbit's website, and the browser sends the message to your API.
+
+00:01:15.596 --> 00:01:22.777
+Your API, running on a server, finds that customer's session and hands the message to Scout.
+
+00:01:22.777 --> 00:01:27.677
+Scout runs its loop, with the step and spend limits from your guards file.
+
+00:01:27.677 --> 00:01:34.846
+It calls tools such as get order and track parcel on the server, and the reply travels back the same way.
+
+00:01:34.846 --> 00:01:41.684
+Notice what the browser never sees: the API key, the tools or the system prompt.
+
+00:01:41.684 --> 00:01:49.022
+Inside the server, the application uses its own private key and runs the usual assistant steps.
+
+00:01:49.022 --> 00:01:54.261
+It can ask a tool for Ana’s order and compose a reply from the result.
+
+00:01:54.261 --> 00:01:57.743
+Only the permitted reply goes back to the browser.
+
+00:01:57.743 --> 00:02:04.444
+Inspect what Ana sees: a message about her parcel, not the server’s private settings.
+
+00:02:04.444 --> 00:02:11.080
+Remember that the model has no memory of its own; your code sends the history every time.
+
+00:02:11.080 --> 00:02:18.314
+So the server must know which history belongs to which customer, and that is what the session id is for.
+
+00:02:18.314 --> 00:02:27.788
+Picture the conversation ID as a claim ticket. It helps the application find the right history when another message arrives.
+
+00:02:27.788 --> 00:02:35.695
+The application keeps each history separate and checks the customer is allowed to access the requested order.
+
+00:02:35.695 --> 00:02:45.260
+A Python dictionary works on one server, but it is lost on every restart, so real deployments keep sessions in a database.
+
+00:02:45.260 --> 00:02:49.956
+Imagine two customers type into the site at the same instant.
+
+00:02:49.956 --> 00:02:52.692
+Ana sends her order number first.
+
+00:02:52.692 --> 00:03:00.299
+On the server, the program looks up the conversation that belongs to her session before adding that new message.
+
+00:03:00.299 --> 00:03:04.396
+Now follow Owen's message down the same network path.
+
+00:03:04.396 --> 00:03:09.796
+The server code can be shared, but the history loaded for Owen must be different.
+
+00:03:09.796 --> 00:03:17.150
+The session identifies a conversation; access checks still have to protect the underlying order.
+
+00:03:17.150 --> 00:03:19.798
+Open two separate test sessions.
+
+00:03:19.798 --> 00:03:24.770
+Give each a different pretend order and ask the same follow-up in both.
+
+00:03:24.770 --> 00:03:28.200
+Compare what each window shows with its own record.
+
+00:03:28.200 --> 00:03:34.088
+This catches mix-ups that a successful single-window demo would never reveal.
+
+00:03:34.088 --> 00:03:39.511
+Now open two test conversations, one for Ana and another for Owen.
+
+00:03:39.511 --> 00:03:44.248
+Give them different order numbers and alternate their follow-up questions.
+
+00:03:44.248 --> 00:03:47.442
+Each reply should refer to its own order.
+
+00:03:47.442 --> 00:03:51.649
+One successful message tests that the service is reachable.
+
+00:03:51.649 --> 00:03:59.414
+Two separate conversations test something just as important: whose information each reply uses.

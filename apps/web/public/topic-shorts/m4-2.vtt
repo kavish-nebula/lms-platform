@@ -1,0 +1,130 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:05.678
+Context means the information a model receives when it prepares one answer.
+
+00:00:05.678 --> 00:00:09.895
+Imagine handing a colleague a folder before a phone call.
+
+00:00:09.895 --> 00:00:14.827
+Anything important missing from the folder may be missing from the answer.
+
+00:00:14.827 --> 00:00:18.468
+Models count text in small pieces called tokens.
+
+00:00:18.468 --> 00:00:25.115
+A longer conversation can cost more to send and may eventually exceed the space available.
+
+00:00:25.115 --> 00:00:30.110
+Repeating every greeting rarely helps with the customer’s next decision.
+
+00:00:30.110 --> 00:00:38.372
+You can keep recent messages, shorten older ones into a summary, and copy essential facts into a separate note.
+
+00:00:38.372 --> 00:00:43.494
+The test is whether the next question can still be answered accurately.
+
+00:00:43.494 --> 00:00:48.232
+Ravi has spent a long chat discussing a foam mat and a return.
+
+00:00:48.232 --> 00:00:51.651
+His first message contains his order number.
+
+00:00:51.651 --> 00:00:59.493
+Later messages contain greetings, repeated questions, and a decision about which item he wants help with.
+
+00:00:59.493 --> 00:01:04.613
+The request grows each time the whole conversation is sent again.
+
+00:01:04.613 --> 00:01:07.872
+Try keeping just the most recent messages.
+
+00:01:07.872 --> 00:01:12.038
+It saves space, but now the order number has disappeared.
+
+00:01:12.038 --> 00:01:14.338
+Try a better combination.
+
+00:01:14.338 --> 00:01:23.611
+Keep the last complete exchanges, summarize the earlier discussion in a few lines, and preserve the exact order number separately.
+
+00:01:23.611 --> 00:01:29.829
+A summary such as customer asked about some equipment loses the useful detail.
+
+00:01:29.829 --> 00:01:34.996
+Here's what a well-built request looks like on Ravi's twenty-second message.
+
+00:01:34.996 --> 00:01:40.477
+First, in the system prompt, the pinned facts: his order number and his name.
+
+00:01:40.477 --> 00:01:45.874
+Next, a short summary of the older turns, written by the model a while back.
+
+00:01:45.874 --> 00:01:51.988
+Then the last ten messages, word for word, so the recent back and forth is exact.
+
+00:01:51.988 --> 00:01:55.800
+Scout gets everything it needs, and nothing it doesn't.
+
+00:01:55.800 --> 00:02:03.031
+On this turn, the separate order number survives even though some earlier messages have been left out.
+
+00:02:03.031 --> 00:02:07.759
+Read this summary as though you are joining Ravi's chat halfway through.
+
+00:02:07.759 --> 00:02:10.357
+A customer asked about a parcel.
+
+00:02:10.357 --> 00:02:14.604
+It fits in a tiny space, yet you cannot look anything up.
+
+00:02:14.604 --> 00:02:17.734
+The crucial identifier has disappeared.
+
+00:02:17.734 --> 00:02:23.411
+Keep the order number separately and add a short note about the unresolved question.
+
+00:02:23.411 --> 00:02:27.352
+Then retain the most recent exchanges word for word.
+
+00:02:27.352 --> 00:02:32.167
+Each part earns its place by helping the next answer in a different way.
+
+00:02:32.167 --> 00:02:35.268
+Hand only this smaller packet to a colleague.
+
+00:02:35.268 --> 00:02:40.186
+Could they identify the order and understand what Ravi still needs?
+
+00:02:40.186 --> 00:02:46.852
+This is a better test of a summary than simply checking how many words you managed to remove.
+
+00:02:46.852 --> 00:02:49.504
+Here's summarising in practice.
+
+00:02:49.504 --> 00:02:55.149
+Ravi's chat passes thirty turns, so the code sets aside the oldest twenty.
+
+00:02:55.149 --> 00:03:03.278
+It makes one extra call, often to a small, cheap model like Haiku, asking for the gist in a few lines.
+
+00:03:03.278 --> 00:03:10.085
+That note replaces the twenty turns, while the pinned facts and the recent messages stay as they are.
+
+00:03:10.085 --> 00:03:15.056
+From then on, Scout carries the early chat at a fraction of the tokens.
+
+00:03:15.056 --> 00:03:23.182
+The summary takes an extra call to create, so compare that cost with the repeated text you save on later turns.
+
+00:03:23.182 --> 00:03:27.868
+Test both versions with Ravi’s follow-up about the same parcel.
+
+00:03:27.868 --> 00:03:32.756
+Does Scout still know which order to check and which item is in question?
+
+00:03:32.756 --> 00:03:36.481
+Compare the answer with the original conversation.
+
+00:03:36.481 --> 00:03:45.344
+A smaller request is useful when it saves text and still preserves the facts needed for the customer’s unfinished task.

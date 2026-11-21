@@ -6,6 +6,9 @@ import { planLesson } from "@/lib/learner-plan";
 import { Globe2, Lightbulb } from "lucide-react";
 import { StageShell, Callout } from "@/components/player/stage-shell";
 import { VideoLesson } from "@/components/player/video/video-lesson";
+import { useLearningContext } from "@/components/learning/course-companion";
+import { TopicShort } from "./topic-short";
+import filmTitles from "./topic-film-titles.json";
 import { useWatchedVideos } from "@/components/player/video/watched";
 import { videoMinutes } from "@/lib/module-outline";
 import { WORLD } from "@/lib/world";
@@ -30,7 +33,20 @@ export function VideoExplainer({
   const to = useTranslations("outline");
   const videos = block.videos!;
   const video = videos.find((v) => v.id === videoId) ?? videos[0]!;
+  const course = useLearningContext();
+  const filmTitle = course?.courseId === "ai-agent" && !video.uploadedVideo && !video.personalizationSource
+    ? (filmTitles as Record<string, string>)[video.id]
+    : undefined;
   const { watched, markWatched } = useWatchedVideos();
+  const lessonPlayer = (
+    <VideoLesson
+      key={video.id}
+      video={video}
+      onComplete={() => markWatched(video.id)}
+      onNext={nav.onComplete}
+      nextLabel={nextTitle ? to("nextPart", { title: nextTitle }) : t("finishTopic")}
+    />
+  );
   // the planner's example for this learner (their field and role), else the field's template
   const planned = planLesson(adaptation.plan, video.lesson)?.inYourWorld;
   const template = adaptation.domain ? WORLD[video.lesson] : undefined;
@@ -51,13 +67,11 @@ export function VideoExplainer({
       {...nav}
       done={nav.done || watched.includes(video.id)}
     >
-      <VideoLesson
-        key={video.id}
-        video={video}
-        onComplete={() => markWatched(video.id)}
-        onNext={nav.onComplete}
-        nextLabel={nextTitle ? to("nextPart", { title: nextTitle }) : t("finishTopic")}
-      />
+      {filmTitle ? (
+        <TopicShort key={video.id} id={video.id} title={filmTitle} lessonTitle={video.title}>
+          {lessonPlayer}
+        </TopicShort>
+      ) : lessonPlayer}
 
       <div className="concept-text-cards" aria-label="Lesson reading cards">
         {adaptation.support === "extra" && <Callout className="concept-text-card" tone="worked" label="A little guidance before you begin" icon={<Lightbulb />}>
