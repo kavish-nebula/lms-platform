@@ -1,0 +1,2385 @@
+{
+  "title": "Agents vs. chatbots vs. workflows",
+  "style": "topic-animation",
+  "scenes": [
+    {
+      "id": "Scene1",
+      "kind": "decision",
+      "title": "Who chooses the next step?",
+      "sourceIds": [
+        "M1T2Passage1"
+      ],
+      "evidence": "Three helpers can appear in the same chat window and work quite differently.",
+      "holdSeconds": 1,
+      "beats": [
+        {
+          "id": "Scene1Beat1",
+          "label": "A chatbot replies",
+          "narration": "Three helpers can appear in the same chat window and work quite differently. A simple question-and-answer chatbot reads your message and explains something it already has in writing. Think of asking a receptionist about opening hours.",
+          "visual": {
+            "heading": "A chatbot replies",
+            "detail": "A question about opening hours → a written answer.",
+            "icon": "message",
+            "status": "neutral"
+          }
+        },
+        {
+          "id": "Scene1Beat2",
+          "label": "A workflow follows rules",
+          "narration": "A workflow is a recipe someone wrote for a computer. It can make choices, like sending an incomplete form back, because a person already specified what to do in each case.",
+          "visual": {
+            "heading": "A workflow follows rules",
+            "detail": "Missing field → return the form.",
+            "icon": "table",
+            "status": "neutral"
+          }
+        },
+        {
+          "id": "Scene1Beat3",
+          "label": "An agent chooses",
+          "narration": "An agent is given a goal and some permitted actions. It decides what information to look up next as it learns more. Watch what each helper can do for the same shopper.",
+          "visual": {
+            "heading": "An agent chooses",
+            "detail": "The lookup result guides its next action.",
+            "icon": "model",
+            "status": "success"
+          }
+        }
+      ],
+      "motion": [
+        {
+          "tone": "rose",
+          "keys": [
+            {
+              "beat": 0,
+              "at": 0,
+              "x": 500,
+              "y": 21,
+              "scale": 0.71,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "label": "THREE HELPERS  /  ONE QUESTION"
+        },
+        {
+          "tone": "paper",
+          "keys": [
+            {
+              "beat": 0,
+              "at": 0,
+              "x": 500,
+              "y": 69,
+              "scale": 1.4,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "label": "Who chooses the next step?"
+        },
+        {
+          "tone": "muted",
+          "keys": [
+            {
+              "beat": 0,
+              "at": 0,
+              "x": 343,
+              "y": 130,
+              "scale": 0.99,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "path": "M0 0 V174 M315 0 V174"
+        },
+        {
+          "tone": "paper",
+          "keys": [
+            {
+              "beat": 0,
+              "at": 0,
+              "x": 180,
+              "y": 307,
+              "scale": 1.18,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "label": "Chatbot"
+        },
+        {
+          "tone": "paper",
+          "keys": [
+            {
+              "beat": 1,
+              "at": 0,
+              "x": 500,
+              "y": 312,
+              "scale": 1.18,
+              "opacity": 0,
+              "angle": 0
+            },
+            {
+              "beat": 1,
+              "at": 0.1,
+              "x": 500,
+              "y": 307,
+              "scale": 1.18,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "label": "Workflow"
+        },
+        {
+          "tone": "paper",
+          "keys": [
+            {
+              "beat": 2,
+              "at": 0,
+              "x": 820,
+              "y": 312,
+              "scale": 1.18,
+              "opacity": 0,
+              "angle": 0
+            },
+            {
+              "beat": 2,
+              "at": 0.1,
+              "x": 820,
+              "y": 307,
+              "scale": 1.18,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "label": "Agent"
+        },
+        {
+          "tone": "muted",
+          "keys": [
+            {
+              "beat": 0,
+              "at": 0.06,
+              "x": 142,
+              "y": 204,
+              "scale": 0.84,
+              "opacity": 0,
+              "angle": 0
+            },
+            {
+              "beat": 0,
+              "at": 0.16,
+              "x": 142,
+              "y": 199,
+              "scale": 0.84,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "path": "M0 -18 Q-19 -31 -39 -22 V23 Q-19 14 0 27 Q19 14 39 23 V-22 Q19 -31 0 -18 Z M0 -18 V26 M-29 -11 Q-17 -15 -8 -8 M8 -8 Q20 -15 29 -11"
+        },
+        {
+          "tone": "rose",
+          "keys": [
+            {
+              "beat": 0,
+              "at": 0.12,
+              "x": 150,
+              "y": 183,
+              "scale": 0.75,
+              "opacity": 0,
+              "angle": 0
+            },
+            {
+              "beat": 0,
+              "at": 0.27,
+              "x": 173,
+              "y": 175,
+              "scale": 0.75,
+              "opacity": 1,
+              "angle": 0
+            },
+            {
+              "beat": 0,
+              "at": 0.8,
+              "x": 235,
+              "y": 165,
+              "scale": 0.75,
+              "opacity": 1,
+              "angle": 0
+            },
+            {
+              "beat": 0,
+              "at": 0.97,
+              "x": 235,
+              "y": 165,
+              "scale": 0.75,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "path": "M-35 -24 H28 Q36 -24 36 -15 V12 Q36 20 27 20 H-8 L-23 32 V20 H-30 Q-38 20 -38 12 V-15 Q-38 -24 -35 -24 Z M-23 -8 H22 M-23 4 H10"
+        },
+        {
+          "tone": "muted",
+          "keys": [
+            {
+              "beat": 1,
+              "at": 0,
+              "x": 500,
+              "y": 213,
+              "scale": 1,
+              "opacity": 0,
+              "angle": 0
+            },
+            {
+              "beat": 1,
+              "at": 0.1,
+              "x": 500,
+              "y": 208,
+              "scale": 1,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "path": "M-100 0 H100 M-70 -8 V8 M0 -8 V8 M70 -8 V8"
+        },
+        {
+          "tone": "mint",
+          "keys": [
+            {
+              "beat": 1,
+              "at": 0.08,
+              "x": 425,
+              "y": 174,
+              "scale": 0.65,
+              "opacity": 0,
+              "angle": 0
+            },
+            {
+              "beat": 1,
+              "at": 0.17,
+              "x": 425,
+              "y": 174,
+              "scale": 0.65,
+              "opacity": 1,
+              "angle": 0
+            },
+            {
+              "beat": 1,
+              "at": 0.44,
+              "x": 499,
+              "y": 174,
+              "scale": 0.65,
+              "opacity": 1,
+              "angle": 0
+            },
+            {
+              "beat": 1,
+              "at": 0.64,
+              "x": 499,
+              "y": 174,
+              "scale": 0.65,
+              "opacity": 1,
+              "angle": 0
+            },
+            {
+              "beat": 1,
+              "at": 0.94,
+              "x": 573,
+              "y": 174,
+              "scale": 0.65,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "path": "M-27 -34 H9 L27 -16 V34 H-27 Z M9 -34 V-16 H27 M-16 -5 H15 M-16 6 H15 M-16 17 H4"
+        },
+        {
+          "tone": "muted",
+          "keys": [
+            {
+              "beat": 2,
+              "at": 0,
+              "x": 819,
+              "y": 199,
+              "scale": 1,
+              "opacity": 0,
+              "angle": 0
+            },
+            {
+              "beat": 2,
+              "at": 0.1,
+              "x": 819,
+              "y": 194,
+              "scale": 1,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "path": "M-103 12 H-20 L65 -38 M-20 12 L65 62"
+        },
+        {
+          "tone": "amber",
+          "keys": [
+            {
+              "beat": 2,
+              "at": 0.09,
+              "x": 722,
+              "y": 197,
+              "scale": 0.79,
+              "opacity": 0,
+              "angle": 0
+            },
+            {
+              "beat": 2,
+              "at": 0.22,
+              "x": 722,
+              "y": 197,
+              "scale": 0.79,
+              "opacity": 1,
+              "angle": 0
+            },
+            {
+              "beat": 2,
+              "at": 0.5,
+              "x": 799,
+              "y": 197,
+              "scale": 0.79,
+              "opacity": 1,
+              "angle": 0
+            },
+            {
+              "beat": 2,
+              "at": 0.6,
+              "x": 799,
+              "y": 197,
+              "scale": 0.79,
+              "opacity": 1,
+              "angle": 0
+            },
+            {
+              "beat": 2,
+              "at": 0.95,
+              "x": 878,
+              "y": 147,
+              "scale": 0.79,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "path": "M-17 -4 A14 14 0 1 0 11 -4 A14 14 0 1 0 -17 -4 M7 6 L22 22"
+        }
+      ]
+    },
+    {
+      "id": "Scene2",
+      "kind": "document",
+      "title": "Can Owen get free return shipping?",
+      "sourceIds": [
+        "M1T2Passage2"
+      ],
+      "evidence": "Owen bought a jacket and wants a smaller one.",
+      "holdSeconds": 2.5,
+      "beats": [
+        {
+          "id": "Scene2Beat1",
+          "label": "Owen’s question",
+          "narration": "Owen bought a jacket and wants a smaller one. First he asks about return shipping.",
+          "visual": {
+            "heading": "Owen’s question",
+            "detail": "First he asks about return shipping.",
+            "icon": "person",
+            "status": "neutral"
+          }
+        },
+        {
+          "id": "Scene2Beat2",
+          "label": "What the policy says",
+          "narration": "Orbit’s chatbot reads the shop policy and says shipping is free on orders over seventy-five dollars. That explains the rule.",
+          "visual": {
+            "heading": "What the policy says",
+            "detail": "shipping is free on orders over seventy-five dollars.",
+            "icon": "document",
+            "status": "success"
+          }
+        },
+        {
+          "id": "Scene2Beat3",
+          "label": "What we still need",
+          "narration": "The chatbot in this example has not opened Owen’s order, so it cannot say whether his purchase qualifies.",
+          "visual": {
+            "heading": "What we still need",
+            "detail": "it cannot say whether his purchase qualifies.",
+            "icon": "question",
+            "status": "warning"
+          }
+        }
+      ]
+    },
+    {
+      "id": "Scene3",
+      "kind": "decision",
+      "title": "One returns form, two predictable routes",
+      "sourceIds": [
+        "M1T2Passage4"
+      ],
+      "evidence": "Owen submits the shop’s return form.",
+      "holdSeconds": 1,
+      "beats": [
+        {
+          "id": "Scene3Beat1",
+          "label": "Check required fields",
+          "narration": "Owen submits the shop’s return form. A workflow checks that the required fields are filled in.",
+          "visual": {
+            "heading": "Check required fields",
+            "detail": "Does the form include the order number?",
+            "icon": "table",
+            "status": "neutral"
+          }
+        },
+        {
+          "id": "Scene3Beat2",
+          "label": "Complete form",
+          "narration": "A complete form goes into the returns queue.",
+          "visual": {
+            "heading": "Complete form",
+            "detail": "Forward the request to the returns queue.",
+            "icon": "check",
+            "status": "success"
+          }
+        },
+        {
+          "id": "Scene3Beat3",
+          "label": "Missing order number",
+          "narration": "A missing order number sends the form back to Owen. This is still a workflow: both routes were written down before Owen bought his jacket.",
+          "visual": {
+            "heading": "Missing order number",
+            "detail": "Return the form to Owen for the missing detail.",
+            "icon": "question",
+            "status": "warning"
+          }
+        }
+      ],
+      "motion": [
+        {
+          "tone": "rose",
+          "keys": [
+            {
+              "beat": 0,
+              "at": 0,
+              "x": 500,
+              "y": 21,
+              "scale": 0.71,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "label": "RETURNS DESK  /  FIXED WORKFLOW"
+        },
+        {
+          "tone": "paper",
+          "keys": [
+            {
+              "beat": 0,
+              "at": 0,
+              "x": 500,
+              "y": 69,
+              "scale": 1.4,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "label": "The order number sets the route"
+        },
+        {
+          "tone": "muted",
+          "keys": [
+            {
+              "beat": 0,
+              "at": 0,
+              "x": 191,
+              "y": 209,
+              "scale": 1,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "path": "M0 0 H234 L343 -58 H554 M234 0 L343 64 H554"
+        },
+        {
+          "tone": "paper",
+          "keys": [
+            {
+              "beat": 0,
+              "at": 0,
+              "x": 135,
+              "y": 210,
+              "scale": 0.83,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "path": "M-27 -34 H9 L27 -16 V34 H-27 Z M9 -34 V-16 H27 M-16 -5 H15 M-16 6 H15 M-16 17 H4"
+        },
+        {
+          "tone": "paper",
+          "keys": [
+            {
+              "beat": 0,
+              "at": 0,
+              "x": 135,
+              "y": 280,
+              "scale": 0.93,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "label": "Owen’s form"
+        },
+        {
+          "tone": "amber",
+          "keys": [
+            {
+              "beat": 0,
+              "at": 0,
+              "x": 425,
+              "y": 209,
+              "scale": 1,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "path": "M0 -35 L35 0 0 35 -35 0 Z"
+        },
+        {
+          "tone": "amber",
+          "keys": [
+            {
+              "beat": 0,
+              "at": 0,
+              "x": 420,
+              "y": 305,
+              "scale": 0.89,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "label": "Order number?"
+        },
+        {
+          "tone": "mint",
+          "keys": [
+            {
+              "beat": 0,
+              "at": 0,
+              "x": 835,
+              "y": 151,
+              "scale": 1,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "path": "M-74.5 -27.0 H74.5 Q82.5 -27.0 82.5 -19.0 V19.0 Q82.5 27.0 74.5 27.0 H-74.5 Q-82.5 27.0 -82.5 19.0 V-19.0 Q-82.5 -27.0 -74.5 -27.0 Z"
+        },
+        {
+          "tone": "paper",
+          "keys": [
+            {
+              "beat": 0,
+              "at": 0,
+              "x": 835,
+              "y": 151,
+              "scale": 0.82,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "label": "Returns queue"
+        },
+        {
+          "tone": "rose",
+          "keys": [
+            {
+              "beat": 0,
+              "at": 0,
+              "x": 835,
+              "y": 273,
+              "scale": 1,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "path": "M-74.5 -27.0 H74.5 Q82.5 -27.0 82.5 -19.0 V19.0 Q82.5 27.0 74.5 27.0 H-74.5 Q-82.5 27.0 -82.5 19.0 V-19.0 Q-82.5 -27.0 -74.5 -27.0 Z"
+        },
+        {
+          "tone": "paper",
+          "keys": [
+            {
+              "beat": 0,
+              "at": 0,
+              "x": 835,
+              "y": 273,
+              "scale": 0.82,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "label": "Back to Owen"
+        },
+        {
+          "tone": "mint",
+          "keys": [
+            {
+              "beat": 1,
+              "at": 0,
+              "x": 594,
+              "y": 131,
+              "scale": 0.78,
+              "opacity": 0,
+              "angle": 0
+            },
+            {
+              "beat": 1,
+              "at": 0.1,
+              "x": 594,
+              "y": 126,
+              "scale": 0.78,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "label": "Present"
+        },
+        {
+          "tone": "rose",
+          "keys": [
+            {
+              "beat": 2,
+              "at": 0,
+              "x": 594,
+              "y": 303,
+              "scale": 0.78,
+              "opacity": 0,
+              "angle": 0
+            },
+            {
+              "beat": 2,
+              "at": 0.1,
+              "x": 594,
+              "y": 298,
+              "scale": 0.78,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "label": "Missing"
+        },
+        {
+          "tone": "mint",
+          "keys": [
+            {
+              "beat": 0,
+              "at": 0.14,
+              "x": 191,
+              "y": 209,
+              "scale": 0.47,
+              "opacity": 0,
+              "angle": 0
+            },
+            {
+              "beat": 0,
+              "at": 0.26,
+              "x": 207,
+              "y": 209,
+              "scale": 0.47,
+              "opacity": 1,
+              "angle": 0
+            },
+            {
+              "beat": 0,
+              "at": 0.82,
+              "x": 425,
+              "y": 209,
+              "scale": 0.47,
+              "opacity": 1,
+              "angle": 0
+            },
+            {
+              "beat": 1,
+              "at": 0.04,
+              "x": 425,
+              "y": 209,
+              "scale": 0.47,
+              "opacity": 1,
+              "angle": 0
+            },
+            {
+              "beat": 1,
+              "at": 0.43,
+              "x": 534,
+              "y": 151,
+              "scale": 0.47,
+              "opacity": 1,
+              "angle": 0
+            },
+            {
+              "beat": 1,
+              "at": 0.78,
+              "x": 729,
+              "y": 151,
+              "scale": 0.47,
+              "opacity": 1,
+              "angle": 0
+            },
+            {
+              "beat": 1,
+              "at": 0.97,
+              "x": 729,
+              "y": 151,
+              "scale": 0.47,
+              "opacity": 0,
+              "angle": 0
+            }
+          ],
+          "path": "M-27 -34 H9 L27 -16 V34 H-27 Z M9 -34 V-16 H27 M-16 -5 H15 M-16 6 H15 M-16 17 H4"
+        },
+        {
+          "tone": "rose",
+          "keys": [
+            {
+              "beat": 2,
+              "at": 0.01,
+              "x": 210,
+              "y": 209,
+              "scale": 0.47,
+              "opacity": 0,
+              "angle": 0
+            },
+            {
+              "beat": 2,
+              "at": 0.1,
+              "x": 225,
+              "y": 209,
+              "scale": 0.47,
+              "opacity": 1,
+              "angle": 0
+            },
+            {
+              "beat": 2,
+              "at": 0.31,
+              "x": 425,
+              "y": 209,
+              "scale": 0.47,
+              "opacity": 1,
+              "angle": 0
+            },
+            {
+              "beat": 2,
+              "at": 0.43,
+              "x": 425,
+              "y": 209,
+              "scale": 0.47,
+              "opacity": 1,
+              "angle": 0
+            },
+            {
+              "beat": 2,
+              "at": 0.63,
+              "x": 534,
+              "y": 273,
+              "scale": 0.47,
+              "opacity": 1,
+              "angle": 0
+            },
+            {
+              "beat": 2,
+              "at": 0.91,
+              "x": 729,
+              "y": 273,
+              "scale": 0.47,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "path": "M-27 -34 H9 L27 -16 V34 H-27 Z M9 -34 V-16 H27 M-16 -5 H15 M-16 6 H15 M-16 17 H4"
+        }
+      ]
+    },
+    {
+      "id": "Scene4",
+      "kind": "journey",
+      "title": "How a shipment triggers an email",
+      "sourceIds": [
+        "M1T2Passage5"
+      ],
+      "evidence": "Follow a parcel through a different fixed workflow at Orbit.",
+      "holdSeconds": 1,
+      "beats": [
+        {
+          "id": "Scene4Beat1",
+          "label": "Warehouse event",
+          "narration": "Follow a parcel through a different fixed workflow at Orbit. When Sam's warehouse marks an order as shipped, the orders system announces it.",
+          "visual": {
+            "heading": "Warehouse event",
+            "detail": "Order marked as shipped.",
+            "icon": "document",
+            "status": "neutral"
+          }
+        },
+        {
+          "id": "Scene4Beat2",
+          "label": "Fill the template",
+          "narration": "A template fills in the customer's name, the item and the tracking number.",
+          "visual": {
+            "heading": "Fill the template",
+            "detail": "Insert name, item, and tracking number.",
+            "icon": "table",
+            "status": "neutral"
+          }
+        },
+        {
+          "id": "Scene4Beat3",
+          "label": "Send the update",
+          "narration": "And the email goes out to the customer. Same three steps, every time, in the same order, with nothing to decide, so no language model is needed.",
+          "visual": {
+            "heading": "Send the update",
+            "detail": "The customer gets the tracking email.",
+            "icon": "message",
+            "status": "success"
+          }
+        }
+      ],
+      "motion": [
+        {
+          "tone": "rose",
+          "keys": [
+            {
+              "beat": 0,
+              "at": 0,
+              "x": 500,
+              "y": 21,
+              "scale": 0.71,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "label": "SHIPPING  /  EVENT TO EMAIL"
+        },
+        {
+          "tone": "paper",
+          "keys": [
+            {
+              "beat": 0,
+              "at": 0,
+              "x": 500,
+              "y": 69,
+              "scale": 1.4,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "label": "One shipment starts the message"
+        },
+        {
+          "tone": "paper",
+          "keys": [
+            {
+              "beat": 0,
+              "at": 0,
+              "x": 148,
+              "y": 193,
+              "scale": 1.05,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "path": "M-52 -7 L0 -40 52 -7 M-43 -11 V39 H43 V-11 M-22 38 V1 H22 V38 M-22 10 H22 M-22 20 H22"
+        },
+        {
+          "tone": "paper",
+          "keys": [
+            {
+              "beat": 0,
+              "at": 0,
+              "x": 148,
+              "y": 263,
+              "scale": 0.93,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "label": "Warehouse"
+        },
+        {
+          "tone": "muted",
+          "keys": [
+            {
+              "beat": 0,
+              "at": 0,
+              "x": 225,
+              "y": 193,
+              "scale": 1,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "path": "M0 0 H177 M165 -10 L177 0 165 10"
+        },
+        {
+          "tone": "muted",
+          "keys": [
+            {
+              "beat": 0,
+              "at": 0,
+              "x": 536,
+              "y": 204,
+              "scale": 1,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "path": "M-121.0 -74.5 H121.0 Q129.0 -74.5 129.0 -66.5 V66.5 Q129.0 74.5 121.0 74.5 H-121.0 Q-129.0 74.5 -129.0 66.5 V-66.5 Q-129.0 -74.5 -121.0 -74.5 Z"
+        },
+        {
+          "tone": "paper",
+          "keys": [
+            {
+              "beat": 0,
+              "at": 0,
+              "x": 536,
+              "y": 160,
+              "scale": 0.93,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "label": "Shipping email"
+        },
+        {
+          "tone": "mint",
+          "keys": [
+            {
+              "beat": 1,
+              "at": 0.12,
+              "x": 536,
+              "y": 207,
+              "scale": 0.83,
+              "opacity": 0,
+              "angle": 0
+            },
+            {
+              "beat": 1,
+              "at": 0.22,
+              "x": 536,
+              "y": 202,
+              "scale": 0.83,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "label": "Name   ·   Item"
+        },
+        {
+          "tone": "mint",
+          "keys": [
+            {
+              "beat": 1,
+              "at": 0.5,
+              "x": 536,
+              "y": 249,
+              "scale": 0.83,
+              "opacity": 0,
+              "angle": 0
+            },
+            {
+              "beat": 1,
+              "at": 0.6,
+              "x": 536,
+              "y": 244,
+              "scale": 0.83,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "label": "Tracking number"
+        },
+        {
+          "tone": "muted",
+          "keys": [
+            {
+              "beat": 1,
+              "at": 0.7,
+              "x": 683,
+              "y": 199,
+              "scale": 1,
+              "opacity": 0,
+              "angle": 0
+            },
+            {
+              "beat": 1,
+              "at": 0.8,
+              "x": 683,
+              "y": 194,
+              "scale": 1,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "path": "M0 0 H130 M119 -10 L130 0 119 10"
+        },
+        {
+          "tone": "amber",
+          "keys": [
+            {
+              "beat": 0,
+              "at": 0.11,
+              "x": 151,
+              "y": 179,
+              "scale": 0.65,
+              "opacity": 0,
+              "angle": 0
+            },
+            {
+              "beat": 0,
+              "at": 0.35,
+              "x": 212,
+              "y": 173,
+              "scale": 0.65,
+              "opacity": 1,
+              "angle": 0
+            },
+            {
+              "beat": 0,
+              "at": 0.8,
+              "x": 373,
+              "y": 188,
+              "scale": 0.65,
+              "opacity": 1,
+              "angle": 0
+            },
+            {
+              "beat": 0,
+              "at": 0.98,
+              "x": 397,
+              "y": 190,
+              "scale": 0.65,
+              "opacity": 0,
+              "angle": 0
+            }
+          ],
+          "path": "M-28 -14 L0 -29 28 -14 28 15 0 30 -28 15 Z M-28 -14 L0 2 28 -14 M0 2 V30 M-14 -21 L14 -6 V3"
+        },
+        {
+          "tone": "rose",
+          "keys": [
+            {
+              "beat": 2,
+              "at": 0,
+              "x": 560,
+              "y": 195,
+              "scale": 0.9,
+              "opacity": 0,
+              "angle": 0
+            },
+            {
+              "beat": 2,
+              "at": 0.12,
+              "x": 650,
+              "y": 194,
+              "scale": 0.9,
+              "opacity": 1,
+              "angle": 0
+            },
+            {
+              "beat": 2,
+              "at": 0.54,
+              "x": 830,
+              "y": 194,
+              "scale": 0.9,
+              "opacity": 1,
+              "angle": 0
+            },
+            {
+              "beat": 2,
+              "at": 0.75,
+              "x": 875,
+              "y": 194,
+              "scale": 0.9,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "path": "M-33 -20 H33 V20 H-33 Z M-32 -19 L0 5 32 -19"
+        },
+        {
+          "tone": "mint",
+          "keys": [
+            {
+              "beat": 2,
+              "at": 0.55,
+              "x": 865,
+              "y": 265,
+              "scale": 0.9,
+              "opacity": 0,
+              "angle": 0
+            },
+            {
+              "beat": 2,
+              "at": 0.65,
+              "x": 865,
+              "y": 260,
+              "scale": 0.9,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "label": "Delivered"
+        }
+      ]
+    },
+    {
+      "id": "Scene5",
+      "kind": "network",
+      "title": "Can Owen actually get a smaller jacket?",
+      "sourceIds": [
+        "M1T2Passage6"
+      ],
+      "evidence": "Now Owen asks whether he can actually get the smaller jacket.",
+      "holdSeconds": 1,
+      "beats": [
+        {
+          "id": "Scene5Beat1",
+          "label": "Look up his purchase",
+          "narration": "Now Owen asks whether he can actually get the smaller jacket. Scout must find which jacket he bought before it knows which size to check.",
+          "visual": {
+            "heading": "Look up his purchase",
+            "detail": "Which jacket and size did Owen buy?",
+            "icon": "document",
+            "status": "neutral"
+          }
+        },
+        {
+          "id": "Scene5Beat2",
+          "label": "Size available",
+          "narration": "If there is stock, it can offer the exchange under the shop’s rules.",
+          "visual": {
+            "heading": "Size available",
+            "detail": "Check the shop rules and offer the exchange.",
+            "icon": "check",
+            "status": "success"
+          }
+        },
+        {
+          "id": "Scene5Beat3",
+          "label": "Size sold out",
+          "narration": "If the size is sold out, it can explain the other choices. One customer needed a policy answer, a fixed process, and a decision based on fresh information.",
+          "visual": {
+            "heading": "Size sold out",
+            "detail": "Explain the remaining options to Owen.",
+            "icon": "message",
+            "status": "warning"
+          }
+        }
+      ],
+      "motion": [
+        {
+          "tone": "rose",
+          "keys": [
+            {
+              "beat": 0,
+              "at": 0,
+              "x": 500,
+              "y": 21,
+              "scale": 0.71,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "label": "EXCHANGE REQUEST  /  AGENT"
+        },
+        {
+          "tone": "paper",
+          "keys": [
+            {
+              "beat": 0,
+              "at": 0,
+              "x": 500,
+              "y": 69,
+              "scale": 1.4,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "label": "The next action depends on stock"
+        },
+        {
+          "tone": "rose",
+          "keys": [
+            {
+              "beat": 0,
+              "at": 0,
+              "x": 141,
+              "y": 202,
+              "scale": 1.17,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "path": "M-13 -34 L-32 -25 -50 5 -37 14 -26 -1 -26 40 H26 V-1 L37 14 50 5 32 -25 13 -34 0 -20 Z M-13 -34 L-7 -12 0 -20 7 -12 13 -34 M0 -20 V40 M-19 14 L-9 9 M19 14 L9 9"
+        },
+        {
+          "tone": "rose",
+          "keys": [
+            {
+              "beat": 0,
+              "at": 0,
+              "x": 141,
+              "y": 272,
+              "scale": 0.93,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "label": "Owen’s jacket"
+        },
+        {
+          "tone": "muted",
+          "keys": [
+            {
+              "beat": 0,
+              "at": 0,
+              "x": 224,
+              "y": 206,
+              "scale": 1,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "path": "M0 0 H122 M111 -9 L122 0 111 9"
+        },
+        {
+          "tone": "muted",
+          "keys": [
+            {
+              "beat": 0,
+              "at": 0,
+              "x": 460,
+              "y": 206,
+              "scale": 1,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "path": "M-88.5 -53.5 H88.5 Q96.5 -53.5 96.5 -45.5 V45.5 Q96.5 53.5 88.5 53.5 H-88.5 Q-96.5 53.5 -96.5 45.5 V-45.5 Q-96.5 -53.5 -88.5 -53.5 Z"
+        },
+        {
+          "tone": "paper",
+          "keys": [
+            {
+              "beat": 0,
+              "at": 0,
+              "x": 460,
+              "y": 186,
+              "scale": 0.82,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "label": "Find purchase"
+        },
+        {
+          "tone": "amber",
+          "keys": [
+            {
+              "beat": 0,
+              "at": 0.39,
+              "x": 460,
+              "y": 236,
+              "scale": 0.89,
+              "opacity": 0,
+              "angle": 0
+            },
+            {
+              "beat": 0,
+              "at": 0.49,
+              "x": 460,
+              "y": 231,
+              "scale": 0.89,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "label": "Check size M"
+        },
+        {
+          "tone": "muted",
+          "keys": [
+            {
+              "beat": 0,
+              "at": 0.54,
+              "x": 566,
+              "y": 211,
+              "scale": 1,
+              "opacity": 0,
+              "angle": 0
+            },
+            {
+              "beat": 0,
+              "at": 0.64,
+              "x": 566,
+              "y": 206,
+              "scale": 1,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "path": "M0 0 H70 L146 -60 H171 M70 0 L146 62 H171"
+        },
+        {
+          "tone": "mint",
+          "keys": [
+            {
+              "beat": 1,
+              "at": 0,
+              "x": 846,
+              "y": 134,
+              "scale": 0.82,
+              "opacity": 0,
+              "angle": 0
+            },
+            {
+              "beat": 1,
+              "at": 0.1,
+              "x": 846,
+              "y": 129,
+              "scale": 0.82,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "label": "In stock"
+        },
+        {
+          "tone": "paper",
+          "keys": [
+            {
+              "beat": 1,
+              "at": 0.2,
+              "x": 846,
+              "y": 166,
+              "scale": 0.94,
+              "opacity": 0,
+              "angle": 0
+            },
+            {
+              "beat": 1,
+              "at": 0.3,
+              "x": 846,
+              "y": 161,
+              "scale": 0.94,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "label": "Offer exchange"
+        },
+        {
+          "tone": "amber",
+          "keys": [
+            {
+              "beat": 2,
+              "at": 0,
+              "x": 846,
+              "y": 253,
+              "scale": 0.82,
+              "opacity": 0,
+              "angle": 0
+            },
+            {
+              "beat": 2,
+              "at": 0.1,
+              "x": 846,
+              "y": 248,
+              "scale": 0.82,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "label": "Sold out"
+        },
+        {
+          "tone": "paper",
+          "keys": [
+            {
+              "beat": 2,
+              "at": 0.19,
+              "x": 846,
+              "y": 287,
+              "scale": 0.94,
+              "opacity": 0,
+              "angle": 0
+            },
+            {
+              "beat": 2,
+              "at": 0.29,
+              "x": 846,
+              "y": 282,
+              "scale": 0.94,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "label": "Explain options"
+        },
+        {
+          "tone": "amber",
+          "keys": [
+            {
+              "beat": 0,
+              "at": 0.08,
+              "x": 143,
+              "y": 170,
+              "scale": 0.88,
+              "opacity": 0,
+              "angle": 0
+            },
+            {
+              "beat": 0,
+              "at": 0.22,
+              "x": 154,
+              "y": 188,
+              "scale": 0.88,
+              "opacity": 1,
+              "angle": 0
+            },
+            {
+              "beat": 0,
+              "at": 0.55,
+              "x": 301,
+              "y": 204,
+              "scale": 0.88,
+              "opacity": 1,
+              "angle": 0
+            },
+            {
+              "beat": 0,
+              "at": 0.8,
+              "x": 353,
+              "y": 204,
+              "scale": 0.88,
+              "opacity": 1,
+              "angle": 0
+            },
+            {
+              "beat": 0,
+              "at": 0.98,
+              "x": 353,
+              "y": 204,
+              "scale": 0.88,
+              "opacity": 0,
+              "angle": 0
+            }
+          ],
+          "path": "M-17 -4 A14 14 0 1 0 11 -4 A14 14 0 1 0 -17 -4 M7 6 L22 22"
+        },
+        {
+          "tone": "mint",
+          "keys": [
+            {
+              "beat": 1,
+              "at": 0.01,
+              "x": 566,
+              "y": 206,
+              "scale": 1,
+              "opacity": 0,
+              "angle": 0
+            },
+            {
+              "beat": 1,
+              "at": 0.12,
+              "x": 605,
+              "y": 206,
+              "scale": 1,
+              "opacity": 1,
+              "angle": 0
+            },
+            {
+              "beat": 1,
+              "at": 0.29,
+              "x": 636,
+              "y": 206,
+              "scale": 1,
+              "opacity": 1,
+              "angle": 0
+            },
+            {
+              "beat": 1,
+              "at": 0.63,
+              "x": 712,
+              "y": 146,
+              "scale": 1,
+              "opacity": 1,
+              "angle": 0
+            },
+            {
+              "beat": 1,
+              "at": 0.85,
+              "x": 740,
+              "y": 146,
+              "scale": 1,
+              "opacity": 1,
+              "angle": 0
+            },
+            {
+              "beat": 2,
+              "at": 0.01,
+              "x": 740,
+              "y": 146,
+              "scale": 1,
+              "opacity": 0,
+              "angle": 0
+            }
+          ],
+          "path": "M-6 0 A6 6 0 1 0 6 0 A6 6 0 1 0 -6 0",
+          "filled": true
+        },
+        {
+          "tone": "amber",
+          "keys": [
+            {
+              "beat": 2,
+              "at": 0.02,
+              "x": 568,
+              "y": 206,
+              "scale": 1,
+              "opacity": 0,
+              "angle": 0
+            },
+            {
+              "beat": 2,
+              "at": 0.1,
+              "x": 594,
+              "y": 206,
+              "scale": 1,
+              "opacity": 1,
+              "angle": 0
+            },
+            {
+              "beat": 2,
+              "at": 0.2,
+              "x": 636,
+              "y": 206,
+              "scale": 1,
+              "opacity": 1,
+              "angle": 0
+            },
+            {
+              "beat": 2,
+              "at": 0.47,
+              "x": 712,
+              "y": 268,
+              "scale": 1,
+              "opacity": 1,
+              "angle": 0
+            },
+            {
+              "beat": 2,
+              "at": 0.67,
+              "x": 740,
+              "y": 268,
+              "scale": 1,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "path": "M-6 0 A6 6 0 1 0 6 0 A6 6 0 1 0 -6 0",
+          "filled": true
+        }
+      ]
+    },
+    {
+      "id": "Scene6",
+      "kind": "workspace",
+      "title": "When is an agent worth using?",
+      "sourceIds": [
+        "M1T2Passage3"
+      ],
+      "evidence": "So when should you use which?",
+      "holdSeconds": 1,
+      "beats": [
+        {
+          "id": "Scene6Beat1",
+          "label": "Known steps",
+          "narration": "So when should you use which? If you can write the steps down ahead of time, use a fixed workflow. A fixed sequence can be tested with the same starting records and checked against an expected result.",
+          "visual": {
+            "heading": "Known steps",
+            "detail": "Test a fixed workflow against expected results.",
+            "icon": "table",
+            "status": "success"
+          }
+        },
+        {
+          "id": "Scene6Beat2",
+          "label": "Different requests",
+          "narration": "Reach for an agent when the steps depend on the request. Ana wants tracking, Grace wants a return, Owen wants a different size, and you can't predict the mix.",
+          "visual": {
+            "heading": "Different requests",
+            "detail": "Tracking, returns, and exchanges need different lookups.",
+            "icon": "model",
+            "status": "neutral"
+          }
+        },
+        {
+          "id": "Scene6Beat3",
+          "label": "Set limits",
+          "narration": "Letting the model choose a new action can introduce extra calls, expense and opportunities for a mistake. So they need limits and testing, and that is a big part of this course.",
+          "visual": {
+            "heading": "Set limits",
+            "detail": "Extra calls can cost more and introduce errors.",
+            "icon": "shield",
+            "status": "warning"
+          }
+        }
+      ],
+      "motion": [
+        {
+          "tone": "rose",
+          "keys": [
+            {
+              "beat": 0,
+              "at": 0,
+              "x": 500,
+              "y": 21,
+              "scale": 0.71,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "label": "DESIGN CHOICE"
+        },
+        {
+          "tone": "paper",
+          "keys": [
+            {
+              "beat": 0,
+              "at": 0,
+              "x": 500,
+              "y": 69,
+              "scale": 1.4,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "label": "Can you write the steps in advance?"
+        },
+        {
+          "tone": "paper",
+          "keys": [
+            {
+              "beat": 0,
+              "at": 0,
+              "x": 169,
+              "y": 155,
+              "scale": 1.05,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "label": "Known steps"
+        },
+        {
+          "tone": "muted",
+          "keys": [
+            {
+              "beat": 0,
+              "at": 0,
+              "x": 313,
+              "y": 154,
+              "scale": 1,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "path": "M0 0 H512 M64 -8 V8 M252 -8 V8 M440 -8 V8"
+        },
+        {
+          "tone": "mint",
+          "keys": [
+            {
+              "beat": 0,
+              "at": 0.02,
+              "x": 309,
+              "y": 148,
+              "scale": 1,
+              "opacity": 0,
+              "angle": 0
+            },
+            {
+              "beat": 0,
+              "at": 0.17,
+              "x": 377,
+              "y": 148,
+              "scale": 1,
+              "opacity": 1,
+              "angle": 0
+            },
+            {
+              "beat": 0,
+              "at": 0.32,
+              "x": 377,
+              "y": 148,
+              "scale": 1,
+              "opacity": 1,
+              "angle": 0
+            },
+            {
+              "beat": 0,
+              "at": 0.54,
+              "x": 565,
+              "y": 148,
+              "scale": 1,
+              "opacity": 1,
+              "angle": 0
+            },
+            {
+              "beat": 0,
+              "at": 0.67,
+              "x": 565,
+              "y": 148,
+              "scale": 1,
+              "opacity": 1,
+              "angle": 0
+            },
+            {
+              "beat": 0,
+              "at": 0.92,
+              "x": 753,
+              "y": 148,
+              "scale": 1,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "path": "M-13 0 L-4 9 15 -12"
+        },
+        {
+          "tone": "paper",
+          "keys": [
+            {
+              "beat": 1,
+              "at": 0,
+              "x": 173,
+              "y": 250,
+              "scale": 1.01,
+              "opacity": 0,
+              "angle": 0
+            },
+            {
+              "beat": 1,
+              "at": 0.1,
+              "x": 173,
+              "y": 245,
+              "scale": 1.01,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "label": "Different requests"
+        },
+        {
+          "tone": "muted",
+          "keys": [
+            {
+              "beat": 1,
+              "at": 0,
+              "x": 312,
+              "y": 250,
+              "scale": 1,
+              "opacity": 0,
+              "angle": 0
+            },
+            {
+              "beat": 1,
+              "at": 0.1,
+              "x": 312,
+              "y": 245,
+              "scale": 1,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "path": "M0 0 H91 L164 -28 H300 M91 0 H300 M91 0 L164 29 H300"
+        },
+        {
+          "tone": "rose",
+          "keys": [
+            {
+              "beat": 1,
+              "at": 0.04,
+              "x": 312,
+              "y": 245,
+              "scale": 1,
+              "opacity": 0,
+              "angle": 0
+            },
+            {
+              "beat": 1,
+              "at": 0.18,
+              "x": 355,
+              "y": 245,
+              "scale": 1,
+              "opacity": 1,
+              "angle": 0
+            },
+            {
+              "beat": 1,
+              "at": 0.34,
+              "x": 403,
+              "y": 245,
+              "scale": 1,
+              "opacity": 1,
+              "angle": 0
+            },
+            {
+              "beat": 1,
+              "at": 0.55,
+              "x": 476,
+              "y": 217,
+              "scale": 1,
+              "opacity": 1,
+              "angle": 0
+            },
+            {
+              "beat": 1,
+              "at": 0.87,
+              "x": 609,
+              "y": 217,
+              "scale": 1,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "path": "M-6 0 A6 6 0 1 0 6 0 A6 6 0 1 0 -6 0",
+          "filled": true
+        },
+        {
+          "tone": "rose",
+          "keys": [
+            {
+              "beat": 1,
+              "at": 0.08,
+              "x": 680,
+              "y": 220,
+              "scale": 0.7,
+              "opacity": 0,
+              "angle": 0
+            },
+            {
+              "beat": 1,
+              "at": 0.18,
+              "x": 680,
+              "y": 215,
+              "scale": 0.7,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "label": "Tracking"
+        },
+        {
+          "tone": "paper",
+          "keys": [
+            {
+              "beat": 1,
+              "at": 0.21,
+              "x": 670,
+              "y": 250,
+              "scale": 0.7,
+              "opacity": 0,
+              "angle": 0
+            },
+            {
+              "beat": 1,
+              "at": 0.31,
+              "x": 670,
+              "y": 245,
+              "scale": 0.7,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "label": "Return"
+        },
+        {
+          "tone": "paper",
+          "keys": [
+            {
+              "beat": 1,
+              "at": 0.39,
+              "x": 680,
+              "y": 280,
+              "scale": 0.7,
+              "opacity": 0,
+              "angle": 0
+            },
+            {
+              "beat": 1,
+              "at": 0.49,
+              "x": 680,
+              "y": 275,
+              "scale": 0.7,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "label": "Exchange"
+        },
+        {
+          "tone": "amber",
+          "keys": [
+            {
+              "beat": 2,
+              "at": 0,
+              "x": 774,
+              "y": 251,
+              "scale": 1,
+              "opacity": 0,
+              "angle": 0
+            },
+            {
+              "beat": 2,
+              "at": 0.1,
+              "x": 774,
+              "y": 246,
+              "scale": 1,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "path": "M-9 -53 H6 V53 H-9"
+        },
+        {
+          "tone": "amber",
+          "keys": [
+            {
+              "beat": 2,
+              "at": 0.08,
+              "x": 868,
+              "y": 244,
+              "scale": 0.8,
+              "opacity": 0,
+              "angle": 0
+            },
+            {
+              "beat": 2,
+              "at": 0.18,
+              "x": 868,
+              "y": 239,
+              "scale": 0.8,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "label": "Call limit"
+        },
+        {
+          "tone": "paper",
+          "keys": [
+            {
+              "beat": 2,
+              "at": 0.4,
+              "x": 835,
+              "y": 289,
+              "scale": 0.77,
+              "opacity": 0,
+              "angle": 0
+            },
+            {
+              "beat": 2,
+              "at": 0.5,
+              "x": 835,
+              "y": 284,
+              "scale": 0.77,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "label": "Test the choices"
+        }
+      ]
+    },
+    {
+      "id": "Scene7",
+      "kind": "journey",
+      "title": "Try the three questions yourself",
+      "sourceIds": [
+        "M1T2Passage7"
+      ],
+      "evidence": "Cover the names of the three helpers and listen to Owen's questions again.",
+      "holdSeconds": 1,
+      "beats": [
+        {
+          "id": "Scene7Beat1",
+          "label": "Is the answer on a sign?",
+          "narration": "Could a printed sign answer Owen's shipping question? Yes. A chatbot can explain the same written rule to any shopper.",
+          "visual": {
+            "heading": "Is the answer on a sign?",
+            "detail": "One shipping policy can answer many shoppers.",
+            "icon": "document",
+            "status": "neutral"
+          }
+        },
+        {
+          "id": "Scene7Beat2",
+          "label": "Is the rule already set?",
+          "narration": "What happens to a form with no order number? The workflow sends it back every time. A person already chose that route.",
+          "visual": {
+            "heading": "Is the rule already set?",
+            "detail": "A missing field always sends the form back.",
+            "icon": "table",
+            "status": "neutral"
+          }
+        },
+        {
+          "id": "Scene7Beat3",
+          "label": "Which fact is missing?",
+          "narration": "Can Owen have the smaller jacket? We need his order and the stock result. When fresh evidence determines what to do next, that's the job for an agent.",
+          "visual": {
+            "heading": "Which fact is missing?",
+            "detail": "Check the jacket and stock before promising a swap.",
+            "icon": "model",
+            "status": "success"
+          }
+        }
+      ],
+      "motion": [
+        {
+          "tone": "rose",
+          "keys": [
+            {
+              "beat": 0,
+              "at": 0,
+              "x": 500,
+              "y": 21,
+              "scale": 0.71,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "label": "OWEN’S EXCHANGE  /  RECAP"
+        },
+        {
+          "tone": "paper",
+          "keys": [
+            {
+              "beat": 0,
+              "at": 0,
+              "x": 500,
+              "y": 69,
+              "scale": 1.4,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "label": "What information decides the answer?"
+        },
+        {
+          "tone": "rose",
+          "keys": [
+            {
+              "beat": 0,
+              "at": 0,
+              "x": 177,
+              "y": 182,
+              "scale": 1.1,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "path": "M0 -18 Q-19 -31 -39 -22 V23 Q-19 14 0 27 Q19 14 39 23 V-22 Q19 -31 0 -18 Z M0 -18 V26 M-29 -11 Q-17 -15 -8 -8 M8 -8 Q20 -15 29 -11"
+        },
+        {
+          "tone": "rose",
+          "keys": [
+            {
+              "beat": 0,
+              "at": 0,
+              "x": 177,
+              "y": 252,
+              "scale": 0.93,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "label": "Written policy"
+        },
+        {
+          "tone": "paper",
+          "keys": [
+            {
+              "beat": 1,
+              "at": 0,
+              "x": 500,
+              "y": 187,
+              "scale": 1.03,
+              "opacity": 0,
+              "angle": 0
+            },
+            {
+              "beat": 1,
+              "at": 0.1,
+              "x": 500,
+              "y": 182,
+              "scale": 1.03,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "path": "M-27 -34 H9 L27 -16 V34 H-27 Z M9 -34 V-16 H27 M-16 -5 H15 M-16 6 H15 M-16 17 H4"
+        },
+        {
+          "tone": "paper",
+          "keys": [
+            {
+              "beat": 1,
+              "at": 0,
+              "x": 500,
+              "y": 257,
+              "scale": 0.93,
+              "opacity": 0,
+              "angle": 0
+            },
+            {
+              "beat": 1,
+              "at": 0.1,
+              "x": 500,
+              "y": 252,
+              "scale": 0.93,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "label": "Required field"
+        },
+        {
+          "tone": "mint",
+          "keys": [
+            {
+              "beat": 2,
+              "at": 0,
+              "x": 823,
+              "y": 187,
+              "scale": 0.94,
+              "opacity": 0,
+              "angle": 0
+            },
+            {
+              "beat": 2,
+              "at": 0.1,
+              "x": 823,
+              "y": 182,
+              "scale": 0.94,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "path": "M-13 -34 L-32 -25 -50 5 -37 14 -26 -1 -26 40 H26 V-1 L37 14 50 5 32 -25 13 -34 0 -20 Z M-13 -34 L-7 -12 0 -20 7 -12 13 -34 M0 -20 V40 M-19 14 L-9 9 M19 14 L9 9"
+        },
+        {
+          "tone": "mint",
+          "keys": [
+            {
+              "beat": 2,
+              "at": 0,
+              "x": 823,
+              "y": 257,
+              "scale": 0.93,
+              "opacity": 0,
+              "angle": 0
+            },
+            {
+              "beat": 2,
+              "at": 0.1,
+              "x": 823,
+              "y": 252,
+              "scale": 0.93,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "label": "Live stock"
+        },
+        {
+          "tone": "paper",
+          "keys": [
+            {
+              "beat": 0,
+              "at": 0.5,
+              "x": 177,
+              "y": 312,
+              "scale": 1.19,
+              "opacity": 0,
+              "angle": 0
+            },
+            {
+              "beat": 0,
+              "at": 0.6,
+              "x": 177,
+              "y": 307,
+              "scale": 1.19,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "label": "Chatbot"
+        },
+        {
+          "tone": "paper",
+          "keys": [
+            {
+              "beat": 1,
+              "at": 0.37,
+              "x": 500,
+              "y": 312,
+              "scale": 1.19,
+              "opacity": 0,
+              "angle": 0
+            },
+            {
+              "beat": 1,
+              "at": 0.47,
+              "x": 500,
+              "y": 307,
+              "scale": 1.19,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "label": "Workflow"
+        },
+        {
+          "tone": "paper",
+          "keys": [
+            {
+              "beat": 2,
+              "at": 0.54,
+              "x": 823,
+              "y": 312,
+              "scale": 1.19,
+              "opacity": 0,
+              "angle": 0
+            },
+            {
+              "beat": 2,
+              "at": 0.64,
+              "x": 823,
+              "y": 307,
+              "scale": 1.19,
+              "opacity": 1,
+              "angle": 0
+            }
+          ],
+          "label": "Agent"
+        },
+        {
+          "tone": "amber",
+          "keys": [
+            {
+              "beat": 0,
+              "at": 0.02,
+              "x": 115,
+              "y": 137,
+              "scale": 0.89,
+              "opacity": 0,
+              "angle": 0
+            },
+            {
+              "beat": 0,
+              "at": 0.16,
+              "x": 123,
+              "y": 148,
+              "scale": 0.89,
+              "opacity": 1,
+              "angle": 0
+            },
+            {
+              "beat": 0,
+              "at": 0.66,
+              "x": 224,
+              "y": 161,
+              "scale": 0.89,
+              "opacity": 1,
+              "angle": 0
+            },
+            {
+              "beat": 0,
+              "at": 0.97,
+              "x": 226,
+              "y": 165,
+              "scale": 0.89,
+              "opacity": 1,
+              "angle": 0
+            },
+            {
+              "beat": 1,
+              "at": 0.24,
+              "x": 452,
+              "y": 146,
+              "scale": 0.89,
+              "opacity": 1,
+              "angle": 0
+            },
+            {
+              "beat": 1,
+              "at": 0.71,
+              "x": 547,
+              "y": 170,
+              "scale": 0.89,
+              "opacity": 1,
+              "angle": 0
+            },
+            {
+              "beat": 1,
+              "at": 0.98,
+              "x": 547,
+              "y": 170,
+              "scale": 0.89,
+              "opacity": 1,
+              "angle": 0
+            },
+            {
+              "beat": 2,
+              "at": 0.32,
+              "x": 765,
+              "y": 145,
+              "scale": 0.89,
+              "opacity": 1,
+              "angle": 0
+            },
+            {
+              "beat": 2,
+              "at": 0.84,
+              "x": 872,
+              "y": 166,
+              "scale": 0.89,
+              "opacity": 1,
+              "angle": 0
+            },
+            {
+              "beat": 2,
+              "at": 0.98,
+              "x": 885,
+              "y": 170,
+              "scale": 0.89,
+              "opacity": 0,
+              "angle": 0
+            }
+          ],
+          "path": "M-17 -4 A14 14 0 1 0 11 -4 A14 14 0 1 0 -17 -4 M7 6 L22 22"
+        }
+      ]
+    }
+  ]
+}

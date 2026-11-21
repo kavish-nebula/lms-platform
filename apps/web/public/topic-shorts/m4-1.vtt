@@ -1,0 +1,139 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:09.185
+An AI assistant can appear to remember you because the application sends useful information along with your next message.
+
+00:00:09.185 --> 00:00:13.094
+A turn means one contribution to the conversation.
+
+00:00:13.094 --> 00:00:18.782
+Short-term memory keeps relevant recent turns available during the same chat.
+
+00:00:18.782 --> 00:00:25.578
+Long-term memory means deliberately saving information for use in a later conversation.
+
+00:00:25.578 --> 00:00:33.398
+Think of the difference between a note on your desk during a call and a preference a customer agrees to keep on file.
+
+00:00:33.398 --> 00:00:40.140
+A stored fact helps only if the application retrieves it for the right customer at the right time.
+
+00:00:40.140 --> 00:00:45.804
+Decide why you need the detail and how long it should last before saving it.
+
+00:00:45.804 --> 00:00:50.117
+Ravi gives Scout an order number and asks about his parcel.
+
+00:00:50.117 --> 00:00:54.832
+A moment later he asks whether the foam mat is in the same box.
+
+00:00:54.832 --> 00:00:57.324
+Read just that second question.
+
+00:00:57.324 --> 00:01:01.414
+You can understand the words, but which parcel does he mean?
+
+00:01:01.414 --> 00:01:06.814
+Without the previous turn, Scout asks for the order number all over again.
+
+00:01:06.814 --> 00:01:10.454
+Let's follow one turn and see where memory fits.
+
+00:01:10.454 --> 00:01:12.753
+A customer sends a message.
+
+00:01:12.753 --> 00:01:20.048
+The shop loads only information needed for this conversation that the customer is allowed to access.
+
+00:01:20.048 --> 00:01:26.710
+It builds the request: the system prompt, that memory, and the short-term messages so far.
+
+00:01:26.710 --> 00:01:31.149
+The model reads everything in the request and writes a reply.
+
+00:01:31.149 --> 00:01:35.526
+Then your code saves the new turn, and any fact worth keeping.
+
+00:01:35.526 --> 00:01:41.114
+Remember, the model only ever knows what is inside this one request.
+
+00:01:41.114 --> 00:01:45.086
+Inspect the information sent with the second request.
+
+00:01:45.086 --> 00:01:52.136
+Add the recent message that contains Ravi’s number, and same parcel now has a clear reference.
+
+00:01:52.136 --> 00:01:55.025
+Scout can look up the items in that order.
+
+00:01:55.025 --> 00:02:02.313
+Supplying his order number identifies the order; the contents still need to come from the order record.
+
+00:02:02.313 --> 00:02:05.878
+Read Ravi's follow-up without the earlier message.
+
+00:02:05.878 --> 00:02:08.528
+Is the mat in the same parcel?
+
+00:02:08.528 --> 00:02:10.976
+The word same points backwards.
+
+00:02:10.976 --> 00:02:17.411
+A new model request needs enough of that earlier exchange for the reference to mean something.
+
+00:02:17.411 --> 00:02:20.986
+Restore the order number and look up its contents.
+
+00:02:20.986 --> 00:02:25.715
+You can now answer his question, but only after checking the record.
+
+00:02:25.715 --> 00:02:28.941
+Memory helped identify the right parcel.
+
+00:02:28.941 --> 00:02:32.976
+It did not magically reveal which items were inside.
+
+00:02:32.976 --> 00:02:38.832
+A preference Ravi explicitly asks the shop to remember serves a different purpose.
+
+00:02:38.832 --> 00:02:41.100
+It might help on a later visit.
+
+00:02:41.100 --> 00:02:50.036
+Keeping an entire parcel conversation forever just because one preference is useful would store far more than the task needs.
+
+00:02:50.036 --> 00:02:54.562
+Should the shop keep the entire chat forever to solve this problem?
+
+00:02:54.562 --> 00:02:55.758
+No.
+
+00:02:55.758 --> 00:02:59.484
+The earlier turn was needed for this conversation.
+
+00:02:59.484 --> 00:03:05.555
+A preferred size, if Ravi wants it saved for another visit, serves a different purpose.
+
+00:03:05.555 --> 00:03:11.755
+Ask which fact is needed next time, who may use it, and when it can be discarded.
+
+00:03:11.755 --> 00:03:15.674
+Not everything a customer says is worth remembering.
+
+00:03:15.674 --> 00:03:22.952
+The order number in this chat? Yes. It lives in the messages, and Scout needs it until the chat ends.
+
+00:03:22.952 --> 00:03:29.901
+A preferred colour or size? Worth saving to her profile, if it makes the next visit easier.
+
+00:03:29.901 --> 00:03:37.819
+Past orders already live in Orbit's order system, so Scout loads them from there instead of keeping its own copy.
+
+00:03:37.819 --> 00:03:45.628
+Card numbers, passwords and security codes? Never store them, anywhere. Mask them before anything is saved.
+
+00:03:45.628 --> 00:03:51.926
+And don't collect personal details just in case. If Scout doesn't need it, don't keep it.
+
+00:03:51.926 --> 00:03:57.760
+Every detail you store is something you must protect, and something that could leak.

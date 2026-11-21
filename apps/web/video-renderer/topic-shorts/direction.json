@@ -1,0 +1,1267 @@
+{
+  "m1-1": {
+    "opening": {"layout":"wide","shots":[0,1,2]},
+    "voiceEdits": {"a":{"0":"Follow the loop inside this particular shop assistant."}},
+    "sequence": [
+      "intro",
+      "case1",
+      "a",
+      "case2",
+      "lab",
+      "case3",
+      "b"
+    ],
+    "sections": [
+      3,
+      5
+    ],
+    "workbench": {
+      "stage": "lens",
+      "stations": [
+        "Packing slip",
+        "Tracking label"
+      ],
+      "marks": ["ORB-10482","Shipped","Delivered?"],
+      "illustration": "parcel",
+      "beats": [
+        {
+          "label": "Order found",
+          "detail": "ORB-10482",
+          "voice": "Imagine Ana is on the phone while you have her packing slip in front of you. Her question sounds simple, but it hides two different questions. Has the warehouse sent the tent, and has the carrier delivered it?"
+        },
+        {
+          "label": "Warehouse entry",
+          "detail": "Shipped",
+          "voice": "Move your finger to the warehouse entry. Shipped settles the first question. Now look at the tracking label. The number identifies a parcel, but the number alone cannot tell you which doorstep it reached."
+        },
+        {
+          "label": "What Scout can say",
+          "detail": "Sent; delivery unconfirmed",
+          "voice": "Try speaking one sentence using only those two pieces of evidence. Your tent has shipped and here is the tracking number. If Ana asks when it will arrive, Scout has a new reason to look again."
+        }
+      ]
+    }
+  },
+  "m1-2": {
+    "opening": {"layout":"margin","shots":[0,1,2]},
+    "voiceEdits": {"a":{"0":"Follow a parcel through a different fixed workflow at Orbit.","5":"Once those three steps are connected, a warehouse event can send a useful tracking email without someone deciding the route again."},"b":{"2":"A fixed sequence can be tested with the same starting records and checked against an expected result.","5":"Letting the model choose a new action can introduce extra calls, expense and opportunities for a mistake."}},
+    "sequence": [
+      "intro",
+      "case1",
+      "b",
+      "case2",
+      "a",
+      "case3",
+      "lab"
+    ],
+    "sections": [
+      3,
+      4
+    ],
+    "workbench": {
+      "stage": "switch",
+      "stations": [
+        "Written rules",
+        "Live inventory"
+      ],
+      "marks": ["Explain policy","Check form","Check stock"],
+      "beats": [
+        {
+          "label": "Policy question",
+          "detail": "Read the policy",
+          "voice": "Cover the names of the three helpers and listen to Owen's questions again. Could a printed sign answer the first one? Yes. The shipping rule can be written once and explained to the next customer who asks."
+        },
+        {
+          "label": "Incomplete form",
+          "detail": "Return to sender",
+          "voice": "Now cover the name of the jacket. The same validation rule still works because the missing field determines the next action. Changing the customer's wording does not change where an incomplete form goes."
+        },
+        {
+          "label": "Exchange request",
+          "detail": "Check this jacket",
+          "voice": "Finally, cover the stock result. You cannot promise Owen an exchange yet. The next useful action depends on which jacket he owns and what the warehouse finds. That missing fact is the clue to who should handle the request."
+        }
+      ]
+    }
+  },
+  "m1-3": {
+    "opening": {"layout":"folio","shots":[0,1,2]},
+    "sequence": [
+      "intro",
+      "case1",
+      "a",
+      "case2",
+      "lab",
+      "case3",
+      "b"
+    ],
+    "sections": [
+      4,
+      6
+    ],
+    "workbench": {
+      "stage": "sieve",
+      "stations": [
+        "Open orders",
+        "Draft queue"
+      ],
+      "marks": ["Green tent","Still waiting","Draft ready"],
+      "illustration": "mail",
+      "beats": [
+        {
+          "label": "Two green tents",
+          "detail": "One has shipped",
+          "voice": "Picture two customers who bought the very same green tent. One parcel is already on a truck. The other tent is still waiting at the warehouse. The supplier's delay affects only one of those customers."
+        },
+        {
+          "label": "Select waiting orders",
+          "detail": "Match colour and status",
+          "voice": "A search for green tents alone would write to both. A search for every unshipped order would include customers waiting for boots. Keep the intersection, the orders that satisfy both conditions at once."
+        },
+        {
+          "label": "Review before sending",
+          "detail": "One affected customer",
+          "voice": "Open the remaining draft and check the name, item and wording against the order and supplier notice. The useful unit of work was a checked draft for one affected customer. Counting messages sent would reward the wrong thing."
+        }
+      ]
+    }
+  },
+  "m1-4": {
+    "opening": {"layout":"reverse","shots":[0,1,2]},
+    "sequence": [
+      "intro",
+      "a",
+      "case1",
+      "case2",
+      "b",
+      "lab",
+      "case3"
+    ],
+    "sections": [
+      3,
+      4
+    ],
+    "workbench": {
+      "stage": "relay",
+      "stations": [
+        "Order record",
+        "Stock shelf"
+      ],
+      "marks": ["Jacket L","Same style","Jacket M"],
+      "beats": [
+        {
+          "label": "Order detail",
+          "detail": "Black jacket, size L",
+          "voice": "Imagine a colleague hands you just one detail, a black jacket in size large. Before you look for a medium, check which style the customer actually bought. A shelf labelled jackets can hold several different products."
+        },
+        {
+          "label": "Carry the style across",
+          "detail": "Same style, size M",
+          "voice": "Follow the style identifier from the order slip to the stock enquiry. Keep the style and colour, change the size, and check availability. This is what remembering a detail across two actions looks like."
+        },
+        {
+          "label": "Choose the next action",
+          "detail": "Offer only available options",
+          "voice": "A stock count answers whether the item exists. The shop's exchange policy answers whether the exchange is allowed. Both pieces matter. Planning means arranging those checks so that the reply can be traced back to the right jacket."
+        }
+      ]
+    }
+  },
+  "m1-5": {
+    "inspection": {"1":[[245,208],[685,205],[452,325]]},
+    "opening": {"layout":"wide","shots":[0,0,1]},
+    "sequence": [
+      "intro",
+      "case1",
+      "a",
+      "case2",
+      "lab",
+      "b",
+      "case3"
+    ],
+    "sections": [
+      2,
+      6
+    ],
+    "workbench": {
+      "stage": "terminal",
+      "stations": [
+        "Project environment",
+        "Model service"
+      ],
+      "marks": ["python","import","reply"],
+      "illustration": "laptop",
+      "beats": [
+        {
+          "label": "New terminal",
+          "detail": "Which Python is active?",
+          "voice": "Suppose your first request worked yesterday, but today Python says it cannot find the library. Start with what changed. Opening a new terminal can put you back in the system environment even though your project folder still exists."
+        },
+        {
+          "label": "Activate the project",
+          "detail": "Use its installed library",
+          "voice": "Select the project's environment and run the same small script again. If the import now succeeds, you have learned exactly which boundary failed. Changing the model name would have had no effect on Python finding a library."
+        },
+        {
+          "label": "Read the next signal",
+          "detail": "Import, sign in, then reply",
+          "voice": "A service rejecting the account key is a different signal. The request reached a service that could answer. Keeping the first test tiny makes those two problems distinguishable before you add tools, memory or customer data."
+        }
+      ]
+    }
+  },
+  "m2-1": {
+    "opening": {"layout":"margin","shots":[1,1,2]},
+    "voiceEdits": {"a":{"3":"The exact split depends on the model and the language, so do not count words and assume you have counted tokens."},"b":{"2":"Training gives a model general patterns, while new information for this particular reply has to arrive in the request."}},
+    "sequence": [
+      "intro",
+      "a",
+      "case1",
+      "case2",
+      "b",
+      "lab",
+      "case3"
+    ],
+    "sections": [
+      2,
+      5
+    ],
+    "workbench": {
+      "stage": "press",
+      "stations": [
+        "Possible text",
+        "Shop policy"
+      ],
+      "marks": ["We offer","90 days?","30 days"],
+      "beats": [
+        {
+          "label": "A plausible answer",
+          "detail": "Ninety days?",
+          "voice": "Read this aloud as though it were printed on a shop sign. You can return the item within ninety days. It sounds perfectly ordinary. Nothing about the grammar lets a customer tell whether Orbit actually offers that deal."
+        },
+        {
+          "label": "Add the missing passage",
+          "detail": "Thirty days from delivery",
+          "voice": "Now put Orbit's policy beside the draft. Find the words that give the length of the window and the event that starts it. Purchase and delivery can be different days, so keeping the number alone loses a fact."
+        },
+        {
+          "label": "Check the revised claim",
+          "detail": "Number and starting event",
+          "voice": "Cover the original answer. Could another person reconstruct the new answer from the policy passage? This check explains why a polished sentence and a grounded sentence need different tests. Fluency can be judged by reading. The policy claim needs evidence."
+        }
+      ]
+    }
+  },
+  "m2-2": {
+    "inspection": {"1":[[370,178],[493,241],[553,320]]},
+    "opening": {"layout":"reverse","shots":[0,2,1]},
+    "voiceEdits": {"a":{"6":"A small difference per request can matter when the same step runs thousands of times."},"b":{"0":"When the service answers, open the response before judging the result.","1":"This service returns a list of content blocks. For a simple reply we are interested in the block containing customer-facing text.","3":"Read that text as the customer would. Does it give a complete answer, or does it stop partway through a thought?"}},
+    "sequence": [
+      "intro",
+      "case1",
+      "a",
+      "case2",
+      "b",
+      "case3",
+      "lab"
+    ],
+    "sections": [
+      2,
+      5
+    ],
+    "workbench": {
+      "stage": "balance",
+      "stations": [
+        "Candidate A",
+        "Candidate B"
+      ],
+      "marks": ["Same ticket","Expected tag","Measured wait"],
+      "beats": [
+        {
+          "label": "Same ticket set",
+          "detail": "Same expected labels",
+          "voice": "Imagine one candidate gets an easy ticket about returns and the second gets a confusing exchange request. Their answers tell you very little about which model suits the job. Give both candidates the same questions and expected labels."
+        },
+        {
+          "label": "One difficult ticket",
+          "detail": "Did it identify a return?",
+          "voice": "Read the first wrong label before counting totals. Did the customer explicitly ask to send something back, or was return merely part of a product name? That distinction tells you whether the test reflects the work in the queue."
+        },
+        {
+          "label": "Choose for this job",
+          "detail": "Quality, wait and usage",
+          "voice": "Only after checking the labels compare response times and the amount of text processed. A slower candidate might be worth using for a difficult decision while a smaller one handles a routine label. Keep the ticket set for the next comparison."
+        }
+      ]
+    }
+  },
+  "m2-3": {
+    "opening": {"layout":"folio","shots":[0,1,2]},
+    "sequence": [
+      "intro",
+      "case1",
+      "case2",
+      "lab",
+      "a",
+      "b",
+      "case3"
+    ],
+    "sections": [
+      4,
+      5
+    ],
+    "workbench": {
+      "stage": "proof",
+      "stations": [
+        "Customer email",
+        "Reply draft"
+      ],
+      "marks": ["Unused boots","Delivery date?","Ask Grace"],
+      "illustration": "mail",
+      "beats": [
+        {
+          "label": "Underline known facts",
+          "detail": "Unused boots",
+          "voice": "Pretend you are the person who has to send Maya's draft. Underline only what the customer actually wrote. If the email says the boots are unused, that is evidence about their condition. It tells you nothing about their delivery date."
+        },
+        {
+          "label": "Circle the missing fact",
+          "detail": "Date of delivery",
+          "voice": "Place the thirty-day rule next to the email. Which part of the rule can you already check? Which part still needs a question? The answer to that second question belongs in the prompt that requests a draft."
+        },
+        {
+          "label": "Edit one sentence",
+          "detail": "When did they arrive?",
+          "voice": "Compare your boots qualify with when were your boots delivered. The second sentence moves the case forward without promising a refund. That is a concrete way to judge whether a prompt improved the work the customer actually sees."
+        }
+      ]
+    }
+  },
+  "m2-4": {
+    "opening": {"layout":"wide","shots":[0,1,2]},
+    "sequence": [
+      "intro",
+      "a",
+      "case1",
+      "case2",
+      "lab",
+      "case3",
+      "b"
+    ],
+    "sections": [
+      1,
+      5
+    ],
+    "workbench": {
+      "stage": "gate",
+      "stations": [
+        "Customer request",
+        "Refund approval"
+      ],
+      "marks": ["$310","$200 limit","Review"],
+      "illustration": "shield",
+      "beats": [
+        {
+          "label": "Read the amount",
+          "detail": "310 dollars",
+          "voice": "Put yourself at the counter. Owen is upset and needs three hundred and ten dollars back. His urgency matters to the tone of the reply. It cannot tell you who is allowed to move the money."
+        },
+        {
+          "label": "Compare with the rule",
+          "detail": "Above 200 dollars",
+          "voice": "Imagine changing only one word, from please to immediately. The amount and the approval rule stay exactly the same. Scout can acknowledge the urgency and collect the order details while the refund remains pending."
+        },
+        {
+          "label": "Record the handoff",
+          "detail": "Requested, awaiting review",
+          "voice": "Read the proposed reply as if you were Owen. Would you leave thinking the money was already on its way? Replace any promise of payment with what actually happened, that the request is ready for a person to review."
+        }
+      ]
+    }
+  },
+  "m2-5": {
+    "inspection": {"1":[[335,182],[485,256],[672,324]]},
+    "opening": {"layout":"folio","shots":[0,1,2]},
+    "sequence": [
+      "intro",
+      "case1",
+      "a",
+      "case2",
+      "case3",
+      "b",
+      "lab"
+    ],
+    "sections": [
+      2,
+      6
+    ],
+    "workbench": {
+      "stage": "press",
+      "stations": [
+        "Customer text",
+        "Validated ticket"
+      ],
+      "marks": ["order_id","null","Verified?"],
+      "beats": [
+        {
+          "label": "Missing identifier",
+          "detail": "order_id = null",
+          "voice": "Copy the customer's message onto a pretend order form. It says the order has not arrived, but there is no order number. Leaving a machine-readable empty value preserves an important fact. Nobody has supplied the identifier yet."
+        },
+        {
+          "label": "A convincing mistake",
+          "detail": "A made-up order ID",
+          "voice": "Suppose a second form contains a beautifully formatted order number that nobody mentioned. It passes the shape check because it is text in the right box. It fails the evidence check because nobody can point to its source."
+        },
+        {
+          "label": "Check both",
+          "detail": "Shape and evidence",
+          "voice": "Read each filled field back against the message before routing the ticket. The summary can describe the delay, and the next helper can ask for the missing number. The form lets software continue without turning missing information into fiction."
+        }
+      ]
+    }
+  },
+  "m3-1": {
+    "opening": {"layout":"reverse","shots":[0,1,2]},
+    "voiceEdits": {"b":{"4":"Current carrier delays can change after the model was trained. A current source can settle the question."}},
+    "sequence": [
+      "intro",
+      "case1",
+      "b",
+      "case2",
+      "a",
+      "lab",
+      "case3"
+    ],
+    "sections": [
+      3,
+      6
+    ],
+    "workbench": {
+      "stage": "relay",
+      "stations": [
+        "Requested input",
+        "Returned record"
+      ],
+      "marks": ["ORB-10482","Shipped","PP-88213"],
+      "illustration": "parcel",
+      "beats": [
+        {
+          "label": "In the request",
+          "detail": "An order number",
+          "voice": "Watch a single order number make a round trip. Before the lookup runs, all Scout knows is the number Ana supplied and what she wants. The fact that a request was written is no evidence of shipment."
+        },
+        {
+          "label": "At the shop",
+          "detail": "A matching record",
+          "voice": "At the shop boundary, software compares that number with the records it is allowed to read. A match gives a status linked to a specific order. An empty match would be a different result even though the request looked identical."
+        },
+        {
+          "label": "Back in chat",
+          "detail": "Status and tracking",
+          "voice": "Read the reply one phrase at a time. Can you point to where each detail came from? Ana supplied the question, the tool supplied the status, and the model put the checked facts into a sentence for her."
+        }
+      ]
+    }
+  },
+  "m3-2": {
+    "opening": {"layout":"folio","shots":[0,0,1]},
+    "voiceEdits": {"a":{"6":"When the model chooses the wrong tool, review the description first and test again with the same customer question."}},
+    "sequence": [
+      "intro",
+      "case1",
+      "a",
+      "lab",
+      "case2",
+      "b",
+      "case3"
+    ],
+    "sections": [
+      3,
+      5
+    ],
+    "workbench": {
+      "stage": "switch",
+      "stations": [
+        "Tool catalogue",
+        "Function registry"
+      ],
+      "marks": ["Describe","Match name","Run lookup"],
+      "beats": [
+        {
+          "label": "Catalogue label",
+          "detail": "Look up an order",
+          "voice": "Think of the definition as a sign over a service counter. If every sign says help, a visitor cannot decide where to queue. An order lookup sign can say which question it answers and what number to bring."
+        },
+        {
+          "label": "Directory entry",
+          "detail": "get_order runs the lookup",
+          "voice": "Now imagine that the sign is excellent but the phone extension underneath it goes nowhere. Scout can choose the correct named tool and still get no result. The application's list must connect that exact name to working code."
+        },
+        {
+          "label": "Two separate checks",
+          "detail": "Choice, then execution",
+          "voice": "Try one known order and inspect two things. Which name did Scout choose? Which function did the application actually run? A wrong choice sends you back to the sign. A correct choice with no handler sends you back to the directory."
+        }
+      ]
+    }
+  },
+  "m3-3": {
+    "opening": {"layout":"margin","shots":[0,1,2]},
+    "voiceEdits": {"a":{"4":"It rejects names that point outside the approved document folder. For this exercise a policy question needs access only to that folder."}},
+    "sequence": [
+      "intro",
+      "case1",
+      "case2",
+      "a",
+      "lab",
+      "b",
+      "case3"
+    ],
+    "sections": [
+      5,
+      6
+    ],
+    "workbench": {
+      "stage": "sieve",
+      "stations": [
+        "Question",
+        "Allowed source"
+      ],
+      "marks": ["7 × $24","$168","Return rule"],
+      "illustration": "book",
+      "beats": [
+        {
+          "label": "Price calculation",
+          "detail": "Seven items at $24",
+          "voice": "Imagine answering a customer who wants both a total and a shipping update. Write down the arithmetic first. Seven times twenty-four gives one hundred sixty-eight. Yesterday's news or a policy document cannot improve that calculation."
+        },
+        {
+          "label": "Carrier notice",
+          "detail": "Match the affected route",
+          "voice": "The second part needs a different source. A public delay notice might cover another region, so read the route and date before applying it to this order. A search result is the start of a check, not its conclusion."
+        },
+        {
+          "label": "Shop's own document",
+          "detail": "Read the return policy",
+          "voice": "If the customer also asks about returning an item, open the shop's approved policy. Point each sentence of the reply back to its source. Splitting the question this way helps you give each tool only the access its own job requires."
+        }
+      ]
+    }
+  },
+  "m3-4": {
+    "opening": {"layout":"wide","shots":[0,1,2]},
+    "sequence": [
+      "intro",
+      "case1",
+      "a",
+      "case2",
+      "lab",
+      "b",
+      "case3"
+    ],
+    "sections": [
+      1,
+      6
+    ],
+    "workbench": {
+      "stage": "relay",
+      "stations": [
+        "Shop order",
+        "Carrier enquiry"
+      ],
+      "marks": ["ORB-10482","PP-88213","Thursday?"],
+      "illustration": "map",
+      "beats": [
+        {
+          "label": "Shop lookup",
+          "detail": "Order to tracking number",
+          "voice": "Picture two labels on a parcel. One number belongs to the shop and the other to the carrier. Starting with the shop's order number is sensible because that is the number Ana knows. The carrier expects the other label."
+        },
+        {
+          "label": "Join the records",
+          "detail": "Use the same tracking number",
+          "voice": "Put the shop result beside the carrier request. The tracking number on the left must be the one on the right. A real delivery estimate for somebody else's parcel would still produce a wrong answer for Ana."
+        },
+        {
+          "label": "Report what is known",
+          "detail": "In transit; Thursday estimated",
+          "voice": "Read the carrier's wording before drafting the reply. An estimate can change, and in transit does not mean delivered. Keeping those two distinctions lets Scout give Ana a useful answer without turning a forecast into a guarantee."
+        }
+      ]
+    }
+  },
+  "m3-5": {
+    "opening": {"layout":"margin","shots":[0,1,2]},
+    "sequence": [
+      "intro",
+      "case1",
+      "a",
+      "case2",
+      "b",
+      "lab",
+      "case3"
+    ],
+    "sections": [
+      4,
+      5
+    ],
+    "workbench": {
+      "stage": "timer",
+      "stations": [
+        "First attempt",
+        "Last permitted attempt"
+      ],
+      "marks": ["Timeout","Wait","Retry"],
+      "beats": [
+        {
+          "label": "No reply arrived",
+          "detail": "A timeout",
+          "voice": "Imagine calling a carrier and hearing silence until the line cuts off. You cannot tell from that silence whether the parcel is moving. It tells you something about the enquiry, not what happened to the parcel."
+        },
+        {
+          "label": "One more try",
+          "detail": "A bounded wait",
+          "voice": "Try the enquiry once more after the agreed wait in this example. If the carrier replies, replace the error with the returned status. If the same timeout comes back, the second attempt has used time without adding evidence."
+        },
+        {
+          "label": "Different problem",
+          "detail": "Unknown tracking number",
+          "voice": "Now imagine the carrier answered clearly that it did not recognise the tracking number. Waiting and sending the same number again is unlikely to help. Ask for a corrected number instead. The next step follows from the kind of failure."
+        }
+      ]
+    }
+  },
+  "m4-1": {
+    "opening": {"layout":"reverse","shots":[0,2,1]},
+    "voiceEdits": {"a":{"2":"The shop loads only information needed for this conversation that the customer is allowed to access."}},
+    "sequence": [
+      "intro",
+      "case1",
+      "a",
+      "case2",
+      "lab",
+      "case3",
+      "b"
+    ],
+    "sections": [
+      4,
+      5
+    ],
+    "workbench": {
+      "stage": "archive",
+      "stations": [
+        "Current chat",
+        "Saved preference"
+      ],
+      "marks": ["ORB-10533","This parcel","Next visit"],
+      "beats": [
+        {
+          "label": "What does it mean?",
+          "detail": "The same parcel",
+          "voice": "Read Ravi's follow-up without the earlier message. Is the mat in the same parcel? The word same points backwards. A new model request needs enough of that earlier exchange for the reference to mean something."
+        },
+        {
+          "label": "Use this chat",
+          "detail": "Carry Ravi’s order ID",
+          "voice": "Restore the order number and look up its contents. You can now answer his question, but only after checking the record. Memory helped identify the right parcel. It did not magically reveal which items were inside."
+        },
+        {
+          "label": "Consider a future visit",
+          "detail": "Save only a useful preference",
+          "voice": "A preference Ravi explicitly asks the shop to remember serves a different purpose. It might help on a later visit. Keeping an entire parcel conversation forever just because one preference is useful would store far more than the task needs."
+        }
+      ]
+    }
+  },
+  "m4-2": {
+    "opening": {"layout":"folio","shots":[0,1,2]},
+    "voiceEdits": {"a":{"5":"On this turn, the separate order number survives even though some earlier messages have been left out."},"b":{"5":"The summary takes an extra call to create, so compare that cost with the repeated text you save on later turns."}},
+    "sequence": [
+      "intro",
+      "case1",
+      "case2",
+      "a",
+      "lab",
+      "b",
+      "case3"
+    ],
+    "sections": [
+      4,
+      6
+    ],
+    "workbench": {
+      "stage": "archive",
+      "stations": [
+        "Older turns",
+        "Next request"
+      ],
+      "marks": ["Older turns","Order ID","Recent chat"],
+      "illustration": "memory",
+      "beats": [
+        {
+          "label": "Try a short summary",
+          "detail": "A customer asked about a parcel",
+          "voice": "Read this summary as though you are joining Ravi's chat halfway through. A customer asked about a parcel. It fits in a tiny space, yet you cannot look anything up. The crucial identifier has disappeared."
+        },
+        {
+          "label": "Keep an exact fact",
+          "detail": "Order ORB-10533",
+          "voice": "Keep the order number separately and add a short note about the unresolved question. Then retain the most recent exchanges word for word. Each part earns its place by helping the next answer in a different way."
+        },
+        {
+          "label": "Test the packed request",
+          "detail": "Which parcel contains the mat?",
+          "voice": "Hand only this smaller packet to a colleague. Could they identify the order and understand what Ravi still needs? This is a better test of a summary than simply checking how many words you managed to remove."
+        }
+      ]
+    }
+  },
+  "m4-3": {
+    "opening": {"layout":"wide","shots":[1,1,2]},
+    "voiceEdits": {"b":{"4":"A second approach uses an embedding, a set of numbers that represents some of the meaning in a passage.","5":"The question can be represented the same way. This lets a search for send it back find a return policy even when those exact words are missing."}},
+    "sequence": [
+      "intro",
+      "a",
+      "case1",
+      "case2",
+      "b",
+      "lab",
+      "case3"
+    ],
+    "sections": [
+      3,
+      5
+    ],
+    "workbench": {
+      "stage": "lens",
+      "stations": [
+        "Return conditions",
+        "Shipping fees"
+      ],
+      "marks": ["Return terms","Packaging","Over $75"],
+      "illustration": "search",
+      "beats": [
+        {
+          "label": "Two questions",
+          "detail": "Can I return it? Who pays?",
+          "voice": "Draw a line through the middle of Owen's message. On one side he asks whether he can return the jacket. On the other he asks who pays to ship it back. One relevant passage might settle only half the message."
+        },
+        {
+          "label": "Pair each claim",
+          "detail": "Match claim to passage",
+          "voice": "Place the return conditions beside the first question and the fee rule beside the second. His order value helps with the fee rule. It tells you nothing about whether the jacket is unused or still in its original packaging."
+        },
+        {
+          "label": "Remove one passage",
+          "detail": "Which claim loses support?",
+          "voice": "Cover the fee passage and read the proposed reply again. You can still discuss the return conditions. You now lack a source for free shipping. This little test shows exactly what retrieving the second passage contributed."
+        }
+      ]
+    }
+  },
+  "m4-4": {
+    "opening": {"layout":"reverse","shots":[0,1,2]},
+    "voiceEdits": {"b":{"4":"For the shop assistant, a short plan gives the software a sequence it can check before using tools."}},
+    "sequence": [
+      "intro",
+      "case1",
+      "b",
+      "case2",
+      "lab",
+      "a",
+      "case3"
+    ],
+    "sections": [
+      4,
+      5
+    ],
+    "workbench": {
+      "stage": "fork",
+      "stations": [
+        "Original plan",
+        "Revised offer"
+      ],
+      "marks": ["Find order","Stock = 0","Offer choices"],
+      "beats": [
+        {
+          "label": "Dependency",
+          "detail": "Find Ana’s existing order",
+          "voice": "Lay out the proposed exchange as a sequence. First identify the tent Ana bought. The next check refers to a larger tent, so make sure it is the right replacement model before checking the warehouse."
+        },
+        {
+          "label": "Observed stock",
+          "detail": "Zero larger tents",
+          "voice": "Now replace the expected stock count with zero. Which part of the work must you throw away? The order lookup is still useful. The stock result is also trustworthy. It is the planned offer that no longer makes sense."
+        },
+        {
+          "label": "Keep the useful work",
+          "detail": "Explain the available options",
+          "voice": "Cross out only the unavailable exchange and explain the remaining choices. A plan that can change one step is more useful than a script which starts the entire conversation again whenever the world differs from its first guess."
+        }
+      ]
+    }
+  },
+  "m4-5": {
+    "opening": {"layout":"wide","shots":[0,1,2]},
+    "sequence": [
+      "intro",
+      "a",
+      "case1",
+      "case2",
+      "lab",
+      "b",
+      "case3"
+    ],
+    "sections": [
+      2,
+      5
+    ],
+    "workbench": {
+      "stage": "wheel",
+      "stations": [
+        "New question",
+        "Exit condition"
+      ],
+      "marks": ["Request","Shipped","Stop"],
+      "beats": [
+        {
+          "label": "Read the request",
+          "detail": "Has my order shipped?",
+          "voice": "Imagine a small notebook beside Scout. On the first line write the customer's exact question. Whether the parcel has shipped is narrower than when it will arrive. That wording determines which observation would be enough."
+        },
+        {
+          "label": "Read the observation",
+          "detail": "Warehouse says shipped",
+          "voice": "The next line records the warehouse result. Ask whether the new fact answers the first line. If it does, Scout can stop here. Another carrier call might answer an interesting question, but nobody asked that question."
+        },
+        {
+          "label": "Different observation",
+          "detail": "Lookup timed out",
+          "voice": "Replace shipped with a timeout and read the notebook again. The original goal stays the same but the evidence changes. Scout might retry within its limit or hand over. A loop needs both a reason to continue and a reason to stop."
+        }
+      ]
+    }
+  },
+  "m5-1": {
+    "inspection": {"1":[[183,238],[611,183],[394,331]]},
+    "opening": {"layout":"folio","shots":[0,1,2]},
+    "sequence": [
+      "intro",
+      "a",
+      "case1",
+      "case2",
+      "b",
+      "lab",
+      "case3"
+    ],
+    "sections": [
+      2,
+      3
+    ],
+    "workbench": {
+      "stage": "gate",
+      "stations": [
+        "Inside the brief",
+        "Handoff"
+      ],
+      "marks": ["Order status","Gear advice","Hand over"],
+      "beats": [
+        {
+          "label": "In scope",
+          "detail": "Report an order status",
+          "voice": "Imagine two notes arrive on the project desk. The first asks whether Ana's tent has shipped. Your team has an order record, a lookup tool and a way to compare the reply with the record. This job has a testable boundary."
+        },
+        {
+          "label": "Outside the brief",
+          "detail": "Choose expedition equipment",
+          "voice": "The second asks which equipment is right for an expedition. A friendly paragraph would be easy to produce, but the order lookup provides no evidence for that advice. Route the question to a colleague with the relevant expertise."
+        },
+        {
+          "label": "An acceptance test",
+          "detail": "Answer or hand over",
+          "voice": "Write both notes into your acceptance test before you build the chat screen. The first passes when the status matches the record. The second passes when Scout recognises the boundary. A correct handoff can be a successful project outcome."
+        }
+      ]
+    }
+  },
+  "m5-2": {
+    "opening": {"layout":"margin","shots":[0,1,2]},
+    "sequence": [
+      "intro",
+      "case1",
+      "a",
+      "case2",
+      "lab",
+      "case3",
+      "b"
+    ],
+    "sections": [
+      4,
+      7
+    ],
+    "workbench": {
+      "stage": "terminal",
+      "stations": [
+        "Last passing run",
+        "Next small change"
+      ],
+      "marks": ["Small loop","get_order","Retest"],
+      "beats": [
+        {
+          "label": "Baseline",
+          "detail": "A reply with no lookup",
+          "voice": "Save one small question and the answer you expect before adding a tool. At this stage the assistant can explain its limitation honestly. This gives you a working starting point you can reproduce after a change."
+        },
+        {
+          "label": "Change one part",
+          "detail": "Connect order lookup",
+          "voice": "Now wire in the order lookup and use exactly the same question. A better sounding reply is not enough. Find the requested function, its order number and the returned status. Those are direct signs that the new connection worked."
+        },
+        {
+          "label": "Locate a failure",
+          "detail": "Name present; handler missing",
+          "voice": "Imagine a run now says unknown tool. Check whether the request named the tool you intended. If it did, inspect the application's mapping next. Keeping the old test and changing one piece makes the failure local enough to investigate."
+        }
+      ]
+    }
+  },
+  "m5-3": {
+    "opening": {"layout":"reverse","shots":[0,1,2]},
+    "sequence": [
+      "intro",
+      "case1",
+      "a",
+      "case2",
+      "lab",
+      "b",
+      "case3"
+    ],
+    "sections": [
+      3,
+      6
+    ],
+    "workbench": {
+      "stage": "archive",
+      "stations": [
+        "Known test order",
+        "Chat memory"
+      ],
+      "marks": ["Shipped","Processing","Same order"],
+      "illustration": "parcel",
+      "beats": [
+        {
+          "label": "Set a known fact",
+          "detail": "Test order: shipped",
+          "voice": "Write shipped into a pretend order record before speaking to Scout. Because you chose the value yourself, you already know what a correct lookup should say. There is no need to guess whether a real warehouse changed its mind."
+        },
+        {
+          "label": "Change one fact",
+          "detail": "Test order: processing",
+          "voice": "Change only that value to processing and repeat the enquiry with a fresh lookup. If the answer still says shipped, inspect whether the program is repeating yesterday's message instead of reading today's record."
+        },
+        {
+          "label": "Separate two jobs",
+          "detail": "Remember ID; refresh status",
+          "voice": "This is where tools and memory meet. Remembering which order the customer means helps the next turn. Reusing an old parcel status as if it were current defeats the purpose of the tool. Keep the identifier and check the changing fact."
+        }
+      ]
+    }
+  },
+  "m5-4": {
+    "opening": {"layout":"folio","shots":[0,1,2]},
+    "sequence": [
+      "intro",
+      "a",
+      "case1",
+      "case2",
+      "lab",
+      "b",
+      "case3"
+    ],
+    "sections": [
+      2,
+      4
+    ],
+    "workbench": {
+      "stage": "lens",
+      "stations": [
+        "Expected input",
+        "Recorded input"
+      ],
+      "marks": ["get_order","Email","Order ID"],
+      "beats": [
+        {
+          "label": "A plausible reply",
+          "detail": "Grace asks about her boots",
+          "voice": "Start at the last sentence Grace would see. It might sound polite even when the order lookup underneath it failed. To debug this case, work backwards until you find the first place where the evidence differs from the expectation."
+        },
+        {
+          "label": "Inspect the arguments",
+          "detail": "Email placed in order ID",
+          "voice": "The tool name is correct, so checking its description again will not fix this run. Read the input fields beside the saved request. An email in the order-number field gives you a specific, reproducible mismatch."
+        },
+        {
+          "label": "Run the same case",
+          "detail": "Use the correct lookup field",
+          "voice": "Correct the field and use the same message again. Now check the returned delivery date against the return rule before trusting the draft. A successful tool call fixes the lookup. A correct customer answer still requires a second check."
+        }
+      ]
+    }
+  },
+  "m5-5": {
+    "opening": {"layout":"wide","shots":[0,1,2]},
+    "sequence": [
+      "intro",
+      "case1",
+      "a",
+      "case2",
+      "b",
+      "lab",
+      "case3"
+    ],
+    "sections": [
+      2,
+      5
+    ],
+    "workbench": {
+      "stage": "balance",
+      "stations": [
+        "Previous run",
+        "Changed run"
+      ],
+      "marks": ["38 / 60","53 / 60","50 / 60"],
+      "illustration": "chart",
+      "beats": [
+        {
+          "label": "Same denominator",
+          "detail": "60 saved cases",
+          "voice": "Picture sixty labelled envelopes. Each contains a question and the facts a passing answer needs. Using the same envelopes makes the two scores comparable. Swapping hard questions for easy ones would change the test as well as the model."
+        },
+        {
+          "label": "After an edit",
+          "detail": "53 passes become 50",
+          "voice": "Open the envelopes whose results changed. A drop from fifty-three passes to fifty tells you the net change. The count alone cannot tell you whether three old successes broke or several gains and losses cancelled each other out."
+        },
+        {
+          "label": "Inspect the misses",
+          "detail": "Return questions",
+          "voice": "Lay the affected return questions beside the prompt edit. Did a shorter instruction remove the rule those answers depended on? Rerun the original wording on the same cases. You now have evidence for deciding whether to keep the edit."
+        }
+      ]
+    }
+  },
+  "m6-1": {
+    "opening": {"layout":"margin","shots":[0,1,2]},
+    "voiceEdits": {"b":{"1":"A permitted lookup reads an order after the shop has checked the customer's access to it."}},
+    "sequence": [
+      "intro",
+      "a",
+      "case1",
+      "b",
+      "case2",
+      "lab",
+      "case3"
+    ],
+    "sections": [
+      1,
+      3
+    ],
+    "workbench": {
+      "stage": "gate",
+      "stations": [
+        "Requested refund",
+        "Approved payment"
+      ],
+      "marks": ["$200.00","$200.01","Pending"],
+      "illustration": "shield",
+      "beats": [
+        {
+          "label": "A boundary test",
+          "detail": "200 dollars",
+          "voice": "Put two pretend refunds beside the shop's rule. The first is exactly two hundred dollars. Read the word over carefully. Under Orbit's example policy this particular approval threshold does not fire at exactly two hundred."
+        },
+        {
+          "label": "Move one cent",
+          "detail": "200 dollars and one cent",
+          "voice": "Change only the amount to two hundred dollars and one cent. The request now crosses the threshold. A useful test checks whether the system actually pauses before moving money, even if the assistant writes a confident reply."
+        },
+        {
+          "label": "What happened?",
+          "detail": "Pending is not paid",
+          "voice": "Look at the payment record and the message side by side. If the record says pending review, the customer should hear that review is pending. A polite instruction helps the wording. The payment check enforces what can actually happen."
+        }
+      ]
+    }
+  },
+  "m6-2": {
+    "inspection": {"1":[[284,224],[640,303],[585,229]]},
+    "opening": {"layout":"reverse","shots":[0,1,2]},
+    "voiceEdits": {"a":{"0":"This illustrative bill belongs to Ana's order enquiry. Read it as an example of adding charges, rather than a price list."},"b":{"1":"A model call takes time to read its input and produce its output. The length of the answer affects how long it takes to finish.","2":"Each tool has its own response time, and waiting for a busy carrier can account for much of a customer's delay.","3":"A customer waits through any steps that depend on one another. Measure each one to see where the time actually went."}},
+    "sequence": [
+      "intro",
+      "case1",
+      "a",
+      "case2",
+      "b",
+      "lab",
+      "case3"
+    ],
+    "sections": [
+      2,
+      5
+    ],
+    "workbench": {
+      "stage": "timer",
+      "stations": [
+        "First visible word",
+        "Completed answer"
+      ],
+      "marks": ["1.4¢","1.6¢","2.1¢"],
+      "illustration": "clock",
+      "beats": [
+        {
+          "label": "Add the receipt",
+          "detail": "1.4 + 1.6 + 2.1 cents",
+          "voice": "Take the three example charges from Ana's order question and add them on paper. One point four plus one point six makes three cents. Add two point one and the full answer costs five point one cents in this example."
+        },
+        {
+          "label": "Move the first word",
+          "detail": "Same calls, earlier feedback",
+          "voice": "Now picture the same three calls with streaming turned on. Ana can start reading earlier, but you have not removed a lookup or shortened the text simply by changing when it appears. Record both first word and completed answer."
+        },
+        {
+          "label": "Compare like with like",
+          "detail": "Correct answers to the same request",
+          "voice": "Try removing a genuinely repeated lookup and run the same question again. Compare cost, waiting time and whether the answer still matches the parcel. Two responses are only useful to compare if they were supposed to do the same job."
+        }
+      ]
+    }
+  },
+  "m6-3": {
+    "inspection": {"1":[[230,237],[673,202],[260,252]]},
+    "opening": {"layout":"wide","shots":[0,1,2]},
+    "voiceEdits": {"b":{"2":"Picture the conversation ID as a claim ticket. It helps the application find the right history when another message arrives.","3":"The application keeps each history separate and checks the customer is allowed to access the requested order."}},
+    "sequence": [
+      "intro",
+      "case1",
+      "a",
+      "case2",
+      "b",
+      "lab",
+      "case3"
+    ],
+    "sections": [
+      3,
+      6
+    ],
+    "workbench": {
+      "stage": "archive",
+      "stations": [
+        "Ana’s session",
+        "Owen’s session"
+      ],
+      "marks": ["Ana","Owen","Separate IDs"],
+      "beats": [
+        {
+          "label": "Ana sends a message",
+          "detail": "Her order history",
+          "voice": "Imagine two customers type into the site at the same instant. Ana sends her order number first. On the server, the program looks up the conversation that belongs to her session before adding that new message."
+        },
+        {
+          "label": "Owen sends a message",
+          "detail": "His order history",
+          "voice": "Now follow Owen's message down the same network path. The server code can be shared, but the history loaded for Owen must be different. The session identifies a conversation; access checks still have to protect the underlying order."
+        },
+        {
+          "label": "Test both windows",
+          "detail": "No crossed replies",
+          "voice": "Open two separate test sessions. Give each a different pretend order and ask the same follow-up in both. Compare what each window shows with its own record. This catches mix-ups that a successful single-window demo would never reveal."
+        }
+      ]
+    }
+  },
+  "m6-4": {
+    "opening": {"layout":"folio","shots":[0,1,2]},
+    "sequence": [
+      "intro",
+      "case1",
+      "b",
+      "case2",
+      "a",
+      "lab",
+      "case3"
+    ],
+    "sections": [
+      3,
+      4
+    ],
+    "workbench": {
+      "stage": "fork",
+      "stations": [
+        "Terms desk",
+        "Inventory desk"
+      ],
+      "marks": ["40 asked","4 available","36 pending"],
+      "beats": [
+        {
+          "label": "One combined request",
+          "detail": "40 green tents",
+          "voice": "Read the shop owner's enquiry twice. How many green tents can Orbit supply, and under what wholesale terms? Being able to answer the terms does not establish that forty tents are physically available."
+        },
+        {
+          "label": "Check the inventory",
+          "detail": "4 available now",
+          "voice": "Give the inventory helper a narrow question with the exact style, colour and quantity. Four available now is useful evidence. It is not permission for the wholesale helper to promise the remaining thirty-six on a particular date."
+        },
+        {
+          "label": "Rejoin the answers",
+          "detail": "4 confirmed; 36 unconfirmed",
+          "voice": "The coordinator can report the confirmed quantity and hand the outstanding question to Maya. Read the joined reply as the shop owner. It should be clear which part you can count on today and which part still needs confirmation."
+        }
+      ]
+    }
+  },
+  "m6-5": {
+    "opening": {"layout":"margin","shots":[0,1,2]},
+    "voiceEdits": {"a":{"6":"This is the reason and act loop you can now recognise when you look inside Scout."}},
+    "sequence": [
+      "intro",
+      "case1",
+      "a",
+      "case2",
+      "lab",
+      "case3",
+      "b"
+    ],
+    "sections": [
+      1,
+      4
+    ],
+    "workbench": {
+      "stage": "wheel",
+      "stations": [
+        "Observed failure",
+        "Next learning goal"
+      ],
+      "marks": ["Question","Passage","Retest"],
+      "beats": [
+        {
+          "label": "Start with a real miss",
+          "detail": "Cannot find a policy passage",
+          "voice": "Imagine you have one afternoon to improve Scout. Pick an actual failed question first. If Scout fetched the wrong passage for send it back, inspect retrieval before replacing the model or building another specialist."
+        },
+        {
+          "label": "Try one improvement",
+          "detail": "Match wording to meaning",
+          "voice": "Save the original question and the policy passage a correct answer needs. Try one change to the search and repeat that exact enquiry. A new answer that sounds friendlier is not evidence that search found the right passage."
+        },
+        {
+          "label": "Keep the exercise",
+          "detail": "Retest with another wording",
+          "voice": "Finally ask a second version of the same customer question. If both now retrieve the right source, save the cases for the next change. You have turned a broad idea like learn retrieval into a small project with observable results."
+        }
+      ]
+    }
+  }
+}

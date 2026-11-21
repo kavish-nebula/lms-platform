@@ -2,7 +2,7 @@
 export function visualWindows(props,fps){
   return props.scenes.flatMap(scene=>scene.beats.map((beat,index)=>{
     const until=index===scene.beats.length-1?scene.from+scene.durationInFrames:beat.from+beat.durationInFrames;
-    return {beat,start:beat.from,end:Math.min(beat.from+Math.ceil(fps*(props.style==='reference-cinema'?2.4:1.5))+1,until),until};
+    return {beat,start:beat.from,end:scene.motion ? beat.from+beat.durationInFrames : Math.min(beat.from+Math.ceil(fps*(props.style==='classic'||!props.style?1.5:2.4))+1,until),until};
   }));
 }
 /** Preserve every speech sample, padding only the frame-rounding gap and reading holds. */

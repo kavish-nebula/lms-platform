@@ -1,0 +1,148 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:05.057
+A large language model is a program trained on patterns in text.
+
+00:00:05.057 --> 00:00:08.997
+When it writes, it works with small pieces called tokens.
+
+00:00:08.997 --> 00:00:13.393
+A token can be a word, part of a word, or punctuation.
+
+00:00:13.393 --> 00:00:16.346
+Imagine finishing the words please close the.
+
+00:00:16.346 --> 00:00:19.114
+Both door and window would make sense.
+
+00:00:19.114 --> 00:00:23.149
+The words you have just read affect which ending you expect.
+
+00:00:23.149 --> 00:00:27.034
+The model makes a similar choice using learned patterns.
+
+00:00:27.034 --> 00:00:32.061
+After choosing a piece, the model uses the longer text to choose again.
+
+00:00:32.061 --> 00:00:36.342
+The information you give it for this answer is its context.
+
+00:00:36.342 --> 00:00:40.898
+It can write smoothly even when a crucial fact is missing.
+
+00:00:40.898 --> 00:00:46.660
+You will hear the word token constantly when you build with models, so let us pin it down.
+
+00:00:46.660 --> 00:00:51.503
+Common words, like order or boots, are usually a single token.
+
+00:00:51.503 --> 00:00:57.211
+Rare words, long product codes and many names are split into several pieces.
+
+00:00:57.211 --> 00:01:04.818
+The exact split depends on the model and the language, so do not count words and assume you have counted tokens.
+
+00:01:04.818 --> 00:01:13.245
+Think of Lego bricks: the model has a fixed box of pieces, and every reply is snapped together one brick at a time.
+
+00:01:13.245 --> 00:01:20.541
+Tokens matter to you because you pay per token, and a model's limits are counted in tokens too.
+
+00:01:20.541 --> 00:01:25.001
+Grace asks an outdoor shop whether she can return her boots.
+
+00:01:25.001 --> 00:01:28.442
+Scout replies that the shop allows ninety days.
+
+00:01:28.442 --> 00:01:32.639
+It sounds like a perfectly ordinary customer-service sentence.
+
+00:01:32.639 --> 00:01:39.478
+Compare it with the shop’s own rule: returns within thirty days for eligible unused items.
+
+00:01:39.478 --> 00:01:43.054
+Smooth wording has disguised a wrong number.
+
+00:01:43.054 --> 00:01:46.718
+Look closely at how such a reply can be produced.
+
+00:01:46.718 --> 00:01:51.989
+After a few words like we offer, there are several plausible continuations.
+
+00:01:51.989 --> 00:01:56.387
+The model chooses one, adds it, and makes another prediction.
+
+00:01:56.387 --> 00:02:05.750
+Those choices can form a familiar-sounding policy without anyone having checked which policy this particular shop uses.
+
+00:02:05.750 --> 00:02:08.658
+So where does the model's knowledge come from?
+
+00:02:08.658 --> 00:02:16.788
+During training, it read a vast amount of text and learned how language works, along with a lot of general knowledge.
+
+00:02:16.788 --> 00:02:25.237
+Training gives a model general patterns, while new information for this particular reply has to arrive in the request.
+
+00:02:25.237 --> 00:02:32.609
+It also learned common patterns, such as many shops offering thirty, sixty or ninety day returns.
+
+00:02:32.609 --> 00:02:36.175
+What it never saw is anything private to Orbit.
+
+00:02:36.175 --> 00:02:41.726
+It does not know Orbit's policy, Grace's order, or where a parcel is today.
+
+00:02:41.726 --> 00:02:47.753
+The only way it can use those facts is if you put them into its context window.
+
+00:02:47.753 --> 00:02:51.575
+Read this aloud as though it were printed on a shop sign.
+
+00:02:51.575 --> 00:02:54.788
+You can return the item within ninety days.
+
+00:02:54.788 --> 00:02:57.249
+It sounds perfectly ordinary.
+
+00:02:57.249 --> 00:03:03.364
+Nothing about the grammar lets a customer tell whether Orbit actually offers that deal.
+
+00:03:03.364 --> 00:03:06.517
+Now put Orbit's policy beside the draft.
+
+00:03:06.517 --> 00:03:11.427
+Find the words that give the length of the window and the event that starts it.
+
+00:03:11.427 --> 00:03:17.562
+Purchase and delivery can be different days, so keeping the number alone loses a fact.
+
+00:03:17.562 --> 00:03:19.850
+Cover the original answer.
+
+00:03:19.850 --> 00:03:25.057
+Could another person reconstruct the new answer from the policy passage?
+
+00:03:25.057 --> 00:03:31.223
+This check explains why a polished sentence and a grounded sentence need different tests.
+
+00:03:31.223 --> 00:03:34.129
+Fluency can be judged by reading.
+
+00:03:34.129 --> 00:03:37.140
+The policy claim needs evidence.
+
+00:03:37.140 --> 00:03:42.006
+Now supply the real return rule alongside Grace’s question.
+
+00:03:42.006 --> 00:03:47.150
+Ask for a reply using that text, and compare the reply with the rule.
+
+00:03:47.150 --> 00:03:49.812
+Thirty days is now supported.
+
+00:03:49.812 --> 00:03:56.291
+Whether Grace herself qualifies still depends on when the boots arrived and their condition.
+
+00:03:56.291 --> 00:04:02.138
+The source answers the general question while leaving those personal facts open.

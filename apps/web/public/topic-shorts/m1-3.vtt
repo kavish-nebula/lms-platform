@@ -1,0 +1,121 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:08.460
+An agent is useful when people repeatedly work toward the same goal but must make slightly different decisions each time.
+
+00:00:08.460 --> 00:00:14.967
+A task that always has exactly the same steps can often be handled by a simple rule.
+
+00:00:14.967 --> 00:00:19.227
+Look for a place the program can get reliable information.
+
+00:00:19.227 --> 00:00:25.117
+A question about a specific delivery needs an order record or a carrier update.
+
+00:00:25.117 --> 00:00:29.005
+A confident sentence on its own tells you very little.
+
+00:00:29.005 --> 00:00:34.545
+Choose a first job where a person can check the result before it affects anybody.
+
+00:00:34.545 --> 00:00:42.233
+Drafting a message is easier to undo than sending an incorrect promise to hundreds of customers.
+
+00:00:42.233 --> 00:00:45.978
+Imagine a camping shop gets a supplier notice.
+
+00:00:45.978 --> 00:00:49.558
+Its green Trailhead tents will arrive two weeks late.
+
+00:00:49.558 --> 00:00:55.351
+Some customers are waiting for that tent, but others ordered boots or sleeping mats.
+
+00:00:55.351 --> 00:01:02.179
+Sending the same warning to everybody would worry customers who have nothing to do with the delay.
+
+00:01:02.179 --> 00:01:05.866
+So how do you choose a good first job for an agent?
+
+00:01:05.866 --> 00:01:12.409
+First, it is repetitive: it comes up many times a week, and each time it is a little different.
+
+00:01:12.409 --> 00:01:20.872
+Second, it needs lookups: the answer lives in a system, like an orders database, not in the question itself.
+
+00:01:20.872 --> 00:01:28.174
+Third, mistakes are recoverable: if the agent gets one wrong, someone can spot it and fix it cheaply.
+
+00:01:28.174 --> 00:01:36.036
+A job that fails these checks is usually better done by a person, a help page or a simple workflow.
+
+00:01:36.036 --> 00:01:40.156
+The agent opens the list of orders still waiting to ship.
+
+00:01:40.156 --> 00:01:43.320
+It keeps only those containing the green tent.
+
+00:01:43.320 --> 00:01:48.156
+From that shorter list it prepares a message for each affected order.
+
+00:01:48.156 --> 00:01:53.044
+A useful draft names the item and reports the supplier’s delay.
+
+00:01:53.044 --> 00:01:57.750
+It leaves out a delivery date the supplier never confirmed.
+
+00:01:57.750 --> 00:02:01.966
+Picture two customers who bought the very same green tent.
+
+00:02:01.966 --> 00:02:04.851
+One parcel is already on a truck.
+
+00:02:04.851 --> 00:02:08.148
+The other tent is still waiting at the warehouse.
+
+00:02:08.148 --> 00:02:12.491
+The supplier's delay affects only one of those customers.
+
+00:02:12.491 --> 00:02:16.151
+A search for green tents alone would write to both.
+
+00:02:16.151 --> 00:02:21.367
+A search for every unshipped order would include customers waiting for boots.
+
+00:02:21.367 --> 00:02:26.819
+Keep the intersection, the orders that satisfy both conditions at once.
+
+00:02:26.819 --> 00:02:33.860
+Open the remaining draft and check the name, item and wording against the order and supplier notice.
+
+00:02:33.860 --> 00:02:38.929
+The useful unit of work was a checked draft for one affected customer.
+
+00:02:38.929 --> 00:02:42.994
+Counting messages sent would reward the wrong thing.
+
+00:02:42.994 --> 00:02:48.704
+Leo, who works at the shop, checks the proposed recipients against the order list.
+
+00:02:48.704 --> 00:02:53.740
+He checks the wording against the notice, then sends the approved messages.
+
+00:02:53.740 --> 00:03:04.250
+That is a practical first use: a frequent job, facts the program can find, and a person who can catch a mistake before customers see it.
+
+00:03:04.250 --> 00:03:08.295
+One last lesson from real projects: start narrow.
+
+00:03:08.295 --> 00:03:12.148
+Scout's first job is order status, and nothing else.
+
+00:03:12.148 --> 00:03:17.964
+Once that works, it learns to answer policy questions about returns and shipping.
+
+00:03:17.964 --> 00:03:23.404
+Then it handles exchanges, checking the stock before it offers a new size.
+
+00:03:23.404 --> 00:03:28.654
+Only later does it touch refunds, and big ones always wait for a person.
+
+00:03:28.654 --> 00:03:36.268
+Each new job is added only when the last one works reliably, and that is the path this course follows.

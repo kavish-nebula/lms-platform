@@ -1,0 +1,139 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:04.877
+A system prompt is a set of standing instructions for an assistant.
+
+00:00:04.877 --> 00:00:11.311
+Think of it as the job description a new employee receives before customers arrive.
+
+00:00:11.311 --> 00:00:16.741
+The role explains whom the employee serves and what work belongs to the job.
+
+00:00:16.741 --> 00:00:21.074
+The customer’s message changes from one turn to the next.
+
+00:00:21.074 --> 00:00:23.875
+The standing instructions still apply.
+
+00:00:23.875 --> 00:00:31.227
+They can describe the tone to use, the policy to consult, and who should handle a request outside the role.
+
+00:00:31.227 --> 00:00:33.504
+Words can guide a reply.
+
+00:00:33.504 --> 00:00:39.927
+A separate check in the application controls whether an action such as moving money is allowed.
+
+00:00:39.927 --> 00:00:45.807
+Designing the role means thinking about what the assistant may say and what it may do.
+
+00:00:45.807 --> 00:00:49.375
+Every request can carry two kinds of instruction.
+
+00:00:49.375 --> 00:00:55.319
+The system prompt is written by you, the builder, and it is sent with every request.
+
+00:00:55.319 --> 00:01:01.156
+It sets the standing rules: who the model is, what it may do, and how it should sound.
+
+00:01:01.156 --> 00:01:05.937
+Think of it as Scout's job description and policy handbook in one.
+
+00:01:05.937 --> 00:01:11.623
+The user message is whatever the customer typed, and it changes every turn.
+
+00:01:11.623 --> 00:01:18.951
+Keep your rules in the system prompt, where the model treats them as the frame for the whole conversation.
+
+00:01:18.951 --> 00:01:21.442
+Orbit gives Scout a support role.
+
+00:01:21.442 --> 00:01:27.235
+Answer politely using the shop’s rules, and pass important decisions to the team.
+
+00:01:27.235 --> 00:01:31.699
+One rule says refunds over two hundred dollars need approval.
+
+00:01:31.699 --> 00:01:38.342
+That gives Scout something useful to say when a customer asks for more than it can authorize.
+
+00:01:38.342 --> 00:01:43.284
+Owen writes that he wants a three-hundred-and-ten-dollar refund today.
+
+00:01:43.284 --> 00:01:45.709
+Compare the amount with the limit.
+
+00:01:45.709 --> 00:01:49.064
+Three hundred and ten is above two hundred.
+
+00:01:49.064 --> 00:01:54.462
+Asking urgently does not change the amount or the approval requirement.
+
+00:01:54.462 --> 00:02:01.247
+Scout can acknowledge Owen’s request, explain the review, and offer to send it to the team.
+
+00:02:01.247 --> 00:02:03.439
+Put yourself at the counter.
+
+00:02:03.439 --> 00:02:07.814
+Owen is upset and needs three hundred and ten dollars back.
+
+00:02:07.814 --> 00:02:11.488
+His urgency matters to the tone of the reply.
+
+00:02:11.488 --> 00:02:14.939
+It cannot tell you who is allowed to move the money.
+
+00:02:14.939 --> 00:02:19.562
+Imagine changing only one word, from please to immediately.
+
+00:02:19.562 --> 00:02:23.788
+The amount and the approval rule stay exactly the same.
+
+00:02:23.788 --> 00:02:30.680
+Scout can acknowledge the urgency and collect the order details while the refund remains pending.
+
+00:02:30.680 --> 00:02:34.246
+Read the proposed reply as if you were Owen.
+
+00:02:34.246 --> 00:02:38.059
+Would you leave thinking the money was already on its way?
+
+00:02:38.059 --> 00:02:45.740
+Replace any promise of payment with what actually happened, that the request is ready for a person to review.
+
+00:02:45.740 --> 00:02:47.996
+Check two separate outcomes.
+
+00:02:47.996 --> 00:02:54.464
+First, does Owen hear a clear next step rather than a promise that money has already moved?
+
+00:02:54.464 --> 00:02:58.714
+Second, does the payment system actually wait for approval?
+
+00:02:58.714 --> 00:03:01.960
+The instructions shape the first outcome.
+
+00:03:01.960 --> 00:03:09.418
+The application’s permission check protects the second, even if the model words its reply badly.
+
+00:03:09.418 --> 00:03:15.362
+One rule about system prompts is not negotiable: never put secrets in them.
+
+00:03:15.362 --> 00:03:19.468
+No API keys, passwords or tokens, ever.
+
+00:03:19.468 --> 00:03:22.936
+No database addresses or internal links.
+
+00:03:22.936 --> 00:03:25.767
+No details about other customers.
+
+00:03:25.767 --> 00:03:33.290
+And do not rely on a sentence in the prompt to protect anything, because real permissions belong in your code.
+
+00:03:33.290 --> 00:03:41.208
+A determined user can often talk a model into repeating its instructions, so assume anything in a prompt can leak.
+
+00:03:41.208 --> 00:03:48.716
+Keys live in environment variables, and your code decides what data the model is allowed to see.

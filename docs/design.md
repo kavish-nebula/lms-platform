@@ -159,7 +159,9 @@ The course assistant composer uses a compact rounded message bar with a text-fil
 
 The hidden assistant launcher wrapper ignores pointer events while the assistant panel is open, preventing it from covering the message bar's right-side controls.
 
-Quick enrollment presents the saved field/role, coding and explanation preferences with an Edit profile link, followed by exactly two optional radio groups. Each offers a typed answer and Skip this question. Start learning submits the selections directly; Start with the standard course skips both optional answers while retaining profile-based examples. Additional setup is an optional link. Semantic fieldsets, labels and existing focus/reduced-motion patterns are reused.
+Course enrollment opens with the starting-point check where the course defines prerequisites. Topic cards sit side by side on wider screens and stack on narrow screens. A live completion count explains when review is available. Reviewing opens a dedicated guidance screen with a clear way to continue, edit answers or read the optional introductions.
+
+Quick start gives Start learning priority and groups the two optional questions and saved profile in separate disclosures. Learners can start without entered course answers and can preview the fixed lesson sequence before enrolling. The preview returns to Quick start when opened from there. Enrollment feedback shows the server’s saving, planning, ready and error states. The course outline is available on demand. Native form controls, visible focus and headings support keyboard navigation through the flow.
 
 ## Content Creator Studio
 
@@ -308,3 +310,40 @@ paths and before/after comparisons. Motion settles over 2.4 seconds, while the
 existing reduced-motion path settles immediately; captions follow measured local
 narration. The cinematic video palette is deliberately fixed for exported media,
 while surrounding creator controls continue to use the application's theme tokens.
+
+## Animated topic videos
+
+Each topic opens on its own case. The opening edit uses that lesson’s worked examples, and the recap revisits the relevant demonstrations. The first lesson returns to the hook’s Orbit storefront, then cuts to the support queue, Scout’s order lookup and the reply to Ana. Other scenes follow the teaching material into a phone thread, tool result, policy file, token sequence, carrier map, test run or itemised bill. The narration clock controls the cuts and camera. Pause, replay, speed changes and reduced motion use that same clock. Visual Story plays the same film in the expanded viewer. The course reader provides the authored slides and transcript.
+
+Illustrations are bundled locally from the [original Twemoji 12 release](https://github.com/twitter/twemoji/tree/v12.1.6/assets/svg). In-player credits link the individual Wikimedia Commons files and the [CC BY 4.0 license](https://creativecommons.org/licenses/by/4.0/).
+
+The Remotion entry shares the learner's scene renderer. To export a narrated MP4 of the first topic from the repository root, run the following command. Each of the 30 course topics has a composition named `Topic-<video id>`.
+
+```sh
+npx remotion render apps/web/video-renderer/topic-entry.tsx Topic-m1-1 topic-m1-1.mp4 --public-dir=apps/web/public
+```
+
+## Scripted topic films
+
+Each AI Agent topic opens with a captioned film for someone meeting the idea for the first time. Three short explanations introduce the concept in everyday language. A single worked example then follows a question through the action, the evidence and the outcome. **Open full lesson and knowledge checks** opens the interactive lesson.
+
+The production files live in `apps/web/video-renderer/topic-shorts/`. Each entry in `direction.json` orders the scenes for one topic, references two teaching passages from its course fixture and scripts an animated investigation. `prepare.py` combines these with the plain-language introduction in `teaching.json` and the worked case in `storyboards.json`. The resulting script lists the narration in playback order. The editor can change one topic’s sequence, illustrated objects or spoken wording independently.
+
+The course player supplies the topic title and playback controls. A tracking enquiry follows a parcel between systems, a refund pauses at an approval gate, and a conversation opens one message at a time. Visual changes and optional English captions follow sentence recordings. The films run about three to four minutes. Denser scripts may run up to 4:20 to give examples room to breathe. Selected illustrations come from the local Twemoji collection. The exported MP4 metadata and editable scripts carry the attribution.
+
+The local narrator is Kokoro v1.0’s American English Heart voice (`af_heart`), recorded at 0.84× model speed. A short pause separates sentences, with more time after questions and at scene changes. The same recordings drive captions and animation cues. Rendering needs Python with `kokoro-onnx==0.6.1` and the [Kokoro model files](https://github.com/thewh1teagle/kokoro-onnx/releases/tag/model-files-v1.1). Learners play the finished MP4 directly.
+
+From the repository root, generate the media with the following commands.
+
+```powershell
+$filmTools = 'apps/web/video-renderer/topic-shorts'
+$filmWork = 'apps/web/.data/topic-films'
+python "$filmTools/prepare.py" $filmWork
+python -m pip install kokoro-onnx==0.6.1
+$models = "https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.1"
+curl.exe --fail --location "$models/kokoro-v1.0.onnx" --output "$filmWork/kokoro-v1.0.onnx"
+curl.exe --fail --location "$models/voices-v1.0.bin" --output "$filmWork/voices-v1.0.bin"
+python "$filmTools/narrate.py" $filmWork $filmWork
+python "$filmTools/lesson_render.py" $filmWork apps/web/public/topic-shorts
+Copy-Item -LiteralPath "$filmWork/topic-film-titles.json" -Destination apps/web/src/components/player/video/topic-film-titles.json
+```

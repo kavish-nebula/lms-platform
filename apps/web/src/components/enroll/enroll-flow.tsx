@@ -59,7 +59,10 @@ export function EnrollFlow({
   const { byCourse } = useCourseUnits(React.useMemo(() => [course], [course]));
 
   const [phase, setPhase] = React.useState<EnrollPhase | null>(null);
+  const previousPhase = React.useRef<EnrollPhase | null>(null);
+  const mainRef = React.useRef<HTMLElement>(null);
   const [showOptions, setShowOptions] = React.useState(initialPhase === "customize");
+  const [previewFromQuickStart, setPreviewFromQuickStart] = React.useState(false);
   const [prerequisiteSelections, setPrerequisiteSelections] = React.useState<PrerequisiteSelections>({});
   // Keep the stepper steady when saving creates the enrollment during Build.
   const PHASES: EnrollPhase[] = enrolled && phase === 'prerequisites' ? ['prerequisites'] : [...(prerequisiteTopics.length && (!enrolled || Object.keys(prerequisiteSelections).length) ? ['prerequisites' as const] : []), ...(showOptions ? ["fit", "customize", "build"] as const : ["fit", "build"] as const)];
@@ -83,7 +86,12 @@ export function EnrollFlow({
   }
 
   React.useEffect(() => {
-    window.scrollTo({ top: 0 });
+    if (!phase) return;
+    if (previousPhase.current && previousPhase.current !== phase) {
+      window.scrollTo({ top: 0 });
+      mainRef.current?.querySelector("h1")?.focus({ preventScroll: true });
+    }
+    previousPhase.current = phase;
   }, [phase]);
 
   /** Saves enrollment and study preferences without rewriting the saved profile. */
@@ -113,39 +121,46 @@ export function EnrollFlow({
         ? { status: "saving" }
         : enrollment?.pending
           ? { status: "planning", since: planningSince }
-          : { status: "ready", source: enrollment?.plan?.source ?? "baseline", ai: !!enrollment?.ai, failed: enrollment?.lastError ?? null };
+          : { status: "ready", source: enrollment?.plan?.source ?? "baseline", failed: enrollment?.lastError ?? null };
 
   const adaptation = adaptationOf(answers, { precheck, override });
   const editing = enrolled && phase !== "build";
 
   let body: React.ReactNode = <CardSkeleton lines={6} />;
   if (phase === 'prerequisites')
-    body = <PrerequisiteCheck title={course.title} topics={prerequisiteTopics} suggestions={prerequisiteSuggestions} value={prerequisiteSelections} onChange={setPrerequisiteSelections} alreadyEnrolled={enrolled} onContinue={()=>{if(enrolled){router.push(courseHref);return;}setAnswers(current=>prerequisiteEnrollmentAnswers(current,prerequisiteTopics,prerequisiteSelections));setPhase('fit');}} />;
+    body = <PrerequisiteCheck topics={prerequisiteTopics} suggestions={prerequisiteSuggestions} value={prerequisiteSelections} onChange={setPrerequisiteSelections} alreadyEnrolled={enrolled} onContinue={()=>{if(enrolled){router.push(courseHref);return;}setAnswers(current=>prerequisiteEnrollmentAnswers(current,prerequisiteTopics,prerequisiteSelections));setPhase('fit');}} />;
   else if (phase === "fit")
     body = (
-      <div className="grid gap-6">
-      {!enrolled && prerequisiteTopics.length>0 && <Button variant="ghost" className="justify-self-start" onClick={()=>setPhase('prerequisites')}><ChevronLeft className="size-4"/>Review prerequisites</Button>}
-      <QuickEnrollment
-        title={course.title}
-        topic={course.authoredRevisionId ? course.subjectLabel ?? 'the course topic' : undefined}
-        answers={answers}
-        derived={profile?.derived}
-        editProfileHref={welcomeHref(`${courseHref}/enroll?step=fit`)}
-        onStart={next=>{setAnswers(next);setPhase("build");void commit(next);}}
-        onOptions={next=>{setAnswers(next);setShowOptions(true);setPhase("customize");}}
-      />
+      <div className="mx-auto grid max-w-4xl gap-5">
+        {!enrolled && prerequisiteTopics.length > 0 && (
+          <Button type="button" variant="ghost" className="justify-self-start" onClick={() => setPhase("prerequisites")}>
+            <ChevronLeft aria-hidden data-icon="inline-start" />
+            Review starting point
+          </Button>
+        )}
+        <QuickEnrollment
+          topic={course.authoredRevisionId ? course.subjectLabel ?? "the course topic" : undefined}
+          answers={answers}
+          derived={profile?.derived}
+          editProfileHref={welcomeHref(`${courseHref}/enroll?step=fit`)}
+          onStart={next => { setAnswers(next); setPhase("build"); void commit(next); }}
+          onOptions={next => { setAnswers(next); setShowOptions(true); setPreviewFromQuickStart(true); setPhase("customize"); }}
+        />
       </div>
     );
   else if (phase === "customize")
     body = (
       <CustomizeStep
-        course={course}
-        answers={answers}
-        setAnswers={setAnswers}
-        editing={enrolled}
+        order={adaptation.order}
+        primaryLabel={enrolled ? t(previewFromQuickStart ? "saveChanges" : "backToCourse") : t("buildCourse")}
+        onBack={previewFromQuickStart ? () => { setShowOptions(false); setPreviewFromQuickStart(false); setPhase("fit"); } : undefined}
         onEditProfile={() => router.push(welcomeHref(`${courseHref}/enroll?step=customize`))}
         onSubmit={async () => {
           if (enrolled) {
+            if (!previewFromQuickStart) {
+              router.push(courseHref);
+              return;
+            }
             if (await commit()) {
               toast.success(t("toastSaved"));
               router.push(courseHref);
@@ -178,17 +193,23 @@ export function EnrollFlow({
 
   return (
     <div className="flex min-h-dvh flex-col">
+      <a href="#enrollment-content" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-lg focus:bg-panel focus:p-3 focus:ring-2 focus:ring-ring">
+        {t("skipToSetup")}
+      </a>
       <header className="glass glass-sm sticky top-0 z-30 border-x-0 border-t-0 shadow-none">
-        <div className="flex h-(--nav-h) items-center gap-4 page-pad">
+        <div className="flex min-h-(--nav-h) items-center gap-2 py-2 page-pad sm:gap-4">
           <Button asChild variant="ghost" size="icon" aria-label={t("backToCourse")}>
             <Link href={courseHref}>
-              <ChevronLeft />
+              <ChevronLeft aria-hidden />
             </Link>
           </Button>
           <Logo wordmark={false} className="hidden sm:inline-flex" />
           <div className="min-w-0 flex-1">
-            <div className="truncate text-xs text-ink-muted">{editing ? t("editingSetup") : t("settingUp")}</div>
-            <div className="truncate font-semibold">{course.title}</div>
+            <div className="hidden truncate text-xs text-ink-muted md:block">{editing ? t("editingSetup") : t("settingUp")}</div>
+            <div className="font-semibold leading-snug">{course.title}</div>
+            <div className="mt-1 text-xs text-ink-muted md:hidden" aria-current="step">
+              {t("phaseOf", { n: current + 1, total: PHASES.length })} · {t(`phase_${phase ?? first}`)}
+            </div>
           </div>
           <ol className="hidden items-center gap-1 md:flex" aria-label={t("progressLabel")}>
             {PHASES.map((p, i) => {
@@ -218,12 +239,11 @@ export function EnrollFlow({
               );
             })}
           </ol>
-          <span className="text-xs text-ink-muted md:hidden">
-            {t("phaseOf", { n: current + 1, total: PHASES.length })} · {t(`phase_${phase ?? first}`)}
-          </span>
         </div>
       </header>
-      <main className="mx-auto w-full max-w-6xl flex-1 page-pad py-8 lg:py-12">{body}</main>
+      <main ref={mainRef} id="enrollment-content" tabIndex={-1} className="mx-auto w-full max-w-6xl flex-1 scroll-mt-[calc(var(--nav-h)+1rem)] page-pad pt-7 pb-24 lg:pt-10">
+        {body}
+      </main>
     </div>
   );
 }

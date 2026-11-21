@@ -1,0 +1,30 @@
+[
+  {
+    "id": "M1T2Passage1",
+    "text": "Three helpers can appear in the same chat window and work quite differently. A simple question-and-answer chatbot reads your message and explains something it already has in writing. Think of asking a receptionist about opening hours. A workflow is a recipe someone wrote for a computer. It can make choices, like sending an incomplete form back, because a person already specified what to do in each case. An agent is given a goal and some permitted actions. It decides what information to look up next as it learns more. Watch what each helper can do for the same shopper."
+  },
+  {
+    "id": "M1T2Passage2",
+    "text": "Owen bought a jacket and wants a smaller one. First he asks about return shipping. Orbit’s chatbot reads the shop policy and says shipping is free on orders over seventy-five dollars. That explains the rule. The chatbot in this example has not opened Owen’s order, so it cannot say whether his purchase qualifies."
+  },
+  {
+    "id": "M1T2Passage4",
+    "text": "Owen submits the shop’s return form. A workflow checks that the required fields are filled in. A complete form goes into the returns queue. A missing order number sends the form back to Owen. This is still a workflow: both routes were written down before Owen bought his jacket."
+  },
+  {
+    "id": "M1T2Passage5",
+    "text": "Follow a parcel through a different fixed workflow at Orbit. When Sam's warehouse marks an order as shipped, the orders system announces it. A template fills in the customer's name, the item and the tracking number. And the email goes out to the customer. Same three steps, every time, in the same order, with nothing to decide, so no language model is needed. Once those three steps are connected, a warehouse event can send a useful tracking email without someone deciding the route again."
+  },
+  {
+    "id": "M1T2Passage6",
+    "text": "Now Owen asks whether he can actually get the smaller jacket. Scout must find which jacket he bought before it knows which size to check. If there is stock, it can offer the exchange under the shop’s rules. If the size is sold out, it can explain the other choices. One customer needed a policy answer, a fixed process, and a decision based on fresh information."
+  },
+  {
+    "id": "M1T2Passage3",
+    "text": "So when should you use which? If you can write the steps down ahead of time, use a fixed workflow. A fixed sequence can be tested with the same starting records and checked against an expected result. Reach for an agent when the steps depend on the request. Ana wants tracking, Grace wants a return, Owen wants a different size, and you can't predict the mix. Letting the model choose a new action can introduce extra calls, expense and opportunities for a mistake. So they need limits and testing, and that is a big part of this course."
+  },
+  {
+    "id": "M1T2Passage7",
+    "text": "Cover the names of the three helpers and listen to Owen's questions again. Could a printed sign answer the first one? Yes. The shipping rule can be written once and explained to the next customer who asks. Now cover the name of the jacket. The same validation rule still works because the missing field determines the next action. Changing the customer's wording does not change where an incomplete form goes. Finally, cover the stock result. You cannot promise Owen an exchange yet. The next useful action depends on which jacket he owns and what the warehouse finds. That missing fact is the clue to who should handle the request."
+  }
+]

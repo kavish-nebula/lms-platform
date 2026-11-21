@@ -1,0 +1,602 @@
+{
+  "m1-1": {
+    "treatment": "cycle",
+    "concept": [
+      {
+        "term": "A goal",
+        "meaning": "What needs to be answered?",
+        "voice": "An AI agent is a program you give a goal to. You also give it a few things it is allowed to do. It can choose which one to try first."
+      },
+      {
+        "term": "A tool",
+        "meaning": "A way to look something up or act",
+        "voice": "Think of a person answering the phone at a shop. They might know the opening hours by heart. To answer a question about a particular parcel, they need to open a record."
+      },
+      {
+        "term": "A result",
+        "meaning": "Decide whether there is enough to answer",
+        "voice": "A tool lets a program do that lookup. The agent reads what came back and decides whether it can answer, needs another fact, or should ask for help."
+      }
+    ]
+  },
+  "m1-2": {
+    "treatment": "compare",
+    "concept": [
+      {
+        "term": "Chatbot",
+        "meaning": "Explains a written answer",
+        "voice": "Three helpers can appear in the same chat window and work quite differently. A simple question-and-answer chatbot reads your message and explains something it already has in writing. Think of asking a receptionist about opening hours."
+      },
+      {
+        "term": "Workflow",
+        "meaning": "Follows rules chosen ahead of time",
+        "voice": "A workflow is a recipe someone wrote for a computer. It can make choices, like sending an incomplete form back, because a person already specified what to do in each case."
+      },
+      {
+        "term": "Agent",
+        "meaning": "Chooses what to check next",
+        "voice": "An agent is given a goal and some permitted actions. It decides what information to look up next as it learns more. Watch what each helper can do for the same shopper."
+      }
+    ]
+  },
+  "m1-3": {
+    "treatment": "compare",
+    "concept": [
+      {
+        "term": "Repeated work",
+        "meaning": "Similar requests with small differences",
+        "voice": "An agent is useful when people repeatedly work toward the same goal but must make slightly different decisions each time. A task that always has exactly the same steps can often be handled by a simple rule."
+      },
+      {
+        "term": "Available facts",
+        "meaning": "Somewhere to check the answer",
+        "voice": "Look for a place the program can get reliable information. A question about a specific delivery needs an order record or a carrier update. A confident sentence on its own tells you very little."
+      },
+      {
+        "term": "A checkable result",
+        "meaning": "Someone can catch a mistake",
+        "voice": "Choose a first job where a person can check the result before it affects anybody. Drafting a message is easier to undo than sending an incorrect promise to hundreds of customers."
+      }
+    ]
+  },
+  "m1-4": {
+    "treatment": "route",
+    "concept": [
+      {
+        "term": "Language model",
+        "meaning": "Interprets a request",
+        "voice": "An agent needs several abilities. Its language model is the part that reads a message and produces words or chooses an action. Understanding the words is only the beginning of helping the person who wrote them."
+      },
+      {
+        "term": "Tools and memory",
+        "meaning": "Look up new facts and keep relevant details",
+        "voice": "A tool gives the program a way to do something, like check a stock list. Memory supplies information from earlier in the conversation. One finds new facts. The other keeps you from having to repeat facts."
+      },
+      {
+        "term": "A plan",
+        "meaning": "Put dependent steps in order",
+        "voice": "Planning means putting small tasks in a sensible order. If one answer determines what to look up next, doing the second lookup first may send you to the wrong record."
+      }
+    ]
+  },
+  "m1-5": {
+    "treatment": "route",
+    "concept": [
+      {
+        "term": "Python",
+        "meaning": "Runs the instructions in your file",
+        "voice": "A development environment is the small collection of things you need to run a program on your own computer. Python reads your instructions. A terminal is the window where you type a command to start them."
+      },
+      {
+        "term": "Project environment",
+        "meaning": "Keeps this project’s packages together",
+        "voice": "A package is code somebody has already written for you to use. A virtual environment keeps the packages for one project separate, so installing something for another project does not accidentally change this one."
+      },
+      {
+        "term": "Client library",
+        "meaning": "Talks to the model service",
+        "voice": "A client library handles the conversation with an online service. You will also need a private access key. The first test is deliberately small: send one message and see whether a reply comes back."
+      }
+    ]
+  },
+  "m2-1": {
+    "treatment": "cycle",
+    "concept": [
+      {
+        "term": "Text pieces",
+        "meaning": "Words or parts of words",
+        "voice": "A large language model is a program trained on patterns in text. When it writes, it works with small pieces called tokens. A token can be a word, part of a word, or punctuation."
+      },
+      {
+        "term": "A prediction",
+        "meaning": "Which piece might follow?",
+        "voice": "Imagine finishing the words please close the. Both door and window would make sense. The words you have just read affect which ending you expect. The model makes a similar choice using learned patterns."
+      },
+      {
+        "term": "Context",
+        "meaning": "The information supplied this time",
+        "voice": "After choosing a piece, the model uses the longer text to choose again. The information you give it for this answer is its context. It can write smoothly even when a crucial fact is missing."
+      }
+    ]
+  },
+  "m2-2": {
+    "treatment": "compare",
+    "concept": [
+      {
+        "term": "Quality",
+        "meaning": "Does it do this job correctly?",
+        "voice": "A model is the part of an AI service that produces an answer. Choosing one is like choosing a helper for a particular job. A useful first question is what a correct answer to that job would look like."
+      },
+      {
+        "term": "Time and cost",
+        "meaning": "What does a good answer require?",
+        "voice": "Two models can give equally useful answers to a simple question but take different amounts of time or cost different amounts to run. A harder question may change which model you would choose."
+      },
+      {
+        "term": "API",
+        "meaning": "A way for one program to ask another",
+        "voice": "An API is an agreed way for one program to ask another for something. Your program sends a request naming a model and a message. The service sends back an answer you can inspect."
+      }
+    ]
+  },
+  "m2-3": {
+    "treatment": "record",
+    "concept": [
+      {
+        "term": "Task",
+        "meaning": "Say what you want produced",
+        "voice": "A prompt is a request you give an AI model. Writing a useful prompt starts much like asking a new colleague for help. Tell them what you want them to produce and who is going to read it."
+      },
+      {
+        "term": "Facts",
+        "meaning": "Supply what the writer needs",
+        "voice": "Then include the facts needed to do the job. If the reader needs a shop policy, give the model that policy. Otherwise it may fill in the missing details with something that sounds familiar."
+      },
+      {
+        "term": "Output",
+        "meaning": "Describe an answer you could check",
+        "voice": "Describe the useful shape of the answer. Two short sentences asking for one missing detail is a different task from writing a long explanation. A clear instruction makes the result easier to review."
+      }
+    ]
+  },
+  "m2-4": {
+    "treatment": "record",
+    "concept": [
+      {
+        "term": "Role",
+        "meaning": "Who is the assistant helping?",
+        "voice": "A system prompt is a set of standing instructions for an assistant. Think of it as the job description a new employee receives before customers arrive. The role explains whom the employee serves and what work belongs to the job."
+      },
+      {
+        "term": "Customer message",
+        "meaning": "What does this person need today?",
+        "voice": "The customer’s message changes from one turn to the next. The standing instructions still apply. They can describe the tone to use, the policy to consult, and who should handle a request outside the role."
+      },
+      {
+        "term": "Permission",
+        "meaning": "What may actually be done?",
+        "voice": "Words can guide a reply. A separate check in the application controls whether an action such as moving money is allowed. Designing the role means thinking about what the assistant may say and what it may do."
+      }
+    ]
+  },
+  "m2-5": {
+    "treatment": "record",
+    "concept": [
+      {
+        "term": "Named fields",
+        "meaning": "Each detail has a place",
+        "voice": "Structured output means putting an answer into named boxes, like a form. People can understand many different ways of saying an order is late. A computer that sorts messages needs to know exactly where to find the kind of problem."
+      },
+      {
+        "term": "JSON",
+        "meaning": "A written form for data",
+        "voice": "JSON is a common way to write these boxes as names and values. A value can be text, a number, or a simple yes or no. Each name tells the next program what its value represents."
+      },
+      {
+        "term": "Schema",
+        "meaning": "Rules for filling the form",
+        "voice": "A schema describes the form before it is filled in. It says which boxes are required and what kind of value belongs in each. It can also say how to record a missing detail honestly."
+      }
+    ]
+  },
+  "m3-1": {
+    "treatment": "route",
+    "concept": [
+      {
+        "term": "A request",
+        "meaning": "Ask for an outside fact",
+        "voice": "A language model can read the words you send it, but it cannot see a shop’s live records just because someone asks about them. Tool calling is how the model can ask another program to do a specific job."
+      },
+      {
+        "term": "An action",
+        "meaning": "The application performs the lookup",
+        "voice": "Imagine a person at a service desk writing an order number on a lookup slip. Writing the slip asks for the work. Someone still has to open the records and find the matching order."
+      },
+      {
+        "term": "A returned fact",
+        "meaning": "Use what actually came back",
+        "voice": "The application does that work and returns the result. The model can then explain it to the customer. Keeping the request and result separate makes it possible to check where an answer came from."
+      }
+    ]
+  },
+  "m3-2": {
+    "treatment": "route",
+    "concept": [
+      {
+        "term": "Description",
+        "meaning": "Tell the model what a tool does",
+        "voice": "A tool is an action your application offers the model, such as looking up an order. Defining a tool is like writing an entry in a service directory. It needs a name, a purpose, and a description of the information needed to use it."
+      },
+      {
+        "term": "Input",
+        "meaning": "What goes on the request?",
+        "voice": "An input is a value you supply so the action knows what to work on. An order lookup needs an order identifier. A policy search needs a question or search terms. A useful description makes that difference plain."
+      },
+      {
+        "term": "Registration",
+        "meaning": "Connect the name to working code",
+        "voice": "Registering the tool connects the directory entry to the program that actually does the work. You need the description the model can read and a matching connection the application can follow."
+      }
+    ]
+  },
+  "m3-3": {
+    "treatment": "compare",
+    "concept": [
+      {
+        "term": "Search",
+        "meaning": "Find information that can change",
+        "voice": "A tool gives a program an ability it needs for a particular job. A web search can find a recent notice. You still need to read the source and check whether it covers the right place and date."
+      },
+      {
+        "term": "Calculator",
+        "meaning": "Get an exact numerical result",
+        "voice": "A calculator does arithmetic using rules. It is useful when a single wrong digit changes the answer. The surrounding program still has to select the right numbers and explain what the result measures."
+      },
+      {
+        "term": "File reader",
+        "meaning": "Read an approved document",
+        "voice": "A file reader opens a document the program is allowed to use. A shop policy may exist only in that document. Giving a helper a policy to read does not require giving it access to every file."
+      }
+    ]
+  },
+  "m3-4": {
+    "treatment": "route",
+    "concept": [
+      {
+        "term": "An API",
+        "meaning": "An agreed way to request information",
+        "voice": "An API is a way for programs to ask each other for information using agreed names and formats. Think of a parcel enquiry form. The carrier tells you which number goes in the box and what information you can expect back."
+      },
+      {
+        "term": "A wrapper",
+        "meaning": "Translate the request",
+        "voice": "Your application can offer a simple tool that fills out that form behind the scenes. This small piece of code translates the model’s request into the carrier’s format and reads the answer."
+      },
+      {
+        "term": "An answer",
+        "meaning": "Return the fields the customer needs",
+        "voice": "The carrier may send a long record. Your tool can return just the useful details, such as status and estimated delivery day. A service can also decline a request or ask the application to wait."
+      }
+    ]
+  },
+  "m3-5": {
+    "treatment": "compare",
+    "concept": [
+      {
+        "term": "No match",
+        "meaning": "The search finished without a record",
+        "voice": "When a tool cannot give an answer, first find out why. A completed search that finds no order is different from a search that never finished. Only the first tells you anything about the records that were checked."
+      },
+      {
+        "term": "Timeout",
+        "meaning": "The reply did not arrive in time",
+        "voice": "A timeout means the program stopped waiting. The service might be busy or temporarily unreachable. It does not tell you that a parcel is missing, delivered, or even late."
+      },
+      {
+        "term": "Recovery",
+        "meaning": "Choose a next step that could help",
+        "voice": "An edge case is a less common situation the program still needs to handle. Decide which problems could improve after a short wait, which require corrected information, and when to pass the question to a person."
+      }
+    ]
+  },
+  "m4-1": {
+    "treatment": "compare",
+    "concept": [
+      {
+        "term": "Recent turns",
+        "meaning": "Carry this conversation forward",
+        "voice": "An AI assistant can appear to remember you because the application sends useful information along with your next message. A turn means one contribution to the conversation. Short-term memory keeps relevant recent turns available during the same chat."
+      },
+      {
+        "term": "Saved facts",
+        "meaning": "Keep selected details for later",
+        "voice": "Long-term memory means deliberately saving information for use in a later conversation. Think of the difference between a note on your desk during a call and a preference a customer agrees to keep on file."
+      },
+      {
+        "term": "The next request",
+        "meaning": "Load the right information for this person",
+        "voice": "A stored fact helps only if the application retrieves it for the right customer at the right time. Decide why you need the detail and how long it should last before saving it."
+      }
+    ]
+  },
+  "m4-2": {
+    "treatment": "record",
+    "concept": [
+      {
+        "term": "Context",
+        "meaning": "What the model can read on this turn",
+        "voice": "Context means the information a model receives when it prepares one answer. Imagine handing a colleague a folder before a phone call. Anything important missing from the folder may be missing from the answer."
+      },
+      {
+        "term": "Text budget",
+        "meaning": "The folder has limited space",
+        "voice": "Models count text in small pieces called tokens. A longer conversation can cost more to send and may eventually exceed the space available. Repeating every greeting rarely helps with the customer’s next decision."
+      },
+      {
+        "term": "Selection",
+        "meaning": "Keep recent turns and essential facts",
+        "voice": "You can keep recent messages, shorten older ones into a summary, and copy essential facts into a separate note. The test is whether the next question can still be answered accurately."
+      }
+    ]
+  },
+  "m4-3": {
+    "treatment": "route",
+    "concept": [
+      {
+        "term": "Retrieve",
+        "meaning": "Find the relevant passages",
+        "voice": "Retrieval-augmented generation is a long name for an open-book way of answering a question. First, find the parts of a document that might answer it. Retrieval is the name for that search."
+      },
+      {
+        "term": "Add",
+        "meaning": "Put the passages beside the question",
+        "voice": "Next, put the selected passages together with the question so the model can read both. This is what augmented means here. You are giving the model material for this answer; you do not need to teach it the whole book."
+      },
+      {
+        "term": "Generate",
+        "meaning": "Write an answer from those passages",
+        "voice": "Finally, the model writes a reply using the text it received. A good way to check the reply is to put your finger on the sentence in the source that supports each part."
+      }
+    ]
+  },
+  "m4-4": {
+    "treatment": "route",
+    "concept": [
+      {
+        "term": "A goal",
+        "meaning": "What does the person want to achieve?",
+        "voice": "Planning means deciding what needs to happen before promising a result. Task decomposition means breaking one larger request into small questions or actions. A useful step has an outcome you can actually check."
+      },
+      {
+        "term": "A dependency",
+        "meaning": "One answer is needed before another",
+        "voice": "Imagine trying to book a table before learning how many people will come. Some tasks belong in a certain order because the first result determines what you must ask next."
+      },
+      {
+        "term": "A revision",
+        "meaning": "Change the plan when a fact changes",
+        "voice": "Treat the plan as a working list. As results arrive, keep the steps that still make sense. Replace any step that relied on an assumption the new information has disproved."
+      }
+    ]
+  },
+  "m4-5": {
+    "treatment": "cycle",
+    "concept": [
+      {
+        "term": "Choose",
+        "meaning": "Which fact do we need next?",
+        "voice": "An agent loop is a repeatable way of working toward a goal. ReAct is short for reasoning and acting. At each turn the assistant chooses a useful next step based on the information it currently has."
+      },
+      {
+        "term": "Act and observe",
+        "meaning": "Do the step and read its result",
+        "voice": "Think of checking a cake in the oven. You look at it, decide whether it needs more time, and check again later. Taking it out depends on what the check shows, not just on going around the loop."
+      },
+      {
+        "term": "Stop",
+        "meaning": "Enough evidence or a limit reached",
+        "voice": "A program also needs a stopping rule. It can stop because it has an answer, or because it has reached a limit and should explain what it could not establish."
+      }
+    ]
+  },
+  "m5-1": {
+    "treatment": "record",
+    "concept": [
+      {
+        "term": "Scope",
+        "meaning": "Which jobs belong to this project?",
+        "voice": "Scoping a project means deciding what problem it will solve and where its responsibility ends. Saying build a helpful assistant is hard to test. Saying answer questions about known orders gives you something specific to try."
+      },
+      {
+        "term": "Architecture",
+        "meaning": "Which part does which job?",
+        "voice": "Architecture is a map of the parts and how information travels between them. For a small assistant you might draw the customer, the part that reads the question, and the system that holds the answer."
+      },
+      {
+        "term": "Success",
+        "meaning": "What would count as working?",
+        "voice": "Write down a success condition before building. Include an ordinary request and one outside the boundary. That way you can check both whether the assistant helps and whether it knows when to hand over."
+      }
+    ]
+  },
+  "m5-2": {
+    "treatment": "cycle",
+    "concept": [
+      {
+        "term": "Build one piece",
+        "meaning": "Add one new ability",
+        "voice": "Building an agent step by step means keeping a version that works while you add one small ability at a time. If you add six things at once and the result breaks, all six become possible causes."
+      },
+      {
+        "term": "Try it",
+        "meaning": "Use a request with a known answer",
+        "voice": "Before a change, choose a simple input and write down what you expect to happen. This turns trying it into a test. A reply that sounds friendly may still give the wrong fact."
+      },
+      {
+        "term": "Compare",
+        "meaning": "Read what happened before adding more",
+        "voice": "After the change, compare the actual action and reply with the expected ones. Keep a passing example so you can repeat it when the next piece is added."
+      }
+    ]
+  },
+  "m5-3": {
+    "treatment": "route",
+    "concept": [
+      {
+        "term": "Tool",
+        "meaning": "Get a fact or do a job now",
+        "voice": "A tool gives an assistant a way to look up information or take an action. Memory keeps selected information available later. Combining them lets a customer ask a follow-up without explaining the entire situation again."
+      },
+      {
+        "term": "Test record",
+        "meaning": "Know what the answer should be",
+        "voice": "While building, use a made-up order whose details you control. Developers sometimes call this a fixture. You can check the assistant’s answer without depending on a real shipment that might change during the test."
+      },
+      {
+        "term": "Next turn",
+        "meaning": "Bring back the right detail",
+        "voice": "When the conversation continues, the program should load just the relevant facts for this customer. It still needs to look up any information that might have changed since the last question."
+      }
+    ]
+  },
+  "m5-4": {
+    "treatment": "route",
+    "concept": [
+      {
+        "term": "A test",
+        "meaning": "Compare a run with a known result",
+        "voice": "Testing asks whether a program does what you expected. Debugging is the investigation that follows when it does not. With an assistant, a wrong final answer may have started much earlier than the sentence you can see."
+      },
+      {
+        "term": "A trace",
+        "meaning": "A record of the steps the program took",
+        "voice": "A trace is like a receipt for the work. It can show which tool was requested, what information was sent to it, and what came back. Read those steps in order."
+      },
+      {
+        "term": "The first mismatch",
+        "meaning": "Find the first step that went wrong",
+        "voice": "Pick one failing request and repeat it. Compare expected with actual one step at a time. If an earlier lookup was already wrong, editing the final wording alone cannot recover the missing facts."
+      }
+    ]
+  },
+  "m5-5": {
+    "treatment": "record",
+    "concept": [
+      {
+        "term": "A test set",
+        "meaning": "Several requests with known expectations",
+        "voice": "Evaluation means measuring how an assistant performs on a collection of examples. One good conversation can be encouraging, but it cannot tell you whether a change helped other customers asking different questions."
+      },
+      {
+        "term": "A passing case",
+        "meaning": "Decide how to score before running it",
+        "voice": "For each case, write the expected action and the important facts in the answer. Two polite replies can use different words and both be correct. A polite reply that invents a delivery date should fail."
+      },
+      {
+        "term": "A comparison",
+        "meaning": "Use the same cases again",
+        "voice": "To compare two versions, keep the cases and the rules for judging them the same. Then look at the particular cases that changed, as well as the total number that passed."
+      }
+    ]
+  },
+  "m6-1": {
+    "treatment": "compare",
+    "concept": [
+      {
+        "term": "Guidance",
+        "meaning": "What the assistant should say",
+        "voice": "A responsible assistant needs clear limits. A written instruction can help it explain a policy to a customer. If a mistake could move money or change someone’s account, the application needs a way to enforce the limit too."
+      },
+      {
+        "term": "A guardrail",
+        "meaning": "A check before an action",
+        "voice": "A guardrail is a check the program applies regardless of what the assistant asks for. Think of a till that requires a supervisor’s approval for a large refund. The cashier cannot remove that requirement just by describing the refund differently."
+      },
+      {
+        "term": "Human approval",
+        "meaning": "A person decides before the change",
+        "voice": "Match each permission to the task. Reading an order and issuing money have different consequences. Keep customer information private, and give the customer a clear explanation when a person must take over."
+      }
+    ]
+  },
+  "m6-2": {
+    "treatment": "compare",
+    "concept": [
+      {
+        "term": "Cost",
+        "meaning": "What one completed answer used",
+        "voice": "A single customer reply can require several calls to a model. A call sends text in and receives text back. The service measures that text in pieces called tokens. The total cost of an answer adds up across the calls."
+      },
+      {
+        "term": "Latency",
+        "meaning": "How long the customer waits",
+        "voice": "Latency is waiting time. It includes time spent waiting for tools as well as the model. Seeing the first words sooner and finishing the whole job sooner are related but different improvements."
+      },
+      {
+        "term": "Monitoring",
+        "meaning": "Record what happened over many requests",
+        "voice": "Monitoring means recording enough about each request to spot changes across the day. A sudden rise in waiting time means more when you can also see whether a particular lookup started failing."
+      }
+    ]
+  },
+  "m6-3": {
+    "treatment": "route",
+    "concept": [
+      {
+        "term": "Browser",
+        "meaning": "Where the customer types",
+        "voice": "Deployment means making a program available for other people to use. A script on your laptop works while you run it. A shop’s customer needs a service that can receive a message even when your laptop is closed."
+      },
+      {
+        "term": "Server",
+        "meaning": "A computer running the service",
+        "voice": "The browser displays the chat. A server runs the assistant. An API endpoint is an address on that server that accepts a particular kind of request, such as a message from the chat box."
+      },
+      {
+        "term": "Session",
+        "meaning": "Keep one conversation separate",
+        "voice": "Several customers may use the same service at the same time. A session identifies a conversation. The server must check who can access it before loading its history or returning its information."
+      }
+    ]
+  },
+  "m6-4": {
+    "treatment": "route",
+    "concept": [
+      {
+        "term": "Specialist",
+        "meaning": "One helper with a limited job",
+        "voice": "A multi-agent system is a program that divides work among several AI helpers. Each specialist can have its own instructions and tools. Think of a shop with a wholesale desk and a separate inventory desk."
+      },
+      {
+        "term": "Coordinator",
+        "meaning": "Send the right work to each helper",
+        "voice": "A coordinator reads the request, decides who should handle each part, and brings the results together. A handoff is the act of passing a task and the information needed to complete it."
+      },
+      {
+        "term": "Framework",
+        "meaning": "Software that organizes these steps",
+        "voice": "A framework supplies reusable software for running the helpers and passing messages between them. It does not decide whether your team needs more helpers. That choice depends on which problems a single helper is actually having."
+      }
+    ]
+  },
+  "m6-5": {
+    "treatment": "cycle",
+    "concept": [
+      {
+        "term": "Follow a request",
+        "meaning": "What does the customer need?",
+        "voice": "An agent combines several small ideas. It reads a request, decides which fact is missing, uses a permitted tool, and checks the result. Memory helps it carry useful details from one turn into the next."
+      },
+      {
+        "term": "Check the answer",
+        "meaning": "Where did each fact come from?",
+        "voice": "You can understand a whole project by following one question all the way through. Ask what was known at the start, what was learned along the way, and which piece of evidence supports the final reply."
+      },
+      {
+        "term": "Choose what to learn",
+        "meaning": "Start with a failure you can repeat",
+        "voice": "Your next learning project can grow out of one weak spot. A bad document search calls for practice finding better passages. Unpredictable results across many tickets call for better tests."
+      }
+    ]
+  }
+}

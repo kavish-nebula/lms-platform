@@ -1,0 +1,133 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:05.388
+A tool gives an assistant a way to look up information or take an action.
+
+00:00:05.388 --> 00:00:09.180
+Memory keeps selected information available later.
+
+00:00:09.180 --> 00:00:16.445
+Combining them lets a customer ask a follow-up without explaining the entire situation again.
+
+00:00:16.445 --> 00:00:20.886
+While building, use a made-up order whose details you control.
+
+00:00:20.886 --> 00:00:23.954
+Developers sometimes call this a fixture.
+
+00:00:23.954 --> 00:00:31.049
+You can check the assistant’s answer without depending on a real shipment that might change during the test.
+
+00:00:31.049 --> 00:00:37.547
+When the conversation continues, the program should load just the relevant facts for this customer.
+
+00:00:37.547 --> 00:00:43.500
+It still needs to look up any information that might have changed since the last question.
+
+00:00:43.500 --> 00:00:46.760
+A customer asks Scout about a test order.
+
+00:00:46.760 --> 00:00:51.947
+The shop gives Scout a read tool, which can look at the order without changing it.
+
+00:00:51.947 --> 00:00:56.779
+A separate action such as issuing a refund needs different checks.
+
+00:00:56.779 --> 00:00:59.566
+For this question a read is enough.
+
+00:00:59.566 --> 00:01:04.327
+There is no reason to give the assistant permission to move money.
+
+00:01:04.327 --> 00:01:09.141
+Scout doesn't need Orbit's real systems to be built and tested.
+
+00:01:09.141 --> 00:01:16.674
+A small JSON file in the data folder holds the five sample orders, each with the customer's email.
+
+00:01:16.674 --> 00:01:22.659
+Grace's boots were delivered 62 days ago, so she's a ready-made late return.
+
+00:01:22.659 --> 00:01:28.815
+One tracking number always times out, so you can test what Scout does when the carrier fails.
+
+00:01:28.815 --> 00:01:33.949
+And a stock dictionary lets you decide what is in stock and what isn't.
+
+00:01:33.949 --> 00:01:40.039
+With fake data, every hard case happens on demand, the same way every time.
+
+00:01:40.039 --> 00:01:42.967
+Run the lookup with the known order number.
+
+00:01:42.967 --> 00:01:45.159
+The test record says shipped.
+
+00:01:45.159 --> 00:01:49.086
+Check that the actual result and Scout’s reply agree.
+
+00:01:49.086 --> 00:01:52.548
+Save the customer’s order number for the next turn.
+
+00:01:52.548 --> 00:02:00.593
+There is a useful distinction here: the number identifies the order, while its current shipping status can change.
+
+00:02:00.593 --> 00:02:05.183
+Write shipped into a pretend order record before speaking to Scout.
+
+00:02:05.183 --> 00:02:10.551
+Because you chose the value yourself, you already know what a correct lookup should say.
+
+00:02:10.551 --> 00:02:15.119
+There is no need to guess whether a real warehouse changed its mind.
+
+00:02:15.119 --> 00:02:21.136
+Change only that value to processing and repeat the enquiry with a fresh lookup.
+
+00:02:21.136 --> 00:02:29.873
+If the answer still says shipped, inspect whether the program is repeating yesterday's message instead of reading today's record.
+
+00:02:29.873 --> 00:02:32.556
+This is where tools and memory meet.
+
+00:02:32.556 --> 00:02:36.773
+Remembering which order the customer means helps the next turn.
+
+00:02:36.773 --> 00:02:42.950
+Reusing an old parcel status as if it were current defeats the purpose of the tool.
+
+00:02:42.950 --> 00:02:46.950
+Keep the identifier and check the changing fact.
+
+00:02:46.950 --> 00:02:50.370
+Here is what happens to memory on every turn.
+
+00:02:50.370 --> 00:02:53.458
+A new message arrives from the customer.
+
+00:02:53.458 --> 00:02:57.472
+Any order number or email in it is pinned as a fact.
+
+00:02:57.472 --> 00:03:01.988
+The last ten customer turns are kept, and older ones are trimmed.
+
+00:03:01.988 --> 00:03:06.865
+Scout sees the system prompt, the pinned facts and those recent turns.
+
+00:03:06.865 --> 00:03:13.533
+Its final reply is saved as a turn, while the tool calls behind it stay inside that run.
+
+00:03:13.533 --> 00:03:17.688
+The rule is simple: trim the chat, never the facts.
+
+00:03:17.688 --> 00:03:21.276
+Now the customer asks, and where is it today?
+
+00:03:21.276 --> 00:03:28.031
+Scout loads the same order number without asking again and uses it for a fresh lookup if needed.
+
+00:03:28.031 --> 00:03:30.597
+Test a second customer as well.
+
+00:03:30.597 --> 00:03:38.308
+Remembering an identifier is useful only when it belongs to the person who is asking the follow-up.

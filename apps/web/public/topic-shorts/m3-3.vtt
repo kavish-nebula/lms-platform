@@ -1,0 +1,130 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:04.971
+A tool gives a program an ability it needs for a particular job.
+
+00:00:04.971 --> 00:00:07.953
+A web search can find a recent notice.
+
+00:00:07.953 --> 00:00:13.407
+You still need to read the source and check whether it covers the right place and date.
+
+00:00:13.407 --> 00:00:16.962
+A calculator does arithmetic using rules.
+
+00:00:16.962 --> 00:00:21.424
+It is useful when a single wrong digit changes the answer.
+
+00:00:21.424 --> 00:00:28.061
+The surrounding program still has to select the right numbers and explain what the result measures.
+
+00:00:28.061 --> 00:00:32.851
+A file reader opens a document the program is allowed to use.
+
+00:00:32.851 --> 00:00:36.844
+A shop policy may exist only in that document.
+
+00:00:36.844 --> 00:00:43.265
+Giving a helper a policy to read does not require giving it access to every file.
+
+00:00:43.265 --> 00:00:49.569
+Imagine a group asks Orbit about buying seven items priced at twenty-four dollars each.
+
+00:00:49.569 --> 00:00:52.412
+There is also news of a carrier delay.
+
+00:00:52.412 --> 00:00:58.898
+The customer wants the total, whether the delay affects delivery, and the shop’s return terms.
+
+00:00:58.898 --> 00:01:05.084
+Split that message into three questions because each needs a different kind of evidence.
+
+00:01:05.084 --> 00:01:10.314
+For the carrier question, search for a current notice and check the affected route.
+
+00:01:10.314 --> 00:01:14.713
+For the total, send twenty-four times seven to a calculator.
+
+00:01:14.713 --> 00:01:21.053
+Seven groups of twenty dollars make one hundred forty; seven groups of four add twenty-eight.
+
+00:01:21.053 --> 00:01:27.462
+The result is one hundred sixty-eight dollars before any unspecified charges.
+
+00:01:27.462 --> 00:01:32.446
+The file reader lets Scout open Orbit's documents, and only those.
+
+00:01:32.446 --> 00:01:36.758
+Scout asks for a file by name, such as the policy file.
+
+00:01:36.758 --> 00:01:43.500
+Your code joins that name to the docs folder and resolves it into a full, absolute path.
+
+00:01:43.500 --> 00:01:49.082
+Then it checks that the result is still inside docs, and refuses if it is not.
+
+00:01:49.082 --> 00:01:59.689
+It rejects names that point outside the approved document folder. For this exercise a policy question needs access only to that folder.
+
+00:01:59.689 --> 00:02:04.532
+Only then does it read the file and send the text back to Scout.
+
+00:02:04.532 --> 00:02:10.243
+Imagine answering a customer who wants both a total and a shipping update.
+
+00:02:10.243 --> 00:02:12.756
+Write down the arithmetic first.
+
+00:02:12.756 --> 00:02:16.739
+Seven times twenty-four gives one hundred sixty-eight.
+
+00:02:16.739 --> 00:02:22.204
+Yesterday's news or a policy document cannot improve that calculation.
+
+00:02:22.204 --> 00:02:25.036
+The second part needs a different source.
+
+00:02:25.036 --> 00:02:32.964
+A public delay notice might cover another region, so read the route and date before applying it to this order.
+
+00:02:32.964 --> 00:02:37.308
+A search result is the start of a check, not its conclusion.
+
+00:02:37.308 --> 00:02:43.572
+If the customer also asks about returning an item, open the shop's approved policy.
+
+00:02:43.572 --> 00:02:47.182
+Point each sentence of the reply back to its source.
+
+00:02:47.182 --> 00:02:54.392
+Splitting the question this way helps you give each tool only the access its own job requires.
+
+00:02:54.392 --> 00:02:58.147
+Put the three side by side and a pattern appears.
+
+00:02:58.147 --> 00:03:04.061
+Web search reaches the public web, so you cap it and switch it on only where it is needed.
+
+00:03:04.061 --> 00:03:09.758
+The calculator reaches numbers only, guarded by an allow-list of operators.
+
+00:03:09.758 --> 00:03:14.166
+The file reader reaches one folder, guarded by the path check.
+
+00:03:14.166 --> 00:03:21.754
+Compare a tool that runs any Python the model writes: it reaches everything, and there is no simple guard.
+
+00:03:21.754 --> 00:03:28.412
+The principle is called least privilege: give each tool the least power that still does the job.
+
+00:03:28.412 --> 00:03:35.314
+For the return terms, open the shop’s approved policy document and find the relevant passage.
+
+00:03:35.314 --> 00:03:42.900
+A carrier notice cannot tell you the shop’s return window, and the calculator cannot promise a delivery date.
+
+00:03:42.900 --> 00:03:45.665
+Build the reply from the three results.
+
+00:03:45.665 --> 00:03:50.328
+If the notice does not mention this route, leave that part open.

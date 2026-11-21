@@ -1,0 +1,139 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:07.511
+Building an agent step by step means keeping a version that works while you add one small ability at a time.
+
+00:00:07.511 --> 00:00:13.615
+If you add six things at once and the result breaks, all six become possible causes.
+
+00:00:13.615 --> 00:00:19.165
+Before a change, choose a simple input and write down what you expect to happen.
+
+00:00:19.165 --> 00:00:21.731
+This turns trying it into a test.
+
+00:00:21.731 --> 00:00:26.095
+A reply that sounds friendly may still give the wrong fact.
+
+00:00:26.095 --> 00:00:31.908
+After the change, compare the actual action and reply with the expected ones.
+
+00:00:31.908 --> 00:00:37.351
+Keep a passing example so you can repeat it when the next piece is added.
+
+00:00:37.351 --> 00:00:45.439
+Orbit starts with a tiny version of Scout that sends one customer message to a model and displays a reply.
+
+00:00:45.439 --> 00:00:47.312
+Ask about an order.
+
+00:00:47.312 --> 00:00:51.559
+The honest answer at this point is that Scout cannot look it up.
+
+00:00:51.559 --> 00:00:59.301
+Getting that reply confirms the basic message path before anyone adds access to order records.
+
+00:00:59.301 --> 00:01:01.901
+Here is the order we build Scout in.
+
+00:01:01.901 --> 00:01:07.140
+First the bare loop, which should answer honestly that it can't look anything up.
+
+00:01:07.140 --> 00:01:14.408
+Then the get order tool, checked by asking the same question and seeing one call with the right order number.
+
+00:01:14.408 --> 00:01:19.647
+Then the track parcel tool, so the reply can say when the parcel will arrive.
+
+00:01:19.647 --> 00:01:23.853
+Then the other four tools, each tested with its own question.
+
+00:01:23.853 --> 00:01:28.615
+Finally memory and the trace, tested with a short two-turn chat.
+
+00:01:28.615 --> 00:01:34.299
+Each row ends with Scout running, and you never add two new pieces at once.
+
+00:01:34.299 --> 00:01:37.174
+Add one lookup for a known test order.
+
+00:01:37.174 --> 00:01:39.538
+Ask the same question again.
+
+00:01:39.538 --> 00:01:45.378
+This time you expect to see an order number sent to the lookup and a status returned.
+
+00:01:45.378 --> 00:01:49.466
+Check the actual number as well as the final reply.
+
+00:01:49.466 --> 00:01:54.416
+A model that happened to guess shipped would not prove the new tool ran.
+
+00:01:54.416 --> 00:01:59.560
+Save one small question and the answer you expect before adding a tool.
+
+00:01:59.560 --> 00:02:04.396
+At this stage the assistant can explain its limitation honestly.
+
+00:02:04.396 --> 00:02:09.316
+This gives you a working starting point you can reproduce after a change.
+
+00:02:09.316 --> 00:02:14.139
+Now wire in the order lookup and use exactly the same question.
+
+00:02:14.139 --> 00:02:17.180
+A better sounding reply is not enough.
+
+00:02:17.180 --> 00:02:22.110
+Find the requested function, its order number and the returned status.
+
+00:02:22.110 --> 00:02:25.888
+Those are direct signs that the new connection worked.
+
+00:02:25.888 --> 00:02:28.828
+Imagine a run now says unknown tool.
+
+00:02:28.828 --> 00:02:32.502
+Check whether the request named the tool you intended.
+
+00:02:32.502 --> 00:02:36.408
+If it did, inspect the application's mapping next.
+
+00:02:36.408 --> 00:02:43.193
+Keeping the old test and changing one piece makes the failure local enough to investigate.
+
+00:02:43.193 --> 00:02:47.130
+Now try a question that never needed an order lookup.
+
+00:02:47.130 --> 00:02:52.008
+Did adding the new ability cause Scout to use it unnecessarily?
+
+00:02:52.008 --> 00:02:56.672
+Keep both tests: one that needs the tool and one that does not.
+
+00:02:56.672 --> 00:03:03.437
+The next time a change breaks the first or second case, you have a small place to start investigating.
+
+00:03:03.437 --> 00:03:07.033
+For example, ask for the shop’s opening hours.
+
+00:03:07.033 --> 00:03:15.502
+A correct answer using the supplied hours, with zero order lookups, gives you a simple check on that second case.
+
+00:03:15.502 --> 00:03:18.031
+Here is why the habit pays off.
+
+00:03:18.031 --> 00:03:22.782
+Priya adds the track parcel tool: the definition and the function.
+
+00:03:22.782 --> 00:03:27.959
+She runs the same question, and the trace shows an error: unknown tool.
+
+00:03:27.959 --> 00:03:34.190
+Only one thing changed since the last good run, so she looks straight at the new tool's wiring.
+
+00:03:34.190 --> 00:03:40.324
+She had forgotten to add it to the dispatcher. One line, run again, and it passes.
+
+00:03:40.324 --> 00:03:45.645
+In an all-at-once build, that same error would hide among a dozen others.

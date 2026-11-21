@@ -1,0 +1,136 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:03.897
+When a tool cannot give an answer, first find out why.
+
+00:00:03.897 --> 00:00:09.500
+A completed search that finds no order is different from a search that never finished.
+
+00:00:09.500 --> 00:00:13.985
+Only the first tells you anything about the records that were checked.
+
+00:00:13.985 --> 00:00:17.297
+A timeout means the program stopped waiting.
+
+00:00:17.297 --> 00:00:21.385
+The service might be busy or temporarily unreachable.
+
+00:00:21.385 --> 00:00:26.369
+It does not tell you that a parcel is missing, delivered, or even late.
+
+00:00:26.369 --> 00:00:32.077
+An edge case is a less common situation the program still needs to handle.
+
+00:00:32.077 --> 00:00:41.933
+Decide which problems could improve after a short wait, which require corrected information, and when to pass the question to a person.
+
+00:00:41.933 --> 00:00:45.609
+Elena asks whether her climbing rope was delivered.
+
+00:00:45.609 --> 00:00:50.913
+Scout contacts the carrier, but no reply arrives before the time limit.
+
+00:00:50.913 --> 00:00:54.711
+Imagine the tool simply returns an empty box.
+
+00:00:54.711 --> 00:01:00.516
+The assistant might treat it as a normal result and tell Elena her rope arrived.
+
+00:01:00.516 --> 00:01:04.135
+There is nothing in that box to support the claim.
+
+00:01:04.135 --> 00:01:07.989
+Some errors are worth a second try, and some are not.
+
+00:01:07.989 --> 00:01:13.932
+A timeout is usually temporary, so retry, waiting a little longer each time.
+
+00:01:13.932 --> 00:01:20.621
+A four twenty-nine means slow down, so wait as long as the API asks, then retry.
+
+00:01:20.621 --> 00:01:26.949
+Server errors in the five hundreds are often brief, so a couple of retries is reasonable.
+
+00:01:26.949 --> 00:01:34.749
+But a four oh four, tracking number not found, will fail the same way every time, so report it straight away.
+
+00:01:34.749 --> 00:01:41.299
+And a four oh one, a bad API key, needs a person on your team, not another attempt.
+
+00:01:41.299 --> 00:01:46.131
+Retry what might work next time, and report what will not.
+
+00:01:46.131 --> 00:01:51.028
+Instead, return a clear message saying the carrier lookup timed out.
+
+00:01:51.028 --> 00:01:56.779
+The application can allow a short wait and one further attempt in this example.
+
+00:01:56.779 --> 00:01:59.654
+Ask what changes on the second try.
+
+00:01:59.654 --> 00:02:03.147
+If a carrier record arrives, Scout can read it.
+
+00:02:03.147 --> 00:02:08.383
+If the same timeout returns, Scout still lacks a delivery status.
+
+00:02:08.383 --> 00:02:13.518
+Retries belong inside the tool, where your code can handle them quietly.
+
+00:02:13.518 --> 00:02:16.008
+Try the call up to three times.
+
+00:02:16.008 --> 00:02:22.046
+Catch only the temporary errors, like a timeout, and let everything else fail at once.
+
+00:02:22.046 --> 00:02:30.210
+Between tries, wait a little longer each time, which is called backoff, so a struggling server gets room to recover.
+
+00:02:30.210 --> 00:02:38.106
+If the last try fails too, raise a clear error, and the tool loop reports it to the model with the is error flag.
+
+00:02:38.106 --> 00:02:43.036
+Keep the total short, because a customer is waiting while you retry.
+
+00:02:43.036 --> 00:02:48.168
+Imagine calling a carrier and hearing silence until the line cuts off.
+
+00:02:48.168 --> 00:02:52.428
+You cannot tell from that silence whether the parcel is moving.
+
+00:02:52.428 --> 00:02:57.295
+It tells you something about the enquiry, not what happened to the parcel.
+
+00:02:57.295 --> 00:03:02.343
+Try the enquiry once more after the agreed wait in this example.
+
+00:03:02.343 --> 00:03:06.973
+If the carrier replies, replace the error with the returned status.
+
+00:03:06.973 --> 00:03:13.342
+If the same timeout comes back, the second attempt has used time without adding evidence.
+
+00:03:13.342 --> 00:03:19.437
+Now imagine the carrier answered clearly that it did not recognise the tracking number.
+
+00:03:19.437 --> 00:03:24.100
+Waiting and sending the same number again is unlikely to help.
+
+00:03:24.100 --> 00:03:26.848
+Ask for a corrected number instead.
+
+00:03:26.848 --> 00:03:30.254
+The next step follows from the kind of failure.
+
+00:03:30.254 --> 00:03:35.325
+Put a limit on the attempts so Elena is not left waiting indefinitely.
+
+00:03:35.325 --> 00:03:40.211
+Tell her the carrier status could not be confirmed and offer a follow-up.
+
+00:03:40.211 --> 00:03:46.765
+If the number itself were invalid, waiting would accomplish nothing; ask for the correct number.
+
+00:03:46.765 --> 00:03:52.227
+Good recovery starts with preserving the meaning of the original failure.

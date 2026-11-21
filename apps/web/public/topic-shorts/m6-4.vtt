@@ -1,0 +1,127 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:06.432
+A multi-agent system is a program that divides work among several AI helpers.
+
+00:00:06.432 --> 00:00:10.287
+Each specialist can have its own instructions and tools.
+
+00:00:10.287 --> 00:00:15.077
+Think of a shop with a wholesale desk and a separate inventory desk.
+
+00:00:15.077 --> 00:00:22.247
+A coordinator reads the request, decides who should handle each part, and brings the results together.
+
+00:00:22.247 --> 00:00:27.998
+A handoff is the act of passing a task and the information needed to complete it.
+
+00:00:27.998 --> 00:00:35.209
+A framework supplies reusable software for running the helpers and passing messages between them.
+
+00:00:35.209 --> 00:00:39.222
+It does not decide whether your team needs more helpers.
+
+00:00:39.222 --> 00:00:44.748
+That choice depends on which problems a single helper is actually having.
+
+00:00:44.748 --> 00:00:51.439
+A customer asks Orbit about terms for buying tents in bulk and whether enough tents are available.
+
+00:00:51.439 --> 00:00:53.909
+There are two facts to establish.
+
+00:00:53.909 --> 00:00:57.006
+The wholesale rules describe the terms.
+
+00:00:57.006 --> 00:01:00.743
+The inventory record shows the quantity available.
+
+00:01:00.743 --> 00:01:07.313
+Knowing one cannot establish the other, so the coordinator keeps the two questions separate.
+
+00:01:07.313 --> 00:01:10.625
+Splitting is not free, so weigh it honestly.
+
+00:01:10.625 --> 00:01:16.901
+One agent means one prompt and one loop to test, and the fewest model calls per answer.
+
+00:01:16.901 --> 00:01:23.005
+Its weakness is crowding: as tools and jobs pile up, it starts to mix them up.
+
+00:01:23.005 --> 00:01:31.670
+Several agents get small, focused prompts, but every request now pays for extra calls to route it and hand it over.
+
+00:01:31.670 --> 00:01:40.056
+There are also more places to break, and one customer's trace now spans several agents, so debugging takes longer.
+
+00:01:40.056 --> 00:01:47.535
+The rule of thumb: start with one agent, measure it, and split only when your tests show it struggling.
+
+00:01:47.535 --> 00:01:54.311
+It sends the buying question to the wholesale helper and the stock question to the inventory helper.
+
+00:01:54.311 --> 00:01:57.814
+Each needs the item and requested quantity.
+
+00:01:57.814 --> 00:02:03.973
+When the results return, the coordinator can combine the terms with the available quantity.
+
+00:02:03.973 --> 00:02:12.475
+If the inventory answer is missing, it should say availability is unconfirmed rather than promise the order.
+
+00:02:12.475 --> 00:02:15.616
+Here is one request moving through the team.
+
+00:02:15.616 --> 00:02:20.262
+A shop owner asks for forty green two person tents for their store.
+
+00:02:20.262 --> 00:02:27.378
+The coordinator classifies it as wholesale and passes a short summary to the wholesale agent.
+
+00:02:27.378 --> 00:02:33.320
+The wholesale agent checks stock and finds only four of those tents in the warehouse.
+
+00:02:33.320 --> 00:02:40.032
+It replies honestly with what is available and hands the rest of the order to Maya to confirm.
+
+00:02:40.032 --> 00:02:48.105
+Notice that agents pass short summaries to each other rather than whole conversations, which keeps every call small.
+
+00:02:48.105 --> 00:02:51.075
+Read the shop owner's enquiry twice.
+
+00:02:51.075 --> 00:02:56.282
+How many green tents can Orbit supply, and under what wholesale terms?
+
+00:02:56.282 --> 00:03:02.695
+Being able to answer the terms does not establish that forty tents are physically available.
+
+00:03:02.695 --> 00:03:08.524
+Give the inventory helper a narrow question with the exact style, colour and quantity.
+
+00:03:08.524 --> 00:03:11.812
+Four available now is useful evidence.
+
+00:03:11.812 --> 00:03:18.876
+It is not permission for the wholesale helper to promise the remaining thirty-six on a particular date.
+
+00:03:18.876 --> 00:03:25.289
+The coordinator can report the confirmed quantity and hand the outstanding question to Maya.
+
+00:03:25.289 --> 00:03:28.622
+Read the joined reply as the shop owner.
+
+00:03:28.622 --> 00:03:34.863
+It should be clear which part you can count on today and which part still needs confirmation.
+
+00:03:34.863 --> 00:03:39.058
+Run the same request through one assistant with both tools.
+
+00:03:39.058 --> 00:03:46.962
+Compare the accuracy of the answer, how long it took, and whether the item and quantity survived each handoff.
+
+00:03:46.962 --> 00:03:52.330
+The extra specialists earn their place only if they solve a measurable problem.
+
+00:03:52.330 --> 00:03:57.686
+Extra messages by themselves do not make the service more capable.

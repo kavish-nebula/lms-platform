@@ -49,6 +49,12 @@ No uploaded reference or learner profile is sent to an external model by this
 workflow. Optional AI drafting explicitly uses the configured text provider;
 Codex-authored drafts can be saved without that call.
 
+## Topic animation for new courses
+
+The Stage 4 Codex prompt selects `topic-animation`. Design each worked example around a visible change specific to that topic. The module skill describes the editable SVG paths, labels and narration-relative keys. The Player and MP4 follow those keys through the full spoken beat. A document scene can still highlight the source line that supports a decision.
+
+This style uses local Kokoro Heart at 0.84× speed. Sentences have a 0.30-second pause, questions 0.46 seconds, and the last sentence in a scene 0.65 seconds before its visual hold. The saved storyboard style selects the voice and audio cache for its revision.
+
 ## Playback and exports
 
 `reference-cinema` is additive to the existing classic treatment. Every beat can

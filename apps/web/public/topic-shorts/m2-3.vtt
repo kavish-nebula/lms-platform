@@ -1,0 +1,145 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:03.556
+A prompt is a request you give an AI model.
+
+00:00:03.556 --> 00:00:08.847
+Writing a useful prompt starts much like asking a new colleague for help.
+
+00:00:08.847 --> 00:00:13.119
+Tell them what you want them to produce and who is going to read it.
+
+00:00:13.119 --> 00:00:16.249
+Then include the facts needed to do the job.
+
+00:00:16.249 --> 00:00:20.809
+If the reader needs a shop policy, give the model that policy.
+
+00:00:20.809 --> 00:00:26.199
+Otherwise it may fill in the missing details with something that sounds familiar.
+
+00:00:26.199 --> 00:00:29.170
+Describe the useful shape of the answer.
+
+00:00:29.170 --> 00:00:36.713
+Two short sentences asking for one missing detail is a different task from writing a long explanation.
+
+00:00:36.713 --> 00:00:41.161
+A clear instruction makes the result easier to review.
+
+00:00:41.161 --> 00:00:45.463
+A customer emails Orbit asking to return a pair of boots.
+
+00:00:45.463 --> 00:00:48.486
+Maya’s first prompt just says handle this.
+
+00:00:48.486 --> 00:00:50.645
+What should the model do?
+
+00:00:50.645 --> 00:00:55.630
+It might summarize the email, write a reply, or promise a refund.
+
+00:00:55.630 --> 00:01:01.816
+All three sound like handling the message, yet only one may serve Maya’s purpose.
+
+00:01:01.816 --> 00:01:03.637
+Maya tries again.
+
+00:01:03.637 --> 00:01:15.146
+She asks for a short reply to the customer, gives the rule about eligible unused items within thirty days of delivery, and says to ask for any missing facts.
+
+00:01:15.146 --> 00:01:19.703
+Now the task has a reader, a source, and a clear stopping point.
+
+00:01:19.703 --> 00:01:22.897
+The purchase date was never supplied.
+
+00:01:22.897 --> 00:01:27.059
+Pretend you are the person who has to send Maya's draft.
+
+00:01:27.059 --> 00:01:30.669
+Underline only what the customer actually wrote.
+
+00:01:30.669 --> 00:01:36.069
+If the email says the boots are unused, that is evidence about their condition.
+
+00:01:36.069 --> 00:01:39.574
+It tells you nothing about their delivery date.
+
+00:01:39.574 --> 00:01:42.841
+Place the thirty-day rule next to the email.
+
+00:01:42.841 --> 00:01:45.802
+Which part of the rule can you already check?
+
+00:01:45.802 --> 00:01:48.411
+Which part still needs a question?
+
+00:01:48.411 --> 00:01:53.950
+The answer to that second question belongs in the prompt that requests a draft.
+
+00:01:53.950 --> 00:01:57.986
+Compare your boots qualify with when were your boots delivered.
+
+00:01:57.986 --> 00:02:03.013
+The second sentence moves the case forward without promising a refund.
+
+00:02:03.013 --> 00:02:09.849
+That is a concrete way to judge whether a prompt improved the work the customer actually sees.
+
+00:02:09.849 --> 00:02:13.300
+Examples are one of the strongest tools you have.
+
+00:02:13.300 --> 00:02:19.033
+Start with the instruction: tag each email as where is order, return or other.
+
+00:02:19.033 --> 00:02:24.520
+Then show a solved example: has my tent shipped yet is tagged where is order.
+
+00:02:24.520 --> 00:02:29.591
+And another: boots that pinch and need sending back are tagged return.
+
+00:02:29.591 --> 00:02:34.330
+Finally, give the new email, and the model continues the pattern.
+
+00:02:34.330 --> 00:02:40.752
+This is called few-shot prompting: a few solved examples, shown before the real task.
+
+00:02:40.752 --> 00:02:47.750
+Keep your examples varied, because the model copies their length and wording as well as their meaning.
+
+00:02:47.750 --> 00:02:51.019
+The last habit is breaking big tasks down.
+
+00:02:51.019 --> 00:02:58.815
+Customer emails are messy: one message can ask about an order, a return and a size, all at once.
+
+00:02:58.815 --> 00:03:05.686
+So ask the model to first pull out the facts: the order number, the item and what the customer wants.
+
+00:03:05.686 --> 00:03:08.890
+Then to work out which policy rule applies.
+
+00:03:08.890 --> 00:03:13.373
+And only then to draft the reply, short and within policy.
+
+00:03:13.373 --> 00:03:18.848
+Smaller steps are easier for the model to get right, and easier for you to check.
+
+00:03:18.848 --> 00:03:24.470
+Later in the course, each of these steps can become its own call, or a tool.
+
+00:03:24.470 --> 00:03:34.392
+A possible draft says that unused boots in their original packaging can be returned within thirty days, then asks when the boots arrived.
+
+00:03:34.392 --> 00:03:36.680
+Read that beside the email.
+
+00:03:36.680 --> 00:03:40.917
+It explains the rule without inventing a delivery date.
+
+00:03:40.917 --> 00:03:45.774
+Test the instruction on another email that already includes the date.
+
+00:03:45.774 --> 00:03:49.552
+A useful prompt should help with both cases.
