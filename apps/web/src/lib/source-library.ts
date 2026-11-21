@@ -19,7 +19,7 @@ export const ModuleInstructions = z.object({
 export const SourceLibrary = z.object({
   version: z.literal(1),
   miniProject: MiniProjectPlan.optional(),
-  modules: z.array(z.object({ id, title: z.string().max(200), scenarioLabEnabled: z.boolean().optional(), instructions: ModuleInstructions.optional(), topics: z.array(z.object({ id, title: z.string().max(200) }).strict()).max(40) }).strict()).max(12),
+  modules: z.array(z.object({ id, title: z.string().max(200), scenarioLabEnabled: z.boolean().optional(), problemHookPrompt: z.string().max(12000).optional(), instructions: ModuleInstructions.optional(), topics: z.array(z.object({ id, title: z.string().max(200) }).strict()).max(40) }).strict()).max(12),
   sources: z.array(z.object({
     id, revision: z.number().int().positive(), title: z.string().max(200),
     purpose: SourcePurpose.optional(),

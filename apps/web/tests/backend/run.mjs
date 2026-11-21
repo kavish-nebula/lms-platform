@@ -13,6 +13,8 @@ suites["sme-activities"] = "sme-activities-test.ts";
 suites["scenario-lab"] = "scenario-lab-test.ts";
 suites["sme-mini-project"] = "sme-mini-project-test.ts";
 suites["scenario-lab"] = "scenario-lab-test.ts";
+suites["module-workflow"]="module-workflow-test.ts";
+suites["hook-prompt"]="hook-prompt-test.ts";
 const suite = process.argv[2] === "longform" ? "longform-test.ts" : process.argv[2] === "production-audio" ? "production-audio-test.ts" : process.argv[2] === "module-production" ? "module-production-test.ts" : process.argv[2] === "sme-review" ? "sme-review-test.ts" : process.argv[2] === "creator-blueprints" ? "creator-blueprints-test.ts" : process.argv[2] === "content-creator" ? "content-creator-test.ts" : process.argv[2] === "authored-course" ? "authored-course-test.ts" : suites[process.argv[2]] || "backend-test.ts";
 // generated files go to the gitignored .data folder
 const out = path.join(here, "..", "..", ".data", "tests");

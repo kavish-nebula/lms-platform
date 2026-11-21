@@ -325,3 +325,7 @@ Quiz authoring opens a blank first question with four options immediately, inclu
 One course-end Mini project workspace follows all module editors, including the three-module course layout. It uses labelled theme-aware fields and numbered task cards, with optional expandable coverage mappings and a button to copy the existing assembled project as a draft. Task requirements appear in a collapsed Tasks to accomplish panel on the learner project pages, preserving the guided workspace's step-by-step layout.
 
 The SME module editor now places an optional Scenario Lab section between Guided practice and Module quiz. A labelled native checkbox independently controls each module and explains generated-versus-custom content and retention when disabled. Custom scenarios use labelled, stable-ID fieldsets for name, situation, task and expected evidence, plus source/objective mapping. The form uses existing panel, border, text and brand tokens, with no added motion.
+
+SME input includes a planned module count and module workspace selector. Stage 2 distinguishes independent module preparation from complete-course final assembly, using native labelled controls and existing theme tokens.
+
+Problem hook authoring has a labelled prompt textarea with help text and a starter-instructions action, before the source name/content. The starter action is disabled when a prompt is already entered, avoiding accidental replacement.

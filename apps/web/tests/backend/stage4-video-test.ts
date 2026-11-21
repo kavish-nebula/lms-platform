@@ -19,7 +19,7 @@ import fs from 'node:fs/promises';
 
 const owner=await getSessionUser(),d=await db();
 const before={profiles:await d.select().from(profiles),progress:await d.select().from(stepProgress),editions:await d.select().from(publishedAuthoredCourses),enrollments:await d.select().from(enrollments)};
-const brief:CourseBriefData={...EMPTY_BRIEF,title:'Stage 4 source workflow',subject:'AI literacy',audience:'Beginners',outcomes:'Review a draft',dependencies:'Sources before review',objectives:[{text:'Check a draft against supplied notes.',bloom:'Apply'}],sourceLibrary:{version:1,modules:[{id:'M1',title:'Check sources',topics:[{id:'T1',title:'Source checking'}]}],sources:[
+const brief:CourseBriefData={...EMPTY_BRIEF,title:'Stage 4 source workflow',subject:'AI literacy',audience:'Beginners',outcomes:'Review a draft',dependencies:'Sources before review',objectives:[{text:'Check a draft against supplied notes.',bloom:'Apply'}],sourceLibrary:{version:1,modules:[{id:'M1',title:'Check sources',problemHookPrompt:'Use short sentences and a visible unanswered decision.',topics:[{id:'T1',title:'Source checking'}]}],sources:[
  {id:'S1',revision:1,title:'Draft checking',scope:'topic',moduleId:'M1',topicId:'T1',objectiveIds:['O1'],text:'Use supplied notes to check a draft. Mark unstated details as unknown. Keep proposals separate from agreed work. A human reviews the result.',reference:'Synthetic test'},
  {id:'H1',revision:1,title:'An invented deadline',scope:'module',purpose:'problem-hook',moduleId:'M1',topicId:'',objectiveIds:['O1'],text:'A draft adds a deadline. The notes do not give a deadline. The learner must identify the unsupported commitment. The message is not sent.',reference:'Synthetic hook'},
 ]}};
@@ -30,6 +30,7 @@ await assert.rejects(stage4VisualTargets(owner.id,draft.id,'M1'),{code:'visual_a
 await saveSmeReview(owner,draft.id,started.run.id,{moduleId:'M1',expectedVersion:0,verdict:'approved',checklist:Object.fromEntries(Object.keys(EMPTY_SME_CHECKLIST).map(k=>[k,true])) as typeof EMPTY_SME_CHECKLIST,feedback:'Fixture reviewed.',priority:'Recommended'});
 const targets=await stage4VisualTargets(owner.id,draft.id,'M1');
 assert.deepEqual(targets.map(t=>t.videoId),['draft_M1_hook','draft_T1']);
+assert('problemHookPrompt' in targets[0].context);assert.equal(targets[0].context.problemHookPrompt, brief.sourceLibrary!.modules[0].problemHookPrompt);assert(!('problemHookPrompt' in targets[1].context));
 assert.deepEqual(targets[1].sourceIds,['S1']);assert.deepEqual(targets[0].sourceIds,['H1']);
 await assert.rejects(stage4VisualTargets('another-owner',draft.id,'M1'),{status:404});
 const target=targets[1],state=await visualLessonState(owner.id,draft.id,target.videoId);

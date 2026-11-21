@@ -10,7 +10,7 @@ import { ApiError } from './http';
 import { speakProduction, type ProductionSpeaker } from './production-speech';
 import type { ProductionRevision } from '@/lib/module-production';
 import type { ProductionAudioClip, ProductionAudioState, ProductionVoice } from '@/lib/production-audio';
-import { sameCourseBrief } from '@/lib/content-creator';
+import { blueprintMatchesBrief } from '@/lib/instructional-blueprint';
 import { LONGFORM_MAX_SECONDS, narrationDurationValid } from '@/lib/longform-production';
 
 const digest = (value: unknown) => createHash('sha256').update(JSON.stringify(value)).digest('hex');
@@ -63,7 +63,7 @@ export async function startProductionAudio(userId: string, courseId: string, run
     const [head] = await tx.select().from(creatorProductionJobs).where(eq(creatorProductionJobs.id, input.jobId));
     const [sme] = await tx.select().from(creatorSmeReviews).where(and(eq(creatorSmeReviews.runId, runId), eq(creatorSmeReviews.moduleId, moduleId))).orderBy(desc(creatorSmeReviews.version)).limit(1);
     const [review] = await tx.select().from(creatorScriptReviews).where(and(eq(creatorScriptReviews.jobId, input.jobId), eq(creatorScriptReviews.revisionId, input.revisionId))).orderBy(desc(creatorScriptReviews.version)).limit(1);
-    if (!course || !sameCourseBrief(course.brief, c.job.input.run.input.brief) || head.currentRevision !== c.revision.version || sme?.id !== c.job.input.approval.id || review?.id !== input.reviewId || review.verdict !== 'approved') throw new ApiError(409, 'script_approval_required', 'Source or script approval changed. Reload before generating audio.');
+    if (!course || !blueprintMatchesBrief(c.job.input.run.input, course.brief) || head.currentRevision !== c.revision.version || sme?.id !== c.job.input.approval.id || review?.id !== input.reviewId || review.verdict !== 'approved') throw new ApiError(409, 'script_approval_required', 'Source or script approval changed. Reload before generating audio.');
     await assertCurrentProduction(tx, head, userId, courseId, moduleId);
     if (!configured()) throw new ApiError(503, 'speech_unavailable', 'Enable the local Kokoro speech service to generate narration.');
     const voice = settings(c.job.input.unit?.kind === 'video', !!c.revision.content.lessonVideos); const voiceKey = digest(voice); const token = randomUUID();

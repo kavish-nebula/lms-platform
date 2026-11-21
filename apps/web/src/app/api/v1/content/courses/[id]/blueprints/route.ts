@@ -13,7 +13,7 @@ export const POST = handle(async (req: Request, { params }: Context) => {
   await getCreatorDraft(user.id, id);
   const input = await body(req, StartBlueprint);
   if (!aiConfigured()) throw new ApiError(503, "ai_unavailable", "Configure the server AI service before generating a blueprint. Your SME input remains saved.");
-  const { run, token } = await startBlueprint(user.id, id, input.revision);
+  const { run, token } = await startBlueprint(user.id, id, input.revision, input.moduleId);
   if (token) after(() => processBlueprint(run.id, token));
   return ok({ run }, run.status === "running" ? 202 : 200);
 });

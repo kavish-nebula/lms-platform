@@ -1,4 +1,5 @@
 'use client';
+import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import type { CourseBriefData } from '@/lib/content-creator';
@@ -25,6 +26,11 @@ export function ProblemHookSourceEditor({ unit, library, objectives, onChange }:
   }
   return <section aria-label={`Problem hook for ${unit.title || unit.id}`} className="space-y-3 rounded-lg border border-line bg-panel-2 p-4">
     <h4 className="font-semibold">1. Problem hook</h4>
+    <label htmlFor={`${field}-prompt`} className="block text-sm font-medium">Problem hook instruction prompt (optional)</label>
+    <p id={`${field}-prompt-help`} className="text-xs text-ink-muted">Guide the opening situation, language, length, visual approach and unanswered question. Keep facts in the content and teaching sources below. These instructions apply only to this module’s hook.</p>
+    <Textarea id={`${field}-prompt`} aria-describedby={`${field}-prompt-help`} rows={5} maxLength={12000} value={unit.problemHookPrompt ?? ''} onChange={e => onChange({ ...library, modules: library.modules.map(m => m.id === unit.id ? { ...m, problemHookPrompt: e.target.value } : m) })} />
+    <Button type="button" variant="outline" disabled={!!unit.problemHookPrompt?.trim()} onClick={() => onChange({ ...library, modules: library.modules.map(m => m.id === unit.id ? { ...m, problemHookPrompt: 'Create a simple opening that a complete beginner can understand. Start with one familiar, fictional situation supported by the module sources. Show the task, what goes wrong and why it matters through a concrete visual example. Use short sentences and explain unfamiliar words. Keep the opening concise, around 60–90 seconds when narrated. Finish with one clear unanswered question that the concepts will help resolve. Do not reveal the solution, invent technical facts or change supplied hook content. Avoid dense text and decorative visuals that do not support the narration.' } : m) })}>Use starter instructions</Button>
+    <p className="text-xs text-ink-muted">Save draft to keep this prompt. Editing it requires regenerating and reviewing the affected hook.</p>
     <label htmlFor={`${field}-name`} className="block text-sm font-medium">Problem hook name</label>
     <Input id={`${field}-name`} maxLength={200} disabled={full} value={source?.title ?? ''} onChange={e => update({ title: e.target.value })} />
     <label htmlFor={field} className="block text-sm font-medium">Problem hook content (optional)</label>

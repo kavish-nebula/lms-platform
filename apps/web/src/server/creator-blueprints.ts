@@ -3,8 +3,8 @@ import { sourceCoverage } from '@/lib/source-library';
 import { randomUUID } from "node:crypto";
 import { and, desc, eq, lt, sql } from "drizzle-orm";
 import { z } from "zod/v4";
-import { briefReadiness, sameCourseBrief, type CourseBriefData } from "@/lib/content-creator";
-import { BLUEPRINT_PROMPT_VERSION, SIX_STAGE_BLUEPRINT_PROMPT_VERSION, CODEX_ILD_BLUEPRINT_PROMPT_VERSION, supportedBlueprintPrompt, blueprintInput, type BlueprintRun } from "@/lib/instructional-blueprint";
+import { briefReadiness, type CourseBriefData } from "@/lib/content-creator";
+import { BLUEPRINT_PROMPT_VERSION, SIX_STAGE_BLUEPRINT_PROMPT_VERSION, CODEX_ILD_BLUEPRINT_PROMPT_VERSION, supportedBlueprintPrompt, blueprintInput, moduleBlueprintInput, blueprintMatchesBrief, type BlueprintRun } from "@/lib/instructional-blueprint";
 import { getCreatorDraft } from "./content-creator";
 import { db } from "./db/client";
 import { creatorBlueprints } from "./db/schema";
@@ -12,9 +12,9 @@ import { ApiError } from "./http";
 import { generateBlueprint, BlueprintValidationError } from "./blueprint-ai";
 import type { LlmTransport } from "./ai/llm";
 
-export const StartBlueprint = z.object({ revision: z.number().int().positive().max(2147483646) }).strict();
+export const StartBlueprint = z.object({ revision: z.number().int().positive().max(2147483646), moduleId: z.string().regex(/^[A-Za-z][A-Za-z0-9_-]{0,29}$/).optional() }).strict();
 type Row = typeof creatorBlueprints.$inferSelect;
-const view = (row: Row, brief: CourseBriefData, deliveryStructure?: 'legacy' | 'six-stage-v1' | 'codex-ild-v2'): BlueprintRun => ({ deliveryStructure, id: row.id, courseId: row.courseId, inputRevision: row.inputRevision, promptVersion: row.promptVersion, status: row.status as BlueprintRun["status"], attempts: row.attempts, model: row.model, error: row.error, output: row.output, input: row.input, createdAt: row.createdAt.toISOString(), updatedAt: row.updatedAt.toISOString(), outdated: !sameCourseBrief(row.input.brief, brief) || !supportedBlueprintPrompt(row.promptVersion) });
+const view = (row: Row, brief: CourseBriefData, deliveryStructure?: 'legacy' | 'six-stage-v1' | 'codex-ild-v2'): BlueprintRun => ({ deliveryStructure, id: row.id, courseId: row.courseId, inputRevision: row.inputRevision, promptVersion: row.promptVersion, status: row.status as BlueprintRun["status"], attempts: row.attempts, model: row.model, error: row.error, output: row.output, input: row.input, createdAt: row.createdAt.toISOString(), updatedAt: row.updatedAt.toISOString(), outdated: !blueprintMatchesBrief(row.input, brief) || !supportedBlueprintPrompt(row.promptVersion) });
 const LEASE_MS = 8 * 60_000;
 
 export async function listBlueprints(ownerId: string, courseId: string) {
@@ -25,26 +25,28 @@ export async function listBlueprints(ownerId: string, courseId: string) {
   return (await database.select().from(creatorBlueprints).where(eq(creatorBlueprints.courseId, courseId)).orderBy(desc(creatorBlueprints.createdAt))).map(row => view(row, draft.brief, draft.deliveryStructure));
 }
 
-export async function startBlueprint(ownerId: string, courseId: string, revision: number) {
+export async function startBlueprint(ownerId: string, courseId: string, revision: number, moduleId?: string) {
   const draft = await getCreatorDraft(ownerId, courseId);
   if (draft.revision !== revision) throw new ApiError(409, "draft_conflict", "The SME input has changed. Reload the saved brief before processing.");
-  const gaps = sourceCoverage(draft.brief);
+  if (moduleId && !draft.brief.sourceLibrary?.modules.some(m => m.id === moduleId)) throw new ApiError(404, 'module_not_found', 'Select an existing module.');
+  const gaps = sourceCoverage(draft.brief, moduleId);
   if (gaps.length) throw new ApiError(422, 'source_coverage', gaps.join(' '));
-  await (await import('./concept-videos')).assertVideoSources(ownerId, courseId, draft.brief);
-  await (await import('./source-media')).assertSourceMedia(ownerId, courseId, draft.brief);
-  const missing = briefReadiness(draft.brief).filter(c => !c.ready);
+  const scopedBrief = moduleId && draft.brief.sourceLibrary ? { ...draft.brief, sourceLibrary: { ...draft.brief.sourceLibrary, sources: draft.brief.sourceLibrary.sources.filter(s => s.scope === 'course' || s.moduleId === moduleId) } } : draft.brief;
+  await (await import('./concept-videos')).assertVideoSources(ownerId, courseId, scopedBrief);
+  await (await import('./source-media')).assertSourceMedia(ownerId, courseId, scopedBrief);
+  const missing = briefReadiness(draft.brief).filter(c => (!moduleId || c.label !== 'Source evidence mapped to every objective, module and topic') && !c.ready);
   if (missing.length) throw new ApiError(422, "incomplete_input", `Complete the Stage 1 inputs first: ${missing.map(c => c.label).join("; ")}`);
   const promptVersion = draft.deliveryStructure === 'codex-ild-v2' ? CODEX_ILD_BLUEPRINT_PROMPT_VERSION : draft.deliveryStructure === 'six-stage-v1' ? SIX_STAGE_BLUEPRINT_PROMPT_VERSION : BLUEPRINT_PROMPT_VERSION;
   const history = await listBlueprints(ownerId, courseId);
-  const matching = history.find(r => !r.outdated && r.status === "ready" && r.promptVersion === promptVersion);
+  const matching = history.find(r => !r.outdated && r.status === "ready" && r.promptVersion === promptVersion && (r.input.scope?.moduleId ?? '') === (moduleId ?? ''));
   if (matching) return { run: matching, token: null };
   const database = await db();
   const token = randomUUID();
-  const existingModules = draft.deliveryStructure !== 'legacy' ? history.find(r => !r.outdated && r.status === 'ready')?.output?.modules.map(({ id, title, objectiveIds }) => ({ id, title, objectiveIds })) : undefined;
-  const input = { ...blueprintInput(draft.brief, draft.deliveryStructure), ...(existingModules ? { existingModules } : {}) };
-  const [inserted] = await database.insert(creatorBlueprints).values({ courseId, inputRevision: revision, promptVersion, input, token, leaseUntil: new Date(Date.now() + LEASE_MS) }).onConflictDoNothing().returning();
+  const existingModules = !moduleId && draft.deliveryStructure !== 'legacy' ? history.find(r => !r.input.scope && !r.outdated && r.status === 'ready')?.output?.modules.map(({ id, title, objectiveIds }) => ({ id, title, objectiveIds })) : undefined;
+  const input = { ...(moduleId ? moduleBlueprintInput(draft.brief, moduleId, draft.deliveryStructure) : blueprintInput(draft.brief, draft.deliveryStructure)), ...(existingModules ? { existingModules } : {}) };
+  const [inserted] = await database.insert(creatorBlueprints).values({ courseId, inputRevision: revision, promptVersion, scopeKey: moduleId ?? 'course', input, token, leaseUntil: new Date(Date.now() + LEASE_MS) }).onConflictDoNothing().returning();
   if (inserted) return { run: view(inserted, draft.brief, draft.deliveryStructure), token };
-  const [existing] = await database.select().from(creatorBlueprints).where(and(eq(creatorBlueprints.courseId, courseId), eq(creatorBlueprints.inputRevision, revision), eq(creatorBlueprints.promptVersion, promptVersion)));
+  const [existing] = await database.select().from(creatorBlueprints).where(and(eq(creatorBlueprints.courseId, courseId), eq(creatorBlueprints.inputRevision, revision), eq(creatorBlueprints.promptVersion, promptVersion), eq(creatorBlueprints.scopeKey, moduleId ?? 'course')));
   if (existing.status !== "failed") return { run: view(existing, draft.brief, draft.deliveryStructure), token: null };
   const [retried] = await database.update(creatorBlueprints).set({ status: "running", error: null, token, attempts: sql`${creatorBlueprints.attempts} + 1`, leaseUntil: new Date(Date.now() + LEASE_MS), updatedAt: new Date() })
     .where(and(eq(creatorBlueprints.id, existing.id), eq(creatorBlueprints.status, "failed"))).returning();

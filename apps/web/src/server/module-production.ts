@@ -14,7 +14,7 @@ import { generateProduction } from "./production-ai";
 import type { SessionUser } from "./auth";
 import type { ProductionUnit } from '@/lib/longform-production';
 import { generateLongform } from './longform-ai';
-import { sameCourseBrief } from '@/lib/content-creator';
+import { blueprintMatchesBrief } from '@/lib/instructional-blueprint';
 
 export const StartProduction = z.object({ approvalId: z.uuid(), unitKey: z.enum(['module', 'plan', 'v1', 'v2', 'v3', 'v4', 'v5']).optional() }).strict();
 export const SaveProduction = z.object({ jobId: z.uuid(), expectedRevision: z.number().int().positive().max(2147483646), content: ProductionPackage }).strict();
@@ -27,7 +27,7 @@ async function source(database: Pick<DB, 'select'>, scope: Scope, lock = false) 
   if (!scope.run.output?.modules.some(m => m.id === scope.moduleId)) throw new ApiError(404, 'module_not_found', 'Module not found in this blueprint.');
   const [row] = await database.select().from(creatorSmeReviews).where(and(eq(creatorSmeReviews.runId, scope.run.id), eq(creatorSmeReviews.moduleId, scope.moduleId))).orderBy(desc(creatorSmeReviews.version)).limit(1);
   const approval: SmeReviewEntry | null = row ? { ...row, createdAt: row.createdAt.toISOString() } : null;
-  const current = scope.run.status === 'ready' && sameCourseBrief(scope.run.input.brief, course.brief) && supportedBlueprintPrompt(scope.run.promptVersion);
+  const current = scope.run.status === 'ready' && blueprintMatchesBrief(scope.run.input, course.brief) && supportedBlueprintPrompt(scope.run.promptVersion);
   const eligible = current && approval?.verdict === 'approved' && Object.values(approval.checklist).every(Boolean);
   return { eligible: !!eligible, approval, format: course.productionFormat, reason: !current ? 'The blueprint is not current and ready. Generate and review the latest SME input.' : !eligible ? 'Approve this module with all seven checks in Stage 3 before generating production content.' : 'This module is approved for authoring. The course as a whole is not released.' };
 }

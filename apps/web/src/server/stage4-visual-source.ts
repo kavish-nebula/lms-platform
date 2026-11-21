@@ -10,9 +10,9 @@ import { creatorAuthoredCourseRevisions } from './db/schema';
 import { activityVisualSource } from '@/lib/activity-visual';
 
 /** Reviewed SME evidence, not a published package, is the Stage 4 input. */
-export async function stage4VisualTargets(ownerId: string, courseId: string, moduleId?: string) {
+async function selectedStage4VisualTargets(ownerId: string, courseId: string, moduleId: string) {
   const course = await getCreatorDraft(ownerId, courseId);
-  const run = (await listBlueprints(ownerId, courseId)).find(r => r.status === 'ready' && !r.outdated);
+  const run = (await listBlueprints(ownerId, courseId)).sort((a,b) => Number(!!b.input.scope) - Number(!!a.input.scope)).find(r => r.status === 'ready' && !r.outdated && (!r.input.scope || r.input.scope.moduleId === moduleId));
   if (!run?.output) throw new ApiError(409, 'visual_blueprint_required', 'Generate and review the current blueprint before creating module videos.');
   const reviews = await getSmeReview(ownerId, courseId, run.id);
   const modules = course.brief.sourceLibrary?.modules ?? [];
@@ -24,15 +24,15 @@ export async function stage4VisualTargets(ownerId: string, courseId: string, mod
     const all = run.input.sources.filter(s => s.scope === 'course' || s.moduleId === module.id);
     const hook = all.filter(s => s.moduleId === module.id && s.purpose === 'problem-hook');
     const targets = [
-      ...(hook.length ? [{ videoId: `draft_${module.id}_hook`, title: course.brief.sourceLibrary!.sources.find(s => s.id === hook[0].id)!.title, kind: 'hook' as const, selected: hook }] : []),
+      ...((hook.length || module.problemHookPrompt?.trim()) ? [{ videoId: `draft_${module.id}_hook`, title: hook.length ? course.brief.sourceLibrary!.sources.find(s => s.id === hook[0].id)!.title : `Problem hook · ${module.title}`, kind: 'hook' as const, selected: hook.length ? hook : all.filter(s => !s.purpose && s.scope !== 'course') }] : []),
       ...module.topics.map(topic => ({ videoId: `draft_${topic.id}`, title: topic.title, kind: 'concept' as const, selected: all.filter(s => s.topicId === topic.id && s.purpose !== 'problem-hook') })),
     ];
     const teachingTargets = targets.filter(target => target.selected.some(s => s.text.trim())).map(target => {
       const records = [...target.selected, ...all.filter(s => s.scope === 'course')];
       const text = records.map(s => s.text).join('\n\n');
-      const context = { systemPrompt: course.brief.systemPrompt, instructions: module.instructions, objectives: run.input.objectives.filter(o => module.instructions?.objectiveIds.includes(o.id)), audience: course.brief.audience };
+      const context = { ...(target.kind === 'hook' && module.problemHookPrompt?.trim() ? { problemHookPrompt: module.problemHookPrompt.trim() } : {}), systemPrompt: course.brief.systemPrompt, instructions: module.instructions, objectives: run.input.objectives.filter(o => module.instructions?.objectiveIds.includes(o.id)), audience: course.brief.audience };
       return { courseId, courseTitle: course.brief.title, moduleId: module.id, videoId: target.videoId, title: target.title, kind: target.kind, origin: 'stage4' as const, runId: run.id, approvalId: approval.id, briefRevision: course.revision, releaseId: null, sourceIds: records.map(s => s.id), text, context,
-        identity: createHash('sha256').update(JSON.stringify({ version: 'stage4-visual-v1', briefRevision: course.revision, runId: run.id, approvalId: approval.id, target: target.videoId, records, context })).digest('hex') };
+        identity: createHash('sha256').update(JSON.stringify({ version: 'stage4-visual-v1', briefRevision: run.input.scope ? undefined : course.revision, runId: run.id, approvalId: approval.id, target: target.videoId, records, context })).digest('hex') };
     });
     const unit = prepared?.content.modules.find(m => m.id === module.id);
     const activityTargets = unit ? (['worked', 'guided'] as const).map(kind => {
@@ -50,4 +50,10 @@ export async function stage4VisualSource(ownerId: string, courseId: string, vide
   const target = (await stage4VisualTargets(ownerId, courseId)).find(t => t.videoId === videoId);
   if (!target) throw new ApiError(409, 'visual_approval_required', 'This topic has no current Stage 3 approval or teaching source. Recheck the module in Stage 3.');
   return target;
+}
+
+export async function stage4VisualTargets(ownerId: string, courseId: string, moduleId?: string) {
+  if (moduleId) return selectedStage4VisualTargets(ownerId, courseId, moduleId);
+  const course = await getCreatorDraft(ownerId, courseId);
+  return (await Promise.all((course.brief.sourceLibrary?.modules ?? []).map(m => selectedStage4VisualTargets(ownerId, courseId, m.id).catch(error => { if (error instanceof ApiError && error.status === 409) return []; throw error; })))).flat();
 }

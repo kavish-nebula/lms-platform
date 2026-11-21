@@ -150,6 +150,7 @@ export const creatorBlueprints = pgTable("creator_blueprints", {
   courseId: uuid("course_id").notNull().references(() => creatorCourses.id, { onDelete: "cascade" }),
   inputRevision: integer("input_revision").notNull(),
   promptVersion: integer("prompt_version").notNull(),
+  scopeKey: text("scope_key").notNull().default('course'),
   input: jsonb("input").$type<BlueprintInput>().notNull(),
   output: jsonb("output").$type<Blueprint>(),
   status: text("status").notNull().default("running"),
@@ -161,7 +162,7 @@ export const creatorBlueprints = pgTable("creator_blueprints", {
   usage: jsonb("usage").$type<Record<string, number>>(),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
-}, t => [uniqueIndex("creator_blueprint_input_version").on(t.courseId, t.inputRevision, t.promptVersion)]);
+}, t => [uniqueIndex("creator_blueprint_input_version").on(t.courseId, t.inputRevision, t.promptVersion, t.scopeKey)]);
 
 /** Authoring drafts never modify the published content or learner records. */
 export const creatorCourses = pgTable("creator_courses", {
