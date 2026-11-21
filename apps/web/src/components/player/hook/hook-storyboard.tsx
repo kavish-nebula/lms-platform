@@ -20,7 +20,7 @@ export function HookStoryboard({ scenes, index, seconds, reducedMotion }: { scen
     <div className="hook-film-document-footer">{isDraft ? 'Ready for your review' : 'Supplied course evidence'}</div>
   </div>;
   return <div className={`hook-film-scene hook-film-scene-${kind}`}>
-    <header className="hook-film-heading"><span>Nebula KnowLab · Case study</span><h2>{headings[kind]}</h2></header>
+    <header className="hook-film-heading"><span>Case study</span><h2>{headings[kind]}</h2></header>
     <motion.div key={kind + index} initial={reducedMotion ? false : { opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: reducedMotion ? 0 : .25 }} className="hook-film-composition">
       {kind === 'incident' && <div className="hook-film-incident"><div>{production ? <ConceptFactoryVisual stopped={seconds > 1.8 || reducedMotion} seconds={seconds} /> : <div className="hook-film-paper-stack"><FileText aria-hidden /><span>A report needs your review</span></div>}<p className="hook-film-illustration-note">Conceptual illustration</p></div><aside className="hook-film-incident-note"><span className="hook-film-status">Case file</span>{pause && <div className="hook-film-metric"><strong>{pause}</strong><span>minutes paused</span></div>}<p>{excerpt(firstSource.text)}</p></aside></div>}
       {kind === 'document' && <div className="hook-film-document-scene"><div className="hook-film-document-mark"><ScanText aria-hidden /><span>Read the record</span></div>{record(scene.text)}</div>}

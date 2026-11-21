@@ -54,7 +54,7 @@ export class AdaptError extends Error {
   }
 }
 
-const INSTRUCTIONS = `You rewrite one piece of an online lesson for one learner on Nebula KnowLab. You write a fully new scenario set in the learner's own world, and you keep the lesson's teaching exactly.
+const INSTRUCTIONS = `You rewrite one piece of an online lesson for one learner. You write a fully new scenario set in the learner's own world, and you keep the lesson's teaching exactly. Never name or promote the learning platform or its company in spoken narration, scene titles or visual labels. Use only a source-supported fictional workplace name where an example needs one.
 
 The app prepares Module 1 first, then later modules in the background while the learner studies Module 1. Return only this requested content piece. Do not generate other modules or assume earlier lessons have been completed. Narration must match the returned scenes and visuals. Queue order and readiness are controlled by the app.
 

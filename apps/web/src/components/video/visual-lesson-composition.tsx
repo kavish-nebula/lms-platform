@@ -19,7 +19,7 @@ function Scene({ scene, captions, reducedMotion }: { scene: VisualTimedScene; ca
   const progress = reducedMotion ? 1 : interpolate(frame - beat.from, [0, fps * 1.5], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
   const compare = scene.kind === 'comparison';
   return <AbsoluteFill style={{ background: 'radial-gradient(ellipse at 75% 15%, #28203f, #100e1b 70%)', fontFamily: 'Arial, sans-serif', color: ink }}>
-    <div style={{ position:'absolute', left:64, top:38, fontSize:16, letterSpacing:3, color:mint }}>NEBULA KNOWLAB · VISUAL LESSON</div>
+    <div style={{ position:'absolute', left:64, top:38, fontSize:16, letterSpacing:3, color:mint }}>LEARNING IN FOCUS · VISUAL LESSON</div>
     <div data-scene-id={scene.id} style={{ position:'absolute', left:64, right:64, top:78, fontSize:42, fontWeight:700, lineHeight:1.15 }}>{scene.title}</div>
     <svg viewBox="0 0 1280 720" style={{ position:'absolute', inset:0, width:'100%', height:'100%' }} role="img" aria-label={`${scene.title}. ${beat.label}`}>
       <defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8" fill={mint}/></marker></defs>

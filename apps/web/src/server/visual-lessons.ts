@@ -11,6 +11,7 @@ import ffmpeg from 'ffmpeg-static';
 import { db, appRoot } from './db/client';
 import { creatorCourses, creatorSmeReviews, creatorVisualLessons as revisions, creatorVisualJobs as jobs, publishedAuthoredCourses, creatorAuthoredCourseRevisions } from './db/schema';
 import { stage4VisualSource } from './stage4-visual-source';
+import { courseVideoPresentation } from './course-video-presentation';
 import { REFERENCE_VIDEO_DIRECTION, sourceVisualSeed } from '@/lib/visual-authoring';
 import { getCreatorDraft } from './content-creator';
 import { ApiError } from './http';
@@ -196,7 +197,7 @@ export async function serveVisualAsset(ownerId:string,courseId:string,videoId:st
   if(!job||job.status!=='ready')throw new ApiError(404,'not_found','Media is not ready.');
   const revision=await ownedRevision(ownerId,courseId,videoId,job.revisionId);
   let target:string,mime:string;
-  if(job.kind==='export'&&file==='lesson.mp4'){target=path.join(root(),job.id,'final.mp4');mime='video/mp4';}
+  if(job.kind==='export'&&file==='lesson.mp4'){target=await courseVideoPresentation(path.join(root(),job.id,'final.mp4'));mime='video/mp4';}
   else if(job.kind==='audio'&&/^[a-f0-9]{64}\.wav$/.test(file)&&job.output.clips?.some(c=>`${c.key}.wav`===file)){target=path.join(clipsRoot(),file);mime='audio/wav';}
   else throw new ApiError(404,'not_found','Media not found.');
   if(!existsSync(target))throw new ApiError(404,'visual_asset_missing','The cached file is missing. Retry preparation.');

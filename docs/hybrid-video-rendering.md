@@ -95,3 +95,9 @@ outbound connector at the local/cloud boundary and misplaced language-model
 labels. Generic model input, learned parameters and generated text are labeled
 by their visual roles; authored keywords/model names remain separate caption
 chips rather than being assigned to incorrect parts of the diagram.
+
+## Neutral course media presentation
+
+Course videos use neutral labels such as “Learning in focus,” “Visual explainer” and “Case study.” App branding remains separate. Visual-script validation rejects platform-company references in narration and visible labels; adaptation prompts require neutral labels or source-supported fictional workplaces.
+
+Run `node scripts/audit-course-media-brand.mjs` from `apps/web` for a read-only saved-script/media inventory. Then `node scripts/clean-course-video-branding.mjs` creates presentation copies of known branded renderer outputs and original recording logos. It preserves originals, copies the compressed audio stream, verifies exact audio packet hashes and fully decodes each output before atomically activating it. Repeated runs reuse current copies. Reports are local under `outputs/`; course packages, approvals, progress and source provenance are unchanged. Local original-recording speech review is available through `scripts/audit-original-video-narration.py` with the cached Whisper model. The script reports suspected spoken references for review; it does not silently alter teaching narration.

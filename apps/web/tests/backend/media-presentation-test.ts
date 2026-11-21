@@ -1,0 +1,41 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import { courseVideoPresentation } from '@/server/course-video-presentation';
+import { NEUTRAL_VIDEO_VERSION, hasPlatformBrand, neutralCourseVideoUrl } from '@/lib/lesson-presentation';
+import { VisualLesson, automationVisualSeed } from '@/lib/visual-lesson';
+
+const directory = await fs.mkdtemp(path.resolve('.data/tests/neutral-video-'));
+for (const filename of ['final.mp4', 'video', 'a'.repeat(64)]) {
+  const source = path.join(directory, filename);
+  const original = Buffer.from('Original source and approved audio');
+  await fs.writeFile(source, original);
+  assert.equal(await courseVideoPresentation(source), source);
+  const corrected = filename.endsWith('.mp4') ? source.replace(/\.mp4$/, `.${NEUTRAL_VIDEO_VERSION}.mp4`) : `${source}.${NEUTRAL_VIDEO_VERSION}.mp4`;
+  await fs.writeFile(corrected, 'Presentation copy');
+  const stat = await fs.stat(source);
+  const metadata = { version:NEUTRAL_VIDEO_VERSION, sourceBytes:stat.size, sourceModified:stat.mtimeMs, audioUnchanged:true };
+  await fs.writeFile(corrected+'.json', JSON.stringify(metadata));
+  assert.equal(await courseVideoPresentation(source), corrected);
+  assert.deepEqual(await fs.readFile(source), original, 'Resolving a derivative never changes its approved source.');
+  await fs.writeFile(corrected+'.json', JSON.stringify({...metadata,audioUnchanged:false}));
+  assert.equal(await courseVideoPresentation(source), source, 'Unverified audio is not activated.');
+  await fs.writeFile(corrected+'.json', JSON.stringify(metadata));
+  await fs.appendFile(source, ' changed');
+  assert.equal(await courseVideoPresentation(source), source, 'A source edit invalidates an older corrected copy.');
+}
+for (const text of ['Nebula KnowLab', 'NEBULA-KNOW-LAB', 'nebula\nknowlab']) assert(hasPlatformBrand(text));
+assert(!hasPlatformBrand('Cedar Desk: a fictional workplace'));
+assert.equal(neutralCourseVideoUrl('https://example.test/signed.mp4?token=unchanged'), 'https://example.test/signed.mp4?token=unchanged');
+const videoUrl=neutralCourseVideoUrl('/api/v1/example?media=1');
+assert(videoUrl.includes('media=1')&&videoUrl.includes(`presentation=${NEUTRAL_VIDEO_VERSION}`));
+assert.equal(neutralCourseVideoUrl(videoUrl),videoUrl,'Presentation URLs do not accumulate query parameters.');
+const lesson = automationVisualSeed(['S1'], 'Compare the supplied fixed rules and learned patterns.');
+assert(VisualLesson.safeParse(lesson).success);
+const branded = structuredClone(lesson);
+branded.scenes[0].beats[0].narration = 'Welcome to Nebula KnowLab. Compare these two examples.';
+assert(!VisualLesson.safeParse(branded).success, 'Future spoken platform-company references are rejected.');
+branded.scenes[0].beats[0].narration = lesson.scenes[0].beats[0].narration;
+branded.scenes[0].beats[0].visual = {heading:'Nebula KnowLab',detail:'A platform label',icon:'document',status:'neutral'};
+assert(!VisualLesson.safeParse(branded).success, 'Future visual platform-company labels are rejected.');
+console.log('PASS neutral course media: immutable originals, audio verification, version/freshness checks, extensionless assets and forbidden narration/visual labels.');
