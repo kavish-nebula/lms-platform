@@ -657,9 +657,9 @@ const CHANGE: Record<QuestionId, (a: SetupAnswers, d?: ProfileDerived | null) =>
     })[a.coding ?? ""] ?? null,
   firstStep: (a) =>
     ({
-      example: "Each lesson opens with the idea, then a full example, then a quick try.",
-      idea: "Each lesson opens with the idea, then a full example, then a quick try.",
-      try: "Each lesson opens with the idea, then a full example, then a quick try.",
+      example: "You prefer a complete example. This guides personalized support; the approved teaching sequence remains concepts, worked examples, then practice.",
+      idea: "You prefer understanding the idea first. This guides personalized support; the approved teaching sequence remains concepts, worked examples, then practice.",
+      try: "You prefer making an attempt. This guides personalized support; the approved teaching sequence remains concepts, worked examples, then practice.",
     })[a.firstStep ?? ""] ?? null,
   style: (a) =>
     ({

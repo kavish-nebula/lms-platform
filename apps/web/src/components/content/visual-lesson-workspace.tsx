@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
+import { CourseWorkflowNav } from './course-workflow-nav';
 import { Player, type PlayerRef } from '@remotion/player';
 import { useReducedMotion } from 'motion/react';
 import { VisualLessonComposition } from '@/components/video/visual-lesson-composition';
@@ -59,7 +60,7 @@ export function VisualLessonWorkspace({initial}:{initial:State}){
     try{const response=await fetch(endpoint,{cache:'no-store'}),next=await response.json();if(!response.ok)throw Error(next.error?.message??'Reload failed.');setState(next);if(next.revisions[0]){setLoaded(next.revisions[0]);setContent(next.revisions[0].content);setBaseline(JSON.stringify(next.revisions[0].content));setPreviewVersion(v=>v+1);}setError('');}catch(e){setError(e instanceof Error?e.message:'Reload failed.');}
   }
   const valid=VisualLesson.safeParse(content);
-  return <div className="space-y-7">
+  return <div className="creator-stage"><CourseWorkflowNav courseId={state.source.courseId} step={4} />
     <header className="space-y-3"><Link className="text-sm text-brand-ink underline" href={`/content/courses/${state.source.courseId}`}>← Course brief and sources</Link><p className="text-sm text-brand-ink">{state.source.courseTitle} · {state.source.moduleId}</p><h1 className="text-3xl font-semibold">Text-to-visual lesson</h1><p className="text-lg">{state.source.title}</p><p className="max-w-3xl text-sm text-ink-muted">Review the script, play its animated explanation, prepare matching narration and export an MP4. This creator draft does not replace the published lesson or recording.</p></header>
     <Button type="button" variant="outline" aria-pressed={largePreview} onClick={()=>setLargePreview(v=>!v)}>{largePreview?'Show video beside the script':'Large video preview'}</Button>
     <div className={largePreview?'grid items-start gap-6':'grid items-start gap-6 xl:grid-cols-[minmax(0,1.2fr)_minmax(340px,1fr)]'}>

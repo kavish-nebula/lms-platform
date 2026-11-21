@@ -68,7 +68,7 @@ export function CustomizeStep({
             onValueChange={(v) => set({ firstStep: v })}
             options={firstStepQ.options.map((o) => ({ value: o.v, label: o.label }))}
           />
-          <LessonOrderPreview order={a.order} />
+          <LessonOrderPreview order={a.order} preference={answers.firstStep} />
         </Section>
 
       </div>

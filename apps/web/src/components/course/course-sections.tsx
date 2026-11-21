@@ -317,7 +317,7 @@ export function MethodSection({ course }: { course: Course }) {
               </button>
             ))}
           </div>
-          <LessonOrderPreview order={lessonOrder({ firstStep })} />
+          <LessonOrderPreview order={lessonOrder({ firstStep })} preference={firstStep} />
         </Surface>
       </div>
 

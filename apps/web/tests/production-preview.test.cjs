@@ -28,8 +28,8 @@ test('two-question check starts paused with progression disabled and explicit re
 });
 test('six-stage delivery keeps module quiz local and places the three final stages after M4',()=>{
  const html=renderToStaticMarkup(React.createElement(CourseDeliveryFlow,{structure:'six-stage-v1',lastModule:'M4'}));
- const stages=['Problem Hook','Concept Explainer','Worked Example','Guided Practice','Scenario Lab','Quiz','After completing M4','Mastery Gate','Reflection','Spaced Review'];let position=-1;for(const stage of stages){const next=html.indexOf(stage,position+1);assert.ok(next>position,stage);position=next;}
- assert.match(html,/No mini-project is required/);assert.match(html,/require separate authoring and review/);
+ const stages=['Problem Hook','Concept Explainer','Worked Example','Guided Practice','Scenario Lab','Module-end quiz','After completing M4','Mastery Gate','Reflection','Spaced Review'];let position=-1;for(const stage of stages){const next=html.indexOf(stage,position+1);assert.ok(next>position,stage);position=next;}
+ assert.match(html,/Course-end stages remain separate from module instruction/);assert.match(html,/does not publish the course or approve new assessment assets/);
  assert.equal(renderToStaticMarkup(React.createElement(CourseDeliveryFlow,{structure:'legacy'})),'');
 });
 test('projecting a frozen legacy blueprint preserves the source and yields exactly six delivery stages',()=>{

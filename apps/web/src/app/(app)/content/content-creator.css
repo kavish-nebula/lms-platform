@@ -6,6 +6,30 @@
 }
 
 .creator-workspace { width: 100%; min-width: 0; }
+.creator-stage { display: flex; flex-direction: column; gap: 2rem; min-width: 0; }
+.creator-stage > * { min-width: 0; }
+.creator-stage > header p { overflow-wrap: anywhere; }
+.creator-panel { padding: clamp(1.25rem, 2vw, 2rem); min-width: 0; }
+.creator-review-checks { display: grid; gap: 0.75rem 2rem; }
+.creator-review-checks > label { border-top: 1px solid var(--line); padding-block: 0.875rem; }
+.creator-production-grid { display: grid; align-items: start; gap: 1.75rem; min-width: 0; }
+.creator-production-outline { display: flex; gap: 1rem; min-width: 0; max-width: 100%; overflow-x: auto; }
+.creator-production-outline > div { flex-shrink: 0; width: 15rem; min-width: 0; }
+/* Package JSON is a document editor, not a content-sized form answer. */
+.creator-shell .creator-package-json {
+  field-sizing: fixed;
+  height: clamp(20rem, 55dvh, 36rem);
+  min-height: 20rem;
+  max-height: 75dvh;
+  overflow: auto;
+  resize: vertical;
+  tab-size: 2;
+}
+.creator-shell .creator-package-tabs [data-slot="tabs-trigger"] {
+  flex: 0 0 auto;
+  white-space: nowrap;
+  padding-inline: 0.875rem;
+}
 .creator-shell :where(.text-xs) { font-size: var(--fs-sm); line-height: 1.5; }
 .creator-shell :where(.text-sm) { font-size: var(--fs-base); line-height: 1.6; }
 .creator-shell :where(.text-lg) { font-size: var(--fs-md); }
@@ -76,9 +100,19 @@
   .creator-workflow ol { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (min-width: 1100px) {
+  .creator-review-checks { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .creator-production-grid { grid-template-columns: clamp(15rem, 18vw, 20rem) minmax(0, 1fr); }
+  .creator-production-outline {
+    position: sticky;
+    top: 6rem;
+    flex-direction: column;
+    max-height: calc(100dvh - 8rem);
+    overflow-y: auto;
+  }
+  .creator-production-outline > div { width: auto; }
   .creator-brief-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .creator-field-wide { grid-column: 1 / -1; }
-  .creator-workflow ol { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .creator-workflow ol { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 }
 @media (max-width: 600px) {
   .creator-savebar-actions { align-items: stretch; }
