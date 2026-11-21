@@ -40,7 +40,7 @@ export function ReferenceVisualScene({scene,captions,reducedMotion}:{scene:Visua
   return <AbsoluteFill data-reference-scene={scene.id} style={{background:'#0c090b',fontFamily:'Arial, sans-serif',color:color.ink}}>
     <Img src={staticFile('video-style/reference-ambient.jpg')} style={{position:'absolute',inset:0,width:'100%',height:'100%',objectFit:'cover',opacity:.5}}/>
     <AbsoluteFill style={{background:'radial-gradient(ellipse at 65% 40%, #802f4c45, transparent 75%)'}}/>
-    <div style={{position:'absolute',top:30,left:60,fontSize:14,letterSpacing:3,color:color.rose}}>NEBULA KNOWLAB / LEARNING IN FOCUS</div>
+    <div style={{position:'absolute',top:30,left:60,fontSize:14,letterSpacing:3,color:color.rose}}>LEARNING IN FOCUS</div>
     <h1 style={{position:'absolute',top:56,left:60,right:60,fontSize:43,lineHeight:1.15,margin:0,letterSpacing:-1}}>{scene.title}</h1>
     <div style={{position:'absolute',top:156,left:60,right:60,bottom:154,opacity:Math.min(1,.6+enter*.4)}}>
       {document ? <div style={{display:'grid',gridTemplateColumns:'1.2fr 1fr',gap:36,height:'100%',alignItems:'center'}}>

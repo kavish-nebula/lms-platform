@@ -8,6 +8,7 @@ import { conceptNarration } from '@/lib/personalized-concept';
 import { addPlayedRange, allConceptSectionsPlayed, firstUnplayedConceptTime, allowedConceptTime, conceptClock, continuousSection, restoreContinuousResume, type ContinuousPlayback, type ContinuousResume, type PlayedRange } from '@/lib/continuous-concept';
 import { useHydrated, useLocalJson, writeLocal } from '@/lib/local-store';
 import { useLearnerData } from '@/lib/api';
+import { neutralCourseVideoUrl } from '@/lib/lesson-presentation';
 import { useLearningContext } from '@/components/learning/course-companion';
 import { useSignal } from '@/lib/signals';
 import { Button } from '@/components/ui/button';
@@ -80,7 +81,7 @@ export function ContinuousConceptPlayer({authored=false,video,scenes,revisionId,
   const unfinishedAtEnd=restored&&!done&&!checking&&!endChecking&&seconds>=playback.durationSeconds-.05;
   const localSeconds=Math.max(0,seconds-playback.segments[index].startSeconds);
   const Media = playback.video ? 'video' : 'audio';
-  const renderedMedia = (<Media ref={media} src={playback.video ?? playback.audio} preload="metadata" muted={muted} playsInline className={playback.video ? "aspect-video w-full bg-panel" : undefined} aria-label={playback.video ? authored?'Reviewed course video':"Animated personalised video" : "Continuous personalised narration"}
+  const renderedMedia = (<Media ref={media} src={playback.video ? neutralCourseVideoUrl(playback.video) : playback.audio} preload="metadata" muted={muted} playsInline className={playback.video ? "aspect-video w-full bg-panel" : undefined} aria-label={playback.video ? authored?'Reviewed course video':"Animated personalised video" : "Continuous personalised narration"}
         onLoadedMetadata={e=>{e.currentTarget.playbackRate=rate;e.currentTarget.currentTime=seconds;}}
         onPlay={()=>{lastTime.current=media.current?.currentTime??null;setPlaying(true);}}
         onPause={e=>{recordPlayed(e.currentTarget);lastTime.current=null;setPlaying(false);persist();}}

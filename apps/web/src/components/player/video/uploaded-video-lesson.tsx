@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useSignal } from '@/lib/signals';
 import { QuizOverlay } from './video-lesson';
 import { SourceReviewNotes } from './source-recording-lesson';
+import { neutralCourseVideoUrl } from '@/lib/lesson-presentation';
 
 export function UploadedVideoLesson({ video, onComplete, onNext, nextLabel }: { video: ConceptVideo; onComplete?: () => void; onNext?: () => void; nextLabel?: string }) {
   const source = video.uploadedVideo!; const media = useRef<HTMLVideoElement>(null); const signal = useSignal();
@@ -22,7 +23,7 @@ export function UploadedVideoLesson({ video, onComplete, onNext, nextLabel }: { 
     <SourceReviewNotes video={video} />
     <p className="text-sm text-ink-muted">Watch the original teaching video. It pauses for two knowledge-check questions near the midpoint. Use the video controls for captions, playback speed and full screen.</p>
     <div ref={player} className="relative overflow-hidden rounded-xl border border-line bg-panel">
-      <video ref={media} controls playsInline preload="metadata" className="aspect-video w-full bg-black" aria-label={video.title} src={source.src}
+      <video ref={media} controls playsInline preload="metadata" className="aspect-video w-full bg-black" aria-label={video.title} src={neutralCourseVideoUrl(source.src)}
         onTimeUpdate={guard} onSeeking={guard} onPlay={() => { if (checking) media.current?.pause(); }} onError={() => setError('The video could not be loaded. Check your connection and reload this lesson.')}
         onEnded={() => { if (!passed) { checkpoint(); return; } setDone(true); if (!completed.current) { completed.current = true; onComplete?.(); } }}>
         <track kind="captions" src={source.transcriptUrl} srcLang="en" label="Reviewed transcript" />

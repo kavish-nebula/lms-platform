@@ -12,6 +12,7 @@ import { ApiError } from './http';
 import { getCreatorDraft } from './content-creator';
 import { getPublishedAuthoredCourse } from './authored-publication';
 import { findEnrollment } from './repo';
+import { courseVideoPresentation } from './course-video-presentation';
 import { parseTranscriptVtt, transcriptVtt, type TranscriptCueData } from '@/lib/concept-video-source';
 import type { CourseBriefData } from '@/lib/content-creator';
 import { vertexAccessToken, vertexConfig } from './ai/vertex';
@@ -134,13 +135,16 @@ export async function serveConceptVideo(userId: string, courseId: string, assetI
     const transcript = await readVideoTranscript(courseId, assetId, transcriptId);
     return new Response(transcriptVtt(transcript.cues), { headers: { 'Content-Type': 'text/vtt; charset=utf-8', 'Cache-Control': 'private, no-cache', 'X-Content-Type-Options': 'nosniff' } });
   }
-  const range = request.headers.get('range'); let start = 0; let end = asset.bytes - 1;
+  const originalVideo = path.join(directory(courseId, assetId), 'video');
+  const mediaFile = await courseVideoPresentation(originalVideo);
+  const bytes = (await fs.stat(mediaFile)).size;
+  const range = request.headers.get('range'); let start = 0; let end = bytes - 1;
   if (range) {
     const match = range.match(/^bytes=(\d*)-(\d*)$/);
-    if (!match || (!match[1] && !match[2])) return new Response(null, { status: 416, headers: { 'Content-Range': `bytes */${asset.bytes}` } });
-    if (!match[1]) start = Math.max(0, asset.bytes - Number(match[2]));
+    if (!match || (!match[1] && !match[2])) return new Response(null, { status: 416, headers: { 'Content-Range': `bytes */${bytes}` } });
+    if (!match[1]) start = Math.max(0, bytes - Number(match[2]));
     else { start = Number(match[1]); if (match[2]) end = Math.min(end, Number(match[2])); }
-    if (!Number.isSafeInteger(start) || !Number.isSafeInteger(end) || start > end || start >= asset.bytes) return new Response(null, { status: 416, headers: { 'Content-Range': `bytes */${asset.bytes}` } });
+    if (!Number.isSafeInteger(start) || !Number.isSafeInteger(end) || start > end || start >= bytes) return new Response(null, { status: 416, headers: { 'Content-Range': `bytes */${bytes}` } });
   }
-  return new Response(request.method === 'HEAD' ? null : Readable.toWeb(createReadStream(path.join(directory(courseId, assetId), 'video'), { start, end })) as ReadableStream, { status: range ? 206 : 200, headers: { 'Content-Type': asset.mime, 'Content-Length': String(end - start + 1), 'Accept-Ranges': 'bytes', 'Cache-Control': 'private, no-cache', 'X-Content-Type-Options': 'nosniff', ...(range ? { 'Content-Range': `bytes ${start}-${end}/${asset.bytes}` } : {}) } });
+  return new Response(request.method === 'HEAD' ? null : Readable.toWeb(createReadStream(mediaFile, { start, end })) as ReadableStream, { status: range ? 206 : 200, headers: { 'Content-Type': mediaFile === originalVideo ? asset.mime : 'video/mp4', 'Content-Length': String(end - start + 1), 'Accept-Ranges': 'bytes', 'Cache-Control': 'private, no-cache', 'X-Content-Type-Options': 'nosniff', ...(range ? { 'Content-Range': `bytes ${start}-${end}/${bytes}` } : {}) } });
 }

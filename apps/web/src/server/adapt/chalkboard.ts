@@ -12,6 +12,7 @@ import type { ContinuousPlayback } from '@/lib/continuous-concept';
 import * as repo from '@/server/repo';
 import type { SessionUser } from '@/server/auth';
 import hybrid from '../../../video-renderer/contract.json';
+import { courseVideoPresentation } from '../course-video-presentation';
 import { directedPlanWithCache, DIRECTOR_VERSION } from './visual-director';
 
 export const chalkboardEnabled = () => process.env.CHALKBOARD_ENABLED !== 'false';
@@ -45,6 +46,28 @@ export async function prepareChalkboard(input: { enrollmentId: string; moduleId:
   const previous = await readStatus(statusFile);
   if (previous?.status === 'ready') {
     try { await fs.access(path.join(directory, 'final.mp4')); const playback = JSON.parse(await fs.readFile(path.join(directory, 'playback.json'), 'utf8')) as ContinuousPlayback; return { status: 'ready', key, video: `/api/v1/chalkboard-video/${input.enrollmentId}/${input.moduleId}/${key}`, captions: playback.captions }; } catch { /* Recover a missing derivative. */ }
+  }
+  // Reuse only an exactly scoped, corrected legacy render after a header-only
+  // renderer change. Revision, narration, profile plan and illustrations still match.
+  const legacyKey = createHash('sha256').update(JSON.stringify({ version: DIRECTOR_VERSION, rendererHash:'631f81da6509e151378d5a2a834f0b10563445c9dfa762f7af6853a192787dd8', illustrationHash, plan: identity, title: input.title, revision: input.revisionId, audioHash })).digest('hex');
+  if (legacyKey !== key) {
+    const legacyDir = path.join(boardRoot(), input.enrollmentId, input.moduleId, legacyKey);
+    const legacyFile = path.join(legacyDir, 'final.mp4');
+    try {
+      if ((await readStatus(path.join(legacyDir, 'status.json')))?.status === 'ready') {
+        let neutral = await courseVideoPresentation(legacyFile) !== legacyFile;
+        // Manim-only compositions never included the changed Remotion banner.
+        // They can retain their exact scoped cache without a redundant transcode.
+        if (!neutral) {
+          const aligned = JSON.parse(await fs.readFile(path.join(legacyDir, 'aligned.json'), 'utf8')) as {chapters:{kind:string}[]};
+          neutral = aligned.chapters.length > 0 && aligned.chapters.every(chapter => !(hybrid.remotionKinds as string[]).includes(chapter.kind)) && (await fs.stat(legacyFile)).size > 1024;
+        }
+        if (neutral) {
+          const playback = JSON.parse(await fs.readFile(path.join(legacyDir, 'playback.json'), 'utf8')) as ContinuousPlayback;
+          return { status:'ready', key:legacyKey, video:`/api/v1/chalkboard-video/${input.enrollmentId}/${input.moduleId}/${legacyKey}`, captions:playback.captions };
+        }
+      }
+    } catch { /* Incomplete legacy caches must not prevent normal preparation. */ }
   }
   if (previous?.status === 'failed' && !input.retry) return { status: 'failed', key, message: `Your narration is ready, but ${previous.stage === 'storyboard' ? 'visual planning' : 'video rendering'} needs another attempt. Retry the video or watch the original lesson.` };
   try {
@@ -116,6 +139,6 @@ export async function chalkboardFile(user: SessionUser, parts: string[]) {
   if (!(await repo.listEnrollments(user.id)).some(e => e.id === enrollmentId)) return null;
   const directory = path.join(boardRoot(), enrollmentId, moduleId, key);
   if ((await readStatus(path.join(directory, 'status.json')))?.status !== 'ready') return null;
-  const file = path.join(directory, 'final.mp4');
+  const file = await courseVideoPresentation(path.join(directory, 'final.mp4'));
   try { await fs.access(file); return file; } catch { return null; }
 }
