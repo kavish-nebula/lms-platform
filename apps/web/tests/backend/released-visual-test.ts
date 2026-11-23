@@ -5,7 +5,7 @@ import {createCreatorDraft} from '@/server/content-creator';
 import {saveAuthoredCourse,reviewAuthoredCourse} from '@/server/authored-course';
 import {publishAuthoredCourse} from '@/server/authored-publication';
 import {seedVisualLesson,visualLessonState,startVisualJob,runVisualJob} from '@/server/visual-lessons';
-import {releasedVisual,validateReleasedVisuals} from '@/server/released-visual';
+import {releasedVisual,releasedTopicFrames,validateReleasedVisuals} from '@/server/released-visual';
 import {EMPTY_BRIEF} from '@/lib/content-creator';
 import {COURSE_REVIEW_CHECKS,type AuthoredCoursePackageData,type CourseReviewChecklist} from '@/lib/authored-course';
 import {combinePcm} from '@/server/adapt/continuous-audio';
@@ -30,8 +30,17 @@ await validateReleasedVisuals(user.id,draft.id,content);
 const mismatch=structuredClone(content);mismatch.modules[0].conceptExplainer.videos[0].slides[0].narration+=' Changed.';await assert.rejects(validateReleasedVisuals(user.id,draft.id,mismatch),{code:'visual_transcript_mismatch'});
 await approveAndPublish(content,1);
 await assert.rejects(releasedVisual('visual-unenrolled',draft.id,visual.id),{status:403});
+await assert.rejects(releasedTopicFrames('visual-unenrolled',draft.id,visual.id),{status:403});
 await upsertEnrollment(user.id,draft.id,{answers:{},supportOverride:'auto',pace:null,precheck:null});
 await assert.rejects(releasedVisual(user.id,draft.id,'00000000-0000-4000-8000-000000000000'),{status:404});
 const result=await releasedVisual(user.id,draft.id,visual.id);assert(!(result instanceof Response));assert(result.playback.checkpointSeconds!>0&&result.playback.checkpointSeconds!<result.playback.durationSeconds);assert.equal(result.scenes.length,18);assert(result.playback.video.includes(visual.id));
+const library=await releasedTopicFrames(user.id,draft.id,visual.id);
+assert.equal(library?.identity,exported.id);
+assert.equal(library?.frames.length,visual.content.scenes.length);
+for (const frame of library!.frames) {
+  const slide=video.slides.find(s=>s.id===frame.partId);
+  assert.ok(slide?.narration.includes(frame.spokenPhrase));
+  assert.ok(frame.seconds>0 && frame.seconds<result.playback.durationSeconds);
+}
 const media=await releasedVisual(user.id,draft.id,visual.id,new Request(`http://localhost/lesson?media=1`,{headers:{range:'bytes=0-7'}}));assert(media instanceof Response);assert.equal(media.status,206);assert.equal((await media.arrayBuffer()).byteLength,8);
 assert(current.jobs.some(j=>j.id===audio.id&&j.status==='ready'));await closeDb();console.log('PASS released visual: source/transcript binding, immutable revision media, enrollment and edition membership, byte ranges and measured midpoint metadata.');

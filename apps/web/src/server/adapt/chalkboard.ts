@@ -39,7 +39,9 @@ export async function prepareChalkboard(input: { enrollmentId: string; moduleId:
   const rendererRoot=path.join(appRoot(),'video-renderer');
   const rendererHash=createHash('sha256');
   for(const name of (await fs.readdir(rendererRoot)).filter(name=>/\.(tsx?|mjs|json)$/.test(name)).sort())rendererHash.update(name).update(await fs.readFile(path.join(rendererRoot,name)));
-  const key = createHash('sha256').update(JSON.stringify({ version: DIRECTOR_VERSION, rendererHash:rendererHash.digest('hex'), illustrationHash, plan: identity, title: input.title, revision: input.revisionId, audioHash })).digest('hex');
+  const selectedFrames = input.scenes.flatMap(s => (s.selectedVisuals ?? []).map(frame => [s.id,frame]));
+  const frameHash = selectedFrames.length ? createHash('sha256').update(JSON.stringify(selectedFrames)).digest('hex') : undefined;
+  const key = createHash('sha256').update(JSON.stringify({ version: DIRECTOR_VERSION, rendererHash:rendererHash.digest('hex'), illustrationHash, plan: identity, title: input.title, revision: input.revisionId, audioHash, frameHash })).digest('hex');
   const directory = path.join(boardRoot(), input.enrollmentId, input.moduleId, key);
   await fs.mkdir(directory, { recursive: true });
   const statusFile = path.join(directory, 'status.json'), lock = path.join(directory, 'lock');
@@ -51,7 +53,7 @@ export async function prepareChalkboard(input: { enrollmentId: string; moduleId:
   // renderer change. Revision, narration, profile plan and illustrations still match.
   for (const previousRenderer of ['a0dc818be5870629a378ccb5d5f8a5f0dee042328ff2f9d032ffeff67175adff', '631f81da6509e151378d5a2a834f0b10563445c9dfa762f7af6853a192787dd8']) {
   const legacyKey = createHash('sha256').update(JSON.stringify({ version: DIRECTOR_VERSION, rendererHash:previousRenderer, illustrationHash, plan: identity, title: input.title, revision: input.revisionId, audioHash })).digest('hex');
-  if (legacyKey !== key) {
+  if (!frameHash && legacyKey !== key) {
     const legacyDir = path.join(boardRoot(), input.enrollmentId, input.moduleId, legacyKey);
     const legacyFile = path.join(legacyDir, 'final.mp4');
     try {

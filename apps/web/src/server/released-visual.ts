@@ -13,6 +13,7 @@ import { findEnrollment } from './repo';
 import { ApiError } from './http';
 import { pcmWav } from './adapt/continuous-audio';
 import { activityVisualSource } from '@/lib/activity-visual';
+import { spokenSentences, type TopicFrame } from '@/lib/topic-visual-assets';
 
 function bindings(content:AuthoredCoursePackageData){return content.modules.flatMap(m=>[
  ...(m.problemHook.remotion?[{moduleId:m.id,ref:m.problemHook.remotion,videoId:`draft_${m.id}_hook`,video:null,activity:null}]:[]),
@@ -40,6 +41,34 @@ export async function validateReleasedVisuals(ownerId:string,courseId:string,con
   for(const clip of audio.output.clips!){const wav=pcmWav(await fs.readFile(path.join(root,'clips',clip.key+'.wav')));if(Math.abs(wav.seconds-clip.seconds)>.001)throw new ApiError(422,'visual_audio_mismatch','A narration clip does not match its measured timing.');}
  }
 }
+/** Resolve only the concept export actually bound to this learner's edition. */
+export async function releasedTopicFrames(userId:string, courseId:string, revisionId:string) {
+ if (!await findEnrollment(userId,courseId)) throw new ApiError(403,'not_enrolled','Enroll to use the reviewed concept visuals.');
+ const release = await getPublishedAuthoredCourse(courseId,userId);
+ const binding = release && bindings(release.content).find(b => b.video && b.ref.revisionId === revisionId);
+ if (!release || !binding?.video) return;
+ const {revision,audio,exported} = await rows(release.ownerId,courseId,binding);
+ const timeline = visualTimeline(revision.content,audio.output.clips);
+ const slides = binding.video.slides;
+ const frames:TopicFrame[] = [];
+ let slideIndex = 0;
+ for (const scene of timeline.scenes) {
+   for (const beat of scene.beats) {
+     const slide = slides[slideIndex++];
+     // Older scripts reuse the settled final artifact of each scene. Authors
+     // can include a specific beat or exclude any beat when editing the script.
+     if (!(beat.reuseVisual ?? (beat === scene.beats.at(-1))) || !slide || slide.narration !== beat.narration) continue;
+     const phrase = spokenSentences(beat.narration).find(s => s.split(/\s+/).length >= 4);
+     if (!phrase) continue;
+     frames.push({id:beat.id, partId:slide.id, label:beat.visual?.heading ?? beat.label,
+       seconds:(beat.from + Math.floor(beat.durationInFrames * .8))/VISUAL_FPS,
+       crop:{x:.04,y:.215,width:.92,height:.57}, spokenPhrase:phrase});
+   }
+ }
+ const root = process.env.LMS_VISUAL_LESSON_DIR ?? path.join(appRoot(),'.data','visual-lessons');
+ return {identity:exported.id, file:path.join(root,exported.id,'final.mp4'), frames};
+}
+
 export async function releasedVisual(userId:string,courseId:string,revisionId:string,request?:Request){
  if(!await findEnrollment(userId,courseId))throw new ApiError(403,'not_enrolled','Enroll to play this course video.');
  const release=await getPublishedAuthoredCourse(courseId,userId),binding=release&&bindings(release.content).find(b=>b.ref.revisionId===revisionId);

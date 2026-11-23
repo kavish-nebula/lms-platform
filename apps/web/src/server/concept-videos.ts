@@ -43,6 +43,9 @@ export async function videoAsset(courseId: string, assetId: string): Promise<Ass
   try { return JSON.parse(await fs.readFile(path.join(directory(courseId, assetId), 'asset.json'), 'utf8')); }
   catch { throw new ApiError(404, 'not_found', 'Video not found.'); }
 }
+export function uploadedRecordingFile(courseId:string, assetId:string) {
+  return path.join(directory(courseId, assetId), 'video');
+}
 export async function ownedVideo(ownerId: string, courseId: string, assetId: string) {
   await getCreatorDraft(ownerId, courseId); const asset = await videoAsset(courseId, assetId);
   if (asset.ownerId !== ownerId) throw new ApiError(404, 'not_found', 'Video not found.');

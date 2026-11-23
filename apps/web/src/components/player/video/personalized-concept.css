@@ -33,6 +33,7 @@
 .personal-teaching-layout-1 .personal-teaching-symbol { grid-column: 2; grid-row: 1; }
 .personal-teaching-layout-1 .personal-teaching-copy { grid-column: 1; grid-row: 1; }
 .personal-teaching-layout-context { background: var(--panel-2); border-width: 2px; }
+.personal-teaching-layout-asset { grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); }
 .personal-teaching-track { display: flex; gap: 6px; margin-top: auto; }
 .personal-teaching-track span { flex: 1; height: 4px; border-radius: var(--r-sm); background: var(--line); }
 .personal-teaching-track span[data-current="true"], .personal-teaching-track span[data-past="true"] { background: var(--ok); }

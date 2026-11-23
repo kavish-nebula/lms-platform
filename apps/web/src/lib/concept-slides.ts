@@ -1,6 +1,6 @@
 import { conceptNarration, type ConceptScene } from './personalized-concept';
 
-export type ConceptSlide = { text: string; context: boolean; startWord: number; endWord: number };
+export type ConceptSlide = { text: string; context: boolean; startWord: number; endWord: number; asset?: NonNullable<ConceptScene['selectedVisuals']>[number] };
 const words = (text: string) => text.trim().split(/\s+/).filter(Boolean);
 
 /** Presentation only: never rewrite teaching, request speech or alter quiz boundaries.
@@ -19,6 +19,13 @@ export function conceptSlides(scene: ConceptScene): ConceptSlide[] {
     };
     for (const sentence of sentences) {
       const tokens = words(sentence);
+      const asset = scene.selectedVisuals?.find(a => a.sentence === sentence);
+      if (asset) {
+        flush();
+        slides.push({text:sentence, context, startWord:position, endWord:position + tokens.length, asset});
+        position += tokens.length;
+        continue;
+      }
       if (pending.length + tokens.length > 34) flush();
       for (const token of tokens) {
         pending.push(token);

@@ -11,6 +11,7 @@ import { promisify } from 'node:util';
 import { bundle } from '@remotion/bundler';
 import { selectComposition, renderMedia } from '@remotion/renderer';
 import { motionWindows } from './timeline.mjs';
+import { muxTopicVideo, sourceFrameWindows } from './source-frames.mjs';
 
 const exec = promisify(execFile), here = path.dirname(fileURLToPath(import.meta.url));
 const manifestFile = path.resolve(process.argv[2]), dir = path.dirname(manifestFile);
@@ -68,7 +69,8 @@ try {
   }
   // Preserve the exact existing narration and duration; no voice generation.
   const temporary=path.join(dir,'final.tmp.mp4');
-  await exec(manifest.ffmpeg,['-v','error','-i',path.join(dir,'hybrid-silent.mp4'),'-i',manifest.audio,'-map','0:v:0','-map','1:a:0','-c:v','copy','-c:a','aac','-b:a','128k','-t',String(aligned.durationSeconds),'-movflags','+faststart','-y',temporary],{windowsHide:true,timeout:120000});
+  const windows=sourceFrameWindows(manifest.scenes,manifest.playback.segments,aligned.captions);
+  await muxTopicVideo({ffmpeg:manifest.ffmpeg, silent:path.join(dir,'hybrid-silent.mp4'), audio:manifest.audio, windows, duration:aligned.durationSeconds, directory:partsDir, output:temporary});
   // Decode the complete output, not just its container header, before delivery.
   await exec(manifest.ffmpeg,['-v','error','-i',temporary,'-f','null','-'],{windowsHide:true,timeout:120000});
   await fs.rename(temporary,path.join(dir,'final.mp4'));
@@ -80,7 +82,7 @@ try {
     await exec(manifest.ffmpeg,['-v','error','-ss',String(Math.max(0,seconds)),'-i',path.join(dir,'final.mp4'),'-frames:v','1','-y',path.join(dir,'qa',`chapter-${i+1}.png`)],{windowsHide:true,timeout:120000});
   }
   const quality=JSON.parse(await fs.readFile(path.join(dir,'visual-quality.json'),'utf8'));
-  await atomic(path.join(dir,'visual-quality.json'),{...quality,renderer:contract.version,remotionChapters:aligned.chapters.filter(c=>contract.remotionKinds.includes(c.kind)).length,manimChapters:aligned.chapters.filter(c=>!contract.remotionKinds.includes(c.kind)).length,fullDecodePassed:true});
+  await atomic(path.join(dir,'visual-quality.json'),{...quality,sourceFrames:windows.map(({visual,start,end})=>({id:visual.id,start,end})),renderer:contract.version,remotionChapters:aligned.chapters.filter(c=>contract.remotionKinds.includes(c.kind)).length,manimChapters:aligned.chapters.filter(c=>!contract.remotionKinds.includes(c.kind)).length,fullDecodePassed:true});
   await atomic(status,{status:'ready',durationSeconds:aligned.durationSeconds,renderSeconds:(Date.now()-started)/1000,renderer:contract.version});
 } catch(error){await atomic(status,{status:'failed',stage:'composition'});throw error;}
 finally{server.closeAllConnections();await new Promise(resolve=>server.close(resolve));}

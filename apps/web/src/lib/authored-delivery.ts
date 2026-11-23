@@ -84,6 +84,7 @@ export function authoredDelivery({ courseId, revisionId, content: source }: Rele
         },
         { ...base, step_id: `${scope}.explain`, stage: 'explainer', duration_min: Math.max(1, Math.ceil(m.conceptExplainer.videos.reduce((n, v) => n + v.plannedMinutes, 0))), concepts: m.objectiveIds.map(objective), segments: [],
           videos: m.conceptExplainer.videos.map(v => ({
+            ...(v.reusableVisuals ? { reusableVisuals: v.reusableVisuals } : {}),
             ...(v.sourceMedia ? { sourceMedia: v.sourceMedia } : {}),
             ...(v.remotion?{remotion:{endpoint:`/api/v1/courses/${courseId}/visual-lessons/${v.remotion.revisionId}`}}:{}),
             ...((v.remotion || v.uploadedVideo || v.sourceMedia) ? { personalizationSource: { transcriptId: v.uploadedVideo?.transcriptId ?? `source-${revisionId}-${v.id}`, checkpointAfterPart: v.slides.findIndex(s => s.id === v.midpointQuiz.afterSlideId), parts: v.slides.map(s => ({ id: s.id, narration: s.narration, sourceIds: s.sourceIds, objectiveIds: s.objectiveIds })) } } : {}),

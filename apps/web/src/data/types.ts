@@ -160,6 +160,7 @@ export type VideoQuiz = { q: string; options: string[]; explain: string; hint: s
 
 /** A narrated slide video for one lesson (audio: /audio/video-{id}-s{n}.mp3). */
 export type ConceptVideo = {
+  reusableVisuals?: import('@/lib/topic-visual-assets').TopicLibrary;
   remotion?: { endpoint:string };
   /** Reviewed source for a learner-specific derivative; the original stays available. */
   sourceMedia?: { audio?: string; video?: string; image?: string; transcript: string; referenceOnly?: boolean; reviewNotes?: string[] };

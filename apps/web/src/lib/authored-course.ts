@@ -1,6 +1,7 @@
 import { z } from 'zod/v4';
 import { ProjectSandbox } from './project-sandbox';
 import { UploadedConceptVideo } from './concept-video-source';
+import { TopicVisualLibrary } from './topic-visual-assets';
 import { MiniProjectTask } from './sme-mini-project';
 
 const id = z.string().regex(/^[A-Za-z0-9_-]{1,80}$/);
@@ -49,6 +50,7 @@ export const AuthoredCoursePackage = z.object({
     conceptExplainer: z.object({ videos: z.array(z.object({
       id, title: text.max(300), plannedMinutes: z.number().positive().max(300), slides: z.array(Slide).min(1).max(40),
       uploadedVideo: UploadedConceptVideo.optional(),
+      reusableVisuals: TopicVisualLibrary.optional(),
       remotion:ReleasedVisual.optional(),
       sourceChecks: z.array(Question).max(100).optional(),
       sourceMedia: z.object({ audio: z.string().optional(), video: z.string().optional(), image: z.string().optional(), transcript: z.string(), referenceOnly: z.boolean().optional(), reviewNotes: z.array(text).max(10).optional() }).strict().optional(),
@@ -107,6 +109,8 @@ export function validateAuthoredCourse(raw: unknown, context: { objectives: stri
     checkLinks(courseModule.problemHook, courseModule.objectiveIds);
     for (const video of courseModule.conceptExplainer.videos) {
       contentIds.push(video.id);
+      if (video.reusableVisuals && !video.uploadedVideo && !video.sourceMedia?.video) errors.push(`${video.id}: reusable frames require a source recording.`);
+      if (video.uploadedVideo && video.reusableVisuals?.frames.some(f => f.seconds >= video.uploadedVideo!.durationSeconds)) errors.push(`${video.id}: a reusable frame is outside the recording.`);
       if (video.uploadedVideo && (video.uploadedVideo.checkpointSeconds >= video.uploadedVideo.durationSeconds || Math.abs(video.plannedMinutes * 60 - video.uploadedVideo.durationSeconds) > 0.5)) errors.push(`${video.id}: uploaded video timing must match its recording and checkpoint.`);
       if (new Set(video.slides.map(s => s.id)).size !== video.slides.length) errors.push(`${video.id}: slide IDs must be unique.`);
       for (const slide of video.slides) { contentIds.push(slide.id); checkLinks(slide, courseModule.objectiveIds); }

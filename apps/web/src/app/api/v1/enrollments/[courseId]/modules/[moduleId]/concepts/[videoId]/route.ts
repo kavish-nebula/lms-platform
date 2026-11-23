@@ -9,6 +9,7 @@ import { getModule } from '@/data';
 import * as repo from '@/server/repo';
 import { learningService } from '@/server/learning/service';
 import { learnerAnswers } from '@/lib/setup';
+import { applyTopicFrames } from '@/server/adapt/topic-frames';
 
 /** Enrollment/profile/release-scoped delivery; no assessment answers or keys are
  * supplied to the model, and incomplete text/audio never becomes playable. */
@@ -23,17 +24,20 @@ async function view({ params }: Context, retry: boolean) {
   const content = ready ? job.content as unknown as import('@/lib/personalized-concept').PersonalizedConcept & { audio: Record<string, string> } : undefined;
   const useBoard = chalkboardEnabled();
   const playback = content && (useBoard || continuousConceptEnabled(courseId)) ? await continuousNarration({ enrollmentId:job.enrollmentId,moduleId,revisionId:job.id,scenes:content.scenes,audio:content.audio }) : undefined;
-  const mod = useBoard ? await getModule(courseId, moduleId, user.id) : null;
+  const mod = useBoard || content ? await getModule(courseId, moduleId, user.id) : null;
   const videos = mod?.blocks.find(b => b.stage === 'explainer')?.videos ?? [], index = videos.findIndex(v => v.id === videoId);
-  const enrollment = useBoard ? await repo.findEnrollment(user.id, courseId) : null;
-  const profile = useBoard ? await repo.getProfile(user.id) : null;
+  const enrollment = useBoard || content ? await repo.findEnrollment(user.id, courseId) : null;
+  const profile = useBoard || content ? await repo.getProfile(user.id) : null;
   const answers = learnerAnswers(profile?.answers, enrollment?.answers ?? {});
+  // Only registered frames from this edition may enter the player/renderer.
+  const teaching = content?.scenes.map(scene => { const s = {...scene}; delete s.selectedVisuals; return s; });
+  const scenes = teaching && videos[index] ? await applyTopicFrames(courseId,videos[index],teaching,answers.field ?? '',user.id) : teaching;
   let evidence: Awaited<ReturnType<typeof learningService.state>> | null = null;
   if (useBoard && moduleId === 'M1') try { evidence = await learningService.state(user.id, courseId); } catch { /* Other editions use their original progress. */ }
   const priorProgress = enrollment ? await repo.progressFor(enrollment.id) : [];
   const route = useBoard ? conceptRoute(videos[index]?.title ?? '', videos.slice(0, Math.max(0, index)).map(v => ({ title: v.title, href: `/learn/courses/${courseId}/${moduleId}/explainer?v=${v.id}`, demonstrated: !!evidence?.topics.find(t => t.id === v.id)?.disposition || priorProgress.some(p => p.moduleId === moduleId && p.stage === 'explainer') }))) : undefined;
-  const chalkboard = content && playback && useBoard ? await prepareChalkboard({ enrollmentId: job.enrollmentId, moduleId, revisionId: job.id, title: videos[index]?.title ?? content.scenes[0].title, field: [answers.field, answers.domainOther, answers.studyFieldOther].filter(Boolean).join(' '), scenes: content.scenes, playback, retry }) : undefined;
-  return ok({ concept: { id: job.id, status: job.status, ...(route ? { route } : {}), ...(chalkboard ? { chalkboard } : {}), ...(content ? { scenes: content.scenes.map((scene, i) => ({ ...scene, audio: content.audio[`scene${i}`] })), ...(playback ? { playback: { ...playback, ...(chalkboard?.video ? { video: chalkboard.video, captions: chalkboard.captions } : {}) } } : {}) } : {}) } });
+  const chalkboard = scenes && playback && useBoard ? await prepareChalkboard({ enrollmentId: job.enrollmentId, moduleId, revisionId: job.id, title: videos[index]?.title ?? scenes[0].title, field: [answers.field, answers.domainOther, answers.studyFieldOther].filter(Boolean).join(' '), scenes, playback, retry }) : undefined;
+  return ok({ concept: { id: job.id, status: job.status, ...(route ? { route } : {}), ...(chalkboard ? { chalkboard } : {}), ...(content && scenes ? { scenes: scenes.map((scene, i) => ({ ...scene, audio: content.audio[`scene${i}`] })), ...(playback ? { playback: { ...playback, ...(chalkboard?.video ? { video: chalkboard.video, captions: chalkboard.captions } : {}) } } : {}) } : {}) } });
 }
 export const GET = handle(async (_request: Request, context: Context) => view(context, false));
 export const POST = handle(async (_request: Request, context: Context) => view(context, true));

@@ -12,7 +12,7 @@ export const VisualLesson = z.object({
     id, title: z.string().trim().min(1).max(80), kind: z.enum(VISUAL_KINDS),
     sourceIds: z.array(id).min(1).max(20), evidence: z.string().trim().min(12).max(1200),
     holdSeconds: z.number().min(1).max(5),
-    beats: z.array(z.object({ id, label: z.string().trim().min(1).max(65), narration: z.string().trim().min(8).max(420), visual: z.object({ heading: z.string().trim().min(1).max(45), detail: z.string().trim().min(1).max(120), icon: z.enum(['document','message','check','question','person','model','shield','table']).default('document'), status: z.enum(['neutral','warning','success']).default('neutral') }).strict().optional() }).strict()).min(1).max(4),
+    beats: z.array(z.object({ id, label: z.string().trim().min(1).max(65), narration: z.string().trim().min(8).max(420), reuseVisual: z.boolean().optional(), visual: z.object({ heading: z.string().trim().min(1).max(45), detail: z.string().trim().min(1).max(120), icon: z.enum(['document','message','check','question','person','model','shield','table']).default('document'), status: z.enum(['neutral','warning','success']).default('neutral') }).strict().optional() }).strict()).min(1).max(4),
   }).strict()).min(2).max(12),
 }).strict().superRefine((lesson, ctx) => {
   const visibleText = [lesson.title, ...lesson.scenes.flatMap(s => [s.title, ...s.beats.flatMap(b => [b.label, b.narration, b.visual?.heading ?? '', b.visual?.detail ?? ''])])];
