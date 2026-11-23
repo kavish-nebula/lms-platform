@@ -14,3 +14,12 @@ test('fractional cue times are bounded by the actual chapter frames',()=>{
   assert.equal(windows[0].start,48);assert.equal(windows.at(-1).end,96);
   assert.equal(windows.reduce((sum,w)=>sum+w.holdUntil-w.start,0),48);
 });
+
+test('Manim to Remotion selection uses the exact export boundary',async()=>{
+ const {chapterIndexAtFrame}=await import('./timeline.mjs');
+ const chapters=[{cues:[{seconds:0}]},{cues:[{seconds:60.72}]},{cues:[{seconds:92.19}]}];
+ assert.equal(chapterIndexAtFrame(chapters,1456,24),0);
+ assert.equal(chapterIndexAtFrame(chapters,1457,24),1);
+ assert.equal(chapterIndexAtFrame(chapters,1458,24),1);
+ assert.equal(chapterIndexAtFrame(chapters,2212,24),2);
+});

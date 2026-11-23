@@ -14,6 +14,48 @@ JOB = {"id": "job", "lease": "lease", "input": {"authored": SLIDE, "source": SLI
 
 
 class PipelineTests(unittest.TestCase):
+    def test_complete_hook_review_catches_an_unlisted_visual_mismatch(self):
+        import copy
+        hook={'title':'Finance audit assistant','narration':'Finance records need review.','film':{'shots':[{'say':'The finance assistant shows a campstove.'}]},'reveal':{'narration':'The boots arrived.'},'correct':'h1'}
+        job=copy.deepcopy(JOB)
+        job['input'].update(authored=hook,source=hook,piece='hook',trigger='initial',textMapVersion=13,courseId='ai-agent')
+        job['input']['context']['answers']={'field':'finance'}
+        calls=[]
+        def model(req):
+            request=json.loads(req.content);calls.append(request)
+            if request['messages'][0]['content'].startswith('Review a personalized educational hook'):
+                value={'passed':len(calls)>2,'findings':[] if len(calls)>2 else [{'path':'$.film.shots[0].say','reason':'A campstove is unrelated to the finance audit case.'}]}
+            else:
+                value={} if len(calls)==1 else {'$.film.shots[0].say':'The finance assistant shows a source ledger.','$.reveal.narration':'The ledger is ready.'}
+            return httpx.Response(200,json={'choices':[{'message':{'content':json.dumps(value)}}]})
+        with httpx.Client(transport=httpx.MockTransport(model)) as client:
+            result=generate(job,client)['content']
+        self.assertEqual(len(calls),4)
+        self.assertIn('$.reveal.narration',calls[2]['messages'][-1]['content'])
+        self.assertIn('$.film.shots[0].say',calls[2]['messages'][-1]['content'])
+        self.assertEqual(result['film']['shots'][0]['say'],'The finance assistant shows a source ledger.')
+        self.assertEqual(result['correct'],'h1')
+
+    def test_finance_hook_rejects_retail_in_later_spoken_replay(self):
+        import copy
+        hook = {'title':'Finance audit assistant','narration':'Finance records need review.','film':{'shots':[{'say':'The finance assistant cannot verify the report.'}]},'reveal':{'narration':'The parcel shipped yesterday.','frames':[{'caption':'The parcel shipped yesterday.'}]},'code':'The parcel shipped yesterday.','correct':'h1'}
+        job=copy.deepcopy(JOB)
+        job['input'].update(authored=hook,source=hook,piece='hook',trigger='initial',textMapVersion=11,courseId='ai-agent')
+        job['input']['context']['answers']={'field':'finance','domainOther':'Finance and audit'}
+        calls=[]
+        def model(req):
+            calls.append(json.loads(req.content))
+            edits={'$.title':'Finance audit assistant','$.narration':'Finance records need review.','$.film.shots[0].say':'The finance assistant cannot verify the report.'} if len(calls)==1 else {'$.reveal.narration':'The finance report needs a source record.'}
+            return httpx.Response(200,json={'choices':[{'message':{'content':json.dumps(edits)}}]})
+        with httpx.Client(transport=httpx.MockTransport(model)) as client:
+            content=generate(job,client)['content']
+        self.assertEqual(len(calls),2)
+        self.assertIn('$.reveal.narration',calls[1]['messages'][-1]['content'])
+        self.assertEqual(content['reveal']['narration'],'The finance report needs a source record.')
+        self.assertEqual(content['correct'],'h1')
+        self.assertEqual(content['reveal']['frames'][0]['caption'],'The finance report needs a source record.')
+        self.assertEqual(content['code'],'The parcel shipped yesterday.')
+
     def test_prerequisite_bridge_targets_existing_title_subtitle_without_note(self):
         import copy
         slide = {**SLIDE, "sub": "How models predict text"}

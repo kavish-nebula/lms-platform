@@ -51,6 +51,17 @@ const pkg: AuthoredCoursePackageData = {
   },
 };
 
+const deliverySource=JSON.stringify(pkg);
+const delivery=authoredDelivery({courseId:draft.id,revisionId:'fixture-revision',content:pkg});
+assert(delivery.modules[0].videoFirstActivities,'Slide-authored activities must participate in personalization.');
+const remotionPackage=structuredClone(pkg);
+remotionPackage.modules[0].conceptExplainer.videos[0].remotion={revisionId:'visual-fixture',audioJobId:'audio-fixture',exportJobId:'export-fixture'};
+const visualDelivery=authoredDelivery({courseId:draft.id,revisionId:'fixture-revision',content:remotionPackage});
+const concept=visualDelivery.modules[0].blocks.find(b=>b.stage==='explainer')!.videos![0];
+assert(concept.remotion,'The reviewed original remains available.');
+assert(concept.personalizationSource,'Remotion lessons need a reviewed source for personalized delivery.');
+assert.deepEqual(concept.midQuiz.map(q=>q.q),pkg.modules[0].conceptExplainer.videos[0].midpointQuiz.questions.map(q=>q.prompt));
+assert.equal(JSON.stringify(pkg),deliverySource,'Delivery must not edit an approved package.');
 assert.equal(validateAuthoredCourse(pkg, { objectives: ['O1'], smeSourceIds: ['S1'], briefRevision: draft.revision }).modules.length, 1);
 assert.throws(() => validateAuthoredCourse({ ...pkg, modules: [{ ...pkg.modules[0], conceptExplainer: { videos: [{ ...pkg.modules[0].conceptExplainer.videos[0], midpointQuiz: { ...pkg.modules[0].conceptExplainer.videos[0].midpointQuiz, afterSlideId: 'elsewhere' } }] } }] }, { objectives: ['O1'], smeSourceIds: ['S1'], briefRevision: draft.revision }), /midpoint slide/);
 assert.throws(() => validateAuthoredCourse({ ...pkg, modules: [{ ...pkg.modules[0], id: 'V1' }] }, { objectives: ['O1'], smeSourceIds: ['S1'], briefRevision: draft.revision }), /IDs must be unique/);

@@ -119,6 +119,12 @@ const CHAT_RUN: [number, number] = [7400, 11600];
 
 /** A plain product tile, for a rewritten story whose shop isn't selling tents. */
 function ProductArt({ context }: { context: string }) {
+  if (/finance|audit|payable|invoice/i.test(context)) {
+    return <svg viewBox="0 0 400 260" className="text-primary" role="img" aria-label="Finance records with evidence and review status">
+      <rect x="65" y="30" width="270" height="200" rx="10" fill="currentColor" fillOpacity="0.07" stroke="currentColor" />
+      {[75,115,155,195].map((y,i)=><g key={y} stroke="currentColor" fill="none"><path d={`M90 ${y}H225`} opacity="0.5"/><path d={`M250 ${y-7}l7 7 13-15`} opacity={i===3?0.25:1}/></g>)}
+    </svg>;
+  }
   if (/healthcare|medical record|patient|clinic/i.test(context)) {
     return (
       <div className="hf-tent flex items-center justify-center" role="img" aria-label="Illustration of a record request">
@@ -586,7 +592,8 @@ function routeAt(u: number) {
 const ROUTE = `M${P0.x} ${P0.y} C${P1.x} ${P1.y} ${P2.x} ${P2.y} ${P3.x} ${P3.y}`;
 const pct = (p: { x: number; y: number }) => ({ left: `${(p.x / 800) * 100}%`, top: `${(p.y / 400) * 100}%` });
 
-export function ParcelMapShot({ shot, t, reduce, sfx }: ShotProps<"parcel-map">) {
+export function ParcelMapShot({ shot, block, t, reduce, sfx }: ShotProps<"parcel-map">) {
+  const recordCase = !!block.brand && /finance|audit|patient|medical|record/i.test(`${shot.say} ${shot.from} ${shot.to} ${block.narration}`);
   const u = shot.stop * easeOut(span(t, ...MAP_DRIVE));
   const claimed = t >= MAP_CLAIM + 300;
   const caught = t >= MAP_CAUGHT;
@@ -610,13 +617,13 @@ export function ParcelMapShot({ shot, t, reduce, sfx }: ShotProps<"parcel-map">)
       </svg>
       <div className="hf-pin" style={pct(P0)}>
         <span className="hf-pin-ic">
-          <Warehouse aria-hidden />
+          {recordCase ? <FileText aria-hidden /> : <Warehouse aria-hidden />}
         </span>
         <span>{shot.from}</span>
       </div>
       <div className={`hf-pin ${caught ? "bad" : claimed ? "ok" : ""}`} style={pct(P3)}>
         <span className="hf-pin-ic">{caught ? <X aria-hidden /> : claimed ? <Check aria-hidden /> : <Home aria-hidden />}</span>
-        <span>{claimed ? (caught ? "Not delivered" : "Delivered?") : shot.to}</span>
+        <span>{claimed ? (caught ? (recordCase ? "Not verified" : "Not delivered") : (recordCase ? "Verified?" : "Delivered?")) : shot.to}</span>
       </div>
       {u >= shot.stop * 0.98 ? (
         <div className="hf-pin" style={{ ...pct(hub), marginTop: "-3cqw" }}>
@@ -624,7 +631,7 @@ export function ParcelMapShot({ shot, t, reduce, sfx }: ShotProps<"parcel-map">)
         </div>
       ) : null}
       <div className={`hf-truck ${caught ? "lost" : ""}`} style={pct(truck)}>
-        <Truck aria-hidden />
+        {recordCase ? <FileText aria-hidden /> : <Truck aria-hidden />}
       </div>
       {caught ? (
         <motion.div className="hf-truth" style={pct(truck)} initial={reduce ? false : { opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }}>

@@ -1,4 +1,5 @@
 import React from 'react';
+import { chapterIndexAtFrame } from './timeline.mjs';
 import { AbsoluteFill, OffthreadVideo, useCurrentFrame, useVideoConfig } from 'remotion';
 import { DocumentScene } from './document-scene';
 import { LanguageScene } from './language-scene';
@@ -12,7 +13,7 @@ import { EvidenceDemonstration } from './evidence-demonstration';
 
 export function Lesson({chapters,manim,title}: LessonProps) {
   const frame=useCurrentFrame(), {fps}=useVideoConfig(), time=frame/fps;
-  const chapter = chapters.find((c,i)=>time<(chapters[i+1]?.cues[0]?.seconds ?? Infinity)) ?? chapters.at(-1);
+  const chapter = chapters[chapterIndexAtFrame(chapters, frame, fps)];
   if(!chapter) return <AbsoluteFill style={{background:T.bg,color:T.text,justifyContent:'center',alignItems:'center',fontFamily:'Arial',fontSize:40}}>{title}</AbsoluteFill>;
   if(!contract.remotionKinds.includes(chapter.kind)) return <AbsoluteFill><OffthreadVideo src={manim} muted style={{width:'100%',height:'100%'}}/></AbsoluteFill>;
   const language=['token-stream','parameter-network','prompt-workspace'].includes(chapter.kind);

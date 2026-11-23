@@ -5,6 +5,9 @@ import { mergeShape, acceptable, skeletonOf } from "@/server/adapt/shape";
 import { writePiece, AdaptError, type PieceBrief } from "@/server/adapt/write";
 import { piecesOf, authoredWorld } from "@/server/adapt/pieces";
 import { adaptedAudioFile, adaptedModule, adaptNextModule, ensureModule } from "@/server/adapt/service";
+// These legacy tests explicitly advance modules. Background scheduling has its
+// own progressive-adaptation suite; concurrent prefetch changes stub call order.
+process.env.ADAPTIVE_BACKGROUND_ENABLED = 'false';
 import { audioRoot, gemini, retryDelayMs, spoken, withFallback, adaptiveSpeechPayload, type Voicer } from "@/server/adapt/tts";
 import { getSessionUser } from "@/server/auth";
 import { deleteUserData, findEnrollment, saveProfile, upsertEnrollment, adaptedFor } from "@/server/repo";

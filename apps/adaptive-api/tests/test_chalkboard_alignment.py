@@ -2,10 +2,17 @@ import sys
 import unittest
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'adaptive_api'))
-from chalkboard_alignment import align_source, phrase_time, phrase_anchor, adjacent_layers, tokens
+from chalkboard_alignment import align_source, phrase_time, phrase_anchor, adjacent_layers, tokens, optional_bridge_cue
 
 
 class AlignmentTests(unittest.TestCase):
+    def test_unrecognized_optional_bridge_cannot_block_required_teaching(self):
+        scene={'bridge':'Like reviewing finance and audit reports before presenting data.'}
+        cue={'target':'result','phrase':'Like reviewing finance and audit reports'}
+        self.assertTrue(optional_bridge_cue(cue,scene))
+        self.assertFalse(optional_bridge_cue({**cue,'target':'primary'},scene))
+        self.assertFalse(optional_bridge_cue({**cue,'target':'secondary'},scene))
+        self.assertFalse(optional_bridge_cue({**cue,'phrase':'Review the supplied source record'},scene))
     def test_spoken_measurements_match_digit_transcriptions_without_changing_values(self):
         self.assertEqual(tokens('sixty-eight degrees Celsius; nine point two'),tokens('68 degrees Celsius; 9.2'))
         source='The reading rises from sixty-eight to seventy-one degrees. The ratio is nine point two.'

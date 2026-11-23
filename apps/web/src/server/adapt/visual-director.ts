@@ -69,6 +69,7 @@ export function validateDirectedPlan(value: unknown, scenes: ConceptScene[]): Di
     if (chapter.sceneId !== scenes[i].id || !VISUAL_KINDS.includes(chapter.kind)) throw Error('Invalid source order or visual kind.');
     if (chapter.kind === 'conveyor' && !/\b(conveyor|belt|PLC|assembly line)\b/i.test(conceptNarration(scenes[i]))) throw Error(`Scene ${chapter.sceneId}: a conveyor requires an actual narrated belt/PLC, not merely a factory setting. Use incident-board for maintenance/document bottlenecks.`);
     if (chapter.kind === 'workbench' && !/finance|payables|invoice|spreadsheet/i.test(conceptNarration(scenes[i]).split(/[.!?]/)[0])) throw Error('A finance workbench cannot illustrate a manufacturing opening. Choose the source subject.');
+    if (chapter.kind === 'comparison' && !(/finance|payables|invoice/i.test(narration) && /production|coolant|cooler|factory/i.test(narration))) throw Error('The comparison renderer specifically contrasts a finance analogy with production. Use source-inspection or claim-evidence for other comparisons.');
     if (keys.has(normalized(chapter.visualKey))) throw Error('Repeated visual composition. Design a different source-supported treatment.');
     keys.add(normalized(chapter.visualKey));
     if (!chapter.title?.trim() || chapter.title.length > 90 || !chapter.purpose?.trim() || chapter.purpose.length > 650 || !chapter.visualKey?.trim()) throw Error('Missing visual teaching purpose.');
@@ -91,7 +92,7 @@ export function validateDirectedPlan(value: unknown, scenes: ConceptScene[]): Di
 }
 
 export async function directVisuals(input: { title: string; field: string; scenes: ConceptScene[]; playback: ContinuousPlayback; repair?: string }, transport: LlmTransport = llmHttp({ timeoutMs: 90_000, retries: 0, backoffMs: 1000 })) {
-  const source = input.scenes.map((s, i) => ({ sceneId: s.id, narration: conceptNarration(s), coreNarration:s.narration, learnerBridge:s.bridge, anchors: conceptNarration(s).split(/(?<=[.!?])\s+/).map(sentence => sentence.trim().split(/\s+/).slice(0,6).join(' ')).filter(phrase=>normalized(phrase).split(' ').length>=3&&!/^(for further doubts|connect this idea|use this distinction)/i.test(phrase)), phase: s.phase, sourceIds: s.sourceIds, seconds: input.playback.segments[i].endSeconds - input.playback.segments[i].startSeconds }));
+  const source = input.scenes.map((s, i) => ({ sceneId: s.id, narration: conceptNarration(s), coreNarration:s.narration, learnerBridge:s.bridge, anchors: conceptNarration(s).split(/(?<=[.!?])\s+/).map(sentence => sentence.trim().split(/\s+/).slice(0,6).join(' ')).filter(phrase=>normalized(phrase).split(' ').length>=3&&!/^(for further doubts|connect this idea|use this distinction)/i.test(phrase)), phase: s.phase, sourceIds: s.sourceIds, seconds: input.playback.segments[i].endSeconds - input.playback.segments[i].startSeconds, maxCues: Math.max(1, Math.min(4, Math.floor((input.playback.segments[i].endSeconds-input.playback.segments[i].startSeconds-2)/4))) }));
   // The model chooses source anchors; it no longer invents/retypes phrases.
   // JSON-schema constrains these values before deterministic order validation.
   const schema = JSON.parse(JSON.stringify(STORYBOARD_SCHEMA));
@@ -101,7 +102,7 @@ export async function directVisuals(input: { title: string; field: string; scene
   schema.properties.chapters.items.properties.cues.items.properties.phrase.enum = [...new Set(source.flatMap(s=>s.anchors))];
   const messages: { role: 'system' | 'user' | 'assistant'; content: string }[] = [{ role: 'system', content: DIRECTOR_PROMPT + '\n' + VISUAL_ROLE_GUIDE + '\n' + EXTRA_ROLES }, { role: 'user', content: JSON.stringify({ title: input.title, learnerContext: input.field.slice(0, 200), source, visualKinds: VISUAL_KINDS }) }];
   let lastError = '';
-  messages.push({role:'user',content:'For each cue phrase select EXACTLY one of that scene\'s supplied anchors, in order. Never abbreviate an anchor. You may leave layers unused. Never use a mechanical illustration for an information-search problem.'});
+  messages.push({role:'user',content:'For each cue phrase select EXACTLY one of that scene\'s supplied anchors, in order. Never abbreviate an anchor. You may leave layers unused. Never use a mechanical illustration for an information-search problem. Respect each scene maxCues reading-time budget; short scenes need only one primary reveal. Fewer deliberate cues are better than hurried animations. The comparison kind is only for an explicit finance-versus-production analogy; never introduce production labels into unrelated lessons.'});
   if (input.repair) messages.push({ role: 'user', content: 'A previous storyboard passed text review but failed local audio/layout verification. Correct the cited scenes. Use fewer, widely separated sentence-opening cues for timing failures. Do not change narration or source facts. Diagnostics: ' + input.repair.slice(-4000) });
   for (const model of llmModels().slice(0, 2)) {
     for (let round = 0; round < 2; round++) {
@@ -111,6 +112,7 @@ export async function directVisuals(input: { title: string; field: string; scene
         messages.push({ role: 'assistant', content: text });
         if (reply.choices?.[0]?.finish_reason === 'length') throw Error('Storyboard response was truncated; return shorter cues and labels.');
         const plan = validateDirectedPlan(jsonReply(text), input.scenes);
+        for (let i=0;i<plan.chapters.length;i++) if (plan.chapters[i].cues.length>source[i].maxCues) throw Error(`Scene ${source[i].sceneId} has ${source[i].seconds.toFixed(1)} seconds; use at most ${source[i].maxCues} widely separated cues, leaving reading and settling time.`);
         const auditDir = path.join(appRoot(), '.data/chalkboard-storyboards/audit');
         await fs.mkdir(auditDir, { recursive: true });
         await fs.writeFile(path.join(auditDir, createHash('sha256').update(JSON.stringify(source)).digest('hex') + '.json'), JSON.stringify({source, plan}));

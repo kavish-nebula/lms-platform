@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { bundle } from '@remotion/bundler';
-import { selectComposition, renderMedia, renderStill } from '@remotion/renderer';
+import { selectComposition, renderMedia } from '@remotion/renderer';
 import { motionWindows } from './timeline.mjs';
 
 const exec = promisify(execFile), here = path.dirname(fileURLToPath(import.meta.url));
@@ -37,7 +37,7 @@ const server=http.createServer(async (req,res)=>{
 });
 await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
 try {
-  const sourceFiles=(await fs.readdir(here)).filter(f=>/\.(tsx?|json)$/.test(f)).sort();
+  const sourceFiles=(await fs.readdir(here)).filter(f=>/\.(tsx?|mjs|json)$/.test(f)).sort();
   const hash=createHash('sha256');for(const name of sourceFiles)hash.update(await fs.readFile(path.join(here,name)));
   const out=path.resolve(here,'../.data/remotion-bundles',hash.digest('hex'));
   if(!existsSync(path.join(out,'index.html')))await bundle({entryPoint:path.join(here,'entry.tsx'),outDir:out,publicDir:null});
@@ -75,7 +75,9 @@ try {
   await fs.mkdir(path.join(dir,'qa'),{recursive:true});
   for(const [i,c] of aligned.chapters.entries()){
     const seconds=Math.min(c.end-.25,c.cues.at(-1).seconds+2);
-    await renderStill({...options,output:path.join(dir,'qa',`chapter-${i+1}.png`),frame:Math.floor(seconds*contract.fps)});
+    // Inspect the actual exported pixels, avoiding another compositor pass over
+    // Manim footage after the complete MP4 has already decoded successfully.
+    await exec(manifest.ffmpeg,['-v','error','-ss',String(Math.max(0,seconds)),'-i',path.join(dir,'final.mp4'),'-frames:v','1','-y',path.join(dir,'qa',`chapter-${i+1}.png`)],{windowsHide:true,timeout:120000});
   }
   const quality=JSON.parse(await fs.readFile(path.join(dir,'visual-quality.json'),'utf8'));
   await atomic(path.join(dir,'visual-quality.json'),{...quality,renderer:contract.version,remotionChapters:aligned.chapters.filter(c=>contract.remotionKinds.includes(c.kind)).length,manimChapters:aligned.chapters.filter(c=>!contract.remotionKinds.includes(c.kind)).length,fullDecodePassed:true});

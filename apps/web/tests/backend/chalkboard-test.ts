@@ -79,8 +79,26 @@ assert.equal((await prepareChalkboard(input)).key,legacyKey,'Manim-only videos h
 await fs.writeFile(path.join(legacyDir,'aligned.json'),JSON.stringify({chapters:[{kind:'spreadsheet'}]}));
 assert.equal((await prepareChalkboard(input)).status,'failed','A branded Remotion chapter still requires a verified corrected presentation.');
 await fs.rm(legacyDir,{recursive:true,force:true});
+// A historical renderer identity can be unknown, but matching title alone is
+// never enough: require the exact revision-scoped audio and source script.
+const recoveredDir=path.join(boardRoot(),c.enrollment.id,'M1','c'.repeat(64));
+await fs.mkdir(recoveredDir,{recursive:true});
+await fs.writeFile(path.join(recoveredDir,'status.json'),JSON.stringify({status:'ready'}));
+await fs.writeFile(path.join(recoveredDir,'final.mp4'),Buffer.alloc(2048));
+await fs.writeFile(path.join(recoveredDir,'manifest.json'),JSON.stringify({title:input.title,plan:{version:DIRECTOR_VERSION},scenes:input.scenes}));
+await fs.writeFile(path.join(recoveredDir,'playback.json'),JSON.stringify(playback));
+await fs.writeFile(path.join(recoveredDir,'visual-quality.json'),JSON.stringify({fullDecodePassed:true}));
+await fs.writeFile(path.join(recoveredDir,'aligned.json'),JSON.stringify({chapters:[{kind:'backlog'}]}));
+assert.equal((await prepareChalkboard(input)).key,'c'.repeat(64));
+await fs.writeFile(path.join(recoveredDir,'manifest.json'),JSON.stringify({title:input.title,plan:{version:DIRECTOR_VERSION},scenes:[{...scene,narration:'A different script.'}]}));
+assert.equal((await prepareChalkboard(input)).status,'failed','Never reuse another script with the same title.');
+await fs.writeFile(path.join(recoveredDir,'manifest.json'),JSON.stringify({title:input.title,plan:{version:DIRECTOR_VERSION},scenes:input.scenes}));
+await fs.writeFile(path.join(recoveredDir,'playback.json'),JSON.stringify({...playback,audio:'/another/revision.wav'}));
+assert.equal((await prepareChalkboard(input)).status,'failed','Never cross revision/voice boundaries.');
+await fs.rm(recoveredDir,{recursive:true,force:true});
 const chapter = { sceneId: scene.id, title: 'One fixed rule', kind: 'backlog', visualKey: 'invoice-queue-growth', purpose: 'Show the source queue and keep the rule unchanged.', labels: ['Invoice queue', 'Fixed rule'], cues: [{ phrase: 'A fixed rule routes', action: 'reveal', target: 'primary', description: 'Reveal the queue as its fixed rule is narrated.' }] };
 assert.equal(validateDirectedPlan({ chapters: [chapter] }, [scene]).version, DIRECTOR_VERSION);
+assert.throws(()=>validateDirectedPlan({chapters:[{...chapter,kind:'comparison'}]},[scene]),/specifically contrasts/,'A finance lesson must not inherit unrelated source-production visuals.');
 assert.throws(() => validateDirectedPlan({ chapters: [{ ...chapter, labels: ['Sensor 70F'] }] }, [{ ...scene, narration: 'A fixed rule routes a request at 70 degrees.' }]), /units/);
 assert.throws(() => validateDirectedPlan({ chapters: [{ ...chapter, kind: 'workbench' }] }, [{ ...scene, narration: 'A fixed rule routes a factory part.' }]), /finance workbench/);
 assert.throws(() => validateDirectedPlan({ chapters: [{ ...chapter, cues: [{ ...chapter.cues[0], phrase: 'An invented unrelated action' }] }] }, [scene]), /source/);

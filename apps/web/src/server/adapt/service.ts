@@ -1,4 +1,5 @@
 import "server-only";
+import { personalizedHookVisuals } from '@/lib/personalized-hook-visuals';
 import { createHash } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
@@ -238,7 +239,7 @@ export async function adaptedModule(user: SessionUser, courseId: string, moduleI
       pieces: Object.fromEntries([current.hook, current.worked, ...current.activities].filter((r) => r !== null).map((r) => [r.videoId, {
         status: r.status === "ready" ? "ready" : r.status === "failed" ? "failed" : "writing",
       }])),
-      hook: hook?.content ? { ...(hook.content as unknown as NonNullable<AdaptedModuleView["hook"]>), brand: { name: "Harbour Works", short: "Harbour" } } : null,
+      hook: hook?.content ? personalizedHookVisuals({ ...(hook.content as unknown as NonNullable<AdaptedModuleView["hook"]>), brand: { name: "Harbour Works", short: "Harbour" } }) : null,
       worked: (worked?.content as WorkedBlock) ?? null,
       activities: Object.assign({}, ...current.activities.filter(r => r.status === 'ready').map(r => {
         const content = { ...r.content }; delete content.audio; return content;

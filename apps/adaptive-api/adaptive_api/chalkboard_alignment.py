@@ -86,6 +86,13 @@ def adjacent_layers(a, b, sentence_ranges):
     return second == first + 1
 
 
+def optional_bridge_cue(cue, scene):
+    """An analogy badge is optional; required teaching cues never use this path."""
+    quote = ' '.join(tokens(cue.get('phrase', '')))
+    bridge = ' '.join(tokens(scene.get('bridge', '')))
+    return cue.get('target') == 'result' and len(quote.split()) >= 3 and quote in bridge
+
+
 def align_manifest(data, directory):
     from faster_whisper import WhisperModel
     audio = Path(data['audio'])
@@ -136,7 +143,13 @@ def align_manifest(data, directory):
         cues = []
         last = -1
         for cue in chapter['cues']:
-            when, last, anchor = phrase_anchor(cue['phrase'], expected, mapping, last, allow_subphrase=True)
+            try:
+                when, last, anchor = phrase_anchor(cue['phrase'], expected, mapping, last, allow_subphrase=True)
+            except ValueError:
+                if not optional_bridge_cue(cue, scene):
+                    raise
+                adjustments.append({'sceneId':chapter['sceneId'],'from':cue['phrase'],'reason':'Omit an optional analogy badge without reliable word timing; preserve its full narration and captions.'})
+                continue
             if anchor != cue['phrase']:
                 adjustments.append({'sceneId': chapter['sceneId'], 'from': cue['phrase'], 'to': anchor, 'reason': 'Use a fully recognized contiguous source quote after an unrecognized name/acronym.'})
             cues.append({**cue, 'phrase': anchor, 'seconds': max(start, when), 'sourceWord': last})

@@ -49,13 +49,18 @@ export async function prepareChalkboard(input: { enrollmentId: string; moduleId:
   }
   // Reuse only an exactly scoped, corrected legacy render after a header-only
   // renderer change. Revision, narration, profile plan and illustrations still match.
-  const legacyKey = createHash('sha256').update(JSON.stringify({ version: DIRECTOR_VERSION, rendererHash:'631f81da6509e151378d5a2a834f0b10563445c9dfa762f7af6853a192787dd8', illustrationHash, plan: identity, title: input.title, revision: input.revisionId, audioHash })).digest('hex');
+  for (const previousRenderer of ['a0dc818be5870629a378ccb5d5f8a5f0dee042328ff2f9d032ffeff67175adff', '631f81da6509e151378d5a2a834f0b10563445c9dfa762f7af6853a192787dd8']) {
+  const legacyKey = createHash('sha256').update(JSON.stringify({ version: DIRECTOR_VERSION, rendererHash:previousRenderer, illustrationHash, plan: identity, title: input.title, revision: input.revisionId, audioHash })).digest('hex');
   if (legacyKey !== key) {
     const legacyDir = path.join(boardRoot(), input.enrollmentId, input.moduleId, legacyKey);
     const legacyFile = path.join(legacyDir, 'final.mp4');
     try {
       if ((await readStatus(path.join(legacyDir, 'status.json')))?.status === 'ready') {
         let neutral = await courseVideoPresentation(legacyFile) !== legacyFile;
+        if (previousRenderer === 'a0dc818be5870629a378ccb5d5f8a5f0dee042328ff2f9d032ffeff67175adff') {
+          const quality = JSON.parse(await fs.readFile(path.join(legacyDir, 'visual-quality.json'), 'utf8'));
+          neutral ||= quality.fullDecodePassed === true && (await fs.stat(legacyFile)).size > 1024;
+        }
         // Manim-only compositions never included the changed Remotion banner.
         // They can retain their exact scoped cache without a redundant transcode.
         if (!neutral) {
@@ -68,6 +73,26 @@ export async function prepareChalkboard(input: { enrollmentId: string; moduleId:
         }
       }
     } catch { /* Incomplete legacy caches must not prevent normal preparation. */ }
+  }
+  }
+  // Older successful renders did not record their renderer hash. Recover only
+  // an exact script/voice/revision match with independently verified neutral
+  // presentation and full-decode evidence, never by topic title alone.
+  for (const candidate of await fs.readdir(path.dirname(directory))) {
+    if (candidate === key || !/^[a-f0-9]{64}$/.test(candidate)) continue;
+    try {
+      const previousDir = path.join(path.dirname(directory), candidate);
+      if ((await readStatus(path.join(previousDir, 'status.json')))?.status !== 'ready') continue;
+      const manifest = JSON.parse(await fs.readFile(path.join(previousDir, 'manifest.json'), 'utf8'));
+      const quality = JSON.parse(await fs.readFile(path.join(previousDir, 'visual-quality.json'), 'utf8'));
+      const playback = JSON.parse(await fs.readFile(path.join(previousDir, 'playback.json'), 'utf8')) as ContinuousPlayback;
+      if (manifest.plan?.version !== DIRECTOR_VERSION || manifest.title !== input.title || JSON.stringify(manifest.scenes) !== JSON.stringify(input.scenes) || playback.audio !== input.playback.audio || playback.durationSeconds !== input.playback.durationSeconds || JSON.stringify(playback.segments) !== JSON.stringify(input.playback.segments) || playback.checkpointSeconds !== input.playback.checkpointSeconds || quality.fullDecodePassed !== true) continue;
+      const file = path.join(previousDir, 'final.mp4');
+      const aligned = JSON.parse(await fs.readFile(path.join(previousDir, 'aligned.json'), 'utf8')) as {chapters:{kind:string}[]};
+      const neutral = await courseVideoPresentation(file) !== file || aligned.chapters.length > 0 && aligned.chapters.every(c => !(hybrid.remotionKinds as string[]).includes(c.kind));
+      if (!neutral || (await fs.stat(file)).size <= 1024) continue;
+      return {status:'ready',key:candidate,video:`/api/v1/chalkboard-video/${input.enrollmentId}/${input.moduleId}/${candidate}`,captions:playback.captions};
+    } catch { /* Missing or stale candidates are not playable substitutes. */ }
   }
   if (previous?.status === 'failed' && !input.retry) return { status: 'failed', key, message: `Your narration is ready, but ${previous.stage === 'storyboard' ? 'visual planning' : 'video rendering'} needs another attempt. Retry the video or watch the original lesson.` };
   try {

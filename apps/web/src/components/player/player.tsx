@@ -29,7 +29,7 @@ import { HookCinema } from "@/components/player/hook/hook-cinema";
 import { VideoFirstHook } from './hook/video-first-hook';
 import { ModuleMap } from "@/components/player/module-map";
 import { useWatchedVideos } from "@/components/player/video/watched";
-import useSWR from 'swr';
+import useSWR, { mutate } from 'swr';
 import { api, refreshEnrollments } from '@/lib/api';
 import { flushSignals } from '@/lib/signals';
 import { PERSONAL_LEARNING_COURSE, personalLearningHref } from '@/lib/personal-learning';
@@ -187,19 +187,24 @@ export function Player({ module, moduleIndex, stage, video, courseHref, initialD
   };
 
   // is the piece on screen the learner's own, or still being written for them?
-  const piece = pieceOf(stage, part?.video?.id);
+  const piece = module.videoFirstActivities && ['hook', 'worked', 'guided', 'lab'].includes(stage) ? `activity:${stage}` : pieceOf(stage, part?.video?.id);
   const pieceStatus = latestAdapted?.pieces[piece]?.status;
   const personal = {
-    shown: stage === "hook" ? !!adapted?.hook : stage === "worked" ? !!adapted?.worked : !!(part?.video && adapted?.videos[part.video.id]),
+    shown: module.videoFirstActivities && ['hook', 'worked', 'guided', 'lab'].includes(stage) ? !!adapted?.activityAudio?.[stage] : stage === "hook" ? !!adapted?.hook : stage === "worked" ? !!adapted?.worked : !!(part?.video && adapted?.videos[part.video.id]),
     writing: pieceStatus === "writing" || pieceStatus === "voicing",
     organisation: latestAdapted?.world?.organisation,
     required: !enrollmentReady || (enrolled && (!latestAdapted || latestAdapted.live === true)),
     failed: pieceStatus === "failed",
+    onRetry: async () => { try { await api(`/api/v1/enrollments/${module.course_id}/modules/${module.module_id}/adapted`,{method:'POST'}); await mutate(`/api/v1/enrollments/${module.course_id}/modules/${module.module_id}/adapted?piece=hook`); } catch { toast.error('The personalised opening could not restart. Please try again.'); } },
   };
 
+  // Resolve enrollment and its current derivative before showing a player.
+  // Otherwise a fast click can start the generic recording during hydration.
+  if (!enrollmentReady || (enrolled && !latestAdapted)) return <div role="status" className="rounded-xl border border-line bg-panel p-6 text-ink-muted">Loading your course and personalised lesson…</div>;
   const sceneSlides = stage === "hook" || stage === "worked" || stage === "guided" || stage === "lab" ? module.narratedStages?.[stage] : undefined;
   const activityVideo = stage === 'worked' || stage === 'guided' ? module.remotionStages?.[stage] : undefined;
-  if (sceneSlides?.length && !activityVideo && stage !== 'guided' && !(stage === 'hook' && module.remotionHook)) return <NarratedStage key={`${module.module_id}:${stage}`} title={title} courseHref={courseHref} slides={sceneSlides} onComplete={onComplete} onPrev={nav.onPrev} />;
+  const personalizedActivity = enrolled && !!latestAdapted?.live && !!content.videoFirstActivities;
+  if (!module.videoFirstActivities && sceneSlides?.length && !activityVideo && stage !== 'guided' && !(stage === 'hook' && module.remotionHook)) return <NarratedStage key={`${module.module_id}:${stage}`} title={title} courseHref={courseHref} slides={sceneSlides} onComplete={onComplete} onPrev={nav.onPrev} />;
 
   // The problem hook plays full screen, with no map, tutor or banners around it.
   const hook = stage === "hook" ? getBlock(content, "hook") : undefined;
@@ -224,10 +229,10 @@ export function Player({ module, moduleIndex, stage, video, courseHref, initialD
   }
 
   let body: React.ReactNode;
-  const activityNav = { ...nav, audio: activityVideo ? undefined : adapted?.activityAudio?.[stage], personalized: !activityVideo && !!adapted?.activityAudio?.[stage], preparing: !activityVideo && !adapted?.activityAudio?.[stage] && ['writing', 'voicing'].includes(latestAdapted?.pieces[`activity:${stage}`]?.status ?? ''), onInteract: () => setStartedActivity(topicKey) };
+  const activityNav = { ...nav, audio: adapted?.activityAudio?.[stage], personalized: !!adapted?.activityAudio?.[stage], preparing: !adapted?.activityAudio?.[stage] && ['writing', 'voicing'].includes(latestAdapted?.pieces[`activity:${stage}`]?.status ?? ''), onInteract: () => setStartedActivity(topicKey) };
   switch (stage) {
     case 'hook':
-      if (module.remotionHook) body = <ReleasedHookStage key={`${module.course_id}:${module.version}:${module.module_id}:hook`} module={module} nextLabel={to('nextPart', { title: nextTitle })} {...nav} />;
+      if (module.remotionHook && !personalizedActivity) body = <ReleasedHookStage key={`${module.course_id}:${module.version}:${module.module_id}:hook`} module={module} nextLabel={to('nextPart', { title: nextTitle })} {...nav} />;
       else if (content.videoFirstActivities) body = <VideoFirstHook key={`${module.version}:${stage}`} hook={content.videoFirstActivities.problemHook} sceneAudio={adapted?.activitySceneAudio?.hook} fallbackAudioUrl={`/api/v1/courses/${module.course_id}/hook-audio/${module.module_id}`} {...activityNav} />;
       break;
     case "explainer":
@@ -273,7 +278,7 @@ export function Player({ module, moduleIndex, stage, video, courseHref, initialD
   }
 
   // Watching the demonstration does not submit the learner's practice response.
-  if (activityVideo) body = <div className="space-y-6"><section aria-label={`${title} video`}><ReleasedVisualLesson endpoint={activityVideo.endpoint} video={{id:`${module.course_id}-${module.module_id}-${stage}`,module:module.module_id,lesson:stage,midQuiz:[],endQuiz:[]}} /></section>{body}</div>;
+  if (activityVideo) body = <div className="space-y-6">{!personalizedActivity ? <section aria-label={`${title} video`}><ReleasedVisualLesson endpoint={activityVideo.endpoint} video={{id:`${module.course_id}-${module.module_id}-${stage}`,module:module.module_id,lesson:stage,midQuiz:[],endQuiz:[]}} /></section> : <details><summary className="cursor-pointer text-sm font-medium">Watch original demonstration</summary><ReleasedVisualLesson endpoint={activityVideo.endpoint} video={{id:`${module.course_id}-${module.module_id}-${stage}-original`,module:module.module_id,lesson:stage,midQuiz:[],endQuiz:[]}} /></details>}{body}</div>;
 
   const map = (
     <ModuleMap

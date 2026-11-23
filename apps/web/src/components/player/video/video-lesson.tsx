@@ -58,7 +58,7 @@ type Phase = "play" | "mid" | "end" | "done";
  * F fullscreen.
  */
 export function VideoLesson(props: { video: ConceptVideo; onComplete?: () => void; onNext?: () => void; nextLabel?: string }) {
-  if(props.video.remotion)return <ReleasedVisualLesson {...props} endpoint={props.video.remotion.endpoint}/>;
+  if(props.video.remotion && !props.video.personalizationSource)return <ReleasedVisualLesson {...props} endpoint={props.video.remotion.endpoint}/>;
   return props.video.personalizationSource ? <PersonalizedConceptLesson key={`${props.video.id}:${props.video.personalizationSource.transcriptId}`} {...props} /> : props.video.uploadedVideo ? <UploadedVideoLesson key={`${props.video.id}:${props.video.uploadedVideo.transcriptId}`} {...props} /> : <SlideVideoLesson {...props} />;
 }
 

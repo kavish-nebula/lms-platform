@@ -235,10 +235,14 @@ export async function queueModule(user: SessionUser, courseId: string, moduleId:
   const queuePiece = async (piece: "hook" | "worked") => {
     const def = piecesOf(mod).find((p) => p.piece === piece);
     if (!def) return null;
-    const textMapVersion = piece === "hook" ? 10 : undefined;
-    const fingerprint = hash({ enrollment: e.id, moduleId, piece, textMapVersion, authored: def.authored, context: teachingContext(context) });
+    const textMapVersion = piece === "hook" ? 13 : undefined;
+    // Repair an existing learner's partial story rather than discarding its
+    // already correct context. The stable pre-repair basis cannot select itself.
+    const basis = piece === 'hook' ? (await d.select().from(adaptationJobs).where(and(eq(adaptationJobs.enrollmentId,e.id),eq(adaptationJobs.moduleId,moduleId),eq(adaptationJobs.videoId,'hook'),eq(adaptationJobs.status,'ready'))).orderBy(desc(adaptationJobs.createdAt))).find(r=>Number(r.input.textMapVersion??0)<13 && matchesLearnerContext(r.input.context,learnerContextKey(context))) : undefined;
+    const template = basis?.content ? mergeShape(def.authored,basis.content).value : def.authored;
+    const fingerprint = hash({ enrollment: e.id, moduleId, piece, textMapVersion, basis:basis?.id, authored: def.authored, context: teachingContext(context) });
     const priority = preparationPriority < 0 ? preparationPriority : piece === 'hook' ? 1 : 0;
-    const inserted = await d.insert(adaptationJobs).values({ enrollmentId: e.id, moduleId, videoId: piece, slide: 0, fingerprint, trigger: "initial", priority, input: { authored: def.authored, source: def.authored, context, trigger: "initial", piece, courseId, textMapVersion } }).onConflictDoNothing().returning();
+    const inserted = await d.insert(adaptationJobs).values({ enrollmentId: e.id, moduleId, videoId: piece, slide: 0, fingerprint, trigger: "initial", priority, input: { authored: template, source: template, requiredTeaching:def.authored, basisRevision:basis?.id, context, trigger: "initial", piece, courseId, textMapVersion } }).onConflictDoNothing().returning();
     await d.update(adaptationJobs).set({ priority }).where(and(eq(adaptationJobs.fingerprint, fingerprint), eq(adaptationJobs.status, 'queued'), lt(adaptationJobs.priority, priority)));
     if (inserted.length) await d.update(adaptationJobs).set({ status: "superseded", updatedAt: new Date() }).where(and(eq(adaptationJobs.enrollmentId, e.id), eq(adaptationJobs.moduleId, moduleId), eq(adaptationJobs.videoId, piece), or(eq(adaptationJobs.status, "queued"), eq(adaptationJobs.status, "running")), ne(adaptationJobs.fingerprint, fingerprint), lt(adaptationJobs.createdAt, inserted[0]!.createdAt)));
     if (openPiece === piece) await d.update(adaptationJobs).set({ priority: 3 }).where(and(eq(adaptationJobs.fingerprint, fingerprint), eq(adaptationJobs.status, "queued")));
@@ -267,6 +271,12 @@ export async function queueModule(user: SessionUser, courseId: string, moduleId:
 
 /** Explicit concept requests reserve the interactive lane; module preparation
  * supplies a lower priority and reuses the same validated text/audio job. */
+/** Explicitly retry only the current learner/profile/release-scoped failed hook. */
+export async function retryModuleHook(user: SessionUser, courseId: string, moduleId: string) {
+  const current = await queueModule(user, courseId, moduleId, 'hook');
+  if (current.hook?.status === 'failed') await (await db()).update(adaptationJobs).set({status:'queued',attempts:0,error:null,lease:null,leaseUntil:null,priority:10,updatedAt:new Date()}).where(and(eq(adaptationJobs.id,current.hook.id),eq(adaptationJobs.status,'failed')));
+}
+
 export async function queueConcept(user: SessionUser, courseId: string, moduleId: string, videoId: string, retry = false, priority = 10) {
   if (!liveEnabled(courseId)) throw new ApiError(409, 'disabled', 'Live adaptation is disabled.');
   const { videos } = await videosOf(courseId, moduleId, user.id);

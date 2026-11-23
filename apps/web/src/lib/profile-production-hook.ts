@@ -1,5 +1,13 @@
 import type { VideoHook } from './video-first-hook';
 
+/** Presentation alias for a fictional machine; preserve the approved source snapshot. */
+export function neutralProductionHook(hook: VideoHook, courseId: string, moduleId: string): VideoHook {
+  if (courseId !== 'affcb1b6-5539-431c-9a95-cce2bdb26b51' || moduleId !== 'M1') return hook;
+  const alias = (text: string) => text.replace(/\bNebula\s+NK[\s\u2010-\u2015-]*V500\b/gi, 'CNC Model V500');
+  const title = alias(hook.title), situation = alias(hook.situation), question = alias(hook.question);
+  return title === hook.title && situation === hook.situation && question === hook.question ? hook : { ...hook, title, situation, question };
+}
+
 /** Fictional transfer cases; never replacement transcripts or source documents. */
 export function profileProductionHook(hook: VideoHook, courseId: string, context?: unknown): VideoHook {
   if (!['dd1fec93-8c51-4f2d-9e0c-943823062c76', 'affcb1b6-5539-431c-9a95-cce2bdb26b51'].includes(courseId)
@@ -21,6 +29,9 @@ export function profileProductionHook(hook: VideoHook, courseId: string, context
 
 /** Reject a rewrite that loses the transfer case or blurs it with source facts. */
 export function validateProfileProductionHook(authored: VideoHook, candidate: VideoHook) {
+  if (/CNC Model V500/.test(authored.situation) && (!/CNC Model V500/.test(candidate.situation) || /\bNebula\b/i.test([candidate.title, candidate.situation, candidate.question].join(' ')))) {
+    throw new Error('Keep the neutral fictional machine name CNC Model V500 in the problem hook.');
+  }
   const finance = authored.situation.startsWith('Fictional finance and audit case:');
   const healthcare = authored.situation.startsWith('Fictional healthcare administration case:');
   if (!finance && !healthcare) return;

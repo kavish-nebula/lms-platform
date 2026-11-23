@@ -2,8 +2,14 @@ import { after } from "next/server";
 import { getSessionUser } from "@/server/auth";
 import { handle, ok } from "@/server/http";
 import { adaptedModule } from "@/server/adapt/service";
+import { retryModuleHook } from '@/server/adapt/live';
 
 type Ctx = { params: Promise<{ courseId: string; moduleId: string }> };
+export const POST = handle(async (_req:Request,{params}:Ctx)=>{
+  const {courseId,moduleId}=await params,user=await getSessionUser();
+  await retryModuleHook(user,courseId,moduleId);
+  return ok({adapted:await adaptedModule(user,courseId,moduleId,after,{},'hook')});
+});
 
 /**
  * GET: the pieces of this module rewritten for the learner (hook, concept

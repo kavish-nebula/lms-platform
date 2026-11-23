@@ -8,6 +8,7 @@ import { appRoot } from './db/client';
 import { defaultVoicer } from './adapt/tts';
 import type { Voicer } from './adapt/tts';
 import { hookScenes } from '@/lib/video-first-hook';
+import { neutralProductionHook } from '@/lib/profile-production-hook';
 import { ApiError } from './http';
 import { wavSeconds } from './production-audio';
 
@@ -16,7 +17,7 @@ async function source(userId: string, courseId: string, moduleId: string) {
   const release = await getPublishedAuthoredCourse(courseId, userId);
   const courseModule = release?.content.modules.find(m => m.id === moduleId);
   if (!release || !courseModule || !courseModule.conceptExplainer.videos.some(v => v.uploadedVideo || v.sourceMedia?.audio || v.sourceMedia?.video) || (release.ownerId !== userId && !(await findEnrollment(userId, courseId)))) throw new ApiError(404, 'not_found', 'Published hook not found.');
-  const scenes = hookScenes(courseModule.problemHook);
+  const scenes = hookScenes(neutralProductionHook(courseModule.problemHook, courseId, moduleId));
   const key = createHash('sha256').update(JSON.stringify({ revision: release.revisionId, moduleId, scenes, provider: process.env.AUDIO_PROVIDER, model: process.env.AUDIO_MODEL, voice: process.env.AUDIO_VOICE, style: process.env.AUDIO_STYLE, kokoroVoice: process.env.KOKORO_VOICE })).digest('hex');
   const dir = path.join(appRoot(), '.data', 'video-hook-audio');
   const clips = scenes.map((scene, i) => ({ key: `${key}-scene${i}`, text: scene.text }));

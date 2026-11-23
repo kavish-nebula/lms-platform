@@ -122,7 +122,7 @@ export function HookCinema({
   onComplete: () => void;
   onExit: () => void;
   /** Enrolled live courses wait for a matching text/audio pair before playback. */
-  personal?: { shown: boolean; writing: boolean; organisation?: string; required?: boolean; failed?: boolean };
+  personal?: { shown: boolean; writing: boolean; organisation?: string; required?: boolean; failed?: boolean; onRetry?:()=>Promise<void> };
   onPlaybackStart?: () => void;
 }) {
   const t = useTranslations("cinema");
@@ -287,6 +287,7 @@ export function HookCinema({
           </motion.p>
         ) : null}
         <motion.div {...appear(0.4)} className="flex flex-wrap items-center gap-5 pt-2">
+          {personal?.failed && personal.onRetry && <button type="button" className="hc-btn" onClick={()=>void personal.onRetry?.()}><RotateCcw/>Retry personalised opening</button>}
           <button type="button" className="hc-btn big" onClick={begin} disabled={personal?.required && !personal.shown} autoFocus>
             <Play />
             {personal?.required && !personal.shown ? t("personalPreparing") : t("begin")}
